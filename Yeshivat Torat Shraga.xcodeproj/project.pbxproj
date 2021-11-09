@@ -60,10 +60,9 @@
 		B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */ = {
 			isa = PBXGroup;
 			children = (
-				B12AB830273B103C00B17CC0 /* AppDelegate.swift */,
-				B12AB832273B103C00B17CC0 /* SceneDelegate.swift */,
-				B12AB834273B103C00B17CC0 /* RootView.swift */,
-				F230C4C9273B110900F7ACCC /* Root.swift */,
+				F230C4CF273B11DC00F7ACCC /* Delegates */,
+				F230C4CE273B119E00F7ACCC /* Models */,
+				F230C4CB273B117D00F7ACCC /* Views */,
 				B12AB839273B104300B17CC0 /* Assets.xcassets */,
 				B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */,
 				B12AB841273B104300B17CC0 /* Info.plist */,
@@ -79,6 +78,31 @@
 				B12AB83C273B104300B17CC0 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F230C4CB273B117D00F7ACCC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B12AB834273B103C00B17CC0 /* RootView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F230C4CE273B119E00F7ACCC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F230C4C9273B110900F7ACCC /* Root.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F230C4CF273B11DC00F7ACCC /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				B12AB830273B103C00B17CC0 /* AppDelegate.swift */,
+				B12AB832273B103C00B17CC0 /* SceneDelegate.swift */,
+			);
+			path = Delegates;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
