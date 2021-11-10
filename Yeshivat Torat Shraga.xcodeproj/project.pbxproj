@@ -15,6 +15,8 @@
 		B12AB83D273B104300B17CC0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B12AB83C273B104300B17CC0 /* Preview Assets.xcassets */; };
 		B12AB840273B104300B17CC0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */; };
 		F230C4CA273B110900F7ACCC /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4C9273B110900F7ACCC /* Root.swift */; };
+		F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D2273BE58B00F7ACCC /* YTS.swift */; };
+		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		B12AB83F273B104300B17CC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B12AB841273B104300B17CC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F230C4C9273B110900F7ACCC /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
+		F230C4D2273BE58B00F7ACCC /* YTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTS.swift; sourceTree = "<group>"; };
+		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,7 @@
 		B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */ = {
 			isa = PBXGroup;
 			children = (
+				F230C4D1273BE57B00F7ACCC /* Structure */,
 				F230C4CF273B11DC00F7ACCC /* Delegates */,
 				F230C4CE273B119E00F7ACCC /* Models */,
 				F230C4CB273B117D00F7ACCC /* Views */,
@@ -103,6 +108,15 @@
 				B12AB832273B103C00B17CC0 /* SceneDelegate.swift */,
 			);
 			path = Delegates;
+			sourceTree = "<group>";
+		};
+		F230C4D1273BE57B00F7ACCC /* Structure */ = {
+			isa = PBXGroup;
+			children = (
+				F230C4D2273BE58B00F7ACCC /* YTS.swift */,
+				F230C4D4273BE81E00F7ACCC /* Errors.swift */,
+			);
+			path = Structure;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -177,9 +191,11 @@
 			files = (
 				B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
+				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				F230C4CA273B110900F7ACCC /* Root.swift in Sources */,
+				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
