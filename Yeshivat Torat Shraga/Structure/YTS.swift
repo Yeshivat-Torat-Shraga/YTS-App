@@ -11,7 +11,16 @@ import SwiftUI
 typealias FirestoreID = String
 typealias FileID = String
 
-class Rabbi {
+class Rabbi: Hashable {
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Rabbi, rhs: Rabbi) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     /// The `FirestoreID` associated with this object in Firestore
     private var firestoreID: FirestoreID
     
@@ -23,6 +32,9 @@ class Rabbi {
     
     /// The `URL` that links to  this object's profile image
     var profileImageURL: URL?
+    
+    /// A unique ID associated with each instance of Rabbi
+    var id: UUID = UUID()
     
     /// Standard initalizer used for a preexisting `Image`
     /// - Parameters:
@@ -46,6 +58,13 @@ class Rabbi {
         self.profileImageURL = profileImageURL
     }
     
+    static public var samples: [Rabbi] = [
+        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+//        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+    ]
     /*
     init?(name: String, profileImageURL: URL) throws {
         self.name = name
