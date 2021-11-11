@@ -15,7 +15,7 @@ struct HomeView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(model.rabbis, id: \.self) { rabbi in
-                            TileCardView(rabbi: rabbi, size: .small)
+                            TileCardView<Rabbi>(content: rabbi, size: .small)
                         }
                     }
                 }

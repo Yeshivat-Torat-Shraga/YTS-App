@@ -46,7 +46,7 @@ struct TileCardView<Content: Tileable>: View {
     }
     
     var body: some View {
-        content.profileImage?
+        content.image?
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
@@ -72,14 +72,12 @@ struct TileCardView<Content: Tileable>: View {
     }
 }
 
-protocol Tileable {
+protocol Tileable: URLImageable {
     var name: String { get }
-    var profileImage: Image? { get }
-    var profileImageURL: URL? { get }
 }
 
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
-        TileCardView(content: Rabbi.samples[0], size: .small)
+        TileCardView<Rabbi>(content: Rabbi.samples[0], size: .small)
     }
 }

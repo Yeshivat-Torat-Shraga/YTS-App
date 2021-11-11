@@ -109,6 +109,41 @@ class AsyncImageLoader: ObservableObject {
     }
 }
 
+protocol URLImageable {
+    var image: Image? { get set }
+    var imageURL: URL? { get }
+}
+
+struct DownloadableImage<Object: URLImageable>: View {
+    @ObservedObject var model: DownloadableImageModel<Object>
+    
+    init(object: Object) {
+        self.model = DownloadableImageModel(object: object)
+    }
+    
+    var body: some View {
+        if let image = model.object.image {
+            image
+        } else if let imageURL = model.object.imageURL {
+            URLImage(url: imageURL, placeholder: {
+                ProgressView()
+            }, completion: { image in
+                model.object.image = image
+            })
+        } else {
+            
+        }
+    }
+    
+    class DownloadableImageModel<Object: URLImageable>: ObservableObject {
+        @Published var object: Object
+        
+        init(object: Object) {
+            self.object = object
+        }
+    }
+}
+
 struct URLImage<Content : View>: View {
     @ObservedObject var imageLoader = AsyncImageLoader()
     var placeholder: Content
