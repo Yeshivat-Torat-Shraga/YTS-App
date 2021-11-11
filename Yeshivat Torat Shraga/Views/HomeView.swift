@@ -15,10 +15,16 @@ struct HomeView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(model.rabbis, id: \.self) { rabbi in
-                            TileCardView(rabbi: rabbi, size: .small)
+                            NavigationLink(destination: Text("surprise!")) {
+                                TileCardView(rabbi: rabbi, size: .small)
+                            }
                         }
                     }
                 }
+            }
+            .navigationTitle("This is YTS")
+            .toolbar {
+                Text("LOGO HERE")
             }
         }
     }
