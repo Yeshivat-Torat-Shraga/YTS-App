@@ -20,7 +20,7 @@ struct TileCardView<Content: Tileable>: View {
         case large
     }
     
-    var content: Tileable
+    var content: Content
     var size: TileSize
     
     private var frameSize: (width: CGFloat, height: CGFloat) {
@@ -46,8 +46,7 @@ struct TileCardView<Content: Tileable>: View {
     }
     
     var body: some View {
-        content.image?
-            .resizable()
+        DownloadableImage(object: content)
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
             .clipped()
@@ -68,7 +67,6 @@ struct TileCardView<Content: Tileable>: View {
                 }
             )
             .cornerRadius(15)
-
     }
 }
 

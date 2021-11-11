@@ -115,7 +115,7 @@ protocol URLImageable {
 }
 
 struct DownloadableImage<Object: URLImageable>: View {
-    @ObservedObject var model: DownloadableImageModel<Object>
+    @ObservedObject private var model: DownloadableImageModel<Object>
     
     init(object: Object) {
         self.model = DownloadableImageModel(object: object)
@@ -124,6 +124,7 @@ struct DownloadableImage<Object: URLImageable>: View {
     var body: some View {
         if let image = model.object.image {
             image
+                .resizable()
         } else if let imageURL = model.object.imageURL {
             URLImage(url: imageURL, placeholder: {
                 ProgressView()
@@ -135,7 +136,7 @@ struct DownloadableImage<Object: URLImageable>: View {
         }
     }
     
-    class DownloadableImageModel<Object: URLImageable>: ObservableObject {
+    private class DownloadableImageModel<Object: URLImageable>: ObservableObject {
         @Published var object: Object
         
         init(object: Object) {
