@@ -75,6 +75,12 @@ struct TileCardView: View {
     }
 }
 
+protocol Tileable {
+    var name: String { get }
+    var profileImage: Image? { get }
+    var profileImageURL: URL? { get }
+}
+
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
         TileCardView(rabbi: .samples[0], size: .small)
