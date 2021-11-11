@@ -1,0 +1,5 @@
+.DS_Store
+*/xcshareddata/
+Pod*
+xcuserdata/
+GoogleService-Info.plist

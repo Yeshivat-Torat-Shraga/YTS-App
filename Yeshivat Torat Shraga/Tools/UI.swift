@@ -7,12 +7,14 @@
 
 import SwiftUI
 
+/// Source: https://stackoverflow.com/questions/56760335/round-specific-corners-swiftui
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
 }
 
+/// Source: https://stackoverflow.com/questions/56760335/round-specific-corners-swiftui
 struct RoundedCorner: Shape {
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
@@ -23,12 +25,14 @@ struct RoundedCorner: Shape {
     }
 }
 
+/// Source: https://stackoverflow.com/questions/56610957/is-there-a-method-to-blur-a-background-in-swiftui
 struct VisualEffectView: UIViewRepresentable {
     var effect: UIVisualEffect?
     func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
     func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
 }
 
+/// Source: https://stackoverflow.com/questions/56610957/is-there-a-method-to-blur-a-background-in-swiftui
 struct Blur: UIViewRepresentable {
     var style: UIBlurEffect.Style = .systemMaterial
     
