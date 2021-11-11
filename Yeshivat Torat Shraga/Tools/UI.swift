@@ -114,9 +114,12 @@ protocol URLImageable {
     var imageURL: URL? { get }
 }
 
+/// Image view that makes `URLImage` easier when the image is taken from a `URLImageable`
 struct DownloadableImage<Object: URLImageable>: View {
     @ObservedObject private var model: DownloadableImageModel<Object>
     
+    /// Standard intializer for `DownloadableImage`
+    /// - Parameter object: `Object` to display image data from
     init(object: Object) {
         self.model = DownloadableImageModel(object: object)
     }
