@@ -47,7 +47,6 @@ struct TileCardView: View {
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
             .clipped()
-            .cornerRadius(15)
             .overlay(
                 VStack {
                     Spacer()
@@ -57,21 +56,15 @@ struct TileCardView: View {
                             .padding(5)
                             .font(.system(size: fontSize, weight: .medium ))
                             .background(
-                                ZStack {
-                                    VisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
-                                }
+                                VisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
                                     .cornerRadius(15, corners: [.topRight, .bottomLeft])
                             )
                         Spacer()
                     }
                 }
-//                Text("Rabbi Shmuel Silber")
-//                    .foregroundColor(.white)
-//                    .font(.headline)
-//                    .bold()
-//                    .multilineTextAlignment(.center)
             )
-        
+            .cornerRadius(15)
+
     }
 }
 
