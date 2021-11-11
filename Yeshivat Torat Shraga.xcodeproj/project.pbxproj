@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66A32FE345BB8AA31D85C386 /* Pods_Yeshivat_Torat_Shraga.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -24,6 +25,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yeshivat_Torat_Shraga.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		60C4381864607B5942F1F056 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.debug.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.debug.xcconfig"; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -37,6 +40,7 @@
 		B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		B1BF5042273D2A2200CF18D6 /* TileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileCardView.swift; sourceTree = "<group>"; };
 		B1BF5045273D37BD00CF18D6 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
+		B38B17AA75B5E68936A8DB18 /* Pods-Yeshivat Torat Shraga.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.release.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.release.xcconfig"; sourceTree = "<group>"; };
 		F230C4C9273B110900F7ACCC /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		F230C4D2273BE58B00F7ACCC /* YTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTS.swift; sourceTree = "<group>"; };
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
@@ -47,17 +51,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A32FE345BB8AA31D85C386 /* Pods_Yeshivat_Torat_Shraga.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		302F37C472D6E5056493B0FB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				60C4381864607B5942F1F056 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */,
+				B38B17AA75B5E68936A8DB18 /* Pods-Yeshivat Torat Shraga.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		B12AB824273B103C00B17CC0 = {
 			isa = PBXGroup;
 			children = (
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
+				302F37C472D6E5056493B0FB /* Pods */,
+				DDBA30DCECD219195C07B023 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -100,6 +117,14 @@
 				B1BF5045273D37BD00CF18D6 /* UI.swift */,
 			);
 			path = Tools;
+			sourceTree = "<group>";
+		};
+		DDBA30DCECD219195C07B023 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F230C4CB273B117D00F7ACCC /* Views */ = {
@@ -146,9 +171,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B12AB844273B104300B17CC0 /* Build configuration list for PBXNativeTarget "Yeshivat Torat Shraga" */;
 			buildPhases = (
+				EDE065ACC6CCD22BB4A253C2 /* [CP] Check Pods Manifest.lock */,
 				B12AB829273B103C00B17CC0 /* Sources */,
 				B12AB82A273B103C00B17CC0 /* Frameworks */,
 				B12AB82B273B103C00B17CC0 /* Resources */,
+				7B86BE1E7B047E09C10875D5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -203,6 +230,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7B86BE1E7B047E09C10875D5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EDE065ACC6CCD22BB4A253C2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Yeshivat Torat Shraga-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B12AB829273B103C00B17CC0 /* Sources */ = {
@@ -355,6 +424,7 @@
 		};
 		B12AB845273B104300B17CC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 60C4381864607B5942F1F056 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -376,6 +446,7 @@
 		};
 		B12AB846273B104300B17CC0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B38B17AA75B5E68936A8DB18 /* Pods-Yeshivat Torat Shraga.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
