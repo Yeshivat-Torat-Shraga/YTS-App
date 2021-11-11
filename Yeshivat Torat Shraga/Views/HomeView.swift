@@ -11,21 +11,29 @@ struct HomeView: View {
     @StateObject var model: HomeViewModel = HomeViewModel()
     var body: some View {
         NavigationView {
-            VStack {
-                ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView {
+                VStack {
                     HStack {
-                        ForEach(model.rabbis, id: \.self) { rabbi in
-                            NavigationLink(destination: Text("surprise!")) {
-                                TileCardView<Rabbi>(content: rabbi, size: .small)
+                        Text("Rebbeim")
+                        Spacer()
+                    }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(model.rabbis, id: \.self) { rabbi in
+                                NavigationLink(destination: Text("surprise!")) {
+                                    TileCardView<Rabbi>(content: rabbi, size: .small)
+                                }
+                                
                             }
-                            
                         }
                     }
+                    Divider()
                 }
+                .padding()
+                .navigationTitle("This is YTS")
+                .toolbar {
+                    Text("LOGO HERE")
             }
-            .navigationTitle("This is YTS")
-            .toolbar {
-                Text("LOGO HERE")
             }
         }
     }
