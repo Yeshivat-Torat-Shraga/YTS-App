@@ -13,14 +13,16 @@ import SwiftUI
 // Shiurim (A/V), Rebbeimm, Categories/Topics
 // and maybe the slideshow. Not sure about that yet.
 
-struct TileCardView: View {
+struct TileCardView<Content: Tileable>: View {
     enum TileSize {
         case small
         case wide
         case large
     }
-    var rabbi: Rabbi
+    
+    var content: Tileable
     var size: TileSize
+    
     private var frameSize: (width: CGFloat, height: CGFloat) {
         switch size {
         case .small:
@@ -31,6 +33,7 @@ struct TileCardView: View {
             return (200, 200)
         }
     }
+    
     private var fontSize: CGFloat {
         switch size {
         case .small:
@@ -41,8 +44,9 @@ struct TileCardView: View {
             return 12
         }
     }
+    
     var body: some View {
-        rabbi.profileImage?
+        content.profileImage?
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
@@ -50,8 +54,8 @@ struct TileCardView: View {
             .overlay(
                 VStack {
                     Spacer()
-                    HStack{
-                        Text(rabbi.name)
+                    HStack {
+                        Text(content.name)
                             .foregroundColor(.white)
                             .padding(5)
                             .font(.system(size: fontSize, weight: .medium ))
@@ -76,6 +80,6 @@ protocol Tileable {
 
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
-        TileCardView(rabbi: .samples[0], size: .small)
+        TileCardView(content: Rabbi.samples[0], size: .small)
     }
 }
