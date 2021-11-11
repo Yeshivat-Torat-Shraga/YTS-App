@@ -16,8 +16,9 @@ struct HomeView: View {
                     HStack {
                         ForEach(model.rabbis, id: \.self) { rabbi in
                             NavigationLink(destination: Text("surprise!")) {
-                                TileCardView(rabbi: rabbi, size: .small)
+                                TileCardView<Rabbi>(content: rabbi, size: .small)
                             }
+                            
                         }
                     }
                 }
