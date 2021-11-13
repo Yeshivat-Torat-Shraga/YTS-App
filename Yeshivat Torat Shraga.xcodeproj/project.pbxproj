@@ -91,11 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */,
-				B1BF5044273D37AE00CF18D6 /* Tools */,
-				F230C4D1273BE57B00F7ACCC /* Structure */,
-				F230C4CF273B11DC00F7ACCC /* Delegates */,
-				F230C4CE273B119E00F7ACCC /* Models */,
-				F230C4CB273B117D00F7ACCC /* Views */,
+				F230C4DA274044DD00F7ACCC /* Code */,
 				B12AB839273B104300B17CC0 /* Assets.xcassets */,
 				B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */,
 				B12AB841273B104300B17CC0 /* Info.plist */,
@@ -164,6 +160,18 @@
 				F230C4D4273BE81E00F7ACCC /* Errors.swift */,
 			);
 			path = Structure;
+			sourceTree = "<group>";
+		};
+		F230C4DA274044DD00F7ACCC /* Code */ = {
+			isa = PBXGroup;
+			children = (
+				B1BF5044273D37AE00CF18D6 /* Tools */,
+				F230C4D1273BE57B00F7ACCC /* Structure */,
+				F230C4CF273B11DC00F7ACCC /* Delegates */,
+				F230C4CE273B119E00F7ACCC /* Models */,
+				F230C4CB273B117D00F7ACCC /* Views */,
+			);
+			path = Code;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
