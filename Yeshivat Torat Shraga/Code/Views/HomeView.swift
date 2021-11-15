@@ -14,13 +14,25 @@ struct HomeView: View {
             ScrollView {
                 VStack {
                     HStack {
+                        Text("Recently Uploaded")
+                        Spacer()
+                    }
+                    ScrollView(.horizontal, showsIndicators: false) {
+//                        ForEach(model.recentlyUploaded, id: \.self) { content in
+//                            NavigationLink(destination: Text("Recently uploaded content object")) {
+//                                TileCardView(content: content, size: .wide)
+//                            }
+//                        }
+                    }
+                    Divider()
+                    HStack {
                         Text("Rebbeim")
                         Spacer()
                     }
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(model.rabbis, id: \.self) { rabbi in
-                                NavigationLink(destination: Text("surprise!")) {
+                                NavigationLink(destination: Text("Rabbi page")) {
                                     TileCardView<Rabbi>(content: rabbi, size: .small)
                                 }
                                 
@@ -30,10 +42,10 @@ struct HomeView: View {
                     Divider()
                 }
                 .padding()
-                .navigationTitle("This is YTS")
+                .navigationTitle("Welcome to YTS")
                 .toolbar {
                     Text("LOGO HERE")
-            }
+                }
             }
         }
     }

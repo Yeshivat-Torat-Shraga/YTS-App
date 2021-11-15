@@ -70,7 +70,7 @@ struct TileCardView<Content: Tileable>: View {
     }
 }
 
-protocol Tileable: URLImageable {
+protocol Tileable: URLImageable, Hashable {
     var name: String { get }
 }
 
