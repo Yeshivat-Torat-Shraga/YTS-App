@@ -5,7 +5,7 @@ admin.initializeApp({
 	projectId: "yeshivat-torat-shraga"
 });
 
-exports.loadRabbis = functions.https.onCall(async (callData, context) => {
+exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	// if (context.app == undefined) {
 	// 	throw new functions.https.HttpsError(
 	// 		'failed-precondition',

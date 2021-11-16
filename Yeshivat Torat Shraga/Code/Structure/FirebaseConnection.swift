@@ -17,7 +17,7 @@ final class FirebaseConnection {
     ///   - count: The amount of `Rabbi` objects to return. Default is `10`
     ///   - includeProfilePictureURLs: Whether or not to include profile picture URLs in the response. Default is `true`
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`
-    static func loadRabbis(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeProfilePictureURLs: Bool = true, completion: @escaping (_ results: (rabbis: [Rabbi], metadata: (newLastLoadedDocumentID: FirestoreID, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadRebbeim(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeProfilePictureURLs: Bool = true, completion: @escaping (_ results: (rabbis: [Rabbi], metadata: (newLastLoadedDocumentID: FirestoreID, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var rebbeim: [Rabbi] = []
         
         let data: NSDictionary
@@ -27,7 +27,7 @@ final class FirebaseConnection {
             data = NSDictionary(dictionary: ["count": requestedCount])
         }
         
-        let httpsCallable = functions.httpsCallable("loadRabbis")
+        let httpsCallable = functions.httpsCallable("loadRebbeim")
         
         httpsCallable.call(data) { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {
