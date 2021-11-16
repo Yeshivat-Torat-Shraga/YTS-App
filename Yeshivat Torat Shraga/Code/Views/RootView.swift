@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct RootView: View {
-    @StateObject var root = Root()
+    @StateObject var root = RootModel()
     
     var body: some View {
         TabView {
-            HomeView()
+            HomeView(model: root)
                 .tabItem{
                     Label("Home", systemImage: "house")
                 }

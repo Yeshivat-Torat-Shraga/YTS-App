@@ -7,16 +7,17 @@
 
 import Foundation
 
-class Root: ObservableObject {
+class RootModel: ObservableObject {
 
     @Published var rebbeim: [Rabbi]?
     
     init() {
-        FirebaseConnection.loadRabbis { results, error in
-            guard let results = results else {
-                fatalError(error!.localizedDescription)
-            }
-            rebbeim = results.rabbis
-        }
+        rebbeim = Rabbi.samples
+//        FirebaseConnection.loadRabbis { results, error in
+//            guard let results = results else {
+//                fatalError(error!.localizedDescription)
+//            }
+//            rebbeim = results.rabbis
+//        }
     }
 }

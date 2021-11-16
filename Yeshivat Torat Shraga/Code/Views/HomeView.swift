@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var model: HomeViewModel = HomeViewModel()
+    @StateObject var model: RootModel = RootModel()
     var body: some View {
         NavigationView {
             ScrollView {
@@ -31,8 +31,8 @@ struct HomeView: View {
                     }
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(model.rabbis, id: \.self) { rabbi in
-                                NavigationLink(destination: Text("Rabbi page")) {
+                            ForEach(model.rebbeim ?? [], id: \.self) { rabbi in
+                                NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
                                     TileCardView<Rabbi>(content: rabbi, size: .small)
                                 }
                                 
