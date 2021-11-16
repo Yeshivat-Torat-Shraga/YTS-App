@@ -7,8 +7,9 @@
 
 import Foundation
 
-enum YTSError {
-    
+enum YTSError: Error {
+    case noDataReceived
+    case invalidDataReceived
 }
 
 /// Prepares a model class to show errors in its parent view
