@@ -6,18 +6,20 @@
 //
 
 import Foundation
+import SwiftUI
 
 class RootModel: ObservableObject {
 
-    @Published var rebbeim: [Rabbi]?
+    @Published var rebbeim: [DetailedRabbi]?
     
     init() {
-        rebbeim = Rabbi.samples
-//        FirebaseConnection.loadRabbis { results, error in
-//            guard let results = results else {
-//                fatalError(error!.localizedDescription)
-//            }
-//            rebbeim = results.rabbis
-//        }
+        FirebaseConnection.loadRebbeim(includeProfilePictureURLs: true) { results, error in
+            guard let results = results else {
+                fatalError(error!.localizedDescription)
+            }
+            withAnimation {
+            self.rebbeim = results.rabbis as! [DetailedRabbi]
+            }
+        }
     }
 }
