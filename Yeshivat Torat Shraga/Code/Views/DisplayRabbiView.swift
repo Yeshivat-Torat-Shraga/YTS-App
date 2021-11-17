@@ -18,7 +18,9 @@ struct DisplayRabbiView: View {
         NavigationView {
             VStack {
                 ScrollView(.horizontal, showsIndicators: false) {
-//                    ForEach(model.
+                    ForEach(model.audios!, id: \.self) { audio in
+                        Text("\(audio.title)")
+                    }
                 }
             }
             .navigationTitle(model.rabbi.name)
@@ -31,6 +33,6 @@ struct DisplayRabbiView: View {
 
 struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
-        DisplayRabbiView(rabbi: Rabbi.samples[0])
+        DisplayRabbiView(rabbi: DetailedRabbi.samples[0])
     }
 }

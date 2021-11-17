@@ -142,7 +142,9 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 					description: data.description,
 					type: data.type,
 					source_url: url,
-					author: author
+					author: author,
+                    date: data.date,
+                    duration: data.duration
 				};
 
 				content.push(c);

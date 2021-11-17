@@ -31,7 +31,7 @@ struct HomeView: View {
                     }
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(model.rebbeim?, id: \.self) { rabbi in
+                            ForEach(model.rebbeim ?? [], id: \.self) { rabbi in
                                 NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
                                     TileCardView<DetailedRabbi>(content: rabbi, size: .small)
                                 }

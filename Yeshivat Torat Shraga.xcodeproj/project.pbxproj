@@ -32,6 +32,8 @@
 
 /* Begin PBXFileReference section */
 		3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yeshivat_Torat_Shraga.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.release.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.release.xcconfig"; sourceTree = "<group>"; };
+		88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.debug.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.debug.xcconfig"; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
 				DDBA30DCECD219195C07B023 /* Frameworks */,
+				C111B0ABFB42BD0B0930FF28 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -113,6 +116,16 @@
 				B1BF5045273D37BD00CF18D6 /* UI.swift */,
 			);
 			path = Tools;
+			sourceTree = "<group>";
+		};
+		C111B0ABFB42BD0B0930FF28 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */,
+				68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		DDBA30DCECD219195C07B023 /* Frameworks */ = {
@@ -443,6 +456,7 @@
 		};
 		B12AB845273B104300B17CC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -464,6 +478,7 @@
 		};
 		B12AB846273B104300B17CC0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
