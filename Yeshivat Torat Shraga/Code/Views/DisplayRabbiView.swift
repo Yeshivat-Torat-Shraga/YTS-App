@@ -18,7 +18,7 @@ struct DisplayRabbiView: View {
         NavigationView {
             VStack {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    ForEach(model.audios!, id: \.self) { audio in
+                    ForEach(model.audios ?? [], id: \.self) { audio in
                         Text("\(audio.title)")
                     }
                 }
