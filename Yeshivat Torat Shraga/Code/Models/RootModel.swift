@@ -12,12 +12,12 @@ class RootModel: ObservableObject {
     @Published var rebbeim: [Rabbi]?
     
     init() {
-        rebbeim = Rabbi.samples
-//        FirebaseConnection.loadRabbis { results, error in
-//            guard let results = results else {
-//                fatalError(error!.localizedDescription)
-//            }
-//            rebbeim = results.rabbis
-//        }
+//        rebbeim = Rabbi.samples
+        FirebaseConnection.loadRebbeim { results, error in
+            guard let results = results else {
+                fatalError(error!.localizedDescription)
+            }
+            self.rebbeim = results.rabbis
+        }
     }
 }

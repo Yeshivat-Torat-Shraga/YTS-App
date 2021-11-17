@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import FirebaseFunctions
 
 final class FirebaseConnection {
     static var functions = Functions.functions()

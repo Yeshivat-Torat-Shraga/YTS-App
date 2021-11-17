@@ -16,6 +16,8 @@
 		B12AB83D273B104300B17CC0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B12AB83C273B104300B17CC0 /* Preview Assets.xcassets */; };
 		B12AB840273B104300B17CC0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */; };
 		B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */; };
+		B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */; };
+		B1ACF927274456F900079F9A /* LogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF926274456F900079F9A /* LogoView.swift */; };
 		B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503C273C868B00CF18D6 /* HomeView.swift */; };
 		B1BF503F273D1C9A00CF18D6 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */; };
 		B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5042273D2A2200CF18D6 /* TileCardView.swift */; };
@@ -30,7 +32,6 @@
 
 /* Begin PBXFileReference section */
 		3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yeshivat_Torat_Shraga.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		60C4381864607B5942F1F056 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.debug.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.debug.xcconfig"; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,12 +42,13 @@
 		B12AB83F273B104300B17CC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B12AB841273B104300B17CC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRabbiView.swift; sourceTree = "<group>"; };
+		B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRabbiModel.swift; sourceTree = "<group>"; };
+		B1ACF926274456F900079F9A /* LogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoView.swift; sourceTree = "<group>"; };
 		B1BF503C273C868B00CF18D6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		B1BF5042273D2A2200CF18D6 /* TileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileCardView.swift; sourceTree = "<group>"; };
 		B1BF5045273D37BD00CF18D6 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		B1D4DA742742B13F00F56748 /* functions */ = {isa = PBXFileReference; lastKnownFileType = folder; path = functions; sourceTree = "<group>"; };
-		B38B17AA75B5E68936A8DB18 /* Pods-Yeshivat Torat Shraga.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.release.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.release.xcconfig"; sourceTree = "<group>"; };
 		F230C4C9273B110900F7ACCC /* RootModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootModel.swift; sourceTree = "<group>"; };
 		F230C4D2273BE58B00F7ACCC /* YTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTS.swift; sourceTree = "<group>"; };
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
@@ -66,21 +68,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		302F37C472D6E5056493B0FB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				60C4381864607B5942F1F056 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */,
-				B38B17AA75B5E68936A8DB18 /* Pods-Yeshivat Torat Shraga.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		B12AB824273B103C00B17CC0 = {
 			isa = PBXGroup;
 			children = (
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
-				302F37C472D6E5056493B0FB /* Pods */,
 				DDBA30DCECD219195C07B023 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -138,6 +130,7 @@
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
 				B1BF5042273D2A2200CF18D6 /* TileCardView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
+				B1ACF926274456F900079F9A /* LogoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -147,6 +140,7 @@
 			children = (
 				F230C4C9273B110900F7ACCC /* RootModel.swift */,
 				B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */,
+				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -308,6 +302,8 @@
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
+				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
+				B1ACF927274456F900079F9A /* LogoView.swift in Sources */,
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
 				B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */,
@@ -447,7 +443,6 @@
 		};
 		B12AB845273B104300B17CC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 60C4381864607B5942F1F056 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -469,7 +464,6 @@
 		};
 		B12AB846273B104300B17CC0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B38B17AA75B5E68936A8DB18 /* Pods-Yeshivat Torat Shraga.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
