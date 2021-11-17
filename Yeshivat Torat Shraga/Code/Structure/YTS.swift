@@ -11,21 +11,34 @@ import SwiftUI
 typealias FirestoreID = String
 typealias FileID = String
 
-class Rabbi: Hashable, Tileable {
+
+class Rabbi: Hashable {
     /// The `FirestoreID` associated with this object in Firestore
     private var firestoreID: FirestoreID
     
     /// The name associated with this object
     var name: String
     
+    init(id firestoreID: FirestoreID, name: String) {
+        self.firestoreID = firestoreID
+        self.name = name
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(firestoreID)
+    }
+    
+    static func == (lhs: Rabbi, rhs: Rabbi) -> Bool {
+        lhs.firestoreID == rhs.firestoreID
+    }
+}
+
+class DetailedRabbi: Rabbi, Tileable {
     /// The profile image associated with this object
     var profileImage: Image?
     
     /// The `URL` that links to  this object's profile image
     var profileImageURL: URL?
-    
-    /// A unique ID associated with each instance of Rabbi
-    var id: UUID = UUID()
     
     var image: Image? {
         get {
@@ -46,8 +59,7 @@ class Rabbi: Hashable, Tileable {
     ///   - name: The name associated with this object
     ///   - profileImage: The profile image associated with this object
     init(id firestoreID: FirestoreID, name: String, profileImage: Image) {
-        self.firestoreID = firestoreID
-        self.name = name
+        super.init(id: firestoreID, name: name)
         self.profileImage = profileImage
     }
     
@@ -57,17 +69,16 @@ class Rabbi: Hashable, Tileable {
     ///   - name: The name associated with this object
     ///   - profileImageURL: The `URL` that links to this object's profile image
     init(id firestoreID: FirestoreID, name: String, profileImageURL: URL) {
-        self.firestoreID = firestoreID
-        self.name = name
+        super.init(id: firestoreID, name: name)
         self.profileImageURL = profileImageURL
     }
     
-    static public var samples: [Rabbi] = [
-        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        Rabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+    static public var samples: [DetailedRabbi] = [
+        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
     ]
     
     /*
@@ -84,14 +95,6 @@ class Rabbi: Hashable, Tileable {
         }
     }
      */
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: Rabbi, rhs: Rabbi) -> Bool {
-        lhs.id == rhs.id
-    }
 }
 
 typealias Tag = String
@@ -102,7 +105,7 @@ protocol YTSContent {
     var firestoreID: FirestoreID { get }
     
     /// The `FileID` associated with this object's files in Firestore
-    var fileID: FileID { get }
+    var fileID: FileID? { get }
     
     /// The `URL` that links to the source content
     var sourceURL: URL { get }
@@ -121,7 +124,7 @@ protocol YTSContent {
     var date: Date { get }
     
     /// The duration of the content in seconds
-    var duration: TimeInterval { get }
+    var duration: TimeInterval? { get }
     
     /// `Tag` references to this object's topics
     var tags: [Tag] { get }
@@ -129,13 +132,13 @@ protocol YTSContent {
 
 class Video: YTSContent {
     internal var firestoreID: FirestoreID
-    internal var fileID: FileID
+    internal var fileID: FileID?
     var sourceURL: URL
     var title: String
     var author: Rabbi
     var description: String
     var date: Date
-    var duration: TimeInterval
+    var duration: TimeInterval?
     var tags: [Tag]
     
     var thumbnail: Image?
@@ -153,7 +156,7 @@ class Video: YTSContent {
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
     ///   - thumbnail: The thumbnail associated with this content
-    init(id firestoreID: FirestoreID, fileID: FileID, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval, tags: [Tag], thumbnail: Image) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnail: Image) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -179,7 +182,7 @@ class Video: YTSContent {
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
     ///   - thumbnailURL: The `URL` associated with this content's thumbnail image
-    init(id firestoreID: FirestoreID, fileID: FileID, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval, tags: [Tag], thumbnailURL: URL) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnailURL: URL) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -196,13 +199,13 @@ class Video: YTSContent {
 
 class Audio: YTSContent {
     internal var firestoreID: FirestoreID
-    internal var fileID: FileID
+    internal var fileID: FileID?
     var sourceURL: URL
     var title: String
     var author: Rabbi
     var description: String
     var date: Date
-    var duration: TimeInterval
+    var duration: TimeInterval?
     var tags: [Tag]
     
     /// Standard initializer for an `Audio`
@@ -216,7 +219,7 @@ class Audio: YTSContent {
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
-    init(id firestoreID: FirestoreID, fileID: FileID, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval, tags: [Tag]) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag]) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL

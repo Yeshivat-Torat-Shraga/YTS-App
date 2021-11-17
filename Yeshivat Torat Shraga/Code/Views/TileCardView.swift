@@ -76,6 +76,6 @@ protocol Tileable: URLImageable, Hashable {
 
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
-        TileCardView<Rabbi>(content: Rabbi.samples[0], size: .small)
+        TileCardView<DetailedRabbi>(content: DetailedRabbi.samples[0], size: .small)
     }
 }

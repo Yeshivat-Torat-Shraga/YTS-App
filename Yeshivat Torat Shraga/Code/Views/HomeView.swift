@@ -33,7 +33,7 @@ struct HomeView: View {
                         HStack {
                             ForEach(model.rebbeim?, id: \.self) { rabbi in
                                 NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                    TileCardView<Rabbi>(content: rabbi, size: .small)
+                                    TileCardView<DetailedRabbi>(content: rabbi, size: .small)
                                 }
                                 
                             }
