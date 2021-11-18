@@ -16,16 +16,18 @@ struct DisplayRabbiView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    ForEach(model.audios ?? [], id: \.self) { audio in
-                        Text("\(audio.title)")
+            ScrollView {
+                VStack {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        ForEach(model.audios ?? [], id: \.self) { audio in
+                            Text("\(audio.title)")
+                        }
                     }
                 }
+                .navigationTitle(model.rabbi.name)
+                .toolbar {
+                    LogoView()
             }
-            .navigationTitle(model.rabbi.name)
-            .toolbar {
-                LogoView()
             }
         }
     }

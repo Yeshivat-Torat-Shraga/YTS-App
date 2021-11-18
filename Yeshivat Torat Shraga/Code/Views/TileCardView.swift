@@ -70,10 +70,6 @@ struct TileCardView<Content: Tileable>: View {
     }
 }
 
-protocol Tileable: URLImageable, Hashable {
-    var name: String { get }
-}
-
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
         TileCardView<DetailedRabbi>(content: DetailedRabbi.samples[0], size: .small)
