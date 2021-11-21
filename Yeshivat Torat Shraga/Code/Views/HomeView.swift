@@ -53,7 +53,7 @@ struct HomeView: View {
                 .padding()
                 .navigationTitle("Welcome to YTS")
                 .toolbar {
-                    LogoView()
+                    LogoView(size: .small)
                 }
             }
         }

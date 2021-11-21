@@ -27,13 +27,15 @@ struct DisplayRabbiView: View {
         }
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
-            LogoView()
+            LogoView(size: .small)
         })
     }
 }
 
 struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
-        DisplayRabbiView(rabbi: DetailedRabbi.samples[0])
+        NavigationView {
+            DisplayRabbiView(rabbi: DetailedRabbi.samples[0])
+        }
     }
 }
