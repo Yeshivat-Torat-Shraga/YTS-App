@@ -196,9 +196,8 @@ exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).
 	const THUMB_PREFIX = 'TTT';
 	const THUMB_MAX_WIDTH = 512;
 
-
 	const SERVICE_ACCOUNT = 'kol-hatorah-kulah-4da36246fede.json';
-	const PROJECT_ID = "kol-hatorah-kulah";
+	const PROJECT_ID = "yeshivat-torat-shraga";
 
 	const storage = new Storage({
 		SERVICE_ACCOUNT,
