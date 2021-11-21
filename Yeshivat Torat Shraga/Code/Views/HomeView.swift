@@ -8,7 +8,16 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var model: RootModel
+    @ObservedObject var model: HomeViewModel
+    
+    init(rebbeim: [DetailedRabbi]) {
+        self.model = HomeViewModel(rebbeim: rebbeim)
+    }
+    
+    init() {
+        self.model = HomeViewModel()
+    }
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -53,6 +62,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView(model: RootModel())
+        HomeView()
     }
 }

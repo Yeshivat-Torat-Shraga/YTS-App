@@ -12,7 +12,8 @@ struct RootView: View {
     
     var body: some View {
         TabView {
-            HomeView(model: root)
+            HomeView()
+                .foregroundColor(Color("ShragaBlue"))
                 .tabItem{
                     Label("Home", systemImage: "house")
                 }

@@ -19,7 +19,7 @@ final class FirebaseConnection {
     ///   - count: The amount of `Rabbi` objects to return. Default is `10`.
     ///   - includeProfilePictureURLs: Whether or not to include profile picture URLs in the response. Default is `true`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadRebbeim(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeProfilePictureURLs: Bool = true, completion: @escaping (_ results: (rabbis: [Rabbi], metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadRebbeim(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeProfilePictureURLs: Bool = true, completion: @escaping (_ results: (rebbeim: [Rabbi], metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var rebbeim: [Rabbi] = []
         
         let data: NSDictionary
@@ -76,7 +76,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((rabbis: rebbeim, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((rebbeim: rebbeim, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
             }
         }
     }
