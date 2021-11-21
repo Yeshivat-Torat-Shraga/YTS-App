@@ -96,7 +96,6 @@
 				F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */,
 				F230C4DA274044DD00F7ACCC /* Code */,
 				B12AB839273B104300B17CC0 /* Assets.xcassets */,
-				B1D4DA742742B13F00F56748 /* functions */,
 				B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */,
 				B12AB841273B104300B17CC0 /* Info.plist */,
 				B12AB836273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld */,
@@ -188,6 +187,7 @@
 				F230C4CF273B11DC00F7ACCC /* Delegates */,
 				F230C4CE273B119E00F7ACCC /* Models */,
 				F230C4CB273B117D00F7ACCC /* Views */,
+				B1D4DA742742B13F00F56748 /* functions */,
 			);
 			path = Code;
 			sourceTree = "<group>";
