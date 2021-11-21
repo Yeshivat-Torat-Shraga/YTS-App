@@ -41,31 +41,32 @@ struct HomeView: View {
                     
                     
                     Group {
-                    HStack {
-                        Text("Rebbeim")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }
-                        if let rebbeim = model.rebbeim {
-                    ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(model.rebbeim ?? [], id: \.self) { rabbi in
-                                NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                    TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
-                                }
-                                
-                            }
+                            Text("Rebbeim")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
                         }
-                    }
+                        if let rebbeim = model.rebbeim {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack {
+                                    ForEach(rebbeim, id: \.self) { rabbi in
+                                        NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
+                                            TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
+                                        }
+                                        
+                                    }
+                                }
+                            }
                         } else {
                             HStack {
                                 Spacer()
-                                ProgressView().progressViewStyle(YTSProgressViewStyle())
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
                                 Spacer()
                             }.padding()
                         }
-                    Divider()
+                        Divider()
                     }
                 }
                 .padding()
@@ -80,6 +81,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView()
+        HomeView()
     }
 }

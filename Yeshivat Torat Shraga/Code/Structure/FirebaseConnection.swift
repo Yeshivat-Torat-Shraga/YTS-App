@@ -37,7 +37,7 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let rabbiDocuments = response["rabbis"] as? [[String: Any]] else {
+            guard let rabbiDocuments = response["rebbeim"] as? [[String: Any]] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -125,10 +125,16 @@ final class FirebaseConnection {
             }
             
             for contentDocument in contentDocuments {
-                guard let id = contentDocument["id"] as? FirestoreID, let title = contentDocument["title"] as? String, let description = contentDocument["description"] as? String, let dateDictionary = contentDocument["date"] as? [String: Int], let type = contentDocument["type"] as? String, let author = contentDocument["author"] as? [String: Any], let sourceURLString = contentDocument["source_url"] as? String else {
-                    print("Document missing sufficient data. Continuing to next document.")
-                    group.leave()
-                    continue
+                guard let id = contentDocument["id"] as? FirestoreID,
+                      let title = contentDocument["title"] as? String,
+                      let description = contentDocument["description"] as? String,
+                      let dateDictionary = contentDocument["date"] as? [String: Int],
+                      let type = contentDocument["type"] as? String,
+                      let author = contentDocument["author"] as? [String: Any],
+                      let sourceURLString = contentDocument["source_url"] as? String else {
+                        print("Document missing sufficient data. Continuing to next document.")
+                        group.leave()
+                        continue
                 }
                 
                 guard let sourceURL = URL(string: sourceURLString) else {

@@ -42,14 +42,23 @@ struct TileCardView<Content: Tileable>: View {
         case .small:
             return 8
         case .wide, .medium:
-            return 10
-        case .large:
             return 12
+        case .large:
+            return 14
+        }
+    }
+    
+    init(content: Content, size: TileSize) {
+        self.size = size
+        self.content = content
+        if (self.content.image == nil && self.content.imageURL == nil) {
+            self.content.image = Image("AudioPlaceholder")
         }
     }
     
     var body: some View {
         DownloadableImage(object: content)
+            .background(Color("ShragaGold"))
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
             .clipped()
@@ -75,6 +84,6 @@ struct TileCardView<Content: Tileable>: View {
 
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
-        TileCardView<DetailedRabbi>(content: DetailedRabbi.samples[0], size: .small)
+        TileCardView<DetailedRabbi>(content: DetailedRabbi.samples[0], size: .medium)
     }
 }

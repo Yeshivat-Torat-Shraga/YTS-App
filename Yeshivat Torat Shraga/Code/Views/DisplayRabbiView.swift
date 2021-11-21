@@ -19,11 +19,12 @@ struct DisplayRabbiView: View {
             VStack {
                 ScrollView(.horizontal, showsIndicators: false) {
                     ForEach(model.audios ?? [], id: \.self) { audio in
-                        Text("\(audio.title)")
+                        TileCardView(content: audio, size: .small)
                     }
                 }
                 Spacer()
             }
+            .padding()
         }
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
