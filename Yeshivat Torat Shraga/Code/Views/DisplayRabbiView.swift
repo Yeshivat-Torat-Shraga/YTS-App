@@ -15,20 +15,20 @@ struct DisplayRabbiView: View {
     }
     
     var body: some View {
-            ScrollView {
-                VStack {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        ForEach(model.audios ?? [], id: \.self) { audio in
-                            Text("\(audio.title)")
-                        }
+        ScrollView {
+            VStack {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    ForEach(model.audios ?? [], id: \.self) { audio in
+                        Text("\(audio.title)")
                     }
-                    Spacer()
                 }
+                Spacer()
             }
-            .navigationTitle(model.rabbi.name)
-            .toolbar(content: {
-                LogoView()
-            })
+        }
+        .navigationTitle(model.rabbi.name)
+        .toolbar(content: {
+            LogoView()
+        })
     }
 }
 
