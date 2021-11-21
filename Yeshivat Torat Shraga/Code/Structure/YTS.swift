@@ -135,7 +135,6 @@ protocol YTSContent: Tileable {
 }
 
 class Video: YTSContent {
-    
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
     var sourceURL: URL
@@ -149,10 +148,20 @@ class Video: YTSContent {
     var thumbnail: Image?
     var thumbnailURL: URL?
     
-    
-    var name: String
-    var image: Image?
-    var imageURL: URL?
+    var name: String {
+        return title
+    }
+    var image: Image? {
+        get {
+            return thumbnail
+        }
+        set {
+            thumbnail = newValue
+        }
+    }
+    var imageURL: URL? {
+        return thumbnailURL
+    }
     
     /// Standard initializer for a `Video`
     /// - Parameters:
