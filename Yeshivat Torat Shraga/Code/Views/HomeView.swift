@@ -22,8 +22,11 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
+                    Group {
                     HStack {
                         Text("Recently Uploaded")
+                            .font(.title3)
+                            .bold()
                         Spacer()
                     }
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -33,25 +36,40 @@ struct HomeView: View {
 //                            }
 //                        }
                     }
-                    Divider()
+                        Divider()
+                    }
+                    
+                    
+                    Group {
                     HStack {
                         Text("Rebbeim")
+                            .font(.title3)
+                            .bold()
                         Spacer()
                     }
+                        if let rebbeim = model.rebbeim {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(model.rebbeim ?? [], id: \.self) { rabbi in
                                 NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                    TileCardView<DetailedRabbi>(content: rabbi, size: .small)
+                                    TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
                                 }
                                 
                             }
                         }
                     }
+                        } else {
+                            HStack {
+                                Spacer()
+                                ProgressView().progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
+                        }
                     Divider()
+                    }
                 }
                 .padding()
-                .navigationTitle("Welcome to YTS")
+                .navigationTitle("Welcome to Shraga")
                 .toolbar {
                     LogoView()
                 }
@@ -62,6 +80,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        RootView()
     }
 }

@@ -28,6 +28,7 @@
 		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
 		F230C4D7273DC61800F7ACCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
+		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
+		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 				F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */,
 				F230C4DA274044DD00F7ACCC /* Code */,
 				B12AB839273B104300B17CC0 /* Assets.xcassets */,
+				B1D4DA742742B13F00F56748 /* functions */,
 				B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */,
 				B12AB841273B104300B17CC0 /* Info.plist */,
 				B12AB836273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld */,
@@ -124,7 +127,6 @@
 				88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */,
 				68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -180,7 +182,7 @@
 		F230C4DA274044DD00F7ACCC /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				B1D4DA742742B13F00F56748 /* functions */,
+				F2F44C71274A6D0700F7D337 /* Styles */,
 				B1BF5044273D37AE00CF18D6 /* Tools */,
 				F230C4D1273BE57B00F7ACCC /* Structure */,
 				F230C4CF273B11DC00F7ACCC /* Delegates */,
@@ -188,6 +190,14 @@
 				F230C4CB273B117D00F7ACCC /* Views */,
 			);
 			path = Code;
+			sourceTree = "<group>";
+		};
+		F2F44C71274A6D0700F7D337 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */,
+			);
+			path = Styles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,6 +322,7 @@
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
+				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
