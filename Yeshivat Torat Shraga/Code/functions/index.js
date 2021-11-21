@@ -181,6 +181,120 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 
 });
 
+
+const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).object().onFinalize(async object => {
+	const mkdirp = require('mkdirp-promise');
+	const {
+		Storage
+	} = require('@google-cloud/storage');
+	const spawn = require('child-process-promise').spawn;
+	const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+	const path = require('path');
+	const os = require('os');
+	const fs = require('fs');
+	const THUMB_PREFIX = 'TTT';
+	const THUMB_MAX_WIDTH = 512;
+
+	const SERVICE_ACCOUNT = 'yeshivat-torat-shraga-1358031cf751.json';
+	const PROJECT_ID = "yeshivat-torat-shraga";
+
+	const storage = new Storage({
+		SERVICE_ACCOUNT,
+		PROJECT_ID
+	});
+
+	const contentType = object.contentType; // This is the MIME type
+	const isVideo = contentType.startsWith('video/');
+	if (!isVideo) {
+		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; (A05)`);
+		return Promise.resolve();
+	}
+
+	log(`Attempting to create thumbnail for file.`);
+	const fileBucket = object.bucket; // The Storage bucket that contains the file.
+	const filePathInBucket = object.name;
+	const resourceState = object.resourceState; // The resourceState is 'exists' or 'not_exists' (for file/folder deletions).
+	const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
+	const isImage = contentType.startsWith('image/');
+	log(`Object: ${JSON.stringify(object)}`);
+	log(`Creating thumbnail for file with path '${filePathInBucket}' in bucket '${fileBucket}'`);
+
+	if (resourceState === 'not_exists') {
+		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; (A01)`);
+		return Promise.resolve();
+	} else if (resourceState === 'exists' && metageneration > 1) {
+		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; (A02)`);
+		return Promise.resolve();
+	} else if (filePathInBucket.indexOf('.thumbnail.') !== -1) {
+		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; (A03)`);
+		return Promise.resolve();
+	} else if (!(isImage || isVideo)) {
+		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; (A04)`);
+		return Promise.resolve();
+	} else if (!isVideo) {
+		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; (A05)`);
+		return Promise.resolve();
+	}
+
+	const fileDir = path.dirname(filePathInBucket);
+	const fileName = path.basename(filePathInBucket);
+	// const fileInfo = parseName(fileName);
+	const thumbFileExt = isVideo ? 'jpg' : fileInfo.ext;
+	const indexOfDot = fileName.lastIndexOf('.');
+	const newFilename = `${fileName.substring(0, indexOfDot).replace('FFF', THUMB_PREFIX)}.${thumbFileExt}`;
+	let thumbFilePath = path.normalize(`thumbnails/${newFilename}`);
+	log(`New thumbnail file path: '${thumbFilePath}'`);
+	const tempLocalThumbFile = path.join(os.tmpdir(), newFilename); //thumbFilePath;
+	log(`Temporary local thumbnail file: '${tempLocalThumbFile}'`);
+	const tempLocalDir = fileDir;
+	log(`Temporary local directory: '${tempLocalDir}'`);
+	// const generateOperation = isVideo ? generateFromVideo : generateFromImage;
+	const generateOperation = generateThumbnailFromVideo;
+
+	const bucket = storage.bucket(fileBucket);
+	log(`Bucket: '${JSON.stringify(bucket)}'`);
+	// const bucket = gcs({projectId: PROJECT_ID, keyFilename: SERVICE_ACCOUNT}).bucket(fileBucket);
+	// const bucket = gcs({keyFilename: SERVICE_ACCOUNT}).bucket(fileBucket);
+	log(`Using bucket: '${JSON.stringify(bucket)}'`);
+	const file = bucket.file(filePathInBucket);
+	const metadata = {
+		contentType: isVideo ? 'image/jpeg' : contentType,
+		// To enable Client-side caching you can set the Cache-Control headers here. Uncomment below.
+		// 'Cache-Control': 'public,max-age=3600',
+	};
+
+	let resolvedPromise = await generateOperation(file, tempLocalThumbFile, fileName).then(async function() {
+			log(`Promise resolved, stored at: '${tempLocalThumbFile}'`);
+			log(`Now uploading to bucket at ${thumbFilePath}`);
+			await bucket.upload(tempLocalThumbFile, {
+				destination: thumbFilePath,
+				metadata: metadata
+			});
+			return
+		}).catch((error) => {
+			log(`ERR: ${error}`);
+			return
+		});
+});
+
+async function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
+	log(`Entered generateThumbnailFromVideo function.`);
+	return await file.getSignedUrl({
+		action: 'read',
+		expires: Date.now() + 60 * 60 * 1000
+	}).then(signedUrl => {
+		log(`Signed URL: ${signedUrl}`);
+		const fileUrl = signedUrl[0];
+		log(`File URL: ${fileUrl}`);
+		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', `scale=512:-1`, `-update`, `1`, tempLocalThumbnailFile]);
+		log(`Used spawn to generate promise: ${JSON.stringify(promise)}`);
+		// promise.childProcess.stdout.on('data', (data) => console.info('[spawn] stdout: ', data.toString()));
+		// promise.childProcess.stderr.on('data', (data) => console.info('[spawn] stderr: ', data.toString()));
+		return promise;
+	});
+}
+
 exports.reloadSearchIndices = functions.https.onCall((data, context) => {
 	let collectionName = data.collectionName;
 	var db = admin.firestore();
@@ -204,7 +318,7 @@ exports.reloadSearchIndices = functions.https.onCall((data, context) => {
 	});
 });
 
-exports.updatePeopleData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
+exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
 	if (ev.after.data != undefined) {
 		let data = ev.after.data();
 		let components = [];
@@ -275,7 +389,7 @@ async function getRabbiFor(id, includeProfilePictureURL) {
 			}
 
 			if (includeProfilePictureURL) {
-				const bucket = admin.storage().bucket('kol-hatorah-kulah.appspot.com');
+				const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
 				const filename = appendToEndOfFilename(personData.profilepic, '_300x1000');
 				await bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
 					action: "read",
