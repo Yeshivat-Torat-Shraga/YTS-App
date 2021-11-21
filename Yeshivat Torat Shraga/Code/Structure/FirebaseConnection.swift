@@ -19,7 +19,7 @@ final class FirebaseConnection {
     ///   - count: The amount of `Rabbi` objects to return. Default is `10`.
     ///   - includeProfilePictureURLs: Whether or not to include profile picture URLs in the response. Default is `true`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadRebbeim(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeProfilePictureURLs: Bool = true, completion: @escaping (_ results: (rabbis: [Rabbi], metadata: (newLastLoadedDocumentID: FirestoreID, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadRebbeim(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeProfilePictureURLs: Bool = true, completion: @escaping (_ results: (rabbis: [Rabbi], metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var rebbeim: [Rabbi] = []
         
         let data: NSDictionary
@@ -42,10 +42,7 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
+            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
             
             guard let includesLastElement = response["includesLastElement"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
@@ -91,7 +88,7 @@ final class FirebaseConnection {
     ///   - includeThumbnailURLs: Whether or not to include thumbnail URLs in the response.
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: (videos: [Video], audios: [Audio]), metadata: (newLastLoadedDocumentID: FirestoreID, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: (videos: [Video], audios: [Audio]), metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var content: (videos: [Video], audios: [Audio]) = (videos: [], audios: [])
         
         let data: NSDictionary
@@ -114,10 +111,7 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
+            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
             
             guard let includesLastElement = response["includesLastElement"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
@@ -174,6 +168,7 @@ final class FirebaseConnection {
                         rabbi = Rabbi(id: authorID, name: authorName)
                     }
                     content.audios.append(Audio(id: id, sourceURL: sourceURL, title: title, author: rabbi, description: description, date: date, duration: duration, tags: []))
+                    group.leave()
                     continue
                 default:
                     print("Type unrecognized.")

@@ -99,8 +99,12 @@ class DetailedRabbi: Rabbi, Tileable {
 
 typealias Tag = String
 
+protocol Tileable: URLImageable, Hashable {
+    var name: String { get }
+}
+
 /// A content object modeled like a Firestore content document
-protocol YTSContent {
+protocol YTSContent: Tileable {
     /// The `FirestoreID` associated with this object in Firestore
     var firestoreID: FirestoreID { get }
     
@@ -131,6 +135,7 @@ protocol YTSContent {
 }
 
 class Video: YTSContent {
+    
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
     var sourceURL: URL
@@ -143,6 +148,11 @@ class Video: YTSContent {
     
     var thumbnail: Image?
     var thumbnailURL: URL?
+    
+    
+    var name: String
+    var image: Image?
+    var imageURL: URL?
     
     /// Standard initializer for a `Video`
     /// - Parameters:
@@ -166,7 +176,6 @@ class Video: YTSContent {
         self.date = date
         self.duration = duration
         self.tags = tags
-        
         self.thumbnail = thumbnail
     }
     
@@ -195,9 +204,23 @@ class Video: YTSContent {
         
         self.thumbnailURL = thumbnailURL
     }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(firestoreID)
+    }
+    
+    static func == (lhs: Video, rhs: Video) -> Bool {
+        lhs.firestoreID == rhs.firestoreID
+    }
 }
 
-class Audio: YTSContent {
+class Audio: YTSContent, Hashable {
+    var name: String
+    
+    var image: Image?
+    
+    var imageURL: URL?
+    
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
     var sourceURL: URL
@@ -229,6 +252,16 @@ class Audio: YTSContent {
         self.date = date
         self.duration = duration
         self.tags = tags
+        self.name = title
+        
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(firestoreID)
+    }
+    
+    static func == (lhs: Audio, rhs: Audio) -> Bool {
+        lhs.firestoreID == rhs.firestoreID
     }
 }
 

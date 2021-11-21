@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var model: RootModel = RootModel()
+    @ObservedObject var model: RootModel
     var body: some View {
         NavigationView {
             ScrollView {
@@ -44,7 +44,7 @@ struct HomeView: View {
                 .padding()
                 .navigationTitle("Welcome to YTS")
                 .toolbar {
-                    Text("LOGO HERE")
+                    LogoView()
                 }
             }
         }
@@ -53,6 +53,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(model: RootModel())
     }
 }

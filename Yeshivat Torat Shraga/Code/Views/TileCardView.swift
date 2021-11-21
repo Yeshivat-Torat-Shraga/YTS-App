@@ -60,18 +60,14 @@ struct TileCardView<Content: Tileable>: View {
                             .font(.system(size: fontSize, weight: .medium ))
                             .background(
                                 VisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
-                                    .cornerRadius(15, corners: [.topRight, .bottomLeft])
+                                    .cornerRadius(8, corners: [.topRight, .bottomLeft])
                             )
                         Spacer()
                     }
                 }
             )
-            .cornerRadius(15)
+            .cornerRadius(8)
     }
-}
-
-protocol Tileable: URLImageable, Hashable {
-    var name: String { get }
 }
 
 struct TileCardView_Previews: PreviewProvider {

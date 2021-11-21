@@ -8,10 +8,28 @@
 import SwiftUI
 
 struct DisplayRabbiView: View {
-    @State var rabbi: DetailedRabbi
+    @ObservedObject var model: DisplayRabbiModel
+    
+    init (rabbi: Rabbi) {
+        model = DisplayRabbiModel(rabbi: rabbi)
+    }
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            ScrollView {
+                VStack {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        ForEach(model.audios ?? [], id: \.self) { audio in
+                            Text("\(audio.title)")
+                        }
+                    }
+                }
+                .navigationTitle(model.rabbi.name)
+                .toolbar {
+                    LogoView()
+            }
+            }
+        }
     }
 }
 
