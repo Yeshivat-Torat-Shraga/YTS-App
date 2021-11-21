@@ -16,6 +16,7 @@ import SwiftUI
 struct TileCardView<Content: Tileable>: View {
     enum TileSize {
         case small
+        case medium
         case wide
         case large
     }
@@ -27,6 +28,8 @@ struct TileCardView<Content: Tileable>: View {
         switch size {
         case .small:
             return (100, 100)
+        case .medium:
+            return (150, 150)
         case .wide:
             return (200, 100)
         case .large:
@@ -38,7 +41,7 @@ struct TileCardView<Content: Tileable>: View {
         switch size {
         case .small:
             return 8
-        case .wide:
+        case .wide, .medium:
             return 10
         case .large:
             return 12

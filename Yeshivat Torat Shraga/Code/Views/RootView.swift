@@ -17,7 +17,7 @@ struct RootView: View {
                 .tabItem{
                     Label("Home", systemImage: "house")
                 }
-        }
+        }.accentColor(Color("ShragaBlue"))
     }
 }
 
