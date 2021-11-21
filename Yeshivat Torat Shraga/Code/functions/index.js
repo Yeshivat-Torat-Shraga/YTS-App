@@ -140,6 +140,8 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 					attributionID: data.attributionID,
 					title: data.title,
 					description: data.description,
+					duration: data.duration,
+					date: data.date,
 					type: data.type,
 					source_url: url,
 					author: author
