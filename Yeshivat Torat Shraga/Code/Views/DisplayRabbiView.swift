@@ -15,7 +15,6 @@ struct DisplayRabbiView: View {
     }
     
     var body: some View {
-        NavigationView {
             ScrollView {
                 VStack {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -23,13 +22,13 @@ struct DisplayRabbiView: View {
                             Text("\(audio.title)")
                         }
                     }
+                    Spacer()
                 }
-                .navigationTitle(model.rabbi.name)
-                .toolbar {
-                    LogoView()
             }
-            }
-        }
+            .navigationTitle(model.rabbi.name)
+            .toolbar(content: {
+                LogoView()
+            })
     }
 }
 
