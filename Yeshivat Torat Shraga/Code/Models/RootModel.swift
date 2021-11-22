@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 class RootModel: ObservableObject {
+    static var audioPlayer = AudioPlayer()
+    
     init() {
     }
 }

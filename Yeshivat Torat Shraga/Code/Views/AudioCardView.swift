@@ -11,8 +11,8 @@ struct AudioCardView: View {
     @ObservedObject var model: AudioCardModel
     @State var isShowingPlayerSheet = false
     
-    init(audioContent: Audio) {
-        self.model = AudioCardModel(audioContent: audioContent)
+    init(audio: Audio) {
+        self.model = AudioCardModel(audio: audio)
     }
     
     var body: some View {
@@ -20,17 +20,21 @@ struct AudioCardView: View {
             VStack {
                 Text(model.audio.name)
                 Text(model.audio.author.name)
-                
+                Button {
+                    RootModel.audioPlayer.set(audio: model.audio)
+                    isShowingPlayerSheet = true
+                } label: {
+                    Image(systemName: "play")
+                }
             }
-        }
-        .sheet(isPresented: $isShowingPlayerSheet) {
-            AudioPlayer()
+        }.sheet(isPresented: $isShowingPlayerSheet) {
+            RootModel.audioPlayer
         }
     }
 }
 
 struct AudioCardView_Previews: PreviewProvider {
     static var previews: some View {
-        AudioCardView(audioContent: .sample)
+        AudioCardView(audio: .sample)
     }
 }

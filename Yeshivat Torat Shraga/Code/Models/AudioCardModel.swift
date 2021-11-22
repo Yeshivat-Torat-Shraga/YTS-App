@@ -10,7 +10,7 @@ import Foundation
 class AudioCardModel: ObservableObject {
     @Published var audio: Audio
     
-    init(audioContent: Audio) {
-        self.audio = audioContent
+    init(audio: Audio) {
+        self.audio = audio
     }
 }

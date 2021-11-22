@@ -15,7 +15,6 @@
 		B12AB83A273B104300B17CC0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B12AB839273B104300B17CC0 /* Assets.xcassets */; };
 		B12AB83D273B104300B17CC0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B12AB83C273B104300B17CC0 /* Preview Assets.xcassets */; };
 		B12AB840273B104300B17CC0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */; };
-		B1684ACF274AC59000C51773 /* ContentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1684ACE274AC59000C51773 /* ContentCardView.swift */; };
 		B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */; };
 		B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */; };
 		B1ACF927274456F900079F9A /* LogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF926274456F900079F9A /* LogoView.swift */; };
@@ -48,7 +47,6 @@
 		B12AB83C273B104300B17CC0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B12AB83F273B104300B17CC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B12AB841273B104300B17CC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B1684ACE274AC59000C51773 /* ContentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCardView.swift; sourceTree = "<group>"; };
 		B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRabbiView.swift; sourceTree = "<group>"; };
 		B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRabbiModel.swift; sourceTree = "<group>"; };
 		B1ACF926274456F900079F9A /* LogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoView.swift; sourceTree = "<group>"; };
@@ -153,7 +151,6 @@
 				B1BF5042273D2A2200CF18D6 /* TileCardView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				B1ACF926274456F900079F9A /* LogoView.swift */,
-				B1684ACE274AC59000C51773 /* ContentCardView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
 			);
@@ -337,7 +334,6 @@
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
-				B1684ACF274AC59000C51773 /* ContentCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
 				F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
