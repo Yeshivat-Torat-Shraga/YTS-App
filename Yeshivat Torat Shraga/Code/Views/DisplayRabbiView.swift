@@ -16,16 +16,33 @@ struct DisplayRabbiView: View {
     
     var body: some View {
         ScrollView {
-            VStack {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    ForEach(model.audios ?? [], id: \.self) { audio in
-                        TileCardView(content: audio, size: .small)
-                    }
+            Group {
+                HStack {
+                    Text("Recently Uploaded")
+                        .font(.title3)
+                        .bold()
+                    Spacer()
                 }
-                Spacer()
+                Divider()
             }
-            .padding()
+            Group {
+                HStack {
+                    Text("Recently Uploaded")
+                        .font(.title3)
+                        .bold()
+                    Spacer()
+                }
+                VStack {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        ForEach(model.audios ?? [], id: \.self) { audio in
+                            TileCardView(content: audio, size: .small)
+                        }
+                    }
+                    Spacer()
+                }
+            }
         }
+        .padding()
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
             LogoView(size: .small)
