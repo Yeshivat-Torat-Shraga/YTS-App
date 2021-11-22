@@ -28,6 +28,7 @@
 		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
 		F230C4D7273DC61800F7ACCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
+		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
+		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,6 +148,7 @@
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				B1ACF926274456F900079F9A /* LogoView.swift */,
 				B1684ACE274AC59000C51773 /* ContentCardView.swift */,
+				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1684ACF274AC59000C51773 /* ContentCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
+				F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
 				B1ACF927274456F900079F9A /* LogoView.swift in Sources */,
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
