@@ -16,8 +16,7 @@ We told him that we'd love an opportunity to give back to the Yeshiva and that w
 That's a good question. We have not yet decided on what licence to use for this repository,
 but if you shoot us an email, I'm sure we can work it out.
 
-## OMG, I am so blown away by this repository that I am filled with an
-irresistible urge to hire you on the spot. How can I contact you?
+## OMG, I am so blown away by this repository that I am filled with an irresistible urge to hire you on the spot. How can I contact you?
 We are reachable through email.
-- David Reese: david@reesedevelopment <dot> com
-- Benji Tusk: benjitusk1@gmail <dot> com
+- David Reese: david@reesedevelopment•com
+- Benji Tusk: benjitusk1@gmail•com
