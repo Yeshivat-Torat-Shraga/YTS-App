@@ -184,7 +184,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).object().onFinalize(async object => {
-	const mkdirp = require('mkdirp-promise');
+	const mkdirp = require('mkdirp');
 	const {
 		Storage
 	} = require('@google-cloud/storage');

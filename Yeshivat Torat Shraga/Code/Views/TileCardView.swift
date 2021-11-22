@@ -10,7 +10,7 @@ import SwiftUI
 // This view needs to be set up that
 // it can take in any content that conforms
 // to the TileContent protocol. This would be
-// Shiurim (A/V), Rebbeimm, Categories/Topics
+// Shiurim (A/V), Rebbeim, Categories/Topics
 // and maybe the slideshow. Not sure about that yet.
 
 struct TileCardView<Content: Tileable>: View {
