@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "torat shraga black png.png",
+      "filename" : "Shraga_black.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,12 +12,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "torat shraga white png.png",
+      "filename" : "Shraga_white.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "torat shraga black png-1.png",
+      "filename" : "Shraga_black-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -28,12 +28,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "torat shraga white png-1.png",
+      "filename" : "Shraga_white-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "torat shraga black png-2.png",
+      "filename" : "Shraga_black-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -44,7 +44,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "torat shraga white png-2.png",
+      "filename" : "Shraga_white-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
