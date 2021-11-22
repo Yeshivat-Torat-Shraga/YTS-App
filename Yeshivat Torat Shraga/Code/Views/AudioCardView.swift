@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AudioCardView: View {
     @ObservedObject var model: AudioCardModel
+    @State var isShowingPlayerSheet = false
     
     init(audioContent: Audio) {
         self.model = AudioCardModel(audioContent: audioContent)
@@ -16,7 +17,14 @@ struct AudioCardView: View {
     
     var body: some View {
         HStack {
-            Text(model.audio.name)
+            VStack {
+                Text(model.audio.name)
+                Text(model.audio.author.name)
+                
+            }
+        }
+        .sheet(isPresented: $isShowingPlayerSheet) {
+            AudioPlayer()
         }
     }
 }

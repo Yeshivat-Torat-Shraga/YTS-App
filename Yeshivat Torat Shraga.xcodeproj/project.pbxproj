@@ -485,7 +485,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
@@ -507,7 +507,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
