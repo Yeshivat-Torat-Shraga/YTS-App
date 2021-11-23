@@ -37,10 +37,86 @@ struct AudioPlayer: View {
                 .clipShape(RoundedRectangle(cornerRadius: 60))
                 .shadow(radius: 3)
             
-            Button {
-                self.player.play()
-            } label: {
-                Image(systemName: "play.fill")
+            Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
+                if scrubStarted {
+                    self.player.scrubState = .scrubStarted
+                } else {
+                    self.player.scrubState = .scrubEnded(self.player.displayTime)
+                }
+            })//.contentShape(Rectangle())
+            .accentColor(Color("ShragaGold"))
+            
+            HStack {
+                Spacer()
+                Group {
+                Spacer()
+                
+                Button(action: {
+                }, label: {
+                    Image(systemName: "gobackward.30")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                })
+                    .frame(width: 20)
+                
+                Spacer()
+                
+                Button(action: {
+                }, label: {
+                    Image(systemName: "backward.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                })
+                    .frame(width: 40)
+                }
+                
+                Group {
+                Spacer()
+                
+                if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                    Button(action: {
+                        self.player.play()
+                    }, label: {
+                        Image(systemName: "play.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    })
+                        .frame(width: 30)
+                } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                    Button(action: {
+                        self.player.pause()
+                    }, label: {
+                        Image(systemName: "pause.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 30)
+                } else {
+                    ProgressView()
+                }
+                
+                Spacer()
+                }
+                
+                Group {
+                Button(action: {
+                }, label: {
+                    Image(systemName: "forward.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }).frame(width: 40)
+                
+                Spacer()
+                
+                Button(action: {
+                }, label: {
+                    Image(systemName: "goforward.30")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }).frame(width: 20)
+                
+                Spacer()
+                }
+                Spacer()
             }
             Spacer()
         }.background(LinearGradient(colors: [Color("ShragaBlue"), Color(white: 0.7)], startPoint: .bottomLeading, endPoint: .topTrailing) .ignoresSafeArea())
