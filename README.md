@@ -18,5 +18,5 @@ but if you shoot us an email, I'm sure we can work it out.
 
 ## Oh my goodness, I am so blown away by this repository that I am filled with an irresistible urge to hire you on the spot. How can I contact you?
 We are reachable through email.
-- David Reese: david@reesedevelopment•com
-- Benji Tusk: benjitusk1@gmail•com
+- David Reese: david@reesedevelopment.com
+- Benji Tusk: benjitusk1@gmail.com
