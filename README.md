@@ -1,11 +1,11 @@
 # Yeshivat-Torat-Shraga
-Official repository for the Torat Shraga app
+Official repository for the Yeshivat Torat Shraga app.
 
 ## What is this repository?
 This is where all code written for the Torat Shraga iOS app is kept.
 
-## What does the app do?
-The app is targeted towards Torat Shraga alumi, as a way for students to keep in touch with the Yeshiva.
+## What does this app do?
+The app is targeted towards Torat Shraga alumni, as a way for students to keep in touch with the Yeshiva.
 Pictures, news, and recorded _shiurim_ are all available here, allowing students to stay in the loop.
 
 ## Why did you create this app?
