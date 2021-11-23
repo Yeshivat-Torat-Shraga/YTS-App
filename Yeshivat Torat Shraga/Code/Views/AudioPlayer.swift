@@ -37,14 +37,36 @@ struct AudioPlayer: View {
                 .clipShape(RoundedRectangle(cornerRadius: 60))
                 .shadow(radius: 3)
             
+            VStack {
+                HStack {
+                    Text(self.audio?.title ?? "")
+                        .font(.title3)
+                        .bold()
+                    Spacer()
+                }
+                HStack {
+                    Text(self.audio?.author.name ?? "")
+                        .font(.subheadline)
+                    Spacer()
+                }
+            }
+            .padding(.horizontal)
+                .foregroundColor(.white)
+            
+            if self.player.itemDuration >= 0 {
             Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
                 if scrubStarted {
                     self.player.scrubState = .scrubStarted
                 } else {
                     self.player.scrubState = .scrubEnded(self.player.displayTime)
                 }
-            })//.contentShape(Rectangle())
+            })
             .accentColor(Color("ShragaGold"))
+            .padding(.horizontal)
+            } else {
+                ProgressView().progressViewStyle(LinearProgressViewStyle())
+                    .padding(.horizontal)
+            }
             
             HStack {
                 Spacer()
@@ -89,7 +111,7 @@ struct AudioPlayer: View {
                         Image(systemName: "pause.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                    }).frame(width: 30)
+                    }).frame(width: 25)
                 } else {
                     ProgressView()
                 }
@@ -117,9 +139,9 @@ struct AudioPlayer: View {
                 Spacer()
                 }
                 Spacer()
-            }
+            }.frame(height: 50)
             Spacer()
-        }.background(LinearGradient(colors: [Color("ShragaBlue"), Color(white: 0.7)], startPoint: .bottomLeading, endPoint: .topTrailing) .ignoresSafeArea())
+        }.background(LinearGradient(colors: [Color("ShragaBlue"), Color(white: 0.8)], startPoint: .bottomLeading, endPoint: .topTrailing) .ignoresSafeArea())
     }
 }
 
