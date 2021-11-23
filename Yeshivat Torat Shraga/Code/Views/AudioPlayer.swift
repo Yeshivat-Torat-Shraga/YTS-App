@@ -23,17 +23,27 @@ struct AudioPlayer: View {
             //            avPlayer.volume = 1.0
             //        player.play()
             //            self.model = AudioPlayerModel(player: player)
-            //            self.avPlayer = player
-            self.player.set(avPlayer: player)
-        }
+        //            self.avPlayer = player
+        self.player.set(avPlayer: player)
+    }
     
     var body: some View {
-        Button {
-            self.player.play()
-        } label: {
-            Image(systemName: "play.fill")
-        }
-
+        VStack {
+            Image("Logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .background(Color.white)
+                .padding()
+                .clipShape(RoundedRectangle(cornerRadius: 60))
+                .shadow(radius: 3)
+            
+            Button {
+                self.player.play()
+            } label: {
+                Image(systemName: "play.fill")
+            }
+            Spacer()
+        }.background(LinearGradient(colors: [Color("ShragaBlue"), Color(white: 0.7)], startPoint: .bottomLeading, endPoint: .topTrailing) .ignoresSafeArea())
     }
 }
 

@@ -18,7 +18,7 @@ struct DisplayRabbiView: View {
         ScrollView {
             Group {
                 HStack {
-                    Text("Recently Uploaded")
+                    Text("Favorites")
                         .font(.title3)
                         .bold()
                     Spacer()
@@ -33,9 +33,9 @@ struct DisplayRabbiView: View {
                     Spacer()
                 }
                 VStack {
-                    ScrollView(.horizontal, showsIndicators: false) {
+                    ScrollView(.vertical) {
                         ForEach(model.audios ?? [], id: \.self) { audio in
-                            TileCardView(content: audio, size: .small)
+                            AudioCardView(audio: audio)
                         }
                     }
                     Spacer()

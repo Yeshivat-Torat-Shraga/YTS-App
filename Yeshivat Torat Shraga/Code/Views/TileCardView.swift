@@ -58,7 +58,6 @@ struct TileCardView<Content: Tileable>: View {
     
     var body: some View {
         DownloadableImage(object: content)
-            .background(Color("ShragaGold"))
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
             .clipped()
