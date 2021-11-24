@@ -17,17 +17,43 @@ struct AudioCardView: View {
     
     var body: some View {
         HStack {
-            VStack {
+            VStack(alignment: .leading) {
                 Text(model.audio.name)
+                    .font(.title)
+                    .bold()
                 Text(model.audio.author.name)
-                Button {
-                    RootModel.audioPlayer.set(audio: model.audio)
-                    isShowingPlayerSheet = true
-                } label: {
-                    Image(systemName: "play")
+            }
+            Spacer()
+            VStack(alignment: .trailing) {
+                HStack {
+                    Text(timeFormattedMini(totalSeconds: model.audio.duration ?? 0))
+                        .foregroundColor(Color("Gray"))
+                    Image(systemName: "clock")
+                }
+                if let date = model.audio.date {
+                    if let month = Date.monthNameFor(date.get(.month)) {
+                        HStack {
+                            let yearAsString = String(date.get(.year))
+                            Text("\(month) \(date.get(.day)), \(yearAsString)")
+                                .foregroundColor(Color("Gray"))
+                            Image(systemName: "calendar")
+                        }
+                    }
                 }
             }
-        }.sheet(isPresented: $isShowingPlayerSheet) {
+            .padding()
+
+            Button {
+                RootModel.audioPlayer.set(audio: model.audio)
+                isShowingPlayerSheet = true
+            } label: {
+                Image(systemName: "play.circle.fill")
+                    .shadow(radius: 1)
+                    .scaleEffect(2.25)
+            }
+        }
+        .padding()
+        .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer
         }
     }
@@ -36,5 +62,7 @@ struct AudioCardView: View {
 struct AudioCardView_Previews: PreviewProvider {
     static var previews: some View {
         AudioCardView(audio: .sample)
+            
+            
     }
 }
