@@ -36,6 +36,7 @@ struct AudioPlayer: View {
                 .padding()
                 .clipShape(RoundedRectangle(cornerRadius: 60))
                 .shadow(radius: 3)
+                .preferredColorScheme(.light)
             
             VStack {
                 HStack {
@@ -47,12 +48,14 @@ struct AudioPlayer: View {
                 HStack {
                     Text(self.audio?.author.name ?? "")
                         .font(.subheadline)
+                        .foregroundColor(Color("Gray"))
                     Spacer()
                 }
             }
             .padding(.horizontal)
                 .foregroundColor(.white)
             
+            Group {
             if self.player.itemDuration >= 0 {
             Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
                 if scrubStarted {
@@ -62,11 +65,35 @@ struct AudioPlayer: View {
                 }
             })
             .accentColor(Color("ShragaGold"))
-            .padding(.horizontal)
             } else {
                 ProgressView().progressViewStyle(LinearProgressViewStyle())
-                    .padding(.horizontal)
             }
+            
+            HStack {
+                if let displayTime = self.player.displayTime, displayTime.isFinite {
+                    Text("\(timeFormattedMini(totalSeconds: displayTime))")
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                } else {
+                    Text("--:--")
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                }
+                Spacer()
+                if let duration = self.player.itemDuration, duration.isFinite {
+                    Text("\(timeFormattedMini(totalSeconds: duration))")
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                } else {
+                    Text("--:--")
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                }
+            }
+            }
+            .padding(.horizontal)
+            
+            Spacer()
             
             HStack {
                 Spacer()
@@ -141,6 +168,11 @@ struct AudioPlayer: View {
                 Spacer()
             }.frame(height: 50)
             Spacer()
+            HStack {
+                
+                Spacer()
+            }
+            Spacer()
         }.background(LinearGradient(colors: [Color("ShragaBlue"), Color(white: 0.8)], startPoint: .bottomLeading, endPoint: .topTrailing) .ignoresSafeArea())
     }
 }
@@ -153,6 +185,8 @@ struct AudioPlayer_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        ap
+        Group {
+            ap
+        }
     }
 }
