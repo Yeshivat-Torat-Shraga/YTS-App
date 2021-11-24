@@ -28,7 +28,7 @@ struct HomeView: View {
                             .font(.title3)
                             .bold()
                         Spacer()
-                    }
+                    }.padding(.horizontal)
                     ScrollView(.horizontal, showsIndicators: false) {
 //                        ForEach(model.recentlyUploaded, id: \.self) { content in
 //                            NavigationLink(destination: Text("Recently uploaded content object")) {
@@ -46,17 +46,18 @@ struct HomeView: View {
                                 .font(.title3)
                                 .bold()
                             Spacer()
-                        }
+                        }.padding(.horizontal)
                         if let rebbeim = model.rebbeim {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
+                                    
                                     ForEach(rebbeim, id: \.self) { rabbi in
                                         NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
                                             TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
                                         }
                                         
                                     }
-                                }
+                                }.padding(.horizontal)
                             }
                         } else {
                             HStack {
@@ -69,7 +70,7 @@ struct HomeView: View {
                         Divider()
                     }
                 }
-                .padding()
+                .padding(.vertical)
                 .navigationTitle("Welcome to Shraga")
                 .toolbar {
                     LogoView(size: .small)
