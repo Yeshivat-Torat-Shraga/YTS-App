@@ -24,12 +24,15 @@
 		B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5045273D37BD00CF18D6 /* UI.swift */; };
 		B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */; };
 		B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */; };
+		F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */; };
 		F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4C9273B110900F7ACCC /* RootModel.swift */; };
 		F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D2273BE58B00F7ACCC /* YTS.swift */; };
 		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
 		F230C4D7273DC61800F7ACCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
+		F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2627529CD4005D6355 /* PlayBar.swift */; };
+		F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2827529D3A005D6355 /* PlayBarModel.swift */; };
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
@@ -57,12 +60,15 @@
 		B1BF5045273D37BD00CF18D6 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardView.swift; sourceTree = "<group>"; };
 		B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardModel.swift; sourceTree = "<group>"; };
+		F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackZStackButtonStyle.swift; sourceTree = "<group>"; };
 		F230C4C9273B110900F7ACCC /* RootModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootModel.swift; sourceTree = "<group>"; };
 		F230C4D2273BE58B00F7ACCC /* YTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTS.swift; sourceTree = "<group>"; };
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
 		F25038A3274EA1EC006FF802 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		F29FFB2627529CD4005D6355 /* PlayBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBar.swift; sourceTree = "<group>"; };
+		F29FFB2827529D3A005D6355 /* PlayBarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarModel.swift; sourceTree = "<group>"; };
 		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
@@ -156,6 +162,7 @@
 				B1ACF926274456F900079F9A /* LogoView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
+				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -168,6 +175,7 @@
 				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
 				B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */,
 				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
+				F29FFB2827529D3A005D6355 /* PlayBarModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -208,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */,
+				F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */,
 			);
 			path = Styles;
 			sourceTree = "<group>";
@@ -331,6 +340,7 @@
 				F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */,
 				B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */,
 				B1BF503F273D1C9A00CF18D6 /* HomeViewModel.swift in Sources */,
+				F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
 				B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */,
@@ -339,11 +349,13 @@
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
+				F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */,
 				F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
 				B1ACF927274456F900079F9A /* LogoView.swift in Sources */,
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
+				F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */,
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
 				F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */,
 				B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */,

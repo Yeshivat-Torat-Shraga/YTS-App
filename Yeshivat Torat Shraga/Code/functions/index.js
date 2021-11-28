@@ -7,67 +7,67 @@ projectId: "yeshivat-torat-shraga"
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
     // This function returns a list of rebbeim to be rendered on HomeView in Yeshivat Torat Shraga app
-    
+
     // === APP CHECK ===
     // if (context.app == undefined) {
     // 	throw new functions.https.HttpsError(
     // 		'failed-precondition',
     // 		'The function must be called from an App Check verified app.')
     // }
-    
+
     // This is the id of the documuent loaded by a previous
     // call to this function. This is to assist with pagination
     let pastDocumentID = callData.lastLoadedDocumentID;
-    
+
     // How many items (rabbis) do we want to return
     let requestedCount = callData.count || 10;
-    
+
     // Boolean to indicate whether to return URLs for thumbnails
     let includePictureURLs;
-    
+
     // If we OMIT the includePictureURLs parameter, default to true
     if (callData.includePictureURLs == undefined) includePictureURLs = true;
     // Otherwise, check if we sent either a String "true" or Boolean true
     // If so, set the valuse of incl
     else includePictureURLs = (callData.includePictureURLs == "true" || callData.includePictureURLs == true);
-    
+
     let rebbeim = [];
-    
+
     let db = admin.firestore();
     let query = db.collection('rebbeim').orderBy('name', 'asc');
-    
+
     if (typeof pastDocumentID == "string") {
         let snapshot = await db.collection("rebbeim").doc(pastDocumentID).get()
         query = query.startAfter(snapshot);
         log(`Starting after document '${snapshot}'`);
     }
-    
+
     let rebbeimSnapshot = await query.limit(requestedCount).get();
-    
+
     let lastLoadedDocumentID;
     let docs = rebbeimSnapshot.docs;
     if (Array.isArray(docs) && docs.length > 0) {
         lastLoadedDocumentID = docs[docs.length - 1].id;
-        
+
         await Promise.all(rebbeimSnapshot.docs.map(async doc => {
             const data = doc.data();
             const pfpFilename = data.profile_picture_filename;
-            
+
             let url;
             if (includePictureURLs) {
                 url = await getRabbiProfilePictureURLFor(pfpFilename);
             }
-            
+
             const r = {
             id: doc.id,
             name: data.name,
             profile_picture_filename: pfpFilename,
             profile_picture_url: url
             };
-            
+
             rebbeim.push(r);
         }));
-        
+
         return {
         requestData: {
         pastDocumentID: pastDocumentID,
@@ -96,54 +96,54 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
     // 		'failed-precondition',
     // 		'The function must be called from an App Check verified app.')
     // }
-    
+
     let pastDocumentID = callData.lastLoadedDocumentID;
     let requestedCount = callData.count || 10;
-    
+
     let includeThumbnailURLs;
     if (callData.includeThumbnailURLs == undefined) {
         includeThumbnailURLs = false;
     } else {
         includeThumbnailURLs = (callData.includeThumbnailURLs == "true" || callData.includeThumbnailURLs == true);
     }
-    
+
     let includeAllAuthorData;
     if (callData.includeAllAuthorData == undefined) {
         includeAllAuthorData = false;
     } else {
         includeAllAuthorData = (callData.includeAllAuthorData == "true" || callData.includeAllAuthorData == true);
     }
-    
+
     let content = [];
-    
+
     let db = admin.firestore();
     let query = db.collection('content').orderBy('date', 'asc');
-    
+
     if (typeof pastDocumentID == "string") {
         let snapshot = await db.collection("content").doc(pastDocumentID).get()
         query = query.startAfter(snapshot);
         log(`Starting after document '${snapshot}'`);
     }
-    
+
     let contentSnapshot = await query.limit(requestedCount).get();
-    
+
     let lastLoadedDocumentID;
     let docs = contentSnapshot.docs;
     if (Array.isArray(docs) && docs.length > 0) {
         lastLoadedDocumentID = docs[docs.length - 1].id;
-        
+
         await Promise.all(docs.map(async doc => {
             const data = doc.data();
             let promises = [];
-            
+
             promises.push(getContentURLFor(data.filename).catch(reason => { return null }));
-            
+
             promises.push(getRabbiFor(data.attributionID, includeAllAuthorData).catch(reason => { return null }));
-            
+
             return await Promise.all(promises).then(results => {
                 const url = results[0];
                 const author = results[1];
-                
+
                 const c = {
                 id: doc.id,
                 attributionID: data.attributionID,
@@ -157,11 +157,11 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
                 date: data.date,
                 duration: data.duration
                 };
-                
+
                 content.push(c);
             });
         }));
-        
+
         return {
         requestData: {
         pastDocumentID: pastDocumentID,
@@ -186,10 +186,9 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
         content: []
         };
     }
-    
-    
-});
 
+
+});
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).object().onFinalize(async object => {
@@ -203,7 +202,6 @@ exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).
 	const os = require('os');
 	const fs = require('fs');
 	const THUMB_PREFIX = 'TTT';
-	const THUMB_MAX_WIDTH = 512;
 
 	const SERVICE_ACCOUNT = 'yeshivat-torat-shraga-1358031cf751.json';
 	const PROJECT_ID = "yeshivat-torat-shraga";
@@ -288,6 +286,7 @@ exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).
 });
 
 async function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
+	const THUMB_MAX_WIDTH = 512;
     log(`Entered generateThumbnailFromVideo function.`);
     return await file.getSignedUrl({
     action: 'read',
@@ -332,9 +331,9 @@ exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWr
         let data = ev.after.data();
         let components = [];
         let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
-        
+
         components = components.concat(nameComponents);
-        
+
         const db = admin.firestore();
         let doc = db.collection('rebbeim').doc(ev.after.id);
         doc.set({
@@ -391,12 +390,12 @@ async function getRabbiFor(id, includeProfilePictureURL) {
         let db = admin.firestore();
         await db.collection("rebbeim").doc(id).get().then(async personSnapshot => {
             const personData = personSnapshot.data();
-            
+
             if (personData == undefined) {
                 reject(`Rabbi doesn't exist`);
                 return
             }
-            
+
             if (includeProfilePictureURL) {
                 const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
                 const filename = appendToEndOfFilename(personData.profilepic, '_300x1000');

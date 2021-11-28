@@ -84,19 +84,23 @@ final class FirebaseConnection {
     /// Loads `YTSContent` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
-    ///   - count: The amount of `YTSContent` objects to return. Default is `10`.
+    ///   - requestedCount: The amount of `YTSContent` objects to return. Default is `10`.
     ///   - includeThumbnailURLs: Whether or not to include thumbnail URLs in the response.
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: (videos: [Video], audios: [Audio]), metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    ///   - attributionRabbi: When this value is set, the function only returns content attributed to the `Rabbi` object.
+    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, attributionRabbi: Rabbi? = nil, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: (videos: [Video], audios: [Audio]), metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var content: (videos: [Video], audios: [Audio]) = (videos: [], audios: [])
         
-        let data: NSDictionary
+        var dictionary: [String: Any] = ["count": requestedCount, "includeThumbnailURLs": includeThumbnailURLs, "includeAllAuthorData": includeAllAuthorData]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data = NSDictionary(dictionary: ["lastLoadedDocumentID": lastLoadedDocumentID, "count": requestedCount, "includeThumbnailURLs": includeThumbnailURLs, "includeAllAuthorData": includeAllAuthorData])
-        } else {
-            data = NSDictionary(dictionary: ["count": requestedCount, "includeThumbnailURLs": includeThumbnailURLs, "includeAllAuthorData": includeAllAuthorData])
+            dictionary["lastLoadedDocumentID"] = lastLoadedDocumentID
         }
+        if let attributionRabbi = attributionRabbi {
+            dictionary["rabbiAttributionID"] = attributionRabbi.firestoreID
+        }
+        
+        let data: NSDictionary = NSDictionary(dictionary: dictionary)
         
         let httpsCallable = functions.httpsCallable("loadContent")
         
