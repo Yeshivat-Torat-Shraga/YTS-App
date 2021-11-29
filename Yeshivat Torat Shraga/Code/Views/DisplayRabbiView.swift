@@ -10,7 +10,7 @@ import SwiftUI
 struct DisplayRabbiView: View {
     @ObservedObject var model: DisplayRabbiModel
     
-    init (rabbi: Rabbi) {
+    init(rabbi: DetailedRabbi) {
         model = DisplayRabbiModel(rabbi: rabbi)
     }
     
@@ -42,11 +42,23 @@ struct DisplayRabbiView: View {
                 }
             }
         }
-        .padding()
+        .padding(.horizontal)
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
-            LogoView(size: .small)
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack {
+                    LogoView(size: .small)
+                DownloadableImage(object: model.rabbi)
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                    .shadow(radius: 1)
+                }
+            }
         })
+        .onAppear {
+            self.model.load()
+        }
     }
 }
 

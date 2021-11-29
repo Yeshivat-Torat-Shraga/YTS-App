@@ -309,7 +309,6 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	// const fs = require('fs');
 
 	const THUMB_PREFIX = 'TTT';
-	const THUMB_MAX_WIDTH = 512;
 
 	// const SERVICE_ACCOUNT = '/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json';
 	const PROJECT_ID = "yeshivat-torat-shraga";

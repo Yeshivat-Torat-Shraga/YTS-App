@@ -17,6 +17,14 @@ struct RootView: View {
                 .tabItem{
                     Label("Home", systemImage: "house")
                 }
+                .overlay(VStack {
+                    Spacer()
+                    PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                })
+//                .overlay {
+//                    PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+//                }
+                
         }.accentColor(Color("ShragaBlue"))
     }
 }

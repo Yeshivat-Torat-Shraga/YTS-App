@@ -38,22 +38,33 @@ struct AudioPlayer: View {
                 .shadow(radius: 3)
                 .preferredColorScheme(.light)
             
-            VStack {
-                HStack {
-                    Text(self.audio?.title ?? "")
-                        .font(.title3)
-                        .bold()
-                    Spacer()
+            HStack {
+                VStack {
+                    HStack {
+                        Text(self.audio?.title ?? "")
+                            .font(.title3)
+                            .bold()
+                        Spacer()
+                    }
+                    HStack {
+                        Text(self.audio?.author.name ?? "")
+                            .font(.subheadline)
+                            .foregroundColor(Color(UIColor.systemGray5))
+                        Spacer()
+                    }
                 }
-                HStack {
-                    Text(self.audio?.author.name ?? "")
-                        .font(.subheadline)
-                        .foregroundColor(Color("Gray"))
-                    Spacer()
-                }
-            }
-            .padding(.horizontal)
                 .foregroundColor(.white)
+                
+                Spacer()
+                
+                if let author = self.audio?.author as? DetailedRabbi {
+                    DownloadableImage(object: author)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                        .shadow(radius: 2)
+                }
+            }.padding(.horizontal)
             
             Group {
             if self.player.itemDuration >= 0 {
@@ -167,9 +178,57 @@ struct AudioPlayer: View {
                 }
                 Spacer()
             }.frame(height: 50)
+            
             Spacer()
+            
             HStack {
-                
+                Spacer()
+                if #available(iOS 15.0, *) {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
+                            .frame(width: 20, height: 20)
+                    }).buttonStyle(BorderedProminentButtonStyle())
+                        
+                } else {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
+                            .frame(width: 20, height: 20)
+                    })
+                }
+                if #available(iOS 15.0, *) {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "square.and.arrow.up").foregroundColor(Color("Gray"))
+                            .frame(width: 20, height: 20)
+                    }).buttonStyle(BorderedProminentButtonStyle())
+                } else {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "square.and.arrow.up").foregroundColor(Color(UIColor.lightGray))
+                            .frame(width: 20, height: 20)
+                    })
+                }
+                if #available(iOS 15.0, *) {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "ellipsis").foregroundColor(Color(uiColor: .lightGray))
+                            .frame(width: 20, height: 20)
+                    }).buttonStyle(BorderedProminentButtonStyle())
+                } else {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "ellipsis").foregroundColor(Color(UIColor.lightGray))
+                            .frame(width: 20, height: 20)
+                    })
+                }
                 Spacer()
             }
             Spacer()

@@ -14,7 +14,7 @@ typealias FileID = String
 
 class Rabbi: Hashable {
     /// The `FirestoreID` associated with this object in Firestore
-    private var firestoreID: FirestoreID
+    private(set) var firestoreID: FirestoreID
     
     /// The name associated with this object
     var name: String
