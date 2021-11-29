@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	credential: admin.credential.cert(require('/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	// credential: admin.credential.cert(require('/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
@@ -203,6 +203,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 
 	// Do we need await? We're not assigning the returned Promise to a variable,
 	// so it seems inefficent to use await.
+
 	return Promise.all(docs.map(async doc => {
 		// Get the document data.
 		const data = doc.data();
@@ -244,29 +245,78 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 				content: contentDataArray,
 				errorOccurred,
 				totalDocuments: contentDataArray.length
-			}
+			};
 		});
 });
 
 // === BEGIN THUMBNAIL FUNCTIONS ===
 
+exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async object => {
+	const { Storage } = require('@google-cloud/storage');
+	const storage = new Storage();
+	const path = require('path');
+	const contentType = object.contentType;
+	const isVideo = contentType.startsWith('video/');
+	const fileName = path.basename(object.name);
+	const bucket = storage.bucket(object.bucket);
+	if (!isVideo) {
+		log("Not creating a HLS stream for non video content at the moment.");
+		return;
+	}
+	const hlsStreamCreator = require('hls-stream-creator');
+	const settings = {
+		renditions: [
+			{
+				resolution: {
+					width: 1920,
+					height: 1080,
+				},
+				bitrate: 8000,
+				audioRate: 320,
+			},
+			{
+				resolution: {
+					width: 1280,
+					height: 720,
+				},
+				bitrate: 4000,
+				audioRate: 192,
+			},
+		],
+		printLogs: true
+	};
+
+	try {
+		// const os = require('os');
+		// const tempFilePath = path.join(os.tmpdir(), object.name);
+		// const metadata = {
+		// 	contentType: object.contentType,
+		// };
+		// await bucket.file(object.name).download({ destination: tempFilePath });
+
+		await hlsStreamCreator(object.name, `HLSStream/${fileName}`, settings);
+	} catch (err) {
+		console.log(`Oops we got an error, err: ${err}`);
+	}
+});
+
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
-exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).object().onFinalize(async object => {
-	const mkdirp = require('mkdirp');
+exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async object => {
+	// const mkdirp = require('mkdirp');
 	const { Storage } = require('@google-cloud/storage');
 	const path = require('path');
 	const os = require('os');
-	const fs = require('fs');
+	// const fs = require('fs');
 
 	const THUMB_PREFIX = 'TTT';
 	const THUMB_MAX_WIDTH = 512;
 
-	const SERVICE_ACCOUNT = '/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json';
+	// const SERVICE_ACCOUNT = '/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json';
 	const PROJECT_ID = "yeshivat-torat-shraga";
 
 	const storage = new Storage({
-		SERVICE_ACCOUNT,
-		PROJECT_ID
+		// keyFilename: SERVICE_ACCOUNT,
+		projectId: PROJECT_ID,
 	});
 
 	// MIME type
@@ -305,9 +355,6 @@ exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).
 		return Promise.reject();
 	} else if (!(isImage || isVideo)) {
 		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; contentType=${contentType}. (A04)`);
-		return Promise.reject();
-	} else if (!isVideo) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; contentType=${contentType}. (A05)`);
 		return Promise.reject();
 	}
 
@@ -359,7 +406,8 @@ exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).
 				error);
 		});
 	}).catch(error => {
-		log(`Error: ${error} (A06)`);
+		// log(`Error: ${error} (A06)`);
+		return "The following error occured: \n" + error;
 		throw new functions.https.HttpsError(
 			'error-generating',
 			error);
@@ -368,22 +416,20 @@ exports.generateThumbnail = functions.storage.bucket(adminConfig.storageBucket).
 
 function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
 	log(`Entered generateThumbnailFromVideo function.`);
+	const ffmpeg = require('@ffmpeg-installer/ffmpeg');
 	return file.getSignedUrl({
 		action: 'read',
-		expires: '05-24-2999'
+		expires: Date.now() + 1000 * 60 * 60,
 	}).then(signedUrl => {
 		// log(`Signed URL: ${signedUrl}`);
 		const fileUrl = signedUrl[0];
 		// log(`File URL: ${fileUrl}`);
 		const spawn = require('child-process-promise').spawn;
-		const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', `scale=512:-1`, `-update`, `1`, tempLocalThumbnailFile]);
-		log(`Used spawn to generate promise: ${JSON.stringify(promise)}`);
-		// promise.childProcess.stdout.on('data', (data) => console.info('[spawn] stdout: ', data.toString()));
-		// promise.childProcess.stderr.on('data', (data) => console.info('[spawn] stderr: ', data.toString()));
+		const ffmpegPath = ffmpeg.path;
+		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', /*`scale=512:-1`,*/ `-update`, `1`, tempLocalThumbnailFile]);
 		return promise;
 	}).catch(error => {
-		log(`Failed to generate signed url: ${error}`);
+		log(`Failed to generate signed url (A08)`);
 		return Promise.reject(error);
 	});
 }
@@ -397,7 +443,7 @@ function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
 // 		const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
 // 		bucket.file(`thumbnails/TTT${id}.jpg`).getSignedUrl({
 // 			action: "read",
-//			expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
+// 			expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
 // 		}).then(url => {
 // 			resolve(url[0]);
 // 		}).catch(reason => {
