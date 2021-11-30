@@ -34,7 +34,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 		includePictureURLs = (callData.includePictureURLs == "true" || callData.includePictureURLs == true);
 	}
 
-	let rabbis = [];
+	let rebbeim = [];
 
 	// Create an object that represents the connection to the Firestore database.
 	let db = admin.firestore();
@@ -51,26 +51,26 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	}
 
 	// Execute the query.
-	let rabbisSnapshot = await query.limit(requestedCount).get();
+	let rebbeimSnapshot = await query.limit(requestedCount).get();
 	// Set a variable to hold the ID of the last document returned from the query.
 	// This is so the client can use this ID to load the next page of documents.
 	let lastDocumentFromQueryID;
 	// Get the documents returned from the query.
-	let docs = rabbisSnapshot.docs;
+	let docs = rebbeimSnapshot.docs;
 
 	// If docs is null, return.
 	if (!docs)
 		return {
 			lastLoadedDocumentID: lastDocumentFromQueryID,
-			includesLastElement: (requestedCount > rabbis.length),
-			rabbis: null
+			includesLastElement: (requestedCount > rebbeim.length),
+			rebbeim: null
 		};
 
 	// Assign the last document returned from the query to lastDocumentFromQueryID.
 	lastDocumentFromQueryID = docs[docs.length - 1].id;
 
 	// Loop through the documents returned from the query.
-	// For each document, get the desired data and add it to the rabbis array.
+	// For each document, get the desired data and add it to the rebbeim array.
 	// Since we are using the await keyword, we need to make the
 	// function asynchronous. Because of this, the function returns a Promise and
 	// in turn, docs.map() returns an array of Promises.
@@ -95,14 +95,14 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 			profile_picture_url: url
 		};
 
-		rabbis.push(documentData);
+		rebbeim.push(documentData);
 	}));
 
 	// Once we are done looping through the documents, return the data.
 	return {
 		lastLoadedDocumentID: lastDocumentFromQueryID,
-		includesLastElement: (requestedCount > rabbis.length),
-		rabbis: rabbis
+		includesLastElement: (requestedCount > rebbeim.length),
+		rebbeim: rebbeim
 	};
 });
 
