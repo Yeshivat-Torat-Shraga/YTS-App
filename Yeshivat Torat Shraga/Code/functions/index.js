@@ -263,6 +263,10 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		log("Not creating a HLS stream for non video content at the moment.");
 		return;
 	}
+	if (!object.name.includes('content')) {
+		log("This function only generates HLS streams for files in the content folder.");
+		return;
+	}
 	const hlsStreamCreator = require('hls-stream-creator');
 	const settings = {
 		renditions: [
@@ -287,27 +291,43 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	};
 
 	try {
-		// const os = require('os');
+		const os = require('os');
 		// const tempLocalFilePath = path.join(os.tmpdir(), filename);
 		// const newFilePath = path.normalize(`content/${filename}`);
 		// const metadata = {
 		// 	contentType: object.contentType,
 		// };
-		const file = bucket.file(object.name);
+		const filepath = object.name;
+		const filename = path.basename(filepath);
+		const tempFilePath = path.join(os.tmpdir(), filename);
 
-		const urlResult = await file.getSignedUrl({
-		action: 'read',
-		expires: Date.now() + 1000 * 60 * 60,
-		});
+		// const file = bucket.file(object.name);
+		await bucket.file(filepath).download({destination: tempFilePath});
 
-		// const url = urlResult[0];
+		// const urlResult = await file.getDownloadURL();
+		//
+		// let url = new URL(urlResult[0]);
+		// url.protocol = "file";
 
-		const inputPath = new URL(urlResult[0]);
-		const outputPath = `HLSStream/${filename}`;
+		const inputPath = tempFilePath;
+		const outputDir = path.join(os.tmpdir(), `HLSStreams/`);
 		log(`${process.cwd()}`);
 		log(`Input path: ${inputPath}`);
-		log(`Output path: ${outputPath}`);
-		await hlsStreamCreator(inputPath, `HLSStream/${filename}`, settings);
+		log(`Output path: ${outputDir}`);
+		await hlsStreamCreator(inputPath, outputDir, settings);
+
+		log(`Finished creating HLS stream, now uploading to bucket from ${outputDir}.`);
+
+		const metadata = {
+			// contentType: 'image/jpeg',
+			// To enable Client-side caching you can set the Cache-Control headers here:
+			'Cache-Control': 'public,max-age=3600'
+		};
+
+		await bucket.upload(outputDir, {
+			destination: `HLSStreams/Stream/`,
+			metadata: metadata
+		});
 	} catch (err) {
 		console.log(`Failed: ${err} (B01F)`);
 	}
