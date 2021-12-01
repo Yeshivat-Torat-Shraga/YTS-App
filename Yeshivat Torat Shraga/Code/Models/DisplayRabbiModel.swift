@@ -25,7 +25,6 @@ class DisplayRabbiModel: ObservableObject, ErrorShower {
             guard let results = results else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 fatalError(error!.localizedDescription)
-                return
             }
             print(results)
             self.audios = results.content.audios

@@ -23,6 +23,7 @@ struct DisplayRabbiView: View {
                         .bold()
                     Spacer()
                 }
+                .padding()
                 Divider()
             }
             Group {
@@ -32,17 +33,21 @@ struct DisplayRabbiView: View {
                         .bold()
                     Spacer()
                 }
+                .padding(.horizontal)
                 VStack {
-                    ScrollView(.vertical) {
+//                    ScrollView(.vertical) {
+//                    AudioCardView(audio: .sample)
                         ForEach(model.audios ?? [], id: \.self) { audio in
                             AudioCardView(audio: audio)
                         }
-                    }
-                    Spacer()
+//                    }
+//                    .padding()
+//                    Spacer()
                 }
+                .padding(.horizontal)
             }
         }
-        .padding(.horizontal)
+//        .padding(.horizontal)
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -65,7 +70,7 @@ struct DisplayRabbiView: View {
 struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            DisplayRabbiView(rabbi: DetailedRabbi.samples[0])
+            DisplayRabbiView(rabbi: DetailedRabbi.samples[1])
         }
     }
 }

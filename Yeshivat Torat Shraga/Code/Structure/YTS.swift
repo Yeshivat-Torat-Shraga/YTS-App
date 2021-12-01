@@ -75,7 +75,7 @@ class DetailedRabbi: Rabbi, Tileable {
     
     static public var samples: [DetailedRabbi] = [
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        DetailedRabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
@@ -273,7 +273,7 @@ class Audio: YTSContent, Hashable {
         lhs.firestoreID == rhs.firestoreID
     }
     
-    static let sample = Audio(id: "PD9DX0Hf8v1dJPmGMk97", fileID: "RabbiDavid", sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!, title: "Test Audio", author: Rabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David"), description: "Test description", date: .distantPast, duration: 100, tags: [])
+    static let sample = Audio(id: "PD9DX0Hf8v1dJPmGMk97", fileID: "RabbiDavid", sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!, title: "Hilchot Har Habayit", author: Rabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David"), description: "Test description", date: .distantPast, duration: 100, tags: [])
 }
 
 /// An enhanced wrapper on a `Tag` which includes an icon

@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		66A32FE345BB8AA31D85C386 /* Pods_Yeshivat_Torat_Shraga.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */; };
+		083115492756A78700484B38 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 083115482756A78700484B38 /* FirebaseAnalytics */; };
+		0831154B2756A78700484B38 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0831154A2756A78700484B38 /* FirebaseFirestore */; };
+		0831154D2756A78700484B38 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 0831154C2756A78700484B38 /* FirebaseFunctions */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -39,9 +41,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yeshivat_Torat_Shraga.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.release.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.release.xcconfig"; sourceTree = "<group>"; };
-		88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.debug.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.debug.xcconfig"; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -79,7 +78,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66A32FE345BB8AA31D85C386 /* Pods_Yeshivat_Torat_Shraga.framework in Frameworks */,
+				0831154D2756A78700484B38 /* FirebaseFunctions in Frameworks */,
+				083115492756A78700484B38 /* FirebaseAnalytics in Frameworks */,
+				0831154B2756A78700484B38 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,8 +92,6 @@
 			children = (
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
-				DDBA30DCECD219195C07B023 /* Frameworks */,
-				C111B0ABFB42BD0B0930FF28 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,23 +132,6 @@
 				F25038A3274EA1EC006FF802 /* Helpers.swift */,
 			);
 			path = Tools;
-			sourceTree = "<group>";
-		};
-		C111B0ABFB42BD0B0930FF28 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */,
-				68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		DDBA30DCECD219195C07B023 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F230C4CB273B117D00F7ACCC /* Views */ = {
@@ -228,17 +210,20 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B12AB844273B104300B17CC0 /* Build configuration list for PBXNativeTarget "Yeshivat Torat Shraga" */;
 			buildPhases = (
-				EDE065ACC6CCD22BB4A253C2 /* [CP] Check Pods Manifest.lock */,
 				B12AB829273B103C00B17CC0 /* Sources */,
 				B12AB82A273B103C00B17CC0 /* Frameworks */,
 				B12AB82B273B103C00B17CC0 /* Resources */,
-				7B86BE1E7B047E09C10875D5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "Yeshivat Torat Shraga";
+			packageProductDependencies = (
+				083115482756A78700484B38 /* FirebaseAnalytics */,
+				0831154A2756A78700484B38 /* FirebaseFirestore */,
+				0831154C2756A78700484B38 /* FirebaseFunctions */,
+			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
 			productType = "com.apple.product-type.application";
@@ -266,6 +251,9 @@
 				Base,
 			);
 			mainGroup = B12AB824273B103C00B17CC0;
+			packageReferences = (
+				083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -288,48 +276,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		7B86BE1E7B047E09C10875D5 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EDE065ACC6CCD22BB4A253C2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Yeshivat Torat Shraga-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B12AB829273B103C00B17CC0 /* Sources */ = {
@@ -495,13 +441,12 @@
 		};
 		B12AB845273B104300B17CC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -517,13 +462,12 @@
 		};
 		B12AB846273B104300B17CC0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -559,6 +503,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		083115482756A78700484B38 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		0831154A2756A78700484B38 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		0831154C2756A78700484B38 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		B12AB836273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld */ = {

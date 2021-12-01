@@ -43,7 +43,7 @@ struct PlayBar: View {
                 HStack {
                     if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
-                            RootModel.audioPlayer.pause()
+//                            RootModel.audioPlayer.pause()
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "pause.fill")
@@ -52,7 +52,7 @@ struct PlayBar: View {
                         })
                     } else if RootModel.audioPlayer.player.timeControlStatus == .paused {
                         Button(action: {
-                            RootModel.audioPlayer.play()
+//                            RootModel.audioPlayer.play()
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "play.fill")
