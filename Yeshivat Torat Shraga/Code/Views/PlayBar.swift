@@ -27,6 +27,7 @@ struct PlayBar: View {
                     .cornerRadius(3)
                     .padding(.vertical, 10)
                     .padding(.leading)
+                    .padding(.trailing, 5)
                     .shadow(radius: 1)
                 VStack {
                     HStack {

@@ -277,9 +277,13 @@ class Audio: YTSContent, Hashable {
 }
 
 /// An enhanced wrapper on a `Tag` which includes an icon
-struct Category {
+struct Category: Hashable {
     var tag: Tag
     
     /// The `Image` associated with this `Tag`
     var icon: Image
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(tag)
+    }
 }

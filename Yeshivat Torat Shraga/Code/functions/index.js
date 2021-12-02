@@ -295,6 +295,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	settings = {
 		renditions: [
 			{
+				audioRate: 320
 			},
 		],
 		printLogs: false
@@ -454,21 +455,22 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	};
 
 	return generateOperation(file, tempLocalThumbnailFilePath, fileName).then(async _ => {
-		log(`Promise resolved, stored at: '${tempLocalThumbFile}'`);
+		log(`Promise resolved, stored at: '${tempLocalThumbnailFilePath}'`);
 		log(`Now uploading to bucket at: ${thumbFilePath}`);
-		bucket.upload(tempLocalThumbFile, {
+		bucket.upload(tempLocalThumbnailFilePath, {
 			destination: thumbFilePath,
 			metadata: metadata
 		}).then(_ => {
 			return 'success';
 		}).catch(error => {
 			log(`Error: ${error} (A07)`);
-			throw new functions.https.HttpsError(
+			throw new Error(
 				'error-uploading',
 				error);
 		});
 	}).catch(error => {
-		throw new functions.https.HttpsError(
+		log(error);
+		throw new Error(
 			'error-generating',
 			error);
 	});
@@ -487,7 +489,7 @@ function generateThumbnailFromVideo(file, tempLocalThumbnailFilePath) {
 		const spawn = require('child-process-promise').spawn;
 		const ffmpegPath = ffmpeg.path;
 		log(tempLocalThumbnailFilePath);
-		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', /*`scale=512:-1`,*/ `-update`, `1`, tempLocalThumbnailFilePath]);
+		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', `scale=512:-1`, `-update`, `1`, tempLocalThumbnailFilePath]);
 		return promise;
 	}).catch(error => {
 		log(`Failed to generate thumbnail: ${error} (A08)`);

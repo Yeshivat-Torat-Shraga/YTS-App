@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		083115492756A78700484B38 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 083115482756A78700484B38 /* FirebaseAnalytics */; };
-		0831154B2756A78700484B38 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0831154A2756A78700484B38 /* FirebaseFirestore */; };
-		0831154D2756A78700484B38 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 0831154C2756A78700484B38 /* FirebaseFunctions */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -33,6 +30,9 @@
 		F230C4D7273DC61800F7ACCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
+		F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F28E291E2756A78700D9F4AF /* FirebaseAnalytics */; };
+		F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29202756A78700D9F4AF /* FirebaseFirestore */; };
+		F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29222756A78700D9F4AF /* FirebaseFunctions */; };
 		F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2627529CD4005D6355 /* PlayBar.swift */; };
 		F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2827529D3A005D6355 /* PlayBarModel.swift */; };
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
@@ -78,9 +78,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0831154D2756A78700484B38 /* FirebaseFunctions in Frameworks */,
-				083115492756A78700484B38 /* FirebaseAnalytics in Frameworks */,
-				0831154B2756A78700484B38 /* FirebaseFirestore in Frameworks */,
+				F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */,
+				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
+				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,9 +220,9 @@
 			);
 			name = "Yeshivat Torat Shraga";
 			packageProductDependencies = (
-				083115482756A78700484B38 /* FirebaseAnalytics */,
-				0831154A2756A78700484B38 /* FirebaseFirestore */,
-				0831154C2756A78700484B38 /* FirebaseFunctions */,
+				F28E291E2756A78700D9F4AF /* FirebaseAnalytics */,
+				F28E29202756A78700D9F4AF /* FirebaseFirestore */,
+				F28E29222756A78700D9F4AF /* FirebaseFunctions */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -252,7 +252,7 @@
 			);
 			mainGroup = B12AB824273B103C00B17CC0;
 			packageReferences = (
-				083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
@@ -505,30 +505,30 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		083115482756A78700484B38 /* FirebaseAnalytics */ = {
+		F28E291E2756A78700D9F4AF /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
 		};
-		0831154A2756A78700484B38 /* FirebaseFirestore */ = {
+		F28E29202756A78700D9F4AF /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
 		};
-		0831154C2756A78700484B38 /* FirebaseFunctions */ = {
+		F28E29222756A78700D9F4AF /* FirebaseFunctions */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 083115472756A78700484B38 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
 		};
 /* End XCSwiftPackageProductDependency section */
