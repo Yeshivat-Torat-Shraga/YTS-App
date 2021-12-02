@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var model: HomeViewModel
+    let categories: [Category] = [Category(tag: "Parsha", icon: Image("parsha")), Category(tag: "Chanuka", icon: Image("chanuka"))]
     
     init(rebbeim: [DetailedRabbi]) {
         self.model = HomeViewModel(rebbeim: rebbeim)
@@ -23,22 +24,23 @@ struct HomeView: View {
             ScrollView {
                 VStack {
                     Group {
-                    HStack {
-                        Text("Recently Uploaded")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }.padding(.horizontal)
-                    ScrollView(.horizontal, showsIndicators: false) {
-//                        ForEach(model.recentlyUploaded, id: \.self) { content in
-//                            NavigationLink(destination: Text("Recently uploaded content object")) {
-//                                TileCardView(content: content, size: .wide)
-//                            }
-//                        }
-                    }
+                        HStack {
+                            Text("Recently Uploaded")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            //                        ForEach(model.recentlyUploaded, id: \.self) { content in
+                            //                            NavigationLink(destination: Text("Recently uploaded content object")) {
+                            //                                TileCardView(content: content, size: .wide)
+                            //                            }
+                            //                        }
+                        }
                         Divider()
                     }
-                    
                     
                     Group {
                         HStack {
@@ -66,6 +68,23 @@ struct HomeView: View {
                                     .progressViewStyle(YTSProgressViewStyle())
                                 Spacer()
                             }.padding()
+                        }
+                        Divider()
+                    }
+                    
+                    Group {
+                        HStack {
+                            Text("Categories")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            ForEach(categories, id: \.self) { category in
+                                
+                            }
                         }
                         Divider()
                     }

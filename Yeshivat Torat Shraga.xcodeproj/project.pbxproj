@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		66A32FE345BB8AA31D85C386 /* Pods_Yeshivat_Torat_Shraga.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -31,6 +30,9 @@
 		F230C4D7273DC61800F7ACCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
+		F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F28E291E2756A78700D9F4AF /* FirebaseAnalytics */; };
+		F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29202756A78700D9F4AF /* FirebaseFirestore */; };
+		F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29222756A78700D9F4AF /* FirebaseFunctions */; };
 		F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2627529CD4005D6355 /* PlayBar.swift */; };
 		F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2827529D3A005D6355 /* PlayBarModel.swift */; };
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
@@ -39,9 +41,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yeshivat_Torat_Shraga.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.release.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.release.xcconfig"; sourceTree = "<group>"; };
-		88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yeshivat Torat Shraga.debug.xcconfig"; path = "Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga.debug.xcconfig"; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -79,7 +78,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66A32FE345BB8AA31D85C386 /* Pods_Yeshivat_Torat_Shraga.framework in Frameworks */,
+				F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */,
+				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
+				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,8 +92,6 @@
 			children = (
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
-				DDBA30DCECD219195C07B023 /* Frameworks */,
-				C111B0ABFB42BD0B0930FF28 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,23 +132,6 @@
 				F25038A3274EA1EC006FF802 /* Helpers.swift */,
 			);
 			path = Tools;
-			sourceTree = "<group>";
-		};
-		C111B0ABFB42BD0B0930FF28 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */,
-				68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		DDBA30DCECD219195C07B023 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3023F3BF7A4DF401C4D47B74 /* Pods_Yeshivat_Torat_Shraga.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F230C4CB273B117D00F7ACCC /* Views */ = {
@@ -228,17 +210,20 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B12AB844273B104300B17CC0 /* Build configuration list for PBXNativeTarget "Yeshivat Torat Shraga" */;
 			buildPhases = (
-				EDE065ACC6CCD22BB4A253C2 /* [CP] Check Pods Manifest.lock */,
 				B12AB829273B103C00B17CC0 /* Sources */,
 				B12AB82A273B103C00B17CC0 /* Frameworks */,
 				B12AB82B273B103C00B17CC0 /* Resources */,
-				7B86BE1E7B047E09C10875D5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "Yeshivat Torat Shraga";
+			packageProductDependencies = (
+				F28E291E2756A78700D9F4AF /* FirebaseAnalytics */,
+				F28E29202756A78700D9F4AF /* FirebaseFirestore */,
+				F28E29222756A78700D9F4AF /* FirebaseFunctions */,
+			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
 			productType = "com.apple.product-type.application";
@@ -266,6 +251,9 @@
 				Base,
 			);
 			mainGroup = B12AB824273B103C00B17CC0;
+			packageReferences = (
+				F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -288,48 +276,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		7B86BE1E7B047E09C10875D5 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Yeshivat Torat Shraga/Pods-Yeshivat Torat Shraga-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EDE065ACC6CCD22BB4A253C2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Yeshivat Torat Shraga-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B12AB829273B103C00B17CC0 /* Sources */ = {
@@ -495,7 +441,6 @@
 		};
 		B12AB845273B104300B17CC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 88B35F345FFF10D081486FF5 /* Pods-Yeshivat Torat Shraga.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -517,7 +462,6 @@
 		};
 		B12AB846273B104300B17CC0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 68B3D46B8CAFBEA77991F396 /* Pods-Yeshivat Torat Shraga.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -559,6 +503,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F28E291E2756A78700D9F4AF /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		F28E29202756A78700D9F4AF /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		F28E29222756A78700D9F4AF /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		B12AB836273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld */ = {
