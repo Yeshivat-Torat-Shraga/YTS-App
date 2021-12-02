@@ -78,6 +78,7 @@ struct TileCardView<Content: Tileable>: View {
                 }
             )
             .cornerRadius(8)
+            .shadow(radius: 3)
     }
 }
 

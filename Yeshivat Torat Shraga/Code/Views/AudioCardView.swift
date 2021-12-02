@@ -43,7 +43,7 @@ struct AudioCardView: View {
                     )
                 VStack(alignment: .leading) {
                     Text(model.audio.name)
-                        .font(.title2)
+                        .font(.title3)
                         .bold()
                         .foregroundColor(.black)
                 }
@@ -82,10 +82,13 @@ struct AudioCardView: View {
             }
             .font(.footnote)
         }
-        .padding(10)
-        .background(Rectangle().fill(Color(UIColor.systemBackground)))
-        .cornerRadius(10)
-        .shadow(radius: 2)
+        .padding()
+        .background(Rectangle()
+                        .fill(Color(UIColor.systemBackground))
+                        .cornerRadius(10)
+                        .shadow(radius: 2)
+        )
+        
         
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer

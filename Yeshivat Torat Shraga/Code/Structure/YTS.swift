@@ -97,8 +97,6 @@ class DetailedRabbi: Rabbi, Tileable {
      */
 }
 
-typealias Tag = String
-
 protocol Tileable: URLImageable, Hashable {
     var name: String { get }
 }
@@ -276,14 +274,29 @@ class Audio: YTSContent, Hashable {
     static let sample = Audio(id: "PD9DX0Hf8v1dJPmGMk97", fileID: "RabbiDavid", sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!, title: "Hilchot Har Habayit", author: Rabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David"), description: "Test description", date: .distantPast, duration: 100, tags: [])
 }
 
-/// An enhanced wrapper on a `Tag` which includes an icon
-struct Category: Hashable {
-    var tag: Tag
+class Tag: Hashable {
+    var name: String
     
-    /// The `Image` associated with this `Tag`
-    var icon: Image
+    init(_ name: String) {
+        self.name = name
+    }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(tag)
+        hasher.combine(name)
+    }
+    
+    static func == (lhs: Tag, rhs: Tag) -> Bool {
+        lhs.name == rhs.name
+    }
+}
+
+/// An enhanced wrapper on a ``Tag`` which includes an icon
+class Category: Tag {
+    /// The icon associated with the ``Tag``
+    var icon: Image
+    
+    init(name: String, icon: Image) {
+        self.icon = icon
+        super.init(name)
     }
 }

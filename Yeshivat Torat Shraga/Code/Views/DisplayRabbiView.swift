@@ -39,6 +39,10 @@ struct DisplayRabbiView: View {
 //                    AudioCardView(audio: .sample)
                         ForEach(model.audios ?? [], id: \.self) { audio in
                             AudioCardView(audio: audio)
+                                .contextMenu {
+                                    Button("Play") {
+                                    }
+                                }
                         }
 //                    }
 //                    .padding()

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var model: HomeViewModel
-    let categories: [Category] = [Category(tag: "Parsha", icon: Image("parsha")), Category(tag: "Chanuka", icon: Image("chanuka"))]
+    let categories: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
     
     init(rebbeim: [DetailedRabbi]) {
         self.model = HomeViewModel(rebbeim: rebbeim)
@@ -42,7 +42,7 @@ struct HomeView: View {
                         Divider()
                     }
                     
-                    Group {
+                    VStack(spacing: 0) {
                         HStack {
                             Text("Rebbeim")
                                 .font(.title3)
@@ -52,12 +52,10 @@ struct HomeView: View {
                         if let rebbeim = model.rebbeim {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
-                                    
                                     ForEach(rebbeim, id: \.self) { rabbi in
                                         NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
                                             TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
-                                        }
-                                        
+                                        }.padding(.vertical)
                                     }
                                 }.padding(.horizontal)
                             }
@@ -72,7 +70,7 @@ struct HomeView: View {
                         Divider()
                     }
                     
-                    Group {
+                    VStack(spacing: 0) {
                         HStack {
                             Text("Categories")
                                 .font(.title3)
@@ -82,9 +80,12 @@ struct HomeView: View {
                         .padding(.horizontal)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
-                            ForEach(categories, id: \.self) { category in
-                                
-                            }
+                            LazyHStack {
+                                ForEach(categories, id: \.self) { category in
+                                    TagView(category)
+                                        .padding(.vertical)
+                                }
+                            }.padding(.horizontal)
                         }
                         Divider()
                     }
