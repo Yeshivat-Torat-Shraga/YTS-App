@@ -233,17 +233,17 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 			content.push(null);
 		}
 	})).then(contentDataArray => {
-			log("All promises resolved.");
-			// Once all of the promises have resolved, return the data.
-			// this data will be the resolved data from Promise.all(),
-			// which, in turn, will be returned by the function.
-			return {
-				lastLoadedDocumentID: lastLoadedDocumentID,
-				includesLastElement: (requestedCount > contentDataArray.length),
-				content: contentDataArray,
-				error_occured: error_occured
-			};
-		});
+		log("All promises resolved.");
+		// Once all of the promises have resolved, return the data.
+		// this data will be the resolved data from Promise.all(),
+		// which, in turn, will be returned by the function.
+		return {
+			lastLoadedDocumentID: lastLoadedDocumentID,
+			includesLastElement: (requestedCount > contentDataArray.length),
+			content: contentDataArray,
+			error_occured: error_occured
+		};
+	});
 });
 
 // === BEGIN THUMBNAIL FUNCTIONS ===
@@ -257,7 +257,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	const bucket = storage.bucket(object.bucket);
 
 	if (!object.name.includes('content')) {
-		log("This function only generates HLS streams for files in the content folder.");
+		log(`Skipping ${object.name} because it is not a content file.`);
 		return;
 	}
 
@@ -270,37 +270,36 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	let settings;
 
 	if (contentType.startsWith('video/')) {
-	settings = {
-		renditions: [
-			{
-				resolution: {
-					width: 1920,
-					height: 1080,
+		settings = {
+			renditions: [
+				{
+					resolution: {
+						width: 1920,
+						height: 1080,
+					},
+					bitrate: 8000,
+					audioRate: 320,
 				},
-				bitrate: 8000,
-				audioRate: 320,
-			},
-			{
-				resolution: {
-					width: 1280,
-					height: 720,
+				{
+					resolution: {
+						width: 1280,
+						height: 720,
+					},
+					bitrate: 4000,
+					audioRate: 192,
 				},
-				bitrate: 4000,
-				audioRate: 192,
-			},
-		],
-		printLogs: false
-	};
-} else if (contentType.startsWith('audio/')) {
-	settings = {
-		renditions: [
-			{
-				audioRate: 320
-			},
-		],
-		printLogs: false
-	};
-}
+			],
+			printLogs: true
+		};
+	} else if (contentType.startsWith('audio/')) {
+		settings = {
+			renditions: [
+				{
+				},
+			],
+			printLogs: true
+		};
+	}
 
 	try {
 		const os = require('os');
@@ -315,7 +314,8 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 
 		// const file = bucket.file(object.name);
 		await bucket.file(filepath).download({
-			destination: tempFilePath
+			destination: tempFilePath,
+			validation: false
 		});
 
 		// const urlResult = await file.getDownloadURL();
@@ -325,12 +325,42 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		const foldername = `SSS${fileIDFromFilename(filename)}`;
 
 		const inputPath = tempFilePath;
-		const outputDir = path.join(os.tmpdir(), `HLSStreams/`);
+		const outputDir = path.join(os.tmpdir(), `HLSStreams`);
 		log(`${process.cwd()}`);
 		log(`Input path: ${inputPath}`);
 		log(`Output path: ${outputDir}`);
-		await hlsStreamCreator(inputPath, outputDir, settings);
 
+		if (object.contentType.startsWith("video/")) {
+			await hlsStreamCreator(inputPath, outputDir, settings);
+		} else if (object.contentType.startsWith("audio/")) {
+			const ffmpeg = require('@ffmpeg-installer/ffmpeg');
+			const childProcessPromise = require('child-process-promise');
+			const ffmpegPath = ffmpeg.path;
+			const formattedPaths = {
+				inputPath: inputPath.replace(/(\s+)/g, '\\$1'),
+				outputDir: outputDir.replace(/(\s+)/g, '\\$1'),
+				filename: filename.replace(/(\s+)/g, '\\$1'),
+			};
+
+			await childProcessPromise.spawn("mkdir", ["-p", formattedPaths.outputDir]);
+
+			try {
+				await childProcessPromise.spawn(ffmpegPath, [
+					`-i`, `${inputPath}`,
+					`-hls_list_size`, `0`,
+					`-hls_time`, `10`,
+					`-hls_segment_filename`, `${outputDir}/${filename}%03d.t`,
+					`${outputDir}/${filename}.m3u8`
+				], { stdio: 'inherit' });
+			} catch (error) {
+				log(`Error: ${error}`);
+				throw new Error("Error creating HLS stream.");
+			}
+		} else {
+			return;
+			// throw new Error("This function only generates HLS streams for video and audio recordings");
+
+		}
 		log(`Finished creating HLS stream, now uploading to bucket from ${outputDir}.`);
 
 		const metadata = {
@@ -340,20 +370,30 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		};
 
 		const fs = require('fs');
-
-		await fs.readdir(outputDir, (error, filenames) => {
-			log(filenames);
-			filenames.forEach(async name => {
-				const fp = path.join(outputDir, name);
-				log(`Uploading file with path '${fp}'...`);
-				await bucket.upload(fp, {
-					destination: `HLSStreams/${foldername}/${name}`,
-					metadata: metadata
-				});
+		const filenames = fs.readdirSync(outputDir);
+		// fs.readdir(outputDir, async (error, filenames) => {
+		log(filenames);
+		await Promise.all(filenames.map((filename) => {
+			const fp = path.join(outputDir, filename);
+			log(`Uploading ${fp}...`);
+			return bucket.upload(fp, {
+				destination: `HLSStreams/${object.contentType.split("/")[0]}/${foldername}/${filename}`,
+				metadata: metadata
 			});
-		});
+		}));
+		console.log('Uploaded all files.');
+		// filenames.forEach(async name => {
+		// 	const fp = path.join(outputDir, name);
+		// 	log(`Uploading file with path '${fp}'...`);
+		// 	await bucket.upload(fp, {
+		// 		destination: `HLSStreams/${object.contentType.split("/")[0]}/${foldername}/${filename}`,
+		// 		metadata: metadata
+		// 	});
+		// 	// throw new error("Uploaded one file. Exiting immediately.");
+		// });
+		// });
 	} catch (err) {
-		console.log(`Failed: ${err} (B01F)`);
+		log(`Failed: ${err} (B01F)`);
 	}
 });
 
@@ -385,7 +425,7 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	const filePathInBucket = object.name;
 
 	if (!filePathInBucket.includes('content')) {
-		log("This function only generates thumbnails for files in the content folder.");
+		// log("This function only generates thumbnails for files in the content folder.");
 		return;
 	}
 
@@ -455,22 +495,21 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	};
 
 	return generateOperation(file, tempLocalThumbnailFilePath, fileName).then(async _ => {
-		log(`Promise resolved, stored at: '${tempLocalThumbnailFilePath}'`);
+		log(`Promise resolved, stored at: '${tempLocalThumbFile}'`);
 		log(`Now uploading to bucket at: ${thumbFilePath}`);
-		bucket.upload(tempLocalThumbnailFilePath, {
+		bucket.upload(tempLocalThumbFile, {
 			destination: thumbFilePath,
 			metadata: metadata
 		}).then(_ => {
 			return 'success';
 		}).catch(error => {
 			log(`Error: ${error} (A07)`);
-			throw new Error(
+			throw new functions.https.HttpsError(
 				'error-uploading',
 				error);
 		});
 	}).catch(error => {
-		log(error);
-		throw new Error(
+		throw new functions.https.HttpsError(
 			'error-generating',
 			error);
 	});
@@ -489,7 +528,7 @@ function generateThumbnailFromVideo(file, tempLocalThumbnailFilePath) {
 		const spawn = require('child-process-promise').spawn;
 		const ffmpegPath = ffmpeg.path;
 		log(tempLocalThumbnailFilePath);
-		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', `scale=512:-1`, `-update`, `1`, tempLocalThumbnailFilePath]);
+		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', /*`scale=512:-1`,*/ `-update`, `1`, tempLocalThumbnailFilePath]);
 		return promise;
 	}).catch(error => {
 		log(`Failed to generate thumbnail: ${error} (A08)`);
@@ -595,6 +634,7 @@ function appendToEndOfFilename(filename, text) {
 
 function fileIDFromFilename(filename) {
 	const fileparts = filename.split('/');
+	if (fileparts.length == 1) return filename;
 	const id = fileparts[fileparts.length - 1].substring(3).split('.');
 	id.splice(-1);
 	return id.join('.');
