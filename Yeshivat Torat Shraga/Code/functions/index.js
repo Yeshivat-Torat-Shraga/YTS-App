@@ -190,7 +190,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 	lastLoadedDocumentID = docs[docs.length - 1].id;
 
 	// Keep track if an error occurred
-	let errorOccurred = false;
+	let error_occured = false;
 
 	// Loop through the documents returned from the query.
 	// For each document, get the desired data and add it to the content array.
@@ -209,7 +209,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 		const data = doc.data();
 
 		try {
-			let url = await getContentURLFor(data.filename);
+			let url = await getURLFor(data.source_path);
 			let author = await getRabbiFor(data.attributionID, includeAllAuthorData);
 
 			const contentData = {
@@ -226,15 +226,13 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 
 			return contentData;
 		} catch (promiseResolutionError) {
-			errorOccurred = true;
-			log("There was an error resolving the promises getRabbiFor() and getContentURLFor().");
-			log(promiseResolutionError);
-			content.push({
-				error: promiseResolutionError
-			});
+			error_occured = true;
+			log(`There was an error resolving the promises getRabbiFor() and/or getURLFor(): ${promisepromiseResolutionError}`);
+
+			// Keep this line in, need to be able to see if the final element was loaded
+			content.push(null);
 		}
-	}))
-		.then((contentDataArray) => {
+	})).then(contentDataArray => {
 			log("All promises resolved.");
 			// Once all of the promises have resolved, return the data.
 			// this data will be the resolved data from Promise.all(),
@@ -243,8 +241,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 				lastLoadedDocumentID: lastLoadedDocumentID,
 				includesLastElement: (requestedCount > contentDataArray.length),
 				content: contentDataArray,
-				errorOccurred,
-				totalDocuments: contentDataArray.length
+				error_occured: error_occured
 			};
 		});
 });
@@ -256,19 +253,24 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	const storage = new Storage();
 	const path = require('path');
 	const contentType = object.contentType;
-	const isVideo = contentType.startsWith('video/');
 	const filename = path.basename(object.name);
 	const bucket = storage.bucket(object.bucket);
-	if (!isVideo) {
-		log("Not creating a HLS stream for non video content at the moment.");
-		return;
-	}
+
 	if (!object.name.includes('content')) {
 		log("This function only generates HLS streams for files in the content folder.");
 		return;
 	}
+
+	// if (!isVideo) {
+	// 	log("Not creating a HLS stream for non video content at the moment.");
+	// 	return;
+	// }
+
 	const hlsStreamCreator = require('hls-stream-creator');
-	const settings = {
+	let settings;
+
+	if (contentType.startsWith('video/')) {
+	settings = {
 		renditions: [
 			{
 				resolution: {
@@ -287,8 +289,17 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 				audioRate: 192,
 			},
 		],
-		printLogs: true
+		printLogs: false
 	};
+} else if (contentType.startsWith('audio/')) {
+	settings = {
+		renditions: [
+			{
+			},
+		],
+		printLogs: false
+	};
+}
 
 	try {
 		const os = require('os');
@@ -302,12 +313,15 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		const tempFilePath = path.join(os.tmpdir(), filename);
 
 		// const file = bucket.file(object.name);
-		await bucket.file(filepath).download({destination: tempFilePath});
+		await bucket.file(filepath).download({
+			destination: tempFilePath
+		});
 
 		// const urlResult = await file.getDownloadURL();
 		//
 		// let url = new URL(urlResult[0]);
 		// url.protocol = "file";
+		const foldername = `SSS${fileIDFromFilename(filename)}`;
 
 		const inputPath = tempFilePath;
 		const outputDir = path.join(os.tmpdir(), `HLSStreams/`);
@@ -324,9 +338,18 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 			'Cache-Control': 'public,max-age=3600'
 		};
 
-		await bucket.upload(outputDir, {
-			destination: `HLSStreams/Stream/`,
-			metadata: metadata
+		const fs = require('fs');
+
+		await fs.readdir(outputDir, (error, filenames) => {
+			log(filenames);
+			filenames.forEach(async name => {
+				const fp = path.join(outputDir, name);
+				log(`Uploading file with path '${fp}'...`);
+				await bucket.upload(fp, {
+					destination: `HLSStreams/${foldername}/${name}`,
+					metadata: metadata
+				});
+			});
 		});
 	} catch (err) {
 		console.log(`Failed: ${err} (B01F)`);
@@ -344,12 +367,12 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	const THUMB_PREFIX = 'TTT';
 	const THUMB_MAX_WIDTH = 512;
 
-	// const SERVICE_ACCOUNT = '/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json';
+	const SERVICE_ACCOUNT = 'yeshivat-torat-shraga-1358031cf751.json';
 	const PROJECT_ID = "yeshivat-torat-shraga";
 
 	const storage = new Storage({
-		// keyFilename: SERVICE_ACCOUNT,
-		projectId: PROJECT_ID,
+		keyFilename: SERVICE_ACCOUNT,
+		projectId: PROJECT_ID
 	});
 
 	// MIME type
@@ -359,6 +382,12 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 
 	// File path
 	const filePathInBucket = object.name;
+
+	if (!filePathInBucket.includes('content')) {
+		log("This function only generates thumbnails for files in the content folder.");
+		return;
+	}
+
 	if (!isVideo) {
 		log(`Can't create thumbnail for path '${filePathInBucket}' because it seems to not be a video. (A05)`);
 		return Promise.reject();
@@ -371,7 +400,7 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 
 	const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
 
-	log(`Attempting to create thumbnail for file with file path '${filePathInBucket}'...`);
+	log(`Attempting to create thumbnail for file with path '${filePathInBucket}'...`);
 
 	const isImage = contentType.startsWith('image/');
 	// log(`Object: ${JSON.stringify(object)}`);
@@ -405,7 +434,7 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	let thumbFilePath = path.normalize(`thumbnails/${newFilename}`);
 
 	log(`New thumbnail file path: '${thumbFilePath}'`);
-	const tempLocalThumbFile = path.join(os.tmpdir(), newFilename);
+	const tempLocalThumbnailFilePath = path.join(os.tmpdir(), newFilename);
 	// log(`Temporary local thumbnail file: '${tempLocalThumbFile}'`);
 	const tempLocalDir = fileDir;
 	// log(`Temporary local directory: '${tempLocalDir}'`);
@@ -424,7 +453,7 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 		'Cache-Control': 'public,max-age=3600'
 	};
 
-	return generateOperation(file, tempLocalThumbFile, fileName).then(async _ => {
+	return generateOperation(file, tempLocalThumbnailFilePath, fileName).then(async _ => {
 		log(`Promise resolved, stored at: '${tempLocalThumbFile}'`);
 		log(`Now uploading to bucket at: ${thumbFilePath}`);
 		bucket.upload(tempLocalThumbFile, {
@@ -439,15 +468,13 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 				error);
 		});
 	}).catch(error => {
-		// log(`Error: ${error} (A06)`);
-		return "The following error occured: \n" + error;
 		throw new functions.https.HttpsError(
 			'error-generating',
 			error);
 	});
 });
 
-function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
+function generateThumbnailFromVideo(file, tempLocalThumbnailFilePath) {
 	log(`Entered generateThumbnailFromVideo function.`);
 	const ffmpeg = require('@ffmpeg-installer/ffmpeg');
 	return file.getSignedUrl({
@@ -459,10 +486,11 @@ function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
 		// log(`File URL: ${fileUrl}`);
 		const spawn = require('child-process-promise').spawn;
 		const ffmpegPath = ffmpeg.path;
-		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', /*`scale=512:-1`,*/ `-update`, `1`, tempLocalThumbnailFile]);
+		log(tempLocalThumbnailFilePath);
+		const promise = spawn(ffmpegPath, ['-ss', '0', '-i', fileUrl, '-f', 'image2', '-vframes', '1', '-vf', /*`scale=512:-1`,*/ `-update`, `1`, tempLocalThumbnailFilePath]);
 		return promise;
 	}).catch(error => {
-		log(`Failed to generate signed url (A08)`);
+		log(`Failed to generate thumbnail: ${error} (A08)`);
 		return Promise.reject(error);
 	});
 }
@@ -486,12 +514,14 @@ function generateThumbnailFromVideo(file, tempLocalThumbnailFile) {
 // 	});
 // }
 
+/*
 async function getContentURLFor(filename) {
 	return getURLFor(`content/${filename}`)
 		.catch(_ => {
 			return null;
 		});
 }
+*/
 
 async function getRabbiProfilePictureURLFor(filename) {
 	return getURLFor(`profile-pictures/${filename}`)
@@ -562,7 +592,8 @@ function appendToEndOfFilename(filename, text) {
 }
 
 function fileIDFromFilename(filename) {
-	const id = filename.substring(3).split('.');
+	const fileparts = filename.split('/');
+	const id = fileparts[fileparts.length - 1].substring(3).split('.');
 	id.splice(-1);
 	return id.join('.');
 }
