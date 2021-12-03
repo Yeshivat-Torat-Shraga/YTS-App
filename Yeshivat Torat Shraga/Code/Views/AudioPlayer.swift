@@ -15,14 +15,14 @@ struct AudioPlayer: View {
     init() {}
     
     mutating func set(audio: Audio) {
-            self.audio = audio
-            
-            let playerItem = AVPlayerItem(url: audio.sourceURL)
-            let player = AVPlayer(playerItem: playerItem)
-            //            self.avPlayer.prepareToPlay()
-            //            avPlayer.volume = 1.0
-            //        player.play()
-            //            self.model = AudioPlayerModel(player: player)
+        self.audio = audio
+        
+        let playerItem = AVPlayerItem(url: audio.sourceURL)
+        let player = AVPlayer(playerItem: playerItem)
+        //            self.avPlayer.prepareToPlay()
+        //            avPlayer.volume = 1.0
+        //        player.play()
+        //            self.model = AudioPlayerModel(player: player)
         //            self.avPlayer = player
         self.player.set(avPlayer: player)
     }
@@ -67,40 +67,40 @@ struct AudioPlayer: View {
             }.padding(.horizontal)
             
             Group {
-            if self.player.itemDuration >= 0 {
-            Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
-                if scrubStarted {
-                    self.player.scrubState = .scrubStarted
+                if self.player.itemDuration >= 0 {
+                    Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
+                        if scrubStarted {
+                            self.player.scrubState = .scrubStarted
+                        } else {
+                            self.player.scrubState = .scrubEnded(self.player.displayTime)
+                        }
+                    })
+                        .accentColor(Color("ShragaGold"))
                 } else {
-                    self.player.scrubState = .scrubEnded(self.player.displayTime)
+                    ProgressView().progressViewStyle(LinearProgressViewStyle())
                 }
-            })
-            .accentColor(Color("ShragaGold"))
-            } else {
-                ProgressView().progressViewStyle(LinearProgressViewStyle())
-            }
-            
-            HStack {
-                if let displayTime = self.player.displayTime, displayTime.isFinite {
-                    Text("\(timeFormattedMini(totalSeconds: displayTime))")
-                        .font(.caption2)
-                        .foregroundColor(.white)
-                } else {
-                    Text("--:--")
-                        .font(.caption2)
-                        .foregroundColor(.white)
+                
+                HStack {
+                    if let displayTime = self.player.displayTime, displayTime.isFinite {
+                        Text("\(timeFormattedMini(totalSeconds: displayTime))")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                    } else {
+                        Text("--:--")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                    }
+                    Spacer()
+                    if let duration = self.player.itemDuration, duration.isFinite {
+                        Text("\(timeFormattedMini(totalSeconds: duration))")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                    } else {
+                        Text("--:--")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                    }
                 }
-                Spacer()
-                if let duration = self.player.itemDuration, duration.isFinite {
-                    Text("\(timeFormattedMini(totalSeconds: duration))")
-                        .font(.caption2)
-                        .foregroundColor(.white)
-                } else {
-                    Text("--:--")
-                        .font(.caption2)
-                        .foregroundColor(.white)
-                }
-            }
             }
             .padding(.horizontal)
             
@@ -109,72 +109,72 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 Group {
-                Spacer()
-                
-                Button(action: {
-                }, label: {
-                    Image(systemName: "gobackward.30")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                })
-                    .frame(width: 20)
-                
-                Spacer()
-                
-                Button(action: {
-                }, label: {
-                    Image(systemName: "backward.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                })
-                    .frame(width: 40)
-                }
-                
-                Group {
-                Spacer()
-                
-                if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                    Spacer()
+                    
                     Button(action: {
-                        self.player.play()
                     }, label: {
-                        Image(systemName: "play.fill")
+                        Image(systemName: "gobackward.30")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     })
-                        .frame(width: 30)
-                } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                        .frame(width: 20)
+                    
+                    Spacer()
+                    
                     Button(action: {
-                        self.player.pause()
                     }, label: {
-                        Image(systemName: "pause.fill")
+                        Image(systemName: "backward.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                    }).frame(width: 25)
-                } else {
-                    ProgressView()
-                }
-                
-                Spacer()
+                    })
+                        .frame(width: 40)
                 }
                 
                 Group {
-                Button(action: {
-                }, label: {
-                    Image(systemName: "forward.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }).frame(width: 40)
+                    Spacer()
+                    
+                    if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                        Button(action: {
+                            self.player.play()
+                        }, label: {
+                            Image(systemName: "play.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        })
+                            .frame(width: 30)
+                    } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                        Button(action: {
+                            self.player.pause()
+                        }, label: {
+                            Image(systemName: "pause.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }).frame(width: 25)
+                    } else {
+                        ProgressView()
+                    }
+                    
+                    Spacer()
+                }
                 
-                Spacer()
-                
-                Button(action: {
-                }, label: {
-                    Image(systemName: "goforward.30")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }).frame(width: 20)
-                
-                Spacer()
+                Group {
+                    Button(action: {
+                    }, label: {
+                        Image(systemName: "forward.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 40)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                    }, label: {
+                        Image(systemName: "goforward.30")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 20)
+                    
+                    Spacer()
                 }
                 Spacer()
             }.frame(height: 50)
@@ -190,7 +190,7 @@ struct AudioPlayer: View {
                         Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
                     }).buttonStyle(BorderedProminentButtonStyle())
-                        
+                    
                 } else {
                     Button(action: {
                         

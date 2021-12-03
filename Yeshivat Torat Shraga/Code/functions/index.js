@@ -246,7 +246,6 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 	});
 });
 
-// === BEGIN THUMBNAIL FUNCTIONS ===
 
 exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async object => {
 	const { Storage } = require('@google-cloud/storage');
@@ -397,6 +396,60 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	}
 });
 
+/*
+exports.createFirestoreEntry = functions.storage.object().onFinalize(async (object) => {
+	/*
+	AttributionID
+	Author
+	Date
+	Description
+	Duration
+	Source Path
+	Title
+	Type
+	const bucket = gcs.bucket(object.bucket);
+	const filePath = object.name;
+	const fileName = path.basename(filePath);
+	const fileID = fileIDFromFilename(fileName);
+	const fileType = object.contentType.split("/")[0];
+	const fileExtension = object.contentType.split("/")[1];
+	const fileSize = object.size;
+	const fileCreated = object.timeCreated;
+	const fileUpdated = object.updated;
+
+	const file = bucket.file(filePath);
+	const urlResult = await file.getSignedUrl({
+		action: 'read',
+		expires: '03-09-2491'
+	});
+
+	const url = new URL(urlResult[0]);
+	url.protocol = "file";
+
+	const db = admin.firestore();
+	const docRef = db.collection('files').doc(fileID);
+	const doc = await docRef.get();
+	if (doc.exists) {
+		log(`Document ${fileID} already exists.`);
+		return;
+	}
+
+	const newDoc = {
+		id: fileID,
+		type: fileType,
+		extension: fileExtension,
+		size: fileSize,
+		created: fileCreated,
+		updated: fileUpdated,
+		url: url.href
+	};
+
+	await docRef.set(newDoc);
+});
+*/
+
+
+// === BEGIN THUMBNAIL FUNCTIONS ===
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async object => {
 	// const mkdirp = require('mkdirp');
