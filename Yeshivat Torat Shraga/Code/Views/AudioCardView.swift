@@ -45,8 +45,9 @@ struct AudioCardView: View {
                     Text(model.audio.name)
                         .font(.title3)
                         .bold()
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary)
                 }
+                
                 Spacer()
                 
                 Button {
@@ -54,9 +55,10 @@ struct AudioCardView: View {
                     isShowingPlayerSheet = true
                 } label: {
                     Image(systemName: "play.circle.fill")
+                        .resizable()
                         .shadow(radius: 1)
-                        .scaleEffect(2.25)
                 }
+                .frame(width: 35, height: 35)
                 .padding()
             }
             HStack {
