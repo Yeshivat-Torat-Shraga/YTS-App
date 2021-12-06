@@ -32,13 +32,13 @@ struct HomeView: View {
                         }
                         .padding(.horizontal)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            //                        ForEach(model.recentlyUploaded, id: \.self) { content in
-                            //                            NavigationLink(destination: Text("Recently uploaded content object")) {
-                            //                                TileCardView(content: content, size: .wide)
-                            //                            }
-                            //                        }
-                        }
+//                        ScrollView(.horizontal, showsIndicators: false) {
+//                            //                        ForEach(model.recentlyUploaded, id: \.self) { content in
+//                            //                            NavigationLink(destination: Text("Recently uploaded content object")) {
+//                            //                                TileCardView(content: content, size: .wide)
+//                            //                            }
+//                            //                        }
+//                        }
                         Divider()
                     }
                     
@@ -93,7 +93,10 @@ struct HomeView: View {
                 .padding(.vertical)
                 .navigationTitle("Welcome to Shraga")
                 .toolbar {
-                    LogoView(size: .small)
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        LogoView(size: .small)
+                        
+                    }
                 }
             }
         }

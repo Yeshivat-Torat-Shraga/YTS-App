@@ -37,13 +37,17 @@ struct DisplayRabbiView: View {
                 VStack {
 //                    ScrollView(.vertical) {
 //                    AudioCardView(audio: .sample)
-                        ForEach(model.audios ?? [], id: \.self) { audio in
+                    if let audios = model.audios {
+                        ForEach(audios, id: \.self) { audio in
                             AudioCardView(audio: audio)
                                 .contextMenu {
                                     Button("Play") {
                                     }
                                 }
                         }
+                    } else {
+                        ProgressView()
+                    }
 //                    }
 //                    .padding()
 //                    Spacer()
@@ -57,11 +61,11 @@ struct DisplayRabbiView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
                     LogoView(size: .small)
-                DownloadableImage(object: model.rabbi)
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                    .shadow(radius: 1)
+                    DownloadableImage(object: model.rabbi)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .shadow(radius: 1)
                 }
             }
         })

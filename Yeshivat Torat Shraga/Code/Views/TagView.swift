@@ -29,7 +29,7 @@ struct TagView: View {
                     .padding()
                     .padding()
             }
-            .frame(height: 130)
+            .frame(height: 110)
             .frame(minWidth: 150, maxWidth: 250)
             .aspectRatio(contentMode: .fill)
             .clipped()
@@ -53,7 +53,7 @@ struct TagView: View {
                     .padding()
                     .padding()
             }
-            .frame(height: 130)
+            .frame(height: 110)
             .frame(minWidth: 150, maxWidth: 200)
             .background(LinearGradient(colors: randomColorMix(), startPoint: .bottomLeading, endPoint: .topTrailing)
                             .cornerRadius(5).overlay(Rectangle().opacity(0.2)))
