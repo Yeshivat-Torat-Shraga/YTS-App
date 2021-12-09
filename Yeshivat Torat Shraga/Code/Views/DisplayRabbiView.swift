@@ -51,11 +51,22 @@ struct DisplayRabbiView: View {
 //                    }
 //                    .padding()
 //                    Spacer()
+                    if let videos = model.videos {
+                    ForEach(videos, id: \.self) { video in
+                        VideoCardView(video: video)
+                            .contextMenu {
+                                Button("Play") {}
+                            }
+                    }
+                    } else {
+                        ProgressView()
+                    }
+                    
                 }
                 .padding(.horizontal)
             }
         }
-//        .padding(.horizontal)
+        //        .padding(.horizontal)
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -78,7 +89,7 @@ struct DisplayRabbiView: View {
 struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            DisplayRabbiView(rabbi: DetailedRabbi.samples[1])
+            DisplayRabbiView(rabbi: DetailedRabbi.samples[2])
         }
     }
 }

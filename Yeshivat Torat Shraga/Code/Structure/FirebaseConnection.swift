@@ -56,13 +56,15 @@ final class FirebaseConnection {
             }
             
             for rabbiDocument in rabbiDocuments {
-                guard let id = rabbiDocument["id"] as? FirestoreID, let name = rabbiDocument["name"] as? String else {
+                guard let id = rabbiDocument["id"] as? FirestoreID,
+                      let name = rabbiDocument["name"] as? String else {
                     print("Document missing sufficient data. Continuing to next document.")
                     group.leave()
                     continue
                 }
                 
-                if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String, let profilePictureURL = URL(string: profilePictureURLString) {
+                if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String,
+                   let profilePictureURL = URL(string: profilePictureURLString) {
                     rebbeim.append(DetailedRabbi(id: id, name: name, profileImageURL: profilePictureURL))
                     group.leave()
                     continue
@@ -147,6 +149,7 @@ final class FirebaseConnection {
                     continue
                 }
                 
+                
                 let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
                 
                 guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
@@ -163,12 +166,37 @@ final class FirebaseConnection {
                 
                 switch type {
                 case "video":
+                    let rabbi: Rabbi
+                    if includeAllAuthorData {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                        else {
+                            print("Author profile picture URL is invalid, continuing to next document.")
+                            group.leave()
+                            continue
+                        }
+                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                    } else {
+                        rabbi = Rabbi(id: authorID, name: authorName)
+                    }
+                    content.videos.append(Video(
+                        id: id,
+                        sourceURL: sourceURL,
+                        title: title,
+                        author: rabbi,
+                        description: description,
+                        date: date,
+                        duration: duration,
+                        tags: [],
+                        thumbnailURL: URL(string: "https://i.pcmag.com/imagery/reviews/05q4OgEDdjBnzHuNkFg7MB3-15.fit_lim.size_1050x591.v1626206894.jpg")!))
                     group.leave()
                     continue
                 case "audio":
                     let rabbi: Rabbi
                     if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                        else {
                             print("Author profile picture URL is invalid, continuing to next document.")
                             group.leave()
                             continue

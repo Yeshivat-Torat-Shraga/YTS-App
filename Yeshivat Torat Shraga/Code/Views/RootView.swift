@@ -14,13 +14,18 @@ struct RootView: View {
         TabView {
             HomeView()
                 .foregroundColor(Color("ShragaBlue"))
-                .tabItem{
-                    Label("Home", systemImage: "house")
+                .tabItem {
+                    Image(systemName: "house")
                 }
                 .overlay(VStack {
                     Spacer()
                     PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
                 })
+            SettingsView()
+                .foregroundColor(Color("ShragaBlue"))
+                .tabItem {
+                    Image(systemName: "gearshape")
+                }
 //                .overlay {
 //                    PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
 //                }

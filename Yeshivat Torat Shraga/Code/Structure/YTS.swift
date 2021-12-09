@@ -76,7 +76,7 @@ class DetailedRabbi: Rabbi, Tileable {
     static public var samples: [DetailedRabbi] = [
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David", profileImage: Image("SampleRabbi")),
-        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
+        DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/profile-pictures/test.png")!),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
     ]
@@ -225,6 +225,19 @@ class Video: YTSContent {
     static func == (lhs: Video, rhs: Video) -> Bool {
         lhs.firestoreID == rhs.firestoreID
     }
+    
+    static let sample = Video(id: "7g5JY4X1bYURqv8votbB",
+                              fileID: "testvideo",
+                              sourceURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/HLSStreams/video/SSStest.mp4/test.mp4.m3u8")!,
+                              title: "Test Video",
+                              author: Rabbi(
+                                id: "8h33fFYYSIn5V4crue8f",
+                                name: "Test Uploader"),
+                              description: "Testing Video",
+                              date: .distantPast,
+                              duration: 100,
+                              tags: [],
+                              thumbnailURL: URL(string: "https://eretzhemdah.org/images/AskTheRabbi_en.jpg")!)
 }
 
 class Audio: YTSContent, Hashable {
@@ -277,7 +290,18 @@ class Audio: YTSContent, Hashable {
         lhs.firestoreID == rhs.firestoreID
     }
     
-    static let sample = Audio(id: "PD9DX0Hf8v1dJPmGMk97", fileID: "RabbiDavid", sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!, title: "Hilchot Har Habayit", author: DetailedRabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Fadavid_lp-2.jpg?alt=media&token=0debf11a-d4ef-4aa8-b224-ba6420e1d246")!), description: "Test description", date: .distantPast, duration: 100, tags: [])
+    static let sample = Audio(
+        id: "PD9DX0Hf8v1dJPmGMk97",
+        fileID: "RabbiDavid",
+        sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!,
+        title: "Hilchot Har Habayit",
+        author: Rabbi(
+            id: "wEDCQ71W0bVEUtTM1x5Z",
+            name: "Rabbi David"),
+        description: "Test description",
+        date: .distantPast,
+        duration: 100,
+        tags: [])
 }
 
 class Tag: Hashable {
