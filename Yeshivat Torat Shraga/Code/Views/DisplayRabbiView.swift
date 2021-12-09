@@ -35,33 +35,35 @@ struct DisplayRabbiView: View {
                 }
                 .padding(.horizontal)
                 VStack {
-//                    ScrollView(.vertical) {
-//                    AudioCardView(audio: .sample)
-                        ForEach(model.audios ?? [], id: \.self) { audio in
-                            AudioCardView(audio: audio)
-                                .contextMenu {
-                                    Button("Play") {
-                                    }
-                                }
-                        }
-//                    }
-//                    .padding()
-//                    Spacer()
+                    ForEach(model.audios ?? [], id: \.self) { audio in
+                        AudioCardView(audio: audio)
+                            .contextMenu {
+                                Button("Play") {}
+                            }
+                    }
+                    
+                    ForEach(model.videos ?? [], id: \.self) { video in
+                        VideoCardView(video: video)
+                            .contextMenu {
+                                Button("Play") {}
+                            }
+                    }
+                    
                 }
                 .padding(.horizontal)
             }
         }
-//        .padding(.horizontal)
+        //        .padding(.horizontal)
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
                     LogoView(size: .small)
-                DownloadableImage(object: model.rabbi)
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                    .shadow(radius: 1)
+                    DownloadableImage(object: model.rabbi)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                        .shadow(radius: 1)
                 }
             }
         })
@@ -74,7 +76,7 @@ struct DisplayRabbiView: View {
 struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            DisplayRabbiView(rabbi: DetailedRabbi.samples[1])
+            DisplayRabbiView(rabbi: DetailedRabbi.samples[2])
         }
     }
 }
