@@ -77,3 +77,20 @@ extension Date {
         }
     }
 }
+
+extension Error {
+    func getUIDescription() -> String {
+        let code: Int
+        if self is YTSError {
+            code = (self as! YTSError).customCode
+        } else {
+            code = self._code
+        }
+        switch code {
+        case NSURLErrorNotConnectedToInternet:
+            return "Sorry, it seems you don't have an internet connection."
+        default:
+            return "An unknown error has occured. (\(code))"
+        }
+    }
+}

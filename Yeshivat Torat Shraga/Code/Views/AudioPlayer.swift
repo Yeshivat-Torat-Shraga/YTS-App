@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVKit
+import MediaPlayer
 
 struct AudioPlayer: View {
     @ObservedObject var player = Player()
@@ -25,6 +26,87 @@ struct AudioPlayer: View {
         //            self.model = AudioPlayerModel(player: player)
         //            self.avPlayer = player
         self.player.set(avPlayer: player)
+    }
+    
+    mutating func play(audio: Audio) {
+        self.set(audio: audio)
+        self.play()
+    }
+    
+    func play() {
+        self.player.play()
+        
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.nextTrackCommand.isEnabled = false
+        //        commandCenter.nextTrackCommand.addTarget(self, action:#selector(nextTrackCommandSelector))
+        commandCenter.previousTrackCommand.isEnabled = false
+        
+        commandCenter.togglePlayPauseCommand.isEnabled = true
+        
+        commandCenter.playCommand.addTarget { event in
+            if self.player.timeControlStatus == .paused {
+                self.play()
+                return .success
+            } else {
+                return .commandFailed
+            }
+        }
+        
+        commandCenter.pauseCommand.addTarget { event in
+            if self.player.timeControlStatus == .playing {
+                self.pause()
+                return .success
+            }
+            return .commandFailed
+        }
+        
+        var nowPlayingInfo = [String : Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = audio?.title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = audio?.author.name
+        
+        if let image = UIImage(named: "Logo") {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] =
+            MPMediaItemArtwork(boundsSize: image.size) { size in
+                return image
+            }
+        }
+        
+        commandCenter.changePlaybackPositionCommand.isEnabled = true
+        commandCenter.changePlaybackPositionCommand.addTarget { event in
+            if let event = event as? MPChangePlaybackPositionCommandEvent {
+                let time = CMTime(seconds: event.positionTime, preferredTimescale: 1000000)
+                self.player.avPlayer?.seek(to: time)
+                return .success
+            } else {
+                return .commandFailed
+            }
+        }
+        
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.displayTime
+            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.itemDuration
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.avPlayer?.rate
+            nowPlayingInfo[MPNowPlayingInfoPropertyDefaultPlaybackRate] = 1.0
+            
+            // Set the metadata
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        }
+        
+//        DispatchQueue.global(qos: .background).async {
+//            while player.avPlayer?.currentItem?.duration == nil {}
+//            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.displayTime
+//            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.itemDuration
+//            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.avPlayer?.rate
+//            nowPlayingInfo[MPNowPlayingInfoPropertyDefaultPlaybackRate] = 1.0
+//
+//            // Set the metadata
+//            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+//        }
+    }
+    
+    func pause() {
+        self.player.pause()
     }
     
     var body: some View {
@@ -109,72 +191,72 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 Group {
-                    Spacer()
-                    
-                    Button(action: {
-                    }, label: {
-                        Image(systemName: "gobackward.30")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    })
-                        .frame(width: 20)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                    }, label: {
-                        Image(systemName: "backward.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    })
-                        .frame(width: 40)
+                Spacer()
+                
+                Button(action: {
+                }, label: {
+                    Image(systemName: "gobackward.30")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                })
+                    .frame(width: 20)
+                
+                Spacer()
+                
+                Button(action: {
+                }, label: {
+                    Image(systemName: "backward.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                })
+                    .frame(width: 40)
                 }
                 
                 Group {
-                    Spacer()
-                    
-                    if RootModel.audioPlayer.player.timeControlStatus == .paused {
-                        Button(action: {
-                            self.player.play()
-                        }, label: {
-                            Image(systemName: "play.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        })
-                            .frame(width: 30)
-                    } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
-                        Button(action: {
-                            self.player.pause()
-                        }, label: {
-                            Image(systemName: "pause.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        }).frame(width: 25)
-                    } else {
-                        ProgressView()
-                    }
-                    
-                    Spacer()
+                Spacer()
+                
+                if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                    Button(action: {
+                        self.play()
+                    }, label: {
+                        Image(systemName: "play.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    })
+                        .frame(width: 30)
+                } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                    Button(action: {
+                        self.pause()
+                    }, label: {
+                        Image(systemName: "pause.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 25)
+                } else {
+                    ProgressView()
+                }
+                
+                Spacer()
                 }
                 
                 Group {
-                    Button(action: {
-                    }, label: {
-                        Image(systemName: "forward.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }).frame(width: 40)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                    }, label: {
-                        Image(systemName: "goforward.30")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }).frame(width: 20)
-                    
-                    Spacer()
+                Button(action: {
+                }, label: {
+                    Image(systemName: "forward.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }).frame(width: 40)
+                
+                Spacer()
+                
+                Button(action: {
+                }, label: {
+                    Image(systemName: "goforward.30")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }).frame(width: 20)
+                
+                Spacer()
                 }
                 Spacer()
             }.frame(height: 50)
@@ -218,10 +300,38 @@ struct AudioPlayer: View {
                     Button(action: {
                         
                     }, label: {
+                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
+                            .frame(width: 20, height: 20)
+                    }).buttonStyle(BorderedProminentButtonStyle())
+                    
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "square.and.arrow.up").foregroundColor(Color("Gray"))
+                            .frame(width: 20, height: 20)
+                    }).buttonStyle(BorderedProminentButtonStyle())
+                    
+                    Button(action: {
+                        
+                    }, label: {
                         Image(systemName: "ellipsis").foregroundColor(Color(uiColor: .lightGray))
                             .frame(width: 20, height: 20)
                     }).buttonStyle(BorderedProminentButtonStyle())
                 } else {
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
+                            .frame(width: 20, height: 20)
+                    })
+                    
+                    Button(action: {
+                        
+                    }, label: {
+                        Image(systemName: "square.and.arrow.up").foregroundColor(Color(UIColor.lightGray))
+                            .frame(width: 20, height: 20)
+                    }).padding()
+                    
                     Button(action: {
                         
                     }, label: {

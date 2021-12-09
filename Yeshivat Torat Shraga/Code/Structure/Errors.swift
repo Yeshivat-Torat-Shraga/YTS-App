@@ -8,6 +8,17 @@
 import Foundation
 
 enum YTSError: Error {
+    var customCode: Int {
+        switch self {
+        case .invalidDataReceived:
+            return -4001;
+        case .noDataReceived:
+            return -4002;
+        case .unknownError:
+            return -4005;
+        }
+    }
+    
     case noDataReceived
     case invalidDataReceived
     case unknownError

@@ -132,6 +132,12 @@ protocol YTSContent: Tileable {
     var tags: [Tag] { get }
 }
 
+extension YTSContent {
+    var sortable: SortableYTSContent {
+        return SortableYTSContent(firestoreID: self.firestoreID, date: self.date)
+    }
+}
+
 class Video: YTSContent {
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
@@ -271,7 +277,7 @@ class Audio: YTSContent, Hashable {
         lhs.firestoreID == rhs.firestoreID
     }
     
-    static let sample = Audio(id: "PD9DX0Hf8v1dJPmGMk97", fileID: "RabbiDavid", sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!, title: "Hilchot Har Habayit", author: Rabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David"), description: "Test description", date: .distantPast, duration: 100, tags: [])
+    static let sample = Audio(id: "PD9DX0Hf8v1dJPmGMk97", fileID: "RabbiDavid", sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!, title: "Hilchot Har Habayit", author: DetailedRabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Fadavid_lp-2.jpg?alt=media&token=0debf11a-d4ef-4aa8-b224-ba6420e1d246")!), description: "Test description", date: .distantPast, duration: 100, tags: [])
 }
 
 class Tag: Hashable {
@@ -299,4 +305,11 @@ class Category: Tag {
         self.icon = icon
         super.init(name)
     }
+}
+
+typealias Content = (videos: [Video], audios: [Audio])
+
+struct SortableYTSContent: Hashable {
+    var firestoreID: FirestoreID
+    var date: Date
 }

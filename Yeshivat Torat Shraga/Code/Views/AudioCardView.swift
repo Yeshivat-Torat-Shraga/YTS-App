@@ -51,7 +51,7 @@ struct AudioCardView: View {
                 Spacer()
                 
                 Button {
-                    RootModel.audioPlayer.set(audio: model.audio)
+                    RootModel.audioPlayer.play(audio: model.audio)
                     isShowingPlayerSheet = true
                 } label: {
                     Image(systemName: "play.circle.fill")

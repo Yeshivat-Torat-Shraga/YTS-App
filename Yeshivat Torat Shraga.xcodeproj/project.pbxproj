@@ -30,6 +30,7 @@
 		F230C4D7273DC61800F7ACCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
+		F263DE802761195200486D58 /* AudioTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F263DE7F2761195200486D58 /* AudioTile.swift */; };
 		F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F28E291E2756A78700D9F4AF /* FirebaseAnalytics */; };
 		F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29202756A78700D9F4AF /* FirebaseFirestore */; };
 		F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29222756A78700D9F4AF /* FirebaseFunctions */; };
@@ -67,6 +68,7 @@
 		F230C4D6273DC61800F7ACCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
 		F25038A3274EA1EC006FF802 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		F263DE7F2761195200486D58 /* AudioTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTile.swift; sourceTree = "<group>"; };
 		F28E293A2758E2FB00D9F4AF /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		F29FFB2627529CD4005D6355 /* PlayBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBar.swift; sourceTree = "<group>"; };
 		F29FFB2827529D3A005D6355 /* PlayBarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarModel.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				B1ACF926274456F900079F9A /* LogoView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
+				F263DE7F2761195200486D58 /* AudioTile.swift */,
 				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 			);
 			path = Views;
@@ -285,6 +288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F263DE802761195200486D58 /* AudioTile.swift in Sources */,
 				F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */,
 				F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */,
 				B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */,

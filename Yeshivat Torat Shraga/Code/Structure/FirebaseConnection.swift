@@ -89,8 +89,8 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: When this value is set, the function only returns content attributed to the `Rabbi` object.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, attributionRabbi: Rabbi? = nil, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: (videos: [Video], audios: [Audio]), metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
-        var content: (videos: [Video], audios: [Audio]) = (videos: [], audios: [])
+    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, attributionRabbi: Rabbi? = nil, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+        var content: Content = (videos: [], audios: [])
         
         var dictionary: [String: Any] = ["count": requestedCount, "includeThumbnailURLs": includeThumbnailURLs, "includeAllAuthorData": includeAllAuthorData]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
@@ -163,7 +163,7 @@ final class FirebaseConnection {
                 
                 switch type {
                 case "video":
-                    
+                    group.leave()
                     continue
                 case "audio":
                     let rabbi: Rabbi
