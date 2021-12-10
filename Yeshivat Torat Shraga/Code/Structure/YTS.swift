@@ -231,7 +231,7 @@ class Video: YTSContent {
                               date: .distantPast,
                               duration: 100,
                               tags: [],
-                              thumbnailURL: URL(string: "https://eretzhemdah.org/images/AskTheRabbi_en.jpg")!)
+                              thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!)
 }
 
 class Audio: YTSContent, Hashable {

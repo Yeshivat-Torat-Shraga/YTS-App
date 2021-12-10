@@ -37,6 +37,18 @@ func timeFormattedMini(totalSeconds: TimeInterval) -> String {
     }
 }
 
+// https://stackoverflow.com/a/58913649
+extension String {
+    func index(from: Int) -> Index {
+        return self.index(startIndex, offsetBy: from)
+    }
+    
+    func substring(to: Int) -> String {
+        let toIndex = index(from: to)
+        return String(self[..<toIndex])
+    }
+}
+
 extension Date {
     func get(_ components: Calendar.Component..., calendar: Calendar = Calendar.current) -> DateComponents {
         return calendar.dateComponents(Set(components), from: self)
@@ -46,34 +58,36 @@ extension Date {
         return calendar.component(component, from: self)
     }
     
-    static func monthNameFor(_ number: Int) -> String? {
+    static func monthNameFor(_ number: Int, short: Bool = false) -> String? {
+        let monthName: String
         switch number {
         case 1:
-            return "January"
+            monthName = "January"
         case 2:
-            return "Feburary"
+            monthName = "Feburary"
         case 3:
-            return "March"
+            monthName = "March"
         case 4:
-            return "April"
+            monthName = "April"
         case 5:
-            return "May"
+            monthName = "May"
         case 6:
-            return "June"
+            monthName = "June"
         case 7:
-            return "July"
+            monthName = "July"
         case 8:
-            return "August"
+            monthName = "August"
         case 9:
-            return "September"
+            monthName = "September"
         case 10:
-            return "October"
+            monthName = "October"
         case 11:
-            return "November"
+            monthName = "November"
         case 12:
-            return "December"
+            monthName = "December"
         default:
             return nil
         }
+        return short ? monthName.substring(to: 3) : monthName
     }
 }
