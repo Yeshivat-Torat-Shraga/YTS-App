@@ -13,7 +13,6 @@ struct RootView: View {
     var body: some View {
         TabView {
             HomeView()
-                .foregroundColor(Color("ShragaBlue"))
                 .tabItem {
                     Image(systemName: "house")
                 }
@@ -21,16 +20,22 @@ struct RootView: View {
                     Spacer()
                     PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
                 })
+            FavoritesView()
+                .tabItem {
+                    Image(systemName: "heart.fill")
+                }
+            NewsView()
+                .tabItem {
+                    Image(systemName: "newspaper")
+                }
             SettingsView()
-                .foregroundColor(Color("ShragaBlue"))
                 .tabItem {
                     Image(systemName: "gearshape")
                 }
-//                .overlay {
-//                    PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
-//                }
                 
-        }.accentColor(Color("ShragaBlue"))
+        }
+        .foregroundColor(Color("ShragaBlue"))
+        .accentColor(Color("ShragaBlue"))
     }
 }
 
