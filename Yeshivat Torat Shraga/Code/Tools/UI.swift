@@ -32,6 +32,7 @@ struct VisualEffectView: UIViewRepresentable {
     func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
 }
 
+
 /// Source: https://stackoverflow.com/questions/56610957/is-there-a-method-to-blur-a-background-in-swiftui
 struct Blur: UIViewRepresentable {
     var style: UIBlurEffect.Style = .systemMaterial
@@ -116,6 +117,17 @@ class AsyncImageLoader: ObservableObject {
 protocol URLImageable {
     var image: Image? { get set }
     var imageURL: URL? { get }
+}
+
+struct ShragaFlameProgressStyle: ProgressViewStyle {
+
+    func makeBody(configuration: Configuration) -> some View {
+//        let fractionCompleted = configuration.fractionCompleted ?? 0
+
+        return ZStack {
+            Image("Shraga")
+        }
+    }
 }
 
 /// Image view that makes `URLImage` easier when the image is taken from a `URLImageable`
