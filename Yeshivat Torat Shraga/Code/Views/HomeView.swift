@@ -11,10 +11,6 @@ struct HomeView: View {
     @ObservedObject var model: HomeViewModel
     let categories: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
     
-    init(rebbeim: [DetailedRabbi]) {
-        self.model = HomeViewModel(rebbeim: rebbeim)
-    }
-    
     init() {
         self.model = HomeViewModel()
     }
@@ -23,7 +19,7 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    Group {
+                    VStack {
                         HStack {
                             Text("Recently Uploaded")
                                 .font(.title3)
@@ -32,13 +28,30 @@ struct HomeView: View {
                         }
                         .padding(.horizontal)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            //                        ForEach(model.recentlyUploaded, id: \.self) { content in
-                            //                            NavigationLink(destination: Text("Recently uploaded content object")) {
-                            //                                TileCardView(content: content, size: .wide)
-                            //                            }
-                            //                        }
+                        if let sortables = model.sortables {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                ForEach(sortables.sorted(by: { lhs, rhs in
+                                    lhs.date > rhs.date
+                                }), id: \.firestoreID) { sortable in
+                                    Group {
+                                        if let audio = model.recentlyUploadedContent?.audios.first(where: { a in
+                                            a.firestoreID == sortable.firestoreID
+                                        }) {
+                                            AudioTile(audio: audio)
+                                        } else if let video = model.recentlyUploadedContent?.videos.first(where: { v in
+                                            v.firestoreID == sortable.firestoreID
+                                        }) {
+                                            Text(video.title)
+                                        } else {
+                                            Text("Can't find the id")
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            ProgressView()
                         }
+                        
                         Divider()
                     }
                     
@@ -93,9 +106,22 @@ struct HomeView: View {
                 .padding(.vertical)
                 .navigationTitle("Welcome to Shraga")
                 .toolbar {
-                    LogoView(size: .small)
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        LogoView(size: .small)
+                        
+                    }
                 }
-            }
+            }.alert(isPresented: Binding(get: {
+                model.showError
+            }, set: {
+                model.showError = $0
+            }), content: {
+                Alert(title: Text("Error"), message: Text(model.errorToShow?.getUIDescription() ?? "An unknown error has occured."), dismissButton: Alert.Button.default(Text("Retry"), action: {
+                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                        self.model.retry?()
+                    }
+                }))
+            })
         }
     }
 }

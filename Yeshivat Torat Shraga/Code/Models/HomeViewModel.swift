@@ -8,20 +8,51 @@
 import Foundation
 import SwiftUI
 
-class HomeViewModel: ObservableObject {
+class HomeViewModel: ObservableObject, ErrorShower {
+    @Published var showError: Bool = false
+    var errorToShow: Error?
+    var retry: (() -> Void)?
+    
+    @Published var recentlyUploadedContent: Content?
+    @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     
-    init(rebbeim: [DetailedRabbi]) {
-        self.rebbeim = rebbeim
+    init() {
+        initialLoad()
     }
     
-    init() {
+    func initialLoad() {
         FirebaseConnection.loadRebbeim(includeProfilePictureURLs: true) { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
-                fatalError(error!.localizedDescription)
+                self.showError(error: error ?? YTSError.unknownError, retry: self.initialLoad)
+                return
             }
+            
             withAnimation {
                 self.rebbeim = rebbeim
+            }
+        }
+        
+        FirebaseConnection.loadContent(includeThumbnailURLs: true) { results, error in
+            guard let content = results?.content else {
+                self.showError(error: error ?? YTSError.unknownError, retry: self.initialLoad)
+                return
+            }
+            
+            withAnimation {
+                self.recentlyUploadedContent = content
+                
+                var sortables: [SortableYTSContent] = []
+                
+                for video in content.videos {
+                    sortables.append(video.sortable)
+                }
+                
+                for audio in content.audios {
+                    sortables.append(audio.sortable)
+                }
+                
+                self.sortables = sortables
             }
         }
     }

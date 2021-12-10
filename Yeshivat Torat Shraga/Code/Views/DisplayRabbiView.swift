@@ -35,18 +35,31 @@ struct DisplayRabbiView: View {
                 }
                 .padding(.horizontal)
                 VStack {
-                    ForEach(model.audios ?? [], id: \.self) { audio in
-                        AudioCardView(audio: audio)
-                            .contextMenu {
-                                Button("Play") {}
-                            }
+//                    ScrollView(.vertical) {
+//                    AudioCardView(audio: .sample)
+                    if let audios = model.audios {
+                        ForEach(audios, id: \.self) { audio in
+                            AudioCardView(audio: audio)
+                                .contextMenu {
+                                    Button("Play") {
+                                    }
+                                }
+                        }
+                    } else {
+                        ProgressView()
                     }
-                    
-                    ForEach(model.videos ?? [], id: \.self) { video in
+//                    }
+//                    .padding()
+//                    Spacer()
+                    if let videos = model.videos {
+                    ForEach(videos, id: \.self) { video in
                         VideoCardView(video: video)
                             .contextMenu {
                                 Button("Play") {}
                             }
+                    }
+                    } else {
+                        ProgressView()
                     }
                     
                 }

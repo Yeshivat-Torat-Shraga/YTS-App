@@ -132,6 +132,12 @@ protocol YTSContent: Tileable {
     var tags: [Tag] { get }
 }
 
+extension YTSContent {
+    var sortable: SortableYTSContent {
+        return SortableYTSContent(firestoreID: self.firestoreID, date: self.date)
+    }
+}
+
 class Video: YTSContent {
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
@@ -323,4 +329,11 @@ class Category: Tag {
         self.icon = icon
         super.init(name)
     }
+}
+
+typealias Content = (videos: [Video], audios: [Audio])
+
+struct SortableYTSContent: Hashable {
+    var firestoreID: FirestoreID
+    var date: Date
 }

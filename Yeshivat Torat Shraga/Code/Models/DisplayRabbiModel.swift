@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class DisplayRabbiModel: ObservableObject, ErrorShower {
     var showError: Bool = false
@@ -27,8 +28,10 @@ class DisplayRabbiModel: ObservableObject, ErrorShower {
                 fatalError(error!.localizedDescription)
             }
             print(results)
-            self.audios = results.content.audios
-            self.videos = results.content.videos
+            withAnimation {
+                self.audios = results.content.audios
+                self.videos = results.content.videos
+            }
             
             DispatchQueue.global(qos: .background).async {
                 for audio in self.audios! {
