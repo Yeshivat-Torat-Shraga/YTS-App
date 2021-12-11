@@ -14,7 +14,7 @@ struct RootView: View {
         TabView {
             HomeView()
                 .tabItem {
-                    Image(systemName: "house")
+                    Label("Home", systemImage: "house")
                 }
                 .overlay(VStack {
                     Spacer()
@@ -22,15 +22,15 @@ struct RootView: View {
                 })
             FavoritesView()
                 .tabItem {
-                    Image(systemName: "heart.fill")
+                    Label("Favorites", systemImage: "heart.fill")
                 }
             NewsView()
                 .tabItem {
-                    Image(systemName: "newspaper")
+                    Label("News", systemImage: "newspaper")
                 }
             SettingsView()
                 .tabItem {
-                    Image(systemName: "gearshape")
+                    Label("Settings", systemImage: "gearshape")
                 }
                 
         }

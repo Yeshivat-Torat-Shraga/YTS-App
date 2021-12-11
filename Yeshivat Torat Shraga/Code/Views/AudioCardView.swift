@@ -42,13 +42,12 @@ struct AudioCardView: View {
                     .frame(width: 125)
                     .overlay(
                         Image(systemName: "mic")
-                        //                        .resizable()
                             .scaleEffect(1.35)
                             .foregroundColor(Color("ShragaGold"))
                     )
                     .foregroundColor(Color("ShragaGold"))
                 
-                    .cornerRadius(10, corners: [.topLeft, .bottomLeft])
+                    .cornerRadius(UI.cornerRadius, corners: [.topLeft, .bottomLeft])
                 
                 // Rest of card goes here:
                 VStack {
@@ -61,24 +60,12 @@ struct AudioCardView: View {
                         }
                         
                         Spacer()
-                        
-                        //                    Button {
-                        //                        RootModel.audioPlayer.set(audio: model.audio)
-                        //                        isShowingPlayerSheet = true
-                        //                    } label: {
-                        //                        Image(systemName: "play.fill")
-                        //                            .scaleEffect(1.35)
-                        //                        //                            .resizable()
-                        //                            .shadow(radius: 1)
-                        //                    }
-                        //                    .frame(width: 35, height: 35)
-                        //                    .padding()
                     }
                     Spacer()
                     HStack {
                         HStack {
                             if let date = model.audio.date {
-                                if let month = Date.monthNameFor(date.get(.month)) {
+                                if let month = Date.monthNameFor(date.get(.month), short: true) {
                                     HStack {
                                         let yearAsString = String(date.get(.year))
                                         Image(systemName: "calendar")
@@ -106,8 +93,8 @@ struct AudioCardView: View {
         .background(
             Rectangle()
                 .fill(Color(UIColor.systemBackground))
-                .cornerRadius(10)
-                .shadow(radius: 2)
+                .cornerRadius(UI.cornerRadius)
+                .shadow(radius: UI.shadowRadius)
         )
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer

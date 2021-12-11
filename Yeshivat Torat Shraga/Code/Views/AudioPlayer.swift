@@ -93,16 +93,16 @@ struct AudioPlayer: View {
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
         
-//        DispatchQueue.global(qos: .background).async {
-//            while player.avPlayer?.currentItem?.duration == nil {}
-//            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.displayTime
-//            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.itemDuration
-//            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.avPlayer?.rate
-//            nowPlayingInfo[MPNowPlayingInfoPropertyDefaultPlaybackRate] = 1.0
-//
-//            // Set the metadata
-//            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-//        }
+        //        DispatchQueue.global(qos: .background).async {
+        //            while player.avPlayer?.currentItem?.duration == nil {}
+        //            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.displayTime
+        //            nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.itemDuration
+        //            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.avPlayer?.rate
+        //            nowPlayingInfo[MPNowPlayingInfoPropertyDefaultPlaybackRate] = 1.0
+        //
+        //            // Set the metadata
+        //            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        //        }
     }
     
     func pause() {
@@ -115,9 +115,9 @@ struct AudioPlayer: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
                 .padding()
-                .clipShape(RoundedRectangle(cornerRadius: 60))
-                .shadow(radius: 3)
+                .shadow(radius: UI.shadowRadius)
                 .preferredColorScheme(.light)
             
             HStack {
@@ -144,7 +144,7 @@ struct AudioPlayer: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 60, height: 60)
                         .clipShape(Circle())
-                        .shadow(radius: 2)
+                        .shadow(radius: UI.shadowRadius)
                 }
             }.padding(.horizontal)
             
@@ -191,72 +191,72 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 Group {
-                Spacer()
-                
-                Button(action: {
-                }, label: {
-                    Image(systemName: "gobackward.30")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                })
-                    .frame(width: 20)
-                
-                Spacer()
-                
-                Button(action: {
-                }, label: {
-                    Image(systemName: "backward.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                })
-                    .frame(width: 40)
-                }
-                
-                Group {
-                Spacer()
-                
-                if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                    Spacer()
+                    
                     Button(action: {
-                        self.play()
                     }, label: {
-                        Image(systemName: "play.fill")
+                        Image(systemName: "gobackward.30")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     })
-                        .frame(width: 30)
-                } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                        .frame(width: 20)
+                    
+                    Spacer()
+                    
                     Button(action: {
-                        self.pause()
                     }, label: {
-                        Image(systemName: "pause.fill")
+                        Image(systemName: "backward.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                    }).frame(width: 25)
-                } else {
-                    ProgressView()
-                }
-                
-                Spacer()
+                    })
+                        .frame(width: 40)
                 }
                 
                 Group {
-                Button(action: {
-                }, label: {
-                    Image(systemName: "forward.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }).frame(width: 40)
+                    Spacer()
+                    
+                    if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                        Button(action: {
+                            self.play()
+                        }, label: {
+                            Image(systemName: "play.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        })
+                            .frame(width: 30)
+                    } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                        Button(action: {
+                            self.pause()
+                        }, label: {
+                            Image(systemName: "pause.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }).frame(width: 25)
+                    } else {
+                        ProgressView()
+                    }
+                    
+                    Spacer()
+                }
                 
-                Spacer()
-                
-                Button(action: {
-                }, label: {
-                    Image(systemName: "goforward.30")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }).frame(width: 20)
-                
-                Spacer()
+                Group {
+                    Button(action: {
+                    }, label: {
+                        Image(systemName: "forward.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 40)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                    }, label: {
+                        Image(systemName: "goforward.30")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 20)
+                    
+                    Spacer()
                 }
                 Spacer()
             }.frame(height: 50)
@@ -265,37 +265,7 @@ struct AudioPlayer: View {
             
             HStack {
                 Spacer()
-                if #available(iOS 15.0, *) {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                    
-                } else {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    })
-                }
-                if #available(iOS 15.0, *) {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color("Gray"))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                } else {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    })
-                }
+
                 if #available(iOS 15.0, *) {
                     Button(action: {
                         
@@ -342,20 +312,24 @@ struct AudioPlayer: View {
                 Spacer()
             }
             Spacer()
-        }.background(LinearGradient(colors: [Color("ShragaBlue"), Color(white: 0.8)], startPoint: .bottomLeading, endPoint: .topTrailing) .ignoresSafeArea())
+        }
+        .background(LinearGradient(
+            colors: [Color("ShragaBlue"), Color(white: 0.8)],
+            startPoint: .bottomLeading, endPoint: .topTrailing)
+                        .ignoresSafeArea())
     }
 }
 
 struct AudioPlayer_Previews: PreviewProvider {
-    static var ap = AudioPlayer()
+    static var audioPlayer = AudioPlayer()
     
     init() {
-        AudioPlayer_Previews.ap.set(audio: Audio.sample)
+        AudioPlayer_Previews.audioPlayer.set(audio: Audio.sample)
     }
     
     static var previews: some View {
         Group {
-            ap
+            audioPlayer
         }
     }
 }

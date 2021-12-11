@@ -22,6 +22,7 @@ struct HomeView: View {
                     VStack {
                         HStack {
                             Text("Recently Uploaded")
+                                .foregroundColor(.black)
                                 .font(.title3)
                                 .bold()
                             Spacer()
@@ -44,7 +45,7 @@ struct HomeView: View {
                             ProgressView()
                         }
                         
-                        Divider()
+                        Divider().padding()
                     }
                     
                     VStack(spacing: 0) {
@@ -72,7 +73,7 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider()
+                        Divider().padding()
                     }
                     
                     VStack(spacing: 0) {
@@ -92,7 +93,7 @@ struct HomeView: View {
                                 }
                             }.padding(.horizontal)
                         }
-                        Divider()
+                        Divider().padding()
                     }
                 }
                 .padding(.vertical)
@@ -108,11 +109,18 @@ struct HomeView: View {
             }, set: {
                 model.showError = $0
             }), content: {
-                Alert(title: Text("Error"), message: Text(model.errorToShow?.getUIDescription() ?? "An unknown error has occured."), dismissButton: Alert.Button.default(Text("Retry"), action: {
-                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                        self.model.retry?()
-                    }
-                }))
+                Alert(
+                    title: Text("Error"),
+                    message: Text(
+                        model.errorToShow?.getUIDescription() ??
+                        "An unknown error has occured."),
+                    dismissButton: Alert.Button.default(
+                        Text("Retry"),
+                        action: {
+                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                                self.model.retry?()
+                            }
+                        }))
             })
         }
     }
@@ -121,5 +129,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+            .foregroundColor(Color("ShragaBlue"))
+            .accentColor(Color("ShragaBlue"))
     }
 }

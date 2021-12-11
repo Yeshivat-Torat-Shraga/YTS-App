@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+struct UI {
+    static var shadowRadius: CGFloat = 2
+    static var cornerRadius: CGFloat = 8
+//    static var
+}
+
+
 /// Source: https://stackoverflow.com/questions/56760335/round-specific-corners-swiftui
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {

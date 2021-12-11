@@ -25,7 +25,7 @@ struct VideoCardView: View {
                     .overlay(Color.black.opacity(0.2))
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 125, height: 105)
-                    .cornerRadius(10, corners: [.topLeft, .bottomLeft])
+                    .cornerRadius(UI.cornerRadius, corners: [.topLeft, .bottomLeft])
                 
                 // Rest of card goes here:
                 VStack {
@@ -45,7 +45,7 @@ struct VideoCardView: View {
                     HStack {
                         HStack {
                             if let date = model.video.date {
-                                if let month = Date.monthNameFor(date.get(.month)) {
+                                if let month = Date.monthNameFor(date.get(.month), short: true) {
                                     HStack {
                                         let yearAsString = String(date.get(.year))
                                         Image(systemName: "calendar")
@@ -73,8 +73,8 @@ struct VideoCardView: View {
         .background(
             Rectangle()
                 .fill(Color(UIColor.systemBackground))
-                .cornerRadius(10)
-                .shadow(radius: 2)
+                .cornerRadius(UI.cornerRadius)
+                .shadow(radius: UI.shadowRadius)
         )
     }
 }
