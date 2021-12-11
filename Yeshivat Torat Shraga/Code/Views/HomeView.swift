@@ -22,7 +22,6 @@ struct HomeView: View {
                     VStack {
                         HStack {
                             Text("Recently Uploaded")
-                                .foregroundColor(.black)
                                 .font(.title3)
                                 .bold()
                             Spacer()
