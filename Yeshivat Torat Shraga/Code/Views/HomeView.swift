@@ -30,6 +30,7 @@ struct HomeView: View {
                         
                         if let sortables = model.sortables {
                             ScrollView(.horizontal, showsIndicators: false) {
+                                HStack {
                                 ForEach(sortables.sorted(by: { lhs, rhs in
                                     lhs.date > rhs.date
                                 }), id: \.firestoreID) { sortable in
@@ -38,6 +39,7 @@ struct HomeView: View {
                                             a.firestoreID == sortable.firestoreID
                                         }) {
                                             AudioTile(audio: audio)
+                                                .frame(width: 300, height: 170)
                                         } else if let video = model.recentlyUploadedContent?.videos.first(where: { v in
                                             v.firestoreID == sortable.firestoreID
                                         }) {
@@ -46,6 +48,7 @@ struct HomeView: View {
                                             Text("Can't find the id")
                                         }
                                     }
+                                }
                                 }
                             }
                         } else {
