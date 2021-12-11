@@ -30,20 +30,12 @@ struct HomeView: View {
                         
                         if let sortables = model.sortables {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                ForEach(sortables.sorted(by: { lhs, rhs in
-                                    lhs.date > rhs.date
-                                }), id: \.firestoreID) { sortable in
+                                ForEach(sortables, id: \.self) { sortable in
                                     Group {
-                                        if let audio = model.recentlyUploadedContent?.audios.first(where: { a in
-                                            a.firestoreID == sortable.firestoreID
-                                        }) {
+                                        if let audio = sortable.audio {
                                             AudioTile(audio: audio)
-                                        } else if let video = model.recentlyUploadedContent?.videos.first(where: { v in
-                                            v.firestoreID == sortable.firestoreID
-                                        }) {
+                                        } else if let video = sortable.video {
                                             Text(video.title)
-                                        } else {
-                                            Text("Can't find the id")
                                         }
                                     }
                                 }
