@@ -351,7 +351,7 @@ struct SortableYTSContent: Hashable {
 Unable to get date of non video or audio object.
 Theoretically, this error should be impossible to reach,
 So if you are seeing this, something is seriously wrong...
-G02F
+(F01F)
 """)
     }
     

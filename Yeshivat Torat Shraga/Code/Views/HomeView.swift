@@ -40,7 +40,6 @@ struct HomeView: View {
                                         }
                                     }
                                 }
-                                }
                             }
                         } else {
                             ProgressView()
