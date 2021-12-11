@@ -52,7 +52,9 @@ class HomeViewModel: ObservableObject, ErrorShower {
                     sortables.append(audio.sortable)
                 }
                 
-                self.sortables = sortables
+                self.sortables = sortables.sorted(by: { lhs, rhs in
+                    return lhs.date! > rhs.date!
+                })
             }
         }
     }

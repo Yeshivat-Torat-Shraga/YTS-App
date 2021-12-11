@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TagView: View {
+struct TagTileView: View {
     var tag: Tag
     
     init(_ tag: Tag) {
@@ -33,16 +33,16 @@ struct TagView: View {
             .frame(minWidth: 150, maxWidth: 250)
             .aspectRatio(contentMode: .fill)
             .clipped()
-            .cornerRadius(5)
-            .shadow(radius: 3)
+            .cornerRadius(UI.cornerRadius)
+            .shadow(radius: UI.shadowRadius)
             
 //                .background(category.icon
 //                                .resizable()
 //                                .aspectRatio(contentMode: .fill)
 //                                .clipped()
 //                                .overlay(Rectangle().opacity(0.2))
-//                                .cornerRadius(5)
-//                .shadow(radius: 4)
+//                                .cornerRadius(UI.cornerRadius)
+//                .shadow(radius: UI.shadowRadius)
 //                )
         } else {
             Group {
@@ -55,9 +55,14 @@ struct TagView: View {
             }
             .frame(height: 110)
             .frame(minWidth: 150, maxWidth: 200)
-            .background(LinearGradient(colors: randomColorMix(), startPoint: .bottomLeading, endPoint: .topTrailing)
-                            .cornerRadius(5).overlay(Rectangle().opacity(0.2)))
-            .shadow(radius: 3)
+            .background(LinearGradient(
+                colors: randomColorMix(),
+                startPoint: .bottomLeading,
+                endPoint: .topTrailing)
+                            .cornerRadius(UI.cornerRadius)
+                            .overlay(Rectangle()
+                                        .opacity(0.2)))
+            .shadow(radius: UI.shadowRadius)
         }
     }
     
@@ -70,6 +75,7 @@ struct TagView: View {
 
 struct TagView_Previews: PreviewProvider {
     static var previews: some View {
-        TagView(Tag("Parsha"))
+        TagTileView(Tag("Parsha"))
+            .previewLayout(.sizeThatFits)
     }
 }

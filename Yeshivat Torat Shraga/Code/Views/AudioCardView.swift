@@ -16,9 +16,12 @@ struct AudioCardView: View {
     }
     
     var body: some View {
-        VStack {
+        Button {
+            RootModel.audioPlayer.set(audio: model.audio)
+            isShowingPlayerSheet = true
+        } label: {
             HStack {
-                Circle()
+                Rectangle()
                     .fill(LinearGradient(
                         gradient: Gradient(
                             stops: [
@@ -36,62 +39,63 @@ struct AudioCardView: View {
                                     location: 1)]),
                         startPoint: UnitPoint.bottomLeading,
                         endPoint: UnitPoint.trailing))
-                    .frame(width: 35, height: 35)
+                    .frame(width: 125)
                     .overlay(
                         Image(systemName: "mic")
+                            .scaleEffect(1.35)
                             .foregroundColor(Color("ShragaGold"))
                     )
-                VStack(alignment: .leading) {
-                    Text(model.audio.name)
-                        .font(.title3)
-                        .bold()
-                        .foregroundColor(.primary)
-                }
+                    .foregroundColor(Color("ShragaGold"))
                 
-                Spacer()
+                    .cornerRadius(UI.cornerRadius, corners: [.topLeft, .bottomLeft])
                 
-                Button {
-                    RootModel.audioPlayer.play(audio: model.audio)
-                    isShowingPlayerSheet = true
-                } label: {
-                    Image(systemName: "play.circle.fill")
-                        .resizable()
-                        .shadow(radius: 1)
-                }
-                .frame(width: 35, height: 35)
-                .padding()
-            }
-            HStack {
-                HStack {
-                    if let date = model.audio.date {
-                        if let month = Date.monthNameFor(date.get(.month)) {
-                            HStack {
-                                let yearAsString = String(date.get(.year))
-                                Image(systemName: "calendar")
-                                Text("\(month) \(date.get(.day)), \(yearAsString)")
-                                    .foregroundColor(Color("Gray"))
+                // Rest of card goes here:
+                VStack {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(model.audio.name)
+                                .font(.title3)
+                                .bold()
+                                .foregroundColor(.primary)
+                        }
+                        
+                        Spacer()
+                    }
+                    Spacer()
+                    HStack {
+                        HStack {
+                            if let date = model.audio.date {
+                                if let month = Date.monthNameFor(date.get(.month), short: true) {
+                                    HStack {
+                                        let yearAsString = String(date.get(.year))
+                                        Image(systemName: "calendar")
+                                        Text("\(month) \(date.get(.day)), \(yearAsString)")
+                                            .foregroundColor(Color("Gray"))
+                                    }
+                                }
                             }
                         }
+                        Spacer()
+                        HStack {
+                            Text(timeFormattedMini(totalSeconds: model.audio.duration ?? 0))
+                                .foregroundColor(Color("Gray"))
+                            Image(systemName: "clock")
+                        }
+                        .padding(.trailing, 5)
                     }
+                    .font(.footnote)
                 }
-                Spacer()
-                HStack {
-                    Text(timeFormattedMini(totalSeconds: model.audio.duration ?? 0))
-                        .foregroundColor(Color("Gray"))
-                    Image(systemName: "clock")
-                }
-                .padding(.trailing, 5)
+                
+                .padding()
             }
-            .font(.footnote)
         }
-        .padding()
-        .background(Rectangle()
-                        .fill(Color(UIColor.systemBackground))
-                        .cornerRadius(10)
-                        .shadow(radius: 2)
+        .frame(height: 105)
+        .background(
+            Rectangle()
+                .fill(Color(UIColor.systemBackground))
+                .cornerRadius(UI.cornerRadius)
+                .shadow(radius: UI.shadowRadius)
         )
-        
-        
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer
         }
@@ -102,9 +106,9 @@ struct AudioCardView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             AudioCardView(audio: .sample)
+            VideoCardView(video: .sample)
             AudioCardView(audio: .sample)
-            AudioCardView(audio: .sample)
-            AudioCardView(audio: .sample)
+            VideoCardView(video: .sample)
         }
         .padding()
         .foregroundColor(Color("ShragaBlue"))

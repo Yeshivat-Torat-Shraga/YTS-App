@@ -71,14 +71,14 @@ struct TileCardView<Content: Tileable>: View {
                             .font(.system(size: fontSize, weight: .medium ))
                             .background(
                                 VisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
-                                    .cornerRadius(8, corners: [.topRight, .bottomLeft])
+                                    .cornerRadius(UI.cornerRadius, corners: [.topRight, .bottomLeft])
                             )
                         Spacer()
                     }
                 }
             )
-            .cornerRadius(8)
-            .shadow(radius: 3)
+            .cornerRadius(UI.cornerRadius)
+            .shadow(radius: UI.shadowRadius)
     }
 }
 

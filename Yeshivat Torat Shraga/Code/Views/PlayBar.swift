@@ -24,11 +24,11 @@ struct PlayBar: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .background(Color(UIColor.systemGray5))
-                    .cornerRadius(3)
+                    .cornerRadius(UI.cornerRadius)
                     .padding(.vertical, 10)
                     .padding(.leading)
                     .padding(.trailing, 5)
-                    .shadow(radius: 1)
+                    .shadow(radius: UI.shadowRadius)
                 VStack {
                     HStack {
                         Text(audioCurrentlyPlaying.title)

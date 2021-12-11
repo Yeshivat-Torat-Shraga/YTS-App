@@ -22,6 +22,7 @@ struct HomeView: View {
                     VStack {
                         HStack {
                             Text("Recently Uploaded")
+                                .foregroundColor(.black)
                                 .font(.title3)
                                 .bold()
                             Spacer()
@@ -30,22 +31,12 @@ struct HomeView: View {
                         
                         if let sortables = model.sortables {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack {
-                                ForEach(sortables.sorted(by: { lhs, rhs in
-                                    lhs.date > rhs.date
-                                }), id: \.firestoreID) { sortable in
+                                ForEach(sortables, id: \.self) { sortable in
                                     Group {
-                                        if let audio = model.recentlyUploadedContent?.audios.first(where: { a in
-                                            a.firestoreID == sortable.firestoreID
-                                        }) {
+                                        if let audio = sortable.audio {
                                             AudioTile(audio: audio)
-                                                .frame(width: 300, height: 170)
-                                        } else if let video = model.recentlyUploadedContent?.videos.first(where: { v in
-                                            v.firestoreID == sortable.firestoreID
-                                        }) {
+                                        } else if let video = sortable.video {
                                             Text(video.title)
-                                        } else {
-                                            Text("Can't find the id")
                                         }
                                     }
                                 }
@@ -55,7 +46,7 @@ struct HomeView: View {
                             ProgressView()
                         }
                         
-                        Divider()
+                        Divider().padding()
                     }
                     
                     VStack(spacing: 0) {
@@ -83,7 +74,7 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider()
+                        Divider().padding()
                     }
                     
                     VStack(spacing: 0) {
@@ -98,12 +89,12 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(categories, id: \.self) { category in
-                                    TagView(category)
+                                    TagTileView(category)
                                         .padding(.vertical)
                                 }
                             }.padding(.horizontal)
                         }
-                        Divider()
+                        Divider().padding()
                     }
                 }
                 .padding(.vertical)
@@ -119,11 +110,18 @@ struct HomeView: View {
             }, set: {
                 model.showError = $0
             }), content: {
-                Alert(title: Text("Error"), message: Text(model.errorToShow?.getUIDescription() ?? "An unknown error has occured."), dismissButton: Alert.Button.default(Text("Retry"), action: {
-                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                        self.model.retry?()
-                    }
-                }))
+                Alert(
+                    title: Text("Error"),
+                    message: Text(
+                        model.errorToShow?.getUIDescription() ??
+                        "An unknown error has occured."),
+                    dismissButton: Alert.Button.default(
+                        Text("Retry"),
+                        action: {
+                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                                self.model.retry?()
+                            }
+                        }))
             })
         }
     }
@@ -132,5 +130,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+            .foregroundColor(Color("ShragaBlue"))
+            .accentColor(Color("ShragaBlue"))
     }
 }

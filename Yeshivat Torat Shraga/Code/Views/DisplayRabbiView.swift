@@ -35,38 +35,27 @@ struct DisplayRabbiView: View {
                 }
                 .padding(.horizontal)
                 VStack {
-//                    ScrollView(.vertical) {
-//                    AudioCardView(audio: .sample)
-                    if let audios = model.audios {
-                        ForEach(audios, id: \.self) { audio in
-                            AudioCardView(audio: audio)
-                                .contextMenu {
-                                    Button("Play") {
-                                    }
-                                }
-                        }
-                    } else {
-                        ProgressView()
-                    }
-//                    }
-//                    .padding()
-//                    Spacer()
-                    if let videos = model.videos {
-                    ForEach(videos, id: \.self) { video in
-                        VideoCardView(video: video)
-                            .contextMenu {
-                                Button("Play") {}
-                            }
-                    }
-                    } else {
-                        ProgressView()
-                    }
                     
+                    if let sortables = model.sortables {
+                        ForEach(sortables, id: \.self) { sortable in
+                            if let video = sortable.video {
+                                VideoCardView(video: video)
+                                    .contextMenu {
+                                        Button("Play") {}
+                                    }
+                            } else if let audio = sortable.audio {
+                                AudioCardView(audio: audio)
+                                    .contextMenu {
+                                        Button("Play") {}
+                                    }
+                            }
+                        }
+                    }                    
                 }
                 .padding(.horizontal)
             }
         }
-        //        .padding(.horizontal)
+
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -76,7 +65,7 @@ struct DisplayRabbiView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
-                        .shadow(radius: 3)
+                        .shadow(radius: UI.shadowRadius)
                 }
             }
         })

@@ -134,7 +134,12 @@ protocol YTSContent: Tileable {
 
 extension YTSContent {
     var sortable: SortableYTSContent {
-        return SortableYTSContent(firestoreID: self.firestoreID, date: self.date)
+        if let content = self as? Video {
+            return SortableYTSContent(video: content)
+        } else if let content = self as? Audio {
+            return SortableYTSContent(audio: content)
+        }
+        fatalError("Not able to handle content that is not Video nor Audio. (G01F)")
     }
 }
 
@@ -237,7 +242,7 @@ class Video: YTSContent {
                               date: .distantPast,
                               duration: 100,
                               tags: [],
-                              thumbnailURL: URL(string: "https://eretzhemdah.org/images/AskTheRabbi_en.jpg")!)
+                              thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!)
 }
 
 class Audio: YTSContent, Hashable {
@@ -334,6 +339,26 @@ class Category: Tag {
 typealias Content = (videos: [Video], audios: [Audio])
 
 struct SortableYTSContent: Hashable {
-    var firestoreID: FirestoreID
-    var date: Date
+    var video: Video?
+    var audio: Audio?
+    var date: Date? {
+        if let video = self.video {
+            return video.date
+        } else if let audio = self.audio {
+            return audio.date
+        }
+        fatalError("""
+Unable to get date of non video or audio object.
+Theoretically, this error should be impossible to reach,
+So if you are seeing this, something is seriously wrong...
+G02F
+""")
+    }
+    
+    init(video: Video) {
+        self.video = video
+    }
+    init(audio: Audio) {
+        self.audio = audio
+    }
 }

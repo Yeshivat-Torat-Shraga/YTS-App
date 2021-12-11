@@ -14,8 +14,8 @@ class DisplayRabbiModel: ObservableObject, ErrorShower {
     internal var retry: (() -> Void)?
     
     @Published var rabbi: DetailedRabbi
-    @Published var videos: [Video]?
-    @Published var audios: [Audio]?
+    @Published var content: Content?
+    @Published var sortables: [SortableYTSContent]?
 
     init(rabbi: DetailedRabbi) {
         self.rabbi = rabbi
@@ -29,17 +29,30 @@ class DisplayRabbiModel: ObservableObject, ErrorShower {
             }
             print(results)
             withAnimation {
-                self.audios = results.content.audios
-                self.videos = results.content.videos
+                self.content = results.content
+                
+                var sortables: [SortableYTSContent] = []
+                for audio in self.content!.audios {
+                    sortables.append(audio.sortable)
+                }
+                for video in self.content!.videos {
+                    sortables.append(video.sortable)
+                }
+                
+                self.sortables = sortables.sorted(by: { lhs, rhs in
+                    return lhs.date! > rhs.date!
+                })
+                
+                
             }
             
             DispatchQueue.global(qos: .background).async {
-                for audio in self.audios! {
+                for audio in self.content!.audios {
                     if !(audio.author is DetailedRabbi) {
                         audio.author = self.rabbi
                     }
                 }
-                for video in self.videos! {
+                for video in self.content!.videos {
                     if !(video.author is DetailedRabbi) {
                         video.author = self.rabbi
                     }
