@@ -15,7 +15,7 @@ struct RootView: View {
             HomeView()
                 .foregroundColor(Color("ShragaBlue"))
                 .tabItem {
-                    Image(systemName: "house")
+                    Label("Home", systemImage: "house")
                 }
                 .overlay(VStack {
                     Spacer()
@@ -24,7 +24,7 @@ struct RootView: View {
             SettingsView()
                 .foregroundColor(Color("ShragaBlue"))
                 .tabItem {
-                    Image(systemName: "gearshape")
+                    Label("Settings", systemImage: "gearshape")
                 }
 //                .overlay {
 //                    PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)

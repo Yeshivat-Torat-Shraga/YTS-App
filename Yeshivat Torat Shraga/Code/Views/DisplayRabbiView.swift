@@ -76,7 +76,7 @@ struct DisplayRabbiView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
-                        .shadow(radius: 1)
+                        .shadow(radius: 3)
                 }
             }
         })
