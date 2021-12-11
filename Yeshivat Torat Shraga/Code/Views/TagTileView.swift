@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TagView: View {
+struct TagTileView: View {
     var tag: Tag
     
     init(_ tag: Tag) {
@@ -75,7 +75,7 @@ struct TagView: View {
 
 struct TagView_Previews: PreviewProvider {
     static var previews: some View {
-        TagView(Tag("Parsha"))
+        TagTileView(Tag("Parsha"))
             .previewLayout(.sizeThatFits)
     }
 }

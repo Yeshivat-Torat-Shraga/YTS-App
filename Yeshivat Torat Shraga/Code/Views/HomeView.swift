@@ -88,7 +88,7 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(categories, id: \.self) { category in
-                                    TagView(category)
+                                    TagTileView(category)
                                         .padding(.vertical)
                                 }
                             }.padding(.horizontal)
