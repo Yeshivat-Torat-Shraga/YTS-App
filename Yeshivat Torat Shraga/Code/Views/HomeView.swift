@@ -31,21 +31,24 @@ struct HomeView: View {
                         
                         if let sortables = model.sortables {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                ForEach(sortables, id: \.self) { sortable in
-                                    Group {
-                                        if let audio = sortable.audio {
-                                            AudioTile(audio: audio)
-                                        } else if let video = sortable.video {
-                                            Text(video.title)
+                                HStack {
+                                    ForEach(sortables, id: \.self) { sortable in
+                                        Group {
+                                            if let audio = sortable.audio {
+                                                AudioTile(audio: audio)
+                                            } else if let video = sortable.video {
+                                                Text(video.title)
+                                            }
                                         }
                                     }
                                 }
                             }
                         } else {
                             ProgressView()
+                                .padding(.bottom)
                         }
                         
-                        Divider().padding()
+                        Divider().padding(.horizontal)
                     }
                     
                     VStack(spacing: 0) {
