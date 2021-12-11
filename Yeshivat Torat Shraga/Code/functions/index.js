@@ -580,7 +580,7 @@ function getRabbiFor(id, includeProfilePictureURL) {
 
 			if (includeProfilePictureURL) {
 				const bucket = admin.storage().bucket('kol-hatorah-kulah.appspot.com');
-				const filename = appendToEndOfFilename(personData.profilepic, '_300x1000');
+				const filename = personData.profile_picture_filename;//appendToEndOfFilename(personData.profilepic, '_300x1000');
 				bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
 					action: "read",
 					expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
@@ -588,7 +588,7 @@ function getRabbiFor(id, includeProfilePictureURL) {
 					resolve({
 						id: id,
 						name: personData.name,
-						profile_picture_filename: personData.profilepic,
+						profile_picture_filename: personData.profile_picture_filename,
 						profile_picture_url: url[0]
 					});
 				}).catch(reason => {
@@ -599,7 +599,7 @@ function getRabbiFor(id, includeProfilePictureURL) {
 				resolve({
 					id: id,
 					name: personData.name,
-					profile_picture_filename: personData.profilepic
+					profile_picture_filename: personData.profile_picture_filename
 				});
 			}
 		});
