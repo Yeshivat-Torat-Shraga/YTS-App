@@ -33,7 +33,7 @@ class HomeViewModel: ObservableObject, ErrorShower {
             }
         }
         
-        FirebaseConnection.loadContent(includeThumbnailURLs: true) { results, error in
+        FirebaseConnection.loadContent(includeThumbnailURLs: true, includeAllAuthorData: true) { results, error in
             guard let content = results?.content else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.initialLoad)
                 return

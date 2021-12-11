@@ -11,40 +11,60 @@ struct AudioTile: View {
     var audio: Audio
     
     var body: some View {
-        VStack {
-            HStack {
-                Text(audio.title)
-                    .font(.title)
-                    .bold()
-                if let author = audio.author as? DetailedRabbi {
-                DownloadableImage(object: author)
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(Circle())
-                        .frame(width: 70, height: 70)
+        Button(action: {}) {
+            VStack {
+                HStack {
+                    Text(audio.title)
+                        .font(.title)
+                        .bold()
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                    if let author = audio.author as? DetailedRabbi {
+                    DownloadableImage(object: author)
+                            .aspectRatio(contentMode: .fit)
+                            .clipShape(Circle())
+                            .frame(width: 70, height: 70)
+                    }
                 }
-            }
-            HStack {
-                if #available(iOS 15.0, *) {
-                    Text(audio.date.formatted(date: .long, time: .omitted))
-                } else {
-                    
-                    if let month = Date.monthNameFor(audio.date.get(.month)) {
-                            HStack {
-                                let yearAsString = String(audio.date.get(.year))
-                                Image(systemName: "calendar")
-                                Text("\(month) \(audio.date.get(.day)), \(yearAsString)")
-                                    .foregroundColor(Color("Gray"))
-                            }
-                        }
+                HStack {
+                    Text(audio.author.name)
+                    Spacer()
                 }
                 
                 Spacer()
                 
-                if let duration = audio.duration {
-                Text(timeFormattedMini(totalSeconds: duration))
-                }
+                HStack {
+                    if #available(iOS 15.0, *) {
+                        Text(audio.date.formatted(date: .long, time: .omitted))
+                    } else {
+                        
+                        if let month = Date.monthNameFor(audio.date.get(.month)) {
+                                HStack {
+                                    let yearAsString = String(audio.date.get(.year))
+                                    Image(systemName: "calendar")
+                                    Text("\(month) \(audio.date.get(.day)), \(yearAsString)")
+                                        .foregroundColor(Color("Gray"))
+                                }
+                            }
+                    }
+                    
+                    Spacer()
+                    
+                    if let duration = audio.duration {
+                    Text(timeFormattedMini(totalSeconds: duration))
+                    }
+                }.foregroundColor(Color("Gray"))
+                    .font(.caption)
             }
-        }.background(LinearGradient(colors: [Color("ShragaBlue"), Color("ShragaBlue").lighter()], startPoint: .bottomLeading, endPoint: .topTrailing))
+            .padding()
+        }
+        .background(Color.white
+                        .cornerRadius(8)
+                        .shadow(radius: 2)
+        )
+        .padding()
     }
 }
 
