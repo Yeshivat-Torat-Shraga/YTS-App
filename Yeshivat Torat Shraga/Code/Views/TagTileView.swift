@@ -73,7 +73,7 @@ struct TagTileView: View {
     }
 }
 
-struct TagView_Previews: PreviewProvider {
+struct TagTileView_Previews: PreviewProvider {
     static var previews: some View {
         TagTileView(Tag("Parsha"))
             .previewLayout(.sizeThatFits)
