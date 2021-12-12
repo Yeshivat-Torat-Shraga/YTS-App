@@ -17,7 +17,7 @@ struct AudioCardView: View {
     
     var body: some View {
         Button {
-            RootModel.audioPlayer.set(audio: model.audio)
+            RootModel.audioPlayer.play(audio: model.audio)
             isShowingPlayerSheet = true
         } label: {
             HStack {
@@ -89,13 +89,11 @@ struct AudioCardView: View {
                 .padding()
             }
         }
+        .buttonStyle(BackZStackButtonStyle())
+        .cornerRadius(UI.cornerRadius)
+        .shadow(radius: UI.shadowRadius)
+        .background(Color(UIColor.systemBackground))
         .frame(height: 105)
-        .background(
-            Rectangle()
-                .fill(Color(UIColor.systemBackground))
-                .cornerRadius(UI.cornerRadius)
-                .shadow(radius: UI.shadowRadius)
-        )
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer
         }

@@ -582,7 +582,8 @@ function getRabbiFor(id, includeProfilePictureURL) {
 			if (includeProfilePictureURL) {
 				const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
 				const filename = personData.profile_picture_filename;//appendToEndOfFilename(personData.profilepic, '_300x1000');
-				bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
+				// bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
+				bucket.file(`profile-pictures/${filename}`).getSignedUrl({
 					action: "read",
 					expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
 				}).then(url => {

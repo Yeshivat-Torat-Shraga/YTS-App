@@ -59,11 +59,18 @@ struct AudioTile: View {
                     .font(.caption)
             }
             .padding()
+//            .background(Color.white)
+            
+//            .background(Rectangle()
+//                            .fill(Color.white)
+//                            .cornerRadius(UI.cornerRadius)
+//                            .shadow(radius: UI.shadowRadius)
+//            )
         }
-        .background(Color.white
-                        .cornerRadius(8)
-                        .shadow(radius: 2)
-        )
+        .background(Color(UIColor.systemBackground))
+        .buttonStyle(BackZStackButtonStyle())
+        .cornerRadius(UI.cornerRadius)
+        .shadow(radius: UI.shadowRadius)
         .padding()
     }
 }
