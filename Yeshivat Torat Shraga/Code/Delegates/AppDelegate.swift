@@ -8,12 +8,30 @@
 import UIKit
 import CoreData
 import Firebase
+import FirebaseStorage
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
+#if EMULATORS
+        print("""
+        *************************************
+        **      +  === = === = ===  +      **
+        **      |  USING EMULATORS  |      **
+        **      +  === = === = ===  +      **
+        *************************************
+        """)
+        Storage.storage().useEmulator(withHost:"http://localhost", port:9199)
+        let settings = Firestore.firestore().settings
+        settings.host = "localhost:8080"
+        settings.isPersistenceEnabled = false
+        settings.isSSLEnabled = false
+        Firestore.firestore().settings = settings
+        Functions.functions().useEmulator(withHost: "http://localhost", port: 5001)
+#endif
         return true
     }
 
@@ -82,6 +100,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
 
+#if EMULATORS
+    func applicationWillTerminate(_ application: UIApplication) {
+        print("""
+        *************************************
+        **      +  === = === = ===  +      **
+        **      |  USING EMULATORS  |      **
+        **      +  === = === = ===  +      **
+        *************************************
+        """)
+    }
+#endif
     // MARK: - Core Data Saving support
 
     func saveContext () {

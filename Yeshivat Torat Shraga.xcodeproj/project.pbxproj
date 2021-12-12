@@ -12,6 +12,9 @@
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
+		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
+		08A05B2527653DAA00FEE15F /* TagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagViewModel.swift */; };
+		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -53,6 +56,8 @@
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
+		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
+		08A05B2427653DAA00FEE15F /* TagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViewModel.swift; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -93,6 +98,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */,
+				08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */,
 				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
 				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
 			);
@@ -101,11 +107,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		08A05B2827655D8700FEE15F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B12AB824273B103C00B17CC0 = {
 			isa = PBXGroup;
 			children = (
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
+				08A05B2827655D8700FEE15F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -165,6 +179,7 @@
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
 				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
 				08469DE62762D878007EF981 /* NewsView.swift */,
+				08A05B2227653D4E00FEE15F /* TagView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -179,6 +194,7 @@
 				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
 				F29FFB2827529D3A005D6355 /* PlayBarModel.swift */,
 				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
+				08A05B2427653DAA00FEE15F /* TagViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -244,6 +260,7 @@
 				F28E291E2756A78700D9F4AF /* FirebaseAnalytics */,
 				F28E29202756A78700D9F4AF /* FirebaseFirestore */,
 				F28E29222756A78700D9F4AF /* FirebaseFunctions */,
+				08A05B2927655D8700FEE15F /* FirebaseStorage */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -332,8 +349,10 @@
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
 				F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */,
 				B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */,
+				08A05B2527653DAA00FEE15F /* TagViewModel.swift in Sources */,
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
+				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +370,91 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		08A05B2627655B0200FEE15F /* Firebase Emulators */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-D EMULATORS";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "Firebase Emulators";
+		};
+		08A05B2727655B0200FEE15F /* Firebase Emulators */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
+				DEVELOPMENT_TEAM = YL279DNVQD;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.reesedevelopment.Yeshivat-Torat-Shraga";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Firebase Emulators";
+		};
 		B12AB842273B104300B17CC0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -520,6 +624,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B12AB842273B104300B17CC0 /* Debug */,
+				08A05B2627655B0200FEE15F /* Firebase Emulators */,
 				B12AB843273B104300B17CC0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -529,6 +634,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B12AB845273B104300B17CC0 /* Debug */,
+				08A05B2727655B0200FEE15F /* Firebase Emulators */,
 				B12AB846273B104300B17CC0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -548,6 +654,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		08A05B2927655D8700FEE15F /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		F28E291E2756A78700D9F4AF /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
