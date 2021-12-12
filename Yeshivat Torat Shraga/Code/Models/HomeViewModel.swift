@@ -18,13 +18,13 @@ class HomeViewModel: ObservableObject, ErrorShower {
     @Published var rebbeim: [DetailedRabbi]?
     
     init() {
-        initialLoad()
+        load()
     }
     
-    func initialLoad() {
+    func load() {
         FirebaseConnection.loadRebbeim(includeProfilePictureURLs: true) { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
-                self.showError(error: error ?? YTSError.unknownError, retry: self.initialLoad)
+                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
             
@@ -35,7 +35,7 @@ class HomeViewModel: ObservableObject, ErrorShower {
         
         FirebaseConnection.loadContent(includeThumbnailURLs: true, includeAllAuthorData: true) { results, error in
             guard let content = results?.content else {
-                self.showError(error: error ?? YTSError.unknownError, retry: self.initialLoad)
+                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
             
