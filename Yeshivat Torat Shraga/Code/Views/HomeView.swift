@@ -22,7 +22,6 @@ struct HomeView: View {
                     VStack {
                         HStack {
                             Text("Recently Uploaded")
-                                .foregroundColor(.black)
                                 .font(.title3)
                                 .bold()
                             Spacer()
@@ -91,8 +90,10 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(categories, id: \.self) { category in
+                                    NavigationLink(destination: TagView(tag: category)) {
                                     TagTileView(category)
                                         .padding(.vertical)
+                                    }
                                 }
                             }.padding(.horizontal)
                         }
@@ -100,7 +101,7 @@ struct HomeView: View {
                     }
                 }
                 .padding(.vertical)
-                .navigationTitle("Welcome to Shraga")
+                .navigationTitle("Home")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         LogoView(size: .small)

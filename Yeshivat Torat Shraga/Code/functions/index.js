@@ -11,7 +11,7 @@ const childProcessPromise = require('child-process-promise');
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	// credential: admin.credential.cert(require('/Users/benji/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
@@ -67,13 +67,13 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	let docs = rebbeimSnapshot.docs;
 
 	// If docs is null, return.
-	if (!docs)
+	if (!docs || docs.length == 0) {
 		return {
 			lastLoadedDocumentID: lastDocumentFromQueryID,
 			includesLastElement: (requestedCount > rebbeim.length),
 			rebbeim: null
 		};
-
+	}
 	// Assign the last document returned from the query to lastDocumentFromQueryID.
 	lastDocumentFromQueryID = docs[docs.length - 1].id;
 
@@ -94,6 +94,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 		let url;
 		if (includePictureURLs) {
 			url = await getRabbiProfilePictureURLFor(pfpFilename);
+			console.log(url);
 		}
 
 		const documentData = {
@@ -162,8 +163,8 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 	// If a rabbiAttributionID is specified, build a query to get
 	// only the documents with the specified ID.
 	let query = db.collection('content');
-	if (callData.rabbiAttributionID)
-		query = query.where("attributionID", "==", callData.rabbiAttributionID);
+	if (callData.search)
+		query = query.where(callData.search.field, "==", callData.search.value);
 	// Sort the query by upload date.
 	// query = query.orderBy('date', 'asc');
 
@@ -554,7 +555,7 @@ async function getRabbiProfilePictureURLFor(filename) {
 async function getURLFor(path) {
 	return new Promise(async (resolve, reject) => {
 		// let db = admin.firestore();
-		const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
+		const bucket = admin.storage().bucket("yeshivat-torat-shraga.appspot.com");
 		bucket.file(path).getSignedUrl({
 			action: "read",
 			expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
@@ -621,7 +622,7 @@ function fileIDFromFilename(filename) {
 	return id.join('.');
 }
 
-function log(data, structured = true) {
+function log(data, structured = false) {
 	functions.logger.info(data, {
 		structuredData: structured
 	});
