@@ -323,6 +323,8 @@ class Tag: Hashable {
     static func == (lhs: Tag, rhs: Tag) -> Bool {
         lhs.name == rhs.name
     }
+    
+    static var sample = Tag("Sample")
 }
 
 /// An enhanced wrapper on a ``Tag`` which includes an icon
