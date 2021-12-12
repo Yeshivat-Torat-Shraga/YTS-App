@@ -87,19 +87,26 @@ final class FirebaseConnection {
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
     ///   - requestedCount: The amount of `YTSContent` objects to return. Default is `10`.
+    ///   - searchData: The field you want to search in firebase. Expects the following format: `["field": ```<String>```, "value": ```<String>```]`
     ///   - includeThumbnailURLs: Whether or not to include thumbnail URLs in the response.
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: When this value is set, the function only returns content attributed to the `Rabbi` object.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil, count requestedCount: Int = 10, attributionRabbi: Rabbi? = nil, includeThumbnailURLs: Bool, includeAllAuthorData: Bool = false, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil,
+                            count requestedCount: Int = 10,
+                            searchData: [String: String]? = nil,
+                            attributionRabbi: Rabbi? = nil,
+                            includeThumbnailURLs: Bool,
+                            includeAllAuthorData: Bool = false,
+                            completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var content: Content = (videos: [], audios: [])
         
-        var dictionary: [String: Any] = ["count": requestedCount, "includeThumbnailURLs": includeThumbnailURLs, "includeAllAuthorData": includeAllAuthorData]
+        var dictionary: [String: Any] = ["count": requestedCount,
+                                         "search": searchData ?? nil,
+                                         "includeThumbnailURLs": includeThumbnailURLs,
+                                         "includeAllAuthorData": includeAllAuthorData]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
             dictionary["lastLoadedDocumentID"] = lastLoadedDocumentID
-        }
-        if let attributionRabbi = attributionRabbi {
-            dictionary["rabbiAttributionID"] = attributionRabbi.firestoreID
         }
         
         let data: NSDictionary = NSDictionary(dictionary: dictionary)
