@@ -22,6 +22,9 @@ struct AudioCardView: View {
         } label: {
             HStack {
                 Rectangle()
+                
+                // START GRADIENT {
+                
                     .fill(LinearGradient(
                         gradient: Gradient(
                             stops: [
@@ -39,6 +42,9 @@ struct AudioCardView: View {
                                     location: 1)]),
                         startPoint: UnitPoint.bottomLeading,
                         endPoint: UnitPoint.trailing))
+                
+                // } END GRADIENT
+                
                     .frame(width: 125)
                     .overlay(
                         Image(systemName: "mic")
@@ -47,7 +53,6 @@ struct AudioCardView: View {
                     )
                     .foregroundColor(Color("ShragaGold"))
                 
-                    .cornerRadius(UI.cornerRadius, corners: [.topLeft, .bottomLeft])
                 
                 // Rest of card goes here:
                 VStack {
@@ -90,10 +95,14 @@ struct AudioCardView: View {
             }
         }
         .buttonStyle(BackZStackButtonStyle())
-        .cornerRadius(UI.cornerRadius)
-        .shadow(radius: UI.shadowRadius)
-        .background(Color(UIColor.systemBackground))
         .frame(height: 105)
+        .background(
+            Rectangle()
+                .fill(Color(UIColor.systemBackground))
+                .cornerRadius(UI.cornerRadius)
+                .shadow(radius: UI.shadowRadius)
+        )
+        .cornerRadius(UI.cornerRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer
         }
@@ -101,15 +110,18 @@ struct AudioCardView: View {
 }
 
 struct AudioCardView_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            AudioCardView(audio: .sample)
-            VideoCardView(video: .sample)
-            AudioCardView(audio: .sample)
-            VideoCardView(video: .sample)
-        }
-        .padding()
-        .foregroundColor(Color("ShragaBlue"))
-        
-    }
+//    static var previews: some View {
+//        VStack {
+//            AudioCardView(audio: .sample)
+//            VideoCardView(video: .sample)
+//            AudioCardView(audio: .sample)
+//            VideoCardView(video: .sample)
+//        }
+//        .padding()
+//        .foregroundColor(Color("ShragaBlue"))
+//        .background(Color.black)
+//
+//    }
+    static var previews: some View = VideoCardView_Previews.previews
+        .preferredColorScheme(.dark)
 }
