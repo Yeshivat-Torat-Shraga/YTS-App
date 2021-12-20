@@ -53,6 +53,18 @@ struct Blur: UIViewRepresentable {
     }
 }
 
+struct BackgroundClearView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .clear
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
 class AsyncImageLoader: ObservableObject {
     @Published var downloadedImage: UIImage?
     private var task: URLSessionDataTask?
