@@ -184,6 +184,20 @@ struct DownloadableImage<Object: URLImageable>: View {
     }
 }
 
+// https://stackoverflow.com/questions/57688242/swiftui-how-to-change-the-placeholder-color-of-the-textfield
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
+    }
+}
+
 struct URLImage<Content : View>: View {
     @ObservedObject var imageLoader = AsyncImageLoader()
     var placeholder: Content
