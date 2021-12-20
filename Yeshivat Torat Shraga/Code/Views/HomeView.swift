@@ -56,7 +56,7 @@ struct HomeView: View {
                                             if let audio = sortable.audio {
                                                 AudioTile(audio: audio)
                                             } else if let video = sortable.video {
-                                                Text(video.title)
+                                                VideoTile(video: video)
                                             }
                                         }
                                     }
@@ -111,6 +111,7 @@ struct HomeView: View {
                             LazyHStack {
                                 ForEach(categories, id: \.self) { category in
                                     TagTileView(category)
+                                        .padding(.vertical)
                                 }
                             }.padding()
                         }

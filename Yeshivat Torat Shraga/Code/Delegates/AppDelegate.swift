@@ -9,6 +9,7 @@ import UIKit
 import CoreData
 import Firebase
 import FirebaseStorage
+import AVKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +27,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         """)
         Functions.functions().useEmulator(withHost: "http://localhost", port: 5001)
 #endif
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        
+        do {
+            try audioSession.setCategory(AVAudioSession.Category.playback)
+        } catch  {
+            print("Audio session failed")
+        }
         return true
     }
 

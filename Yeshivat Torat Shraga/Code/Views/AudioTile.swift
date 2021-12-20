@@ -71,6 +71,8 @@ struct AudioTile: View {
         .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
+        .frame(height: 150)
+        .frame(maxWidth: 400)
         .padding()
     }
 }
