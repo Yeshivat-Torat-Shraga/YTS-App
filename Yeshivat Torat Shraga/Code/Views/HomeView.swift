@@ -90,12 +90,9 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(categories, id: \.self) { category in
-                                    NavigationLink(destination: TagView(tag: category)) {
                                     TagTileView(category)
-                                        .padding(.vertical)
-                                    }
                                 }
-                            }.padding(.horizontal)
+                            }.padding()
                         }
                         Divider().padding()
                     }
