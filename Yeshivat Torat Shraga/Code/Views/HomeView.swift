@@ -78,7 +78,7 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider().padding()
+                        Divider().padding(.horizontal)
                     }
                     
                     VStack(spacing: 0) {
@@ -96,9 +96,9 @@ struct HomeView: View {
                                     TagTileView(category)
                                         .padding(.vertical)
                                 }
-                            }.padding()
+                            }.padding(.horizontal)
                         }
-                        Divider().padding()
+                        Divider().padding(.horizontal)
                     }
                 }
                 .padding(.bottom)

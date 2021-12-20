@@ -20,12 +20,14 @@ struct AudioTile: View {
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
+                        .padding(.trailing)
                     Spacer()
                     if let author = audio.author as? DetailedRabbi {
                     DownloadableImage(object: author)
-                            .aspectRatio(contentMode: .fit)
+                            .aspectRatio(contentMode: .fill)
                             .clipShape(Circle())
-                            .frame(width: 70, height: 70)
+                            .frame(width: 65, height: 65)
+                            .clipped()
                     }
                 }
                 HStack {
@@ -82,6 +84,6 @@ struct AudioTile: View {
 struct AudioTile_Previews: PreviewProvider {
     static var previews: some View {
         AudioTile(audio: .sample)
-            .previewLayout(.fixed(width: 350, height: 170))
+            .previewLayout(.fixed(width: 450, height: 170))
     }
 }
