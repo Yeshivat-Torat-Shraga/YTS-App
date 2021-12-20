@@ -74,9 +74,9 @@ struct VideoCardView: View {
             Rectangle()
                 .fill(Color(UIColor.systemBackground))
                 .cornerRadius(UI.cornerRadius)
-                .shadow(radius: UI.shadowRadius)
         )
         .cornerRadius(UI.cornerRadius)
+        .shadow(radius: UI.shadowRadius)
     }
 }
 
@@ -91,8 +91,7 @@ struct VideoCardView_Previews: PreviewProvider {
             }
             .padding()
             .foregroundColor(Color("ShragaBlue"))
-            .background(Color.black)
+//            .background(Color.black)
         }
-        .preferredColorScheme(.dark)
     }
 }

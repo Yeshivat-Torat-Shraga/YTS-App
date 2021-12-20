@@ -100,9 +100,9 @@ struct AudioCardView: View {
             Rectangle()
                 .fill(Color(UIColor.systemBackground))
                 .cornerRadius(UI.cornerRadius)
-                .shadow(radius: UI.shadowRadius)
         )
         .cornerRadius(UI.cornerRadius)
+        .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer
         }
@@ -123,5 +123,5 @@ struct AudioCardView_Previews: PreviewProvider {
 //
 //    }
     static var previews: some View = VideoCardView_Previews.previews
-        .preferredColorScheme(.dark)
+//        .preferredColorScheme(.dark)
 }
