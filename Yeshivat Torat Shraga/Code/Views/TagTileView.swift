@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TagTileView: View {
+    @State var isShowingSheet = false
     var tag: Tag
     
     init(_ tag: Tag) {
@@ -15,54 +16,60 @@ struct TagTileView: View {
     }
     
     var body: some View {
-        if let category = tag as? Category {
-            ZStack {
-                category.icon
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .overlay(Rectangle().opacity(0.2))
-                Text(category.name)
-                    .font(.largeTitle)
-                    .bold()
-                    .foregroundColor(.white)
-                    .minimumScaleFactor(0.5)
-                    .padding()
-                    .padding()
+        Button(action: {isShowingSheet = true}) {
+            if let category = tag as? Category {
+                ZStack {
+                    category.icon
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .overlay(Rectangle().opacity(0.2))
+                    Text(category.name)
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.white)
+                        .minimumScaleFactor(0.5)
+                        .padding()
+                        .padding()
+                }
+                .frame(height: 110)
+                .frame(minWidth: 150, maxWidth: 250)
+                .aspectRatio(contentMode: .fill)
+                .clipped()
+                .cornerRadius(UI.cornerRadius)
+                .shadow(radius: UI.shadowRadius)
+                
+                //                .background(category.icon
+                //                                .resizable()
+                //                                .aspectRatio(contentMode: .fill)
+                //                                .clipped()
+                //                                .overlay(Rectangle().opacity(0.2))
+                //                                .cornerRadius(UI.cornerRadius)
+                //                .shadow(radius: UI.shadowRadius)
+                //                )
+            } else {
+                Group {
+                    Text(tag.name)
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.white)
+                        .padding()
+                        .padding()
+                }
+                .frame(height: 110)
+                .frame(minWidth: 150, maxWidth: 200)
+                .background(LinearGradient(
+                    colors: randomColorMix(),
+                    startPoint: .bottomLeading,
+                    endPoint: .topTrailing)
+                                .cornerRadius(UI.cornerRadius)
+                                .overlay(Rectangle()
+                                            .opacity(0.2)))
+                .shadow(radius: UI.shadowRadius)
             }
-            .frame(height: 110)
-            .frame(minWidth: 150, maxWidth: 250)
-            .aspectRatio(contentMode: .fill)
-            .clipped()
-            .cornerRadius(UI.cornerRadius)
-            .shadow(radius: UI.shadowRadius)
-            
-//                .background(category.icon
-//                                .resizable()
-//                                .aspectRatio(contentMode: .fill)
-//                                .clipped()
-//                                .overlay(Rectangle().opacity(0.2))
-//                                .cornerRadius(UI.cornerRadius)
-//                .shadow(radius: UI.shadowRadius)
-//                )
-        } else {
-            Group {
-            Text(tag.name)
-                    .font(.largeTitle)
-                    .bold()
-                    .foregroundColor(.white)
-                    .padding()
-                    .padding()
-            }
-            .frame(height: 110)
-            .frame(minWidth: 150, maxWidth: 200)
-            .background(LinearGradient(
-                colors: randomColorMix(),
-                startPoint: .bottomLeading,
-                endPoint: .topTrailing)
-                            .cornerRadius(UI.cornerRadius)
-                            .overlay(Rectangle()
-                                        .opacity(0.2)))
-            .shadow(radius: UI.shadowRadius)
+        }
+        .sheet(isPresented: $isShowingSheet) {
+            TagView(tag: tag)
+                .background(BackgroundClearView())
         }
     }
     
