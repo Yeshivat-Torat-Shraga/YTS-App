@@ -101,7 +101,7 @@ struct HomeView: View {
                         Divider().padding()
                     }
                 }
-                .padding(.vertical)
+                .padding(.bottom)
                 .navigationTitle("Home")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
