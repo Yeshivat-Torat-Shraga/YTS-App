@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State var searchText = ""
     @ObservedObject var model: HomeViewModel
     let categories: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
     
@@ -19,7 +20,26 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    VStack(spacing: 0) {
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(Color("ShragaBlue"))
+                            .opacity(0.1)
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                            TextField("", text: $searchText)
+                                .placeholder(when: searchText.isEmpty) {
+                                        Text("Search...").foregroundColor(Color("ShragaGold"))
+                                }
+//                                .foregroundColor(Color("ShragaGold"))
+                        }
+                        .foregroundColor(Color("ShragaGold"))
+                        .padding(.leading, 13)
+                    
+                    }
+                    .frame(height: 40)
+                    .cornerRadius(13)
+                    .padding(.horizontal)
+                    VStack {
                         HStack {
                             Text("Recently Uploaded")
                                 .font(.title3)
@@ -91,12 +111,10 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(categories, id: \.self) { category in
-                                    NavigationLink(destination: TagView(tag: category)) {
-                                        TagTileView(category)
-                                            .padding(.vertical)
-                                    }
+                                    TagTileView(category)
+                                        .padding(.vertical)
                                 }
-                            }.padding(.horizontal)
+                            }.padding()
                         }
                         Divider().padding()
                     }

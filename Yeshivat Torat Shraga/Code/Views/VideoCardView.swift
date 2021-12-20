@@ -25,8 +25,7 @@ struct VideoCardView: View {
                     .overlay(Color.black.opacity(0.2))
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 125, height: 105)
-                    .cornerRadius(UI.cornerRadius, corners: [.topLeft, .bottomLeft])
-                
+                    .clipped()
                 // Rest of card goes here:
                 VStack {
                     HStack {
@@ -69,13 +68,15 @@ struct VideoCardView: View {
                 .padding()
             }
         }
+        .buttonStyle(BackZStackButtonStyle())
         .frame(height: 105)
         .background(
             Rectangle()
                 .fill(Color(UIColor.systemBackground))
                 .cornerRadius(UI.cornerRadius)
-                .shadow(radius: UI.shadowRadius)
         )
+        .cornerRadius(UI.cornerRadius)
+        .shadow(radius: UI.shadowRadius)
     }
 }
 
@@ -88,9 +89,9 @@ struct VideoCardView_Previews: PreviewProvider {
                 AudioCardView(audio: .sample)
                 VideoCardView(video: .sample)
             }
-            .previewLayout(.sizeThatFits)
             .padding()
-        .foregroundColor(Color("ShragaBlue"))
+            .foregroundColor(Color("ShragaBlue"))
+//            .background(Color.black)
         }
     }
 }

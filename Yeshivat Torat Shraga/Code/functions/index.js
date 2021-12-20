@@ -163,8 +163,17 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 	// If a rabbiAttributionID is specified, build a query to get
 	// only the documents with the specified ID.
 	let query = db.collection('content');
-	if (callData.search)
-		query = query.where(callData.search.field, "==", callData.search.value);
+	if (callData.search) {
+		if (callData.search.field == "tag") {
+			query = query.where("tags", "array-contains", "chanuka")
+			log(`Only getting content where [tags] contains ${callData.search.value}`);
+		} else {
+			query = query.where(callData.search.field, "==", callData.search.value);
+			log(`Only getting content where ${callData.search.field} == ${callData.search.value}`);
+		}
+	} else {
+		log(`Not filtering by search. callData.search: ${callData.search}`);
+	}
 	// Sort the query by upload date.
 	// query = query.orderBy('date', 'asc');
 

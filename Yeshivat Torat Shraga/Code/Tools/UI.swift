@@ -53,6 +53,18 @@ struct Blur: UIViewRepresentable {
     }
 }
 
+struct BackgroundClearView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .clear
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}
+
 class AsyncImageLoader: ObservableObject {
     @Published var downloadedImage: UIImage?
     private var task: URLSessionDataTask?
@@ -168,6 +180,20 @@ struct DownloadableImage<Object: URLImageable>: View {
         
         init(object: Object) {
             self.object = object
+        }
+    }
+}
+
+// https://stackoverflow.com/questions/57688242/swiftui-how-to-change-the-placeholder-color-of-the-textfield
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
         }
     }
 }
