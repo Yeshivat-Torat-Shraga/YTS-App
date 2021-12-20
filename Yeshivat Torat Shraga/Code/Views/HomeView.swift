@@ -19,7 +19,7 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    VStack {
+                    VStack(spacing: 0) {
                         HStack {
                             Text("Recently Uploaded")
                                 .font(.title3)
@@ -41,6 +41,7 @@ struct HomeView: View {
                                         }
                                     }
                                 }
+                                .padding(.horizontal)
                             }
                         } else {
                             ProgressView()

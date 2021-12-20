@@ -37,13 +37,15 @@ struct AudioTile: View {
                 
                 HStack {
                     if #available(iOS 15.0, *) {
-                        Text(audio.date.formatted(date: .long, time: .omitted))
+                        HStack {
+                            Text(audio.date.formatted(date: .long, time: .omitted))
+                                .foregroundColor(Color("Gray"))
+                        }
                     } else {
                         
                         if let month = Date.monthNameFor(audio.date.get(.month)) {
                                 HStack {
                                     let yearAsString = String(audio.date.get(.year))
-                                    Image(systemName: "calendar")
                                     Text("\(month) \(audio.date.get(.day)), \(yearAsString)")
                                         .foregroundColor(Color("Gray"))
                                 }
