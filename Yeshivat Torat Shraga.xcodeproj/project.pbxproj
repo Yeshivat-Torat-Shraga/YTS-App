@@ -33,6 +33,7 @@
 		B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */; };
 		F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */; };
 		F2235D4727661CA3005E6086 /* EllipseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2235D4627661CA3005E6086 /* EllipseButton.swift */; };
+		F22C913A2770A260007A9424 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22C91392770A260007A9424 /* SearchView.swift */; };
 		F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4C9273B110900F7ACCC /* RootModel.swift */; };
 		F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D2273BE58B00F7ACCC /* YTS.swift */; };
 		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
@@ -80,6 +81,7 @@
 		B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardModel.swift; sourceTree = "<group>"; };
 		F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackZStackButtonStyle.swift; sourceTree = "<group>"; };
 		F2235D4627661CA3005E6086 /* EllipseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EllipseButton.swift; sourceTree = "<group>"; };
+		F22C91392770A260007A9424 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		F230C4C9273B110900F7ACCC /* RootModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootModel.swift; sourceTree = "<group>"; };
 		F230C4D2273BE58B00F7ACCC /* YTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTS.swift; sourceTree = "<group>"; };
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				B12AB834273B103C00B17CC0 /* RootView.swift */,
 				08756445275E6EC300D22856 /* SettingsView.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
+				F22C91392770A260007A9424 /* SearchView.swift */,
 				B1BF5042273D2A2200CF18D6 /* TileCardView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
@@ -354,6 +357,7 @@
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
 				F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */,
 				F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */,
+				F22C913A2770A260007A9424 /* SearchView.swift in Sources */,
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
 				F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */,
 				B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */,
