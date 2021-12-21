@@ -331,16 +331,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 			});
 		}));
 		console.log('Uploaded all files.');
-		// filenames.forEach(async name => {
-		// 	const fp = path.join(outputDir, name);
-		// 	log(`Uploading file with path '${fp}'...`);
-		// 	await bucket.upload(fp, {
-		// 		destination: `HLSStreams/${object.contentType.split("/")[0]}/${foldername}/${filename}`,
-		// 		metadata: metadata
-		// 	});
-		// 	// throw new error("Uploaded one file. Exiting immediately.");
-		// });
-		// });
+
 	} catch (err) {
 		log(`Failed: ${err} (B01F)`);
 	}
@@ -503,57 +494,9 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	});
 });
 
-function generateThumbnailFromVideo(file, tempLocalThumbnailFilePath) {
-	log(`Entered generateThumbnailFromVideo function.`);
-	return file.getSignedUrl({
-		action: 'read',
-		expires: Date.now() + 1000 * 60 * 60,
-	}).then(signedUrl => {
-		const fileUrl = signedUrl[0];
-		log(tempLocalThumbnailFilePath);
-		const promise = spawn.spawn(ffmpeg.path, [
-			'-ss', '0',
-			'-i', fileUrl,
-			'-f', 'image2',
-			'-vframes', '1',
-			'-vf',
-			// `scale=512:-1`,
-			`-update`, `1`,
-			tempLocalThumbnailFilePath]);
-		return promise;
-	}).catch(error => {
-		log(`Failed to generate thumbnail: ${error} (A08)`);
-		return Promise.reject(error);
-	});
-}
 
-// === END THUMBNAIL GENERATION ===
 
-// async function getThumbnailURLFor(filename) {
-// 	return new Promise(async (resolve, reject) => {
-// 		let db = admin.firestore();
-// 		const id = fileIDFromFilename(filename);
-// 		const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
-// 		bucket.file(`thumbnails/TTT${id}.jpg`).getSignedUrl({
-// 			action: "read",
-// 			expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
-// 		}).then(url => {
-// 			resolve(url[0]);
-// 		}).catch(reason => {
-// 			reject(reason);
-// 			log(`Rejecting getThumbnailURLFor(). Reason: ${reason}`);
-// 		});
-// 	});
-// }
 
-/*
-async function getContentURLFor(filename) {
-	return getURLFor(`content/${filename}`)
-		.catch(_ => {
-			return null;
-		});
-}
-*/
 
 async function getRabbiProfilePictureURLFor(filename) {
 	return getURLFor(`profile-pictures/${filename}`)
