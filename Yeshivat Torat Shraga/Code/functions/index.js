@@ -265,12 +265,10 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 
 
 exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async object => {
+	if (!object.name.includes('content'))
+		return log(`Skipping ${object.name} because it is not a content file.`);
 	const storage = new Storage();
 	const bucket = storage.bucket(object.bucket);
-	if (!object.name.includes('content')) {
-		log(`Skipping ${object.name} because it is not a content file.`);
-		return;
-	}
 
 	try {
 		const filepath = object.name;
