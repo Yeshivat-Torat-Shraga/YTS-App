@@ -10,7 +10,7 @@ const childProcessPromise = require('child-process-promise');
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
@@ -352,7 +352,7 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 	await bucket.file(filepath).download({
 		destination: tempFilePath,
 		validation: false
-});
+	});
 	const inputPath = tempFilePath;
 	const outputDir = path.join(os.tmpdir(), `thumbnails`);
 	// Step 3: Create the output folder
@@ -373,21 +373,21 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 		], { stdio: 'inherit' });
 	} catch (error) {
 		functions.logger.error(`Error: ${error}`);
-}
+	}
 	// Step 5: Upload the thumbnail to the bucket
 	const metadata = {
 		contentType: 'image/jpeg',
 		// To enable Client-side caching you can set the Cache-Control headers here:
 		'Cache-Control': 'public,max-age=3600'
-};
+	};
 	await bucket.upload(`${outputDir}/${filename}.jpg`, {
 		destination: `thumbnails/${filename}.jpg`,
 		metadata: metadata
-});
+	});
 	// Step 6: Delete the temporary file
 	fs.unlinkSync(tempFilePath);
 
-	});
+});
 
 /** === SEARCH FUNCTIONS ===
  *
@@ -440,7 +440,7 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 			if (searchOptions.orderBy.content.field && searchOptions.orderBy.content.order) {
 				query = query.orderBy(searchOptions.orderBy.content.field, searchOptions.orderBy.content.order);
 			} else query = query.orderBy("date", "desc");
-	}
+		}
 
 		if (searchOptions.orderBy.rabbi &&
 			searchOptions.orderBy.rabbi.field &&
@@ -472,8 +472,8 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 			return {
 				content: content,
 				rebbeim: rebbeim,
-	};
-	});
+			};
+		});
 });
 
 
@@ -549,16 +549,19 @@ function appendToEndOfFilename(filename, text) {
 	return components.join('.');
 }
 
-function fileIDFromFilename(filename) {
-	const fileparts = filename.split('/');
-	if (fileparts.length == 1) return filename;
-	const id = fileparts[fileparts.length - 1].substring(3).split('.');
-	id.splice(-1);
-	return id.join('.');
+function strippedFilename(filename) {
+	// Remove directory path
+	const components = filename.split('/');
+	// Remove file extension
+	return components[components.length - 1].split('.')[0];
 }
+
 
 function log(data, structured = false) {
 	functions.logger.info(data, {
 		structuredData: structured
 	});
 }
+
+
+
