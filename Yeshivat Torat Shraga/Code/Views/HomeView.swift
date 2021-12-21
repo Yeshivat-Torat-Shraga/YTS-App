@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State var searchText = ""
     @ObservedObject var model: HomeViewModel
     let categories: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
+    
+    @State var presentingSearchView = false
     
     init() {
         self.model = HomeViewModel()
@@ -20,26 +21,7 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(Color("ShragaBlue"))
-                            .opacity(0.1)
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                            TextField("", text: $searchText)
-                                .placeholder(when: searchText.isEmpty) {
-                                        Text("Search...").foregroundColor(Color("ShragaGold"))
-                                }
-//                                .foregroundColor(Color("ShragaGold"))
-                        }
-                        .foregroundColor(Color("ShragaGold"))
-                        .padding(.leading, 13)
-                    
-                    }
-                    .frame(height: 40)
-                    .cornerRadius(13)
-                    .padding(.horizontal)
-                    VStack {
+                    VStack(spacing: 0.0) {
                         HStack {
                             Text("Recently Uploaded")
                                 .font(.title3)
@@ -61,6 +43,7 @@ struct HomeView: View {
                                         }
                                     }
                                 }
+                                .padding(.horizontal)
                             }
                         } else {
                             ProgressView()
@@ -95,7 +78,7 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider().padding()
+                        Divider().padding(.horizontal)
                     }
                     
                     VStack(spacing: 0) {
@@ -113,17 +96,21 @@ struct HomeView: View {
                                     TagTileView(category)
                                         .padding(.vertical)
                                 }
-                            }.padding()
+                            }.padding(.horizontal)
                         }
-                        Divider().padding()
+                        Divider().padding(.horizontal)
                     }
                 }
-                .padding(.vertical)
+                .padding(.bottom)
                 .navigationTitle("Home")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
+                        HStack(spacing: 0.0) {
                         LogoView(size: .small)
-                        
+                            EllipseButton(action: {
+                                self.presentingSearchView = true
+                            }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
+                        }
                     }
                 }
             }.alert(isPresented: Binding(get: {
@@ -144,6 +131,9 @@ struct HomeView: View {
                             }
                         }))
             })
+        }
+        .sheet(isPresented: $presentingSearchView) {
+            SearchView()
         }
     }
 }

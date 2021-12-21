@@ -20,12 +20,14 @@ struct AudioTile: View {
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.leading)
+                        .padding(.trailing)
                     Spacer()
                     if let author = audio.author as? DetailedRabbi {
                     DownloadableImage(object: author)
-                            .aspectRatio(contentMode: .fit)
+                            .aspectRatio(contentMode: .fill)
                             .clipShape(Circle())
-                            .frame(width: 70, height: 70)
+                            .frame(width: 65, height: 65)
+                            .clipped()
                     }
                 }
                 HStack {
@@ -37,13 +39,15 @@ struct AudioTile: View {
                 
                 HStack {
                     if #available(iOS 15.0, *) {
-                        Text(audio.date.formatted(date: .long, time: .omitted))
+                        HStack {
+                            Text(audio.date.formatted(date: .long, time: .omitted))
+                                .foregroundColor(Color("Gray"))
+                        }
                     } else {
                         
                         if let month = Date.monthNameFor(audio.date.get(.month)) {
                                 HStack {
                                     let yearAsString = String(audio.date.get(.year))
-                                    Image(systemName: "calendar")
                                     Text("\(month) \(audio.date.get(.day)), \(yearAsString)")
                                         .foregroundColor(Color("Gray"))
                                 }
@@ -80,6 +84,6 @@ struct AudioTile: View {
 struct AudioTile_Previews: PreviewProvider {
     static var previews: some View {
         AudioTile(audio: .sample)
-            .previewLayout(.fixed(width: 350, height: 170))
+            .previewLayout(.fixed(width: 450, height: 170))
     }
 }

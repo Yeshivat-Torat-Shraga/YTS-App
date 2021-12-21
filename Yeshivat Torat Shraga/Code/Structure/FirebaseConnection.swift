@@ -195,7 +195,7 @@ final class FirebaseConnection {
                         date: date,
                         duration: duration,
                         tags: [],
-                        thumbnailURL: URL(string: "https://i.pcmag.com/imagery/reviews/05q4OgEDdjBnzHuNkFg7MB3-15.fit_lim.size_1050x591.v1626206894.jpg")!))
+                        thumbnail: Image("test-thumbnail")))
                     group.leave()
                     continue
                 case "audio":
