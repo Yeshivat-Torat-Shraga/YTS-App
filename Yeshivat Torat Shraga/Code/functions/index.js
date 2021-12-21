@@ -272,7 +272,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 
 	try {
 		const filepath = object.name;
-		const filename = path.basename(filepath);
+		const filename = strippedFilename(filepath);
 		const tempFilePath = path.join(os.tmpdir(), filename);
 
 		await bucket.file(filepath).download({
@@ -280,7 +280,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 			validation: false
 		});
 
-		const foldername = `SSS${fileIDFromFilename(filename)}`;
+		const foldername = `${filename}`;
 
 		const inputPath = tempFilePath;
 		const outputDir = path.join(os.tmpdir(), `HLSStreams`);
