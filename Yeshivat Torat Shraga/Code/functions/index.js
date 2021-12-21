@@ -337,160 +337,142 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 	}
 });
 
-/*
-exports.createFirestoreEntry = functions.storage.object().onFinalize(async (object) => {
-	/*
-	AttributionID
-	Author
-	Date
-	Description
-	Duration
-	Source Path
-	Title
-	Type
-	*//*
-const bucket = gcs.bucket(object.bucket);
-const filePath = object.name;
-const fileName = path.basename(filePath);
-const fileID = fileIDFromFilename(fileName);
-const fileType = object.contentType.split("/")[0];
-const fileExtension = object.contentType.split("/")[1];
-const fileSize = object.size;
-const fileCreated = object.timeCreated;
-const fileUpdated = object.updated;
-
-const file = bucket.file(filePath);
-const urlResult = await file.getSignedUrl({
-action: 'read',
-expires: '03-09-2491'
-});
-
-const url = new URL(urlResult[0]);
-url.protocol = "file";
-
-const db = admin.firestore();
-const docRef = db.collection('files').doc(fileID);
-const doc = await docRef.get();
-if (doc.exists) {
-log(`Document ${fileID} already exists.`);
-return;
-}
-
-const newDoc = {
-id: fileID,
-type: fileType,
-extension: fileExtension,
-size: fileSize,
-created: fileCreated,
-updated: fileUpdated,
-url: url.href
-};
-
-await docRef.set(newDoc);
-});
-*/
-
-
 // === BEGIN THUMBNAIL FUNCTIONS ===
 // const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async object => {
+	// Step 1: Preliminary filetype
+	if (!object.contentType.startsWith('video/'))
+		return log(`Skipping ${object.name} because it is not in the video folder.`);
+	// Step 2: Download the file from the bucket to a temporary folder
+	const filepath = object.name;
+	const filename = strippedFilename(filepath);
+	const storage = new Storage();
+	const bucket = storage.bucket(object.bucket);
+	const tempFilePath = path.join(os.tmpdir(), filename);
+	await bucket.file(filepath).download({
+		destination: tempFilePath,
+		validation: false
+});
+	const inputPath = tempFilePath;
+	const outputDir = path.join(os.tmpdir(), `thumbnails`);
+	// Step 3: Create the output folder
+	await childProcessPromise.spawn("mkdir", ["-p", outputDir]);
+	// delete everything in the output directory
+	await childProcessPromise.spawn("rm", ["-rf", `${outputDir}/*`]);
 
-
-	const THUMB_PREFIX = 'TTT';
-
-	const SERVICE_ACCOUNT = 'yeshivat-torat-shraga-1358031cf751.json';
-	const PROJECT_ID = "yeshivat-torat-shraga";
-
-	const storage = new Storage({
-		keyFilename: SERVICE_ACCOUNT,
-		projectId: PROJECT_ID
-	});
-
-	// MIME type
-	const contentType = object.contentType;
-
-	const isVideo = contentType.startsWith('video/');
-
-	// File path
-	const filePathInBucket = object.name;
-
-	if (!filePathInBucket.includes('content')) {
-		// log("This function only generates thumbnails for files in the content folder.");
-		return;
-	}
-
-	if (!isVideo) {
-		log(`Can't create thumbnail for path '${filePathInBucket}' because it seems to not be a video. (A05)`);
-		return Promise.reject();
-	}
-
-	// Storage bucket containing the file
-	const fileBucket = object.bucket; // The Storage bucket that contains the file.
-
-	const resourceState = object.resourceState; // The resourceState is 'exists' or 'not_exists' (for file/folder deletions).
-
-	const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
-
-	log(`Attempting to create thumbnail for file with path '${filePathInBucket}'...`);
-
-	const isImage = contentType.startsWith('image/');
-	// log(`Object: ${JSON.stringify(object)}`);
-	log(`Creating thumbnail for file with path '${filePathInBucket}' in bucket '${fileBucket}'`);
-
-	if (resourceState === 'not_exists') {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; resourceState=${resourceState}. (A01)`);
-		return Promise.reject();
-	} else if (resourceState === 'exists' && metageneration > 1) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; metageneration=${metageneration}. (A02)`);
-		return Promise.reject();
-	} else if (filePathInBucket.indexOf('.thumbnail.') !== -1) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'. (A03)`);
-		return Promise.reject();
-	} else if (!(isImage || isVideo)) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; contentType=${contentType}. (A04)`);
-		return Promise.reject();
-	}
-
-	const fileName = path.basename(filePathInBucket);
-
-
-	const thumbFileExt = 'jpg';
-
-	const indexOfLastDot = fileName.lastIndexOf('.');
-	const newFilename = `${fileName.substring(0, indexOfLastDot).replace('FFF', THUMB_PREFIX)}.${thumbFileExt}`;
-	let thumbFilePath = path.normalize(`thumbnails/${newFilename}`);
-
-	log(`New thumbnail file path: '${thumbFilePath}'`);
-	const tempLocalThumbnailFilePath = path.join(os.tmpdir(), newFilename);
-
-	const generateOperation = generateThumbnailFromVideo;
-
-	const bucket = storage.bucket(fileBucket);
-	const file = bucket.file(filePathInBucket);
+	// Step 4: Generate the thumbnail using ffmpeg
+	try {
+		await childProcessPromise.spawn(ffmpeg.path, [
+			'-ss', '0',
+			'-i', inputPath,
+			'-y',
+			'-vframes', '1',
+			'-vf', `scale=512:-1`,
+			`-update`, `1`,
+			`${outputDir}/${filename}.jpg`
+		], { stdio: 'inherit' });
+	} catch (error) {
+		functions.logger.error(`Error: ${error}`);
+}
+	// Step 5: Upload the thumbnail to the bucket
 	const metadata = {
 		contentType: 'image/jpeg',
 		// To enable Client-side caching you can set the Cache-Control headers here:
 		'Cache-Control': 'public,max-age=3600'
-	};
+};
+	await bucket.upload(`${outputDir}/${filename}.jpg`, {
+		destination: `thumbnails/${filename}.jpg`,
+		metadata: metadata
+});
+	// Step 6: Delete the temporary file
+	fs.unlinkSync(tempFilePath);
 
-	return generateOperation(file, tempLocalThumbnailFilePath, fileName).then(async _ => {
-		log(`Promise resolved, stored at: '${tempLocalThumbFile}'`);
-		log(`Now uploading to bucket at: ${thumbFilePath}`);
-		bucket.upload(tempLocalThumbFile, {
-			destination: thumbFilePath,
-			metadata: metadata
-		}).then(_ => {
-			return 'success';
-		}).catch(error => {
-			log(`Error: ${error} (A07)`);
-			throw new functions.https.HttpsError(
-				'error-uploading',
-				error);
-		});
-	}).catch(error => {
-		throw new functions.https.HttpsError(
-			'error-generating',
-			error);
+	});
+
+/** === SEARCH FUNCTIONS ===
+ *
+ * This function is triggered via HTTP.
+ * It looks through the specified collection
+ * and returns all documents that have any word
+ * in the query string saved in the search_index
+ * field belonging to every document.
+ *
+ * The collections we are searching are currently:
+ * ["content", "rebbeim"]
+ */
+exports.searchFirestore = functions.https.onCall(async (callData, context) => {
+	const db = admin.firestore();
+	const searchQuery = callData.searchQuery;
+	const searchOptions = callData.searchOptions;
+	const searchArray = searchQuery.split(" ");
+	let documentsThatMeetSearchCriteria = [];
+	let error = {
+		error_occured: false,
+	};
+	// Rabbis: order by name
+	// Content: order by date
+
+	// For each collection, run the following async function:
+	return Promise.all(["content", "rebbeim"].map(async (collectionName) => {
+
+		// Get the collection
+		query = db.collection(collectionName);
+
+		// Limit the query with the options given.
+		// These options should be given as a JSON object.
+		// Options include:
+		// - limit: The number of documents to return.
+		// - orderBy: A dictionary of the form 
+		// rabbi: {
+		// 		field: "name",
+		// 		order: "asc"
+		// 	}, content: {
+		// 		field: "date",
+		// 		order: "desc"
+		// 	}
+		// 
+
+		// - startAtDocumentWithID: The documentID to start the query at.
+		if (searchOptions.limit) query = query.limit(searchOptions.limit);
+		if (searchOptions.startAtDocumentWithID) query = query.startAt(searchOptions.startAtDocumentWithID);
+		query = query.where("search_index", "array-contains-any", searchArray);
+		if (searchOptions.orderBy.content) {
+			if (searchOptions.orderBy.content.field && searchOptions.orderBy.content.order) {
+				query = query.orderBy(searchOptions.orderBy.content.field, searchOptions.orderBy.content.order);
+			} else query = query.orderBy("date", "desc");
+	}
+
+		if (searchOptions.orderBy.rabbi &&
+			searchOptions.orderBy.rabbi.field &&
+			searchOptions.orderBy.rabbi.order) {
+			query = query.orderBy(searchOptions.orderBy.rabbi.field, searchOptions.orderBy.rabbi.order);
+		} else query = query.orderBy("date", "desc");
+
+		// else if (collectionName === "rebbeim")
+
+		let contentSnapshot = await query.get();
+		let docs = contentSnapshot.docs;
+		for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
+		return docs;
+	}))
+		.then(docs => {
+			let rawContent = docs[0];
+			let rawRebbeim = docs[1];
+			let content = [];
+			let rebbeim = [];
+
+			rawContent.map(doc => {
+				content.push(doc.data());
+			});
+
+			rawRebbeim.map(doc => {
+				rebbeim.push(doc.data());
+			});
+
+			return {
+				content: content,
+				rebbeim: rebbeim,
+	};
 	});
 });
 
