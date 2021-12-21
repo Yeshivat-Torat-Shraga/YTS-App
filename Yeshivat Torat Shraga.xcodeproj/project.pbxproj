@@ -448,7 +448,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -587,7 +587,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -610,7 +610,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
