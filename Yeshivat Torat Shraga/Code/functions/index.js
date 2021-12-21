@@ -164,7 +164,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 	let query = db.collection('content');
 	if (callData.search) {
 		if (callData.search.field == "tag") {
-			query = query.where("tags", "array-contains", "chanuka")
+			query = query.where("tags", "array-contains", callData.search.value);
 			log(`Only getting content where [tags] contains ${callData.search.value}`);
 		} else {
 			query = query.where(callData.search.field, "==", callData.search.value);
