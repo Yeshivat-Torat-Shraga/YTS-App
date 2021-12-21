@@ -288,11 +288,15 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		log(`Input path: ${inputPath}`);
 		log(`Output path: ${outputDir}`);
 
-
+		// Create the output directory if it doesn't exist
 		await childProcessPromise.spawn("mkdir", ["-p", outputDir]);
+
+		// delete everything in the output directory
+		await childProcessPromise.spawn("rm", ["-rf", `${outputDir}/*`]);
 
 		try {
 			await childProcessPromise.spawn(ffmpeg.path, [
+				`-y`,
 				`-i`, `${inputPath}`,
 				`-hls_list_size`, `0`,
 				`-hls_time`, `10`,
