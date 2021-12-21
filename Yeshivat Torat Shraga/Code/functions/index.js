@@ -2,7 +2,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const admin = require('firebase-admin');
-const spawn = require('child-process-promise');
 const functions = require('firebase-functions');
 const ffmpeg = require('@ffmpeg-installer/ffmpeg');
 const { Storage } = require('@google-cloud/storage');
