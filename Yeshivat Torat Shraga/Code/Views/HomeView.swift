@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var model: HomeViewModel
+    @ObservedObject var model: HomeModel
     let categories: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
     
     @State var presentingSearchView = false
     
     init() {
-        self.model = HomeViewModel()
+        self.model = HomeModel()
     }
     
     var body: some View {

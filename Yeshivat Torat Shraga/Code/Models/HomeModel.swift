@@ -1,5 +1,5 @@
 //
-//  HomeViewModel.swift
+//  HomeModel.swift
 //  Yeshivat Torat Shraga
 //
 //  Created by Benji Tusk on 11/11/21.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-class HomeViewModel: ObservableObject, ErrorShower {
+class HomeModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     var errorToShow: Error?
     var retry: (() -> Void)?

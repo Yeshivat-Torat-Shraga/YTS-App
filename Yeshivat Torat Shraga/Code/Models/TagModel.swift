@@ -1,5 +1,5 @@
 //
-//  TagViewModel.swift
+//  TagModel.swift
 //  Yeshivat Torat Shraga
 //
 //  Created by Benji Tusk on 11/12/2021.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-class TagViewModel: ObservableObject {
+class TagModel: ObservableObject {
     let tag: Tag
     @Published var sortables: [SortableYTSContent]?
     @Published var content: Content?

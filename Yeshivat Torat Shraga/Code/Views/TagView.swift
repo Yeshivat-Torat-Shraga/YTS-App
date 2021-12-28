@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct TagView: View {
-    @ObservedObject var model: TagViewModel
+    @ObservedObject var model: TagModel
     var tag: Tag
     
     init(tag: Tag) {
         self.tag = tag
-        self.model = TagViewModel(tag: tag)
+        self.model = TagModel(tag: tag)
     }
     
     var body: some View {
