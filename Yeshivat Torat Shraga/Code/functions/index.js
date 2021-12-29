@@ -10,7 +10,7 @@ const childProcessPromise = require('child-process-promise');
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	//credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
@@ -325,6 +325,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		await Promise.all(filenames.map((filename) => {
 			const fp = path.join(outputDir, filename);
 			log(`Uploading ${fp}...`);
+			bucket.file(filepath).delete();
 			return bucket.upload(fp, {
 				destination: `HLSStreams/${object.contentType.split("/")[0]}/${foldername}/${filename}`,
 				metadata: metadata
