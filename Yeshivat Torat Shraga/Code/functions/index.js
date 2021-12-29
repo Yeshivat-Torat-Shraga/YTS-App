@@ -325,13 +325,14 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		await Promise.all(filenames.map((filename) => {
 			const fp = path.join(outputDir, filename);
 			log(`Uploading ${fp}...`);
-			bucket.file(filepath).delete();
 			return bucket.upload(fp, {
 				destination: `HLSStreams/${object.contentType.split("/")[0]}/${foldername}/${filename}`,
 				metadata: metadata
 			});
 		}));
 		console.log('Uploaded all files.');
+
+		bucket.file(filepath).delete();
 
 	} catch (err) {
 		log(`Failed: ${err} (B01F)`);
