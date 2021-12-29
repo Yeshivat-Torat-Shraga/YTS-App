@@ -2,16 +2,15 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const admin = require('firebase-admin');
-const spawn = require('child-process-promise');
 const functions = require('firebase-functions');
 const ffmpeg = require('@ffmpeg-installer/ffmpeg');
-const { Storage } = require('@google-cloud/storage');
+const Storage = require('@google-cloud/storage').Storage;
 const childProcessPromise = require('child-process-promise');
 
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
@@ -165,7 +164,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 	let query = db.collection('content');
 	if (callData.search) {
 		if (callData.search.field == "tag") {
-			query = query.where("tags", "array-contains", "chanuka")
+			query = query.where("tags", "array-contains", callData.search.value);
 			log(`Only getting content where [tags] contains ${callData.search.value}`);
 		} else {
 			query = query.where(callData.search.field, "==", callData.search.value);
@@ -266,16 +265,14 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 
 
 exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async object => {
+	if (!object.name.includes('content'))
+		return log(`Skipping ${object.name} because it is not a content file.`);
 	const storage = new Storage();
 	const bucket = storage.bucket(object.bucket);
-	if (!object.name.includes('content')) {
-		log(`Skipping ${object.name} because it is not a content file.`);
-		return;
-	}
 
 	try {
 		const filepath = object.name;
-		const filename = path.basename(filepath);
+		const filename = strippedFilename(filepath);
 		const tempFilePath = path.join(os.tmpdir(), filename);
 
 		await bucket.file(filepath).download({
@@ -283,7 +280,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 			validation: false
 		});
 
-		const foldername = `SSS${fileIDFromFilename(filename)}`;
+		const foldername = `${filename}`;
 
 		const inputPath = tempFilePath;
 		const outputDir = path.join(os.tmpdir(), `HLSStreams`);
@@ -291,11 +288,15 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		log(`Input path: ${inputPath}`);
 		log(`Output path: ${outputDir}`);
 
-
+		// Create the output directory if it doesn't exist
 		await childProcessPromise.spawn("mkdir", ["-p", outputDir]);
+
+		// delete everything in the output directory
+		await childProcessPromise.spawn("rm", ["-rf", `${outputDir}/*`]);
 
 		try {
 			await childProcessPromise.spawn(ffmpeg.path, [
+				`-y`,
 				`-i`, `${inputPath}`,
 				`-hls_list_size`, `0`,
 				`-hls_time`, `10`,
@@ -330,229 +331,154 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 			});
 		}));
 		console.log('Uploaded all files.');
-		// filenames.forEach(async name => {
-		// 	const fp = path.join(outputDir, name);
-		// 	log(`Uploading file with path '${fp}'...`);
-		// 	await bucket.upload(fp, {
-		// 		destination: `HLSStreams/${object.contentType.split("/")[0]}/${foldername}/${filename}`,
-		// 		metadata: metadata
-		// 	});
-		// 	// throw new error("Uploaded one file. Exiting immediately.");
-		// });
-		// });
+
 	} catch (err) {
 		log(`Failed: ${err} (B01F)`);
 	}
 });
 
-/*
-exports.createFirestoreEntry = functions.storage.object().onFinalize(async (object) => {
-	/*
-	AttributionID
-	Author
-	Date
-	Description
-	Duration
-	Source Path
-	Title
-	Type
-	*//*
-const bucket = gcs.bucket(object.bucket);
-const filePath = object.name;
-const fileName = path.basename(filePath);
-const fileID = fileIDFromFilename(fileName);
-const fileType = object.contentType.split("/")[0];
-const fileExtension = object.contentType.split("/")[1];
-const fileSize = object.size;
-const fileCreated = object.timeCreated;
-const fileUpdated = object.updated;
-
-const file = bucket.file(filePath);
-const urlResult = await file.getSignedUrl({
-action: 'read',
-expires: '03-09-2491'
-});
-
-const url = new URL(urlResult[0]);
-url.protocol = "file";
-
-const db = admin.firestore();
-const docRef = db.collection('files').doc(fileID);
-const doc = await docRef.get();
-if (doc.exists) {
-log(`Document ${fileID} already exists.`);
-return;
-}
-
-const newDoc = {
-id: fileID,
-type: fileType,
-extension: fileExtension,
-size: fileSize,
-created: fileCreated,
-updated: fileUpdated,
-url: url.href
-};
-
-await docRef.set(newDoc);
-});
-*/
-
-
 // === BEGIN THUMBNAIL FUNCTIONS ===
 // const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async object => {
-
-
-	const THUMB_PREFIX = 'TTT';
-
-	const SERVICE_ACCOUNT = 'yeshivat-torat-shraga-1358031cf751.json';
-	const PROJECT_ID = "yeshivat-torat-shraga";
-
-	const storage = new Storage({
-		keyFilename: SERVICE_ACCOUNT,
-		projectId: PROJECT_ID
+	// Step 1: Preliminary filetype
+	if (!object.contentType.startsWith('video/'))
+		return log(`Skipping ${object.name} because it is not in the video folder.`);
+	// Step 2: Download the file from the bucket to a temporary folder
+	const filepath = object.name;
+	const filename = strippedFilename(filepath);
+	const storage = new Storage();
+	const bucket = storage.bucket(object.bucket);
+	const tempFilePath = path.join(os.tmpdir(), filename);
+	await bucket.file(filepath).download({
+		destination: tempFilePath,
+		validation: false
 	});
+	const inputPath = tempFilePath;
+	const outputDir = path.join(os.tmpdir(), `thumbnails`);
+	// Step 3: Create the output folder
+	await childProcessPromise.spawn("mkdir", ["-p", outputDir]);
+	// delete everything in the output directory
+	await childProcessPromise.spawn("rm", ["-rf", `${outputDir}/*`]);
 
-	// MIME type
-	const contentType = object.contentType;
-
-	const isVideo = contentType.startsWith('video/');
-
-	// File path
-	const filePathInBucket = object.name;
-
-	if (!filePathInBucket.includes('content')) {
-		// log("This function only generates thumbnails for files in the content folder.");
-		return;
+	// Step 4: Generate the thumbnail using ffmpeg
+	try {
+		await childProcessPromise.spawn(ffmpeg.path, [
+			'-ss', '0',
+			'-i', inputPath,
+			'-y',
+			'-vframes', '1',
+			'-vf', `scale=512:-1`,
+			`-update`, `1`,
+			`${outputDir}/${filename}.jpg`
+		], { stdio: 'inherit' });
+	} catch (error) {
+		functions.logger.error(`Error: ${error}`);
 	}
-
-	if (!isVideo) {
-		log(`Can't create thumbnail for path '${filePathInBucket}' because it seems to not be a video. (A05)`);
-		return Promise.reject();
-	}
-
-	// Storage bucket containing the file
-	const fileBucket = object.bucket; // The Storage bucket that contains the file.
-
-	const resourceState = object.resourceState; // The resourceState is 'exists' or 'not_exists' (for file/folder deletions).
-
-	const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
-
-	log(`Attempting to create thumbnail for file with path '${filePathInBucket}'...`);
-
-	const isImage = contentType.startsWith('image/');
-	// log(`Object: ${JSON.stringify(object)}`);
-	log(`Creating thumbnail for file with path '${filePathInBucket}' in bucket '${fileBucket}'`);
-
-	if (resourceState === 'not_exists') {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; resourceState=${resourceState}. (A01)`);
-		return Promise.reject();
-	} else if (resourceState === 'exists' && metageneration > 1) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; metageneration=${metageneration}. (A02)`);
-		return Promise.reject();
-	} else if (filePathInBucket.indexOf('.thumbnail.') !== -1) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'. (A03)`);
-		return Promise.reject();
-	} else if (!(isImage || isVideo)) {
-		log(`Error: Failed to create thumbnail for path '${filePathInBucket}'; contentType=${contentType}. (A04)`);
-		return Promise.reject();
-	}
-
-	const fileName = path.basename(filePathInBucket);
-
-
-	const thumbFileExt = 'jpg';
-
-	const indexOfLastDot = fileName.lastIndexOf('.');
-	const newFilename = `${fileName.substring(0, indexOfLastDot).replace('FFF', THUMB_PREFIX)}.${thumbFileExt}`;
-	let thumbFilePath = path.normalize(`thumbnails/${newFilename}`);
-
-	log(`New thumbnail file path: '${thumbFilePath}'`);
-	const tempLocalThumbnailFilePath = path.join(os.tmpdir(), newFilename);
-
-	const generateOperation = generateThumbnailFromVideo;
-
-	const bucket = storage.bucket(fileBucket);
-	const file = bucket.file(filePathInBucket);
+	// Step 5: Upload the thumbnail to the bucket
 	const metadata = {
 		contentType: 'image/jpeg',
 		// To enable Client-side caching you can set the Cache-Control headers here:
 		'Cache-Control': 'public,max-age=3600'
 	};
-
-	return generateOperation(file, tempLocalThumbnailFilePath, fileName).then(async _ => {
-		log(`Promise resolved, stored at: '${tempLocalThumbFile}'`);
-		log(`Now uploading to bucket at: ${thumbFilePath}`);
-		bucket.upload(tempLocalThumbFile, {
-			destination: thumbFilePath,
-			metadata: metadata
-		}).then(_ => {
-			return 'success';
-		}).catch(error => {
-			log(`Error: ${error} (A07)`);
-			throw new functions.https.HttpsError(
-				'error-uploading',
-				error);
-		});
-	}).catch(error => {
-		throw new functions.https.HttpsError(
-			'error-generating',
-			error);
+	await bucket.upload(`${outputDir}/${filename}.jpg`, {
+		destination: `thumbnails/${filename}.jpg`,
+		metadata: metadata
 	});
+	// Step 6: Delete the temporary file
+	fs.unlinkSync(tempFilePath);
+
 });
 
-function generateThumbnailFromVideo(file, tempLocalThumbnailFilePath) {
-	log(`Entered generateThumbnailFromVideo function.`);
-	return file.getSignedUrl({
-		action: 'read',
-		expires: Date.now() + 1000 * 60 * 60,
-	}).then(signedUrl => {
-		const fileUrl = signedUrl[0];
-		log(tempLocalThumbnailFilePath);
-		const promise = spawn.spawn(ffmpeg.path, [
-			'-ss', '0',
-			'-i', fileUrl,
-			'-f', 'image2',
-			'-vframes', '1',
-			'-vf',
-			// `scale=512:-1`,
-			`-update`, `1`,
-			tempLocalThumbnailFilePath]);
-		return promise;
-	}).catch(error => {
-		log(`Failed to generate thumbnail: ${error} (A08)`);
-		return Promise.reject(error);
-	});
-}
+/** === SEARCH FUNCTIONS ===
+ *
+ * This function is triggered via HTTP.
+ * It looks through the specified collection
+ * and returns all documents that have any word
+ * in the query string saved in the search_index
+ * field belonging to every document.
+ *
+ * The collections we are searching are currently:
+ * ["content", "rebbeim"]
+ */
+exports.searchFirestore = functions.https.onCall(async (callData, context) => {
+	const db = admin.firestore();
+	const searchQuery = callData.searchQuery;
+	const searchOptions = callData.searchOptions;
+	const searchArray = searchQuery.split(" ");
+	let documentsThatMeetSearchCriteria = [];
+	let error = {
+		error_occured: false,
+	};
+	// Rabbis: order by name
+	// Content: order by date
 
-// === END THUMBNAIL GENERATION ===
+	// For each collection, run the following async function:
+	return Promise.all(["content", "rebbeim"].map(async (collectionName) => {
 
-// async function getThumbnailURLFor(filename) {
-// 	return new Promise(async (resolve, reject) => {
-// 		let db = admin.firestore();
-// 		const id = fileIDFromFilename(filename);
-// 		const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
-// 		bucket.file(`thumbnails/TTT${id}.jpg`).getSignedUrl({
-// 			action: "read",
-// 			expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
-// 		}).then(url => {
-// 			resolve(url[0]);
-// 		}).catch(reason => {
-// 			reject(reason);
-// 			log(`Rejecting getThumbnailURLFor(). Reason: ${reason}`);
-// 		});
-// 	});
-// }
+		// Get the collection
+		query = db.collection(collectionName);
 
-/*
-async function getContentURLFor(filename) {
-	return getURLFor(`content/${filename}`)
-		.catch(_ => {
-			return null;
+		// Limit the query with the options given.
+		// These options should be given as a JSON object.
+		// Options include:
+		// - limit: The number of documents to return.
+		// - orderBy: A dictionary of the form 
+		// rabbi: {
+		// 		field: "name",
+		// 		order: "asc"
+		// 	}, content: {
+		// 		field: "date",
+		// 		order: "desc"
+		// 	}
+		// 
+
+		// - startAtDocumentWithID: The documentID to start the query at.
+		if (searchOptions.limit) query = query.limit(searchOptions.limit);
+		if (searchOptions.startAtDocumentWithID) query = query.startAt(searchOptions.startAtDocumentWithID);
+		query = query.where("search_index", "array-contains-any", searchArray);
+		if (searchOptions.orderBy.content) {
+			if (searchOptions.orderBy.content.field && searchOptions.orderBy.content.order) {
+				query = query.orderBy(searchOptions.orderBy.content.field, searchOptions.orderBy.content.order);
+			} else query = query.orderBy("date", "desc");
+		}
+
+		if (searchOptions.orderBy.rabbi &&
+			searchOptions.orderBy.rabbi.field &&
+			searchOptions.orderBy.rabbi.order) {
+			query = query.orderBy(searchOptions.orderBy.rabbi.field, searchOptions.orderBy.rabbi.order);
+		} else query = query.orderBy("date", "desc");
+
+		// else if (collectionName === "rebbeim")
+
+		let contentSnapshot = await query.get();
+		let docs = contentSnapshot.docs;
+		for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
+		return docs;
+	}))
+		.then(docs => {
+			let rawContent = docs[0];
+			let rawRebbeim = docs[1];
+			let content = [];
+			let rebbeim = [];
+
+			rawContent.map(doc => {
+				content.push(doc.data());
+			});
+
+			rawRebbeim.map(doc => {
+				rebbeim.push(doc.data());
+			});
+
+			return {
+				content: content,
+				rebbeim: rebbeim,
+			};
 		});
-}
-*/
+});
+
+
+
+
 
 async function getRabbiProfilePictureURLFor(filename) {
 	return getURLFor(`profile-pictures/${filename}`)
@@ -623,16 +549,19 @@ function appendToEndOfFilename(filename, text) {
 	return components.join('.');
 }
 
-function fileIDFromFilename(filename) {
-	const fileparts = filename.split('/');
-	if (fileparts.length == 1) return filename;
-	const id = fileparts[fileparts.length - 1].substring(3).split('.');
-	id.splice(-1);
-	return id.join('.');
+function strippedFilename(filename) {
+	// Remove directory path
+	const components = filename.split('/');
+	// Remove file extension
+	return components[components.length - 1].split('.')[0];
 }
+
 
 function log(data, structured = false) {
 	functions.logger.info(data, {
 		structuredData: structured
 	});
 }
+
+
+
