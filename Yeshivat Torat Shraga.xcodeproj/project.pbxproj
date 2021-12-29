@@ -51,6 +51,8 @@
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
 		F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCE178276A63DA009ABAC1 /* VideoTile.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
+		F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */; };
+		F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F69C4E277C3A790069DCAE /* AppValidation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +98,7 @@
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2CCE178276A63DA009ABAC1 /* VideoTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTile.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
+		F2F69C4E277C3A790069DCAE /* AppValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppValidation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +109,7 @@
 				F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */,
 				08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */,
 				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
+				F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */,
 				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,6 +227,7 @@
 				F230C4D2273BE58B00F7ACCC /* YTS.swift */,
 				F230C4D4273BE81E00F7ACCC /* Errors.swift */,
 				F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */,
+				F2F69C4E277C3A790069DCAE /* AppValidation.swift */,
 			);
 			path = Structure;
 			sourceTree = "<group>";
@@ -270,6 +275,7 @@
 				F28E29202756A78700D9F4AF /* FirebaseFirestore */,
 				F28E29222756A78700D9F4AF /* FirebaseFunctions */,
 				08A05B2927655D8700FEE15F /* FirebaseStorage */,
+				F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -353,6 +359,7 @@
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
 				B1ACF927274456F900079F9A /* LogoView.swift in Sources */,
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
+				F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */,
 				F2235D4727661CA3005E6086 /* EllipseButton.swift in Sources */,
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
 				F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */,
@@ -452,7 +459,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -591,7 +598,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -614,7 +621,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = YL279DNVQD;
+				DEVELOPMENT_TEAM = SST62H5AK8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -685,6 +692,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
+		};
+		F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
 		};
 /* End XCSwiftPackageProductDependency section */
 
