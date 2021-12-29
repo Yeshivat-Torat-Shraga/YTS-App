@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var model: HomeViewModel
-    let categories: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
     
     @State var presentingSearchView = false
     
@@ -92,8 +91,8 @@ struct HomeView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
-                                ForEach(categories, id: \.self) { category in
-                                    TagTileView(category)
+                                ForEach(tags, id: \.name) { tag in
+                                    TagTileView(tag)
                                         .padding(.vertical)
                                 }
                             }.padding(.horizontal)

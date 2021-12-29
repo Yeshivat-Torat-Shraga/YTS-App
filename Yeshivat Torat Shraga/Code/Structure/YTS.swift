@@ -328,15 +328,29 @@ class Tag: Hashable {
 }
 
 /// An enhanced wrapper on a ``Tag`` which includes an icon
-class Category: Tag {
+class Category: Tag, URLImageable {
+    
     /// The icon associated with the ``Tag``
     var icon: Image
+    
+    internal var image: Image? {
+        get {
+            return icon
+        }
+        set {}
+    }
+    
+    var imageURL: URL? {
+        return nil
+    }
     
     init(name: String, icon: Image) {
         self.icon = icon
         super.init(name)
     }
 }
+
+let tags: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
 
 typealias Content = (videos: [Video], audios: [Audio])
 
