@@ -543,11 +543,6 @@ function getRabbiFor(id, includeProfilePictureURL) {
 	});
 }
 
-function appendToEndOfFilename(filename, text) {
-	const components = filename.split('.');
-	components[components.length - 2] = components[components.length - 2].concat(text);
-	return components.join('.');
-}
 
 function strippedFilename(filename) {
 	// Remove directory path
