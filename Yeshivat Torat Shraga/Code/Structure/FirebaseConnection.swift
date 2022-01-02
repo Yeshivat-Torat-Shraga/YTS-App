@@ -13,6 +13,67 @@ import SwiftUI
 final class FirebaseConnection {
     static var functions = Functions.functions()
     
+    /// Searches Firestore using the SearchFirestore cloud function
+    /// - Parameters:
+    ///   - query: The text to search Firestore for
+    ///   - searchOptions: Controls how the search operates. The following parameters are available:
+    ///     - `limit`: Number of results to return. *Defaults to ALL RESULTS!!*
+    ///     - `startAtDocumentWithID`: Pages results starting from first element afterwards.
+    ///     - `orderBy`: A dictionary containing sorting instructions. The following parameters are available:
+    ///         - `rabbi &| content`
+    ///           - `field`: The field to sort by.
+    ///           - `order`: The sort order. Must be one of the following:
+    ///             - `asc`
+    ///             - `desc`
+    ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`
+    /// - Returns:
+    /// ((`Video`, `Audio`, `Rabbi`, metadata), `Error?`)
+    ///
+
+    static func searchFirestore(
+        query: String,
+        searchOptions: NSDictionary?,
+        completion: @escaping (
+            _ results: (
+                videos: [Video],
+                audios: [Audio],
+                rabbis: [Rabbi]
+            )?, _ error: Error?) -> Void
+    ) {
+        // === Store results here: ===
+        var videos: [Video] = []
+        var audios: [Audio] = []
+        var rabbis: [Rabbi] = []
+        
+        // === Prepare data for Firebase function call ===
+        let data: NSDictionary
+        data = NSDictionary(dictionary: [
+            "searchQuery": query,
+            "searchOptions": searchOptions as Any
+        ])
+        
+        // === Call the function ===
+        let httpsCallable = functions.httpsCallable("searchFirestore")
+        httpsCallable.call(data) { callResult, callError in
+            // === Handle return data ===
+            
+            // Check if there was any data received
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            // Check if response contains valid data
+            guard let rebbeim = response["rebbeim"] as? [[String: Any]] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+        }
+    }
+    
+    
+    
+    
     /// Loads `Rabbi` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
@@ -58,10 +119,10 @@ final class FirebaseConnection {
             for rabbiDocument in rabbiDocuments {
                 guard let id = rabbiDocument["id"] as? FirestoreID,
                       let name = rabbiDocument["name"] as? String else {
-                    print("Document missing sufficient data. Continuing to next document.")
-                    group.leave()
-                    continue
-                }
+                          print("Document missing sufficient data. Continuing to next document.")
+                          group.leave()
+                          continue
+                      }
                 
                 if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String,
                    let profilePictureURL = URL(string: profilePictureURLString) {
@@ -145,10 +206,10 @@ final class FirebaseConnection {
                       let type = contentDocument["type"] as? String,
                       let author = contentDocument["author"] as? [String: Any],
                       let sourceURLString = contentDocument["source_url"] as? String else {
-                        print("Document missing sufficient data. Continuing to next document.")
-                        group.leave()
-                        continue
-                }
+                          print("Document missing sufficient data. Continuing to next document.")
+                          group.leave()
+                          continue
+                      }
                 
                 guard let sourceURL = URL(string: sourceURLString) else {
                     print("Source URL is invalid. Continuing to next document.")
