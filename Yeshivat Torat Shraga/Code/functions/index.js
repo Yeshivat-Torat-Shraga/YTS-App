@@ -433,19 +433,26 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 		// Get the collection
 		query = db.collection(collectionName);
 		query = query.where("search_index", "array-contains-any", searchArray);
-		if (searchOptions.orderBy.content) {
-			if (searchOptions.orderBy.content.field && searchOptions.orderBy.content.order) {
-				query = query.orderBy(searchOptions.orderBy.content.field, searchOptions.orderBy.content.order);
-			} else query = query.orderBy("date", "desc");
+		switch (collectionName) {
+			case "content":
+				query = query.orderBy("date", "desc");
+				break;
+			case "rebbeim":
+				query = query.orderBy("name", "asc");
+				break;
 		}
 
-		if (searchOptions.orderBy.rabbi &&
-			searchOptions.orderBy.rabbi.field &&
-			searchOptions.orderBy.rabbi.order) {
-			query = query.orderBy(searchOptions.orderBy.rabbi.field, searchOptions.orderBy.rabbi.order);
-		} else query = query.orderBy("date", "desc");
-
-		// else if (collectionName === "rebbeim")
+		// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
+		if (searchOptions[collectionName].startFromDocumentID)
+			query = query.startAt(searchOptions[collectionName].startFromDocumentID);
+		let limit = searchOptions[collectionName].limit;
+		if (!Number.isInteger(limit)) {
+			errors.push("Limit must be an integer.");
+			return [];
+		}
+		query = query.limit(searchOptions[collectionName].limit || 5);
+		if (searchOptions[collectionName].includeThumbnailURLs);
+		if (searchOptions[collectionName].includeDetailedAuthorInfo);
 
 		let contentSnapshot = await query.get();
 		let docs = contentSnapshot.docs;
