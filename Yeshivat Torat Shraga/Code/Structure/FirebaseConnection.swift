@@ -163,7 +163,7 @@ final class FirebaseConnection {
         var content: Content = (videos: [], audios: [])
         
         var dictionary: [String: Any] = ["count": requestedCount,
-                                         "search": searchData ?? nil,
+                                         "search": searchData as Any, // Explicitly cast to 'Any' with 'as Any' to silence this warning
                                          "includeThumbnailURLs": includeThumbnailURLs,
                                          "includeAllAuthorData": includeAllAuthorData]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
