@@ -490,10 +490,31 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 				}
 			}));
 
-			rawRebbeim.map(doc => {
-				rebbeim.push(doc.data());
-			});
+			await Promise.all(rawRebbeim.map(async (doc) => {
+				// Get the document data.
+				const data = doc.data();
 
+				const pfpFilename = data.profile_picture_filename;
+
+				try {
+					let url;
+					if (searchOptions.rebbeim.includePictureURLs)
+						url = await getRabbiProfilePictureURLFor(pfpFilename);
+
+					const documentData = {
+						id: doc.id,
+						name: data.name,
+						profile_picture_filename: pfpFilename,
+						profile_picture_url: url
+					};
+
+					rebbeim.push(documentData);
+				} catch (err) {
+					rebbeim.push(null);
+					errors.push(err);
+				}
+			}));
+			// rebbeim.push(await getRabbiDataFromDoc(doc, searchOptions.rebbeim.includePictureURLs));
 			return {
 				content: content,
 				rebbeim: rebbeim,
