@@ -487,8 +487,8 @@ async function getRabbiProfilePictureURLFor(filename) {
 		});
 }
 
-async function getURLFor(path) {
-	return new Promise(async (resolve, reject) => {
+function getURLFor(path) {
+	return new Promise((resolve, reject) => {
 		// let db = admin.firestore();
 		const bucket = admin.storage().bucket("yeshivat-torat-shraga.appspot.com");
 		bucket.file(path).getSignedUrl({
