@@ -565,3 +565,22 @@ function log(data, structured = false) {
 
 
 
+/**
+ * Merge two objects together, supplying default values for any missing keys.
+ * @param {Object} def 
+ * @param {Object} prov 
+ * @returns {Object} copy of def with prov's properties overriding def's
+ */
+function supplyDefaultParameters(def, prov) {
+	// def = default parameters
+	// prov = provided parameters
+	if (!prov) return def;
+	for (const key in def) {
+		if (!Object.prototype.hasOwnProperty.call(prov, key) || prov[key] === undefined) {
+			prov[key] = def[key];
+		} else if (prov[key] === Object(prov[key])) {
+			prov[key] = supplyDefaultParameters(def[key], prov[key]);
+		}
+	}
+	return prov;
+}
