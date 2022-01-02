@@ -516,8 +516,10 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 			}));
 			// rebbeim.push(await getRabbiDataFromDoc(doc, searchOptions.rebbeim.includePictureURLs));
 			return {
-				content: content,
-				rebbeim: rebbeim,
+				content,
+				rebbeim,
+				searchOptions,
+				errors
 			};
 		});
 });
