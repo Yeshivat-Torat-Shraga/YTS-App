@@ -403,38 +403,35 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
 exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 	const db = admin.firestore();
 	const searchQuery = callData.searchQuery;
-	const searchOptions = callData.searchOptions;
+	let errors = [];
+	if (!searchQuery) return {
+		error: "No search query provided."
+	};
 	const searchArray = searchQuery.split(" ");
 	let documentsThatMeetSearchCriteria = [];
-	let error = {
-		error_occured: false,
+	const defaultSearchOptions = {
+		content: {
+			limit: 5,
+			includeThumbnailURLs: false,
+			includeDetailedAuthorInfo: false,
+			startFromDocumentID: null
+		},
+		rebbeim: {
+			limit: 10,
+			includePictureURLs: false,
+			startFromDocumentID: null
+		}
 	};
-	// Rabbis: order by name
-	// Content: order by date
+
+	// Ensure that all options are set
+	let searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
+
 
 	// For each collection, run the following async function:
 	return Promise.all(["content", "rebbeim"].map(async (collectionName) => {
-
+		if (searchOptions[collectionName].limit <= 0) return [];
 		// Get the collection
 		query = db.collection(collectionName);
-
-		// Limit the query with the options given.
-		// These options should be given as a JSON object.
-		// Options include:
-		// - limit: The number of documents to return.
-		// - orderBy: A dictionary of the form 
-		// rabbi: {
-		// 		field: "name",
-		// 		order: "asc"
-		// 	}, content: {
-		// 		field: "date",
-		// 		order: "desc"
-		// 	}
-		// 
-
-		// - startAtDocumentWithID: The documentID to start the query at.
-		if (searchOptions.limit) query = query.limit(searchOptions.limit);
-		if (searchOptions.startAtDocumentWithID) query = query.startAt(searchOptions.startAtDocumentWithID);
 		query = query.where("search_index", "array-contains-any", searchArray);
 		if (searchOptions.orderBy.content) {
 			if (searchOptions.orderBy.content.field && searchOptions.orderBy.content.order) {
