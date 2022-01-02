@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var model: HomeViewModel
+    @ObservedObject var model: HomeModel
     
     @State var presentingSearchView = false
     
