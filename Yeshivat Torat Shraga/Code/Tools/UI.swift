@@ -184,7 +184,7 @@ struct DownloadableImage<Object: URLImageable>: View {
     }
 }
 
-// https://stackoverflow.com/questions/57688242/swiftui-how-to-change-the-placeholder-color-of-the-textfield
+//General Source: https://stackoverflow.com/questions/57688242/swiftui-how-to-change-the-placeholder-color-of-the-textfield
 extension View {
     func placeholder<Content: View>(
         when shouldShow: Bool,

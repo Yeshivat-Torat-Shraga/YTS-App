@@ -332,6 +332,8 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 		}));
 		console.log('Uploaded all files.');
 
+		bucket.file(filepath).delete();
+
 	} catch (err) {
 		log(`Failed: ${err} (B01F)`);
 	}

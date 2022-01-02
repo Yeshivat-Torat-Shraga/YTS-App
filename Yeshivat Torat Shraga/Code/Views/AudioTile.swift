@@ -30,6 +30,7 @@ struct AudioTile: View {
                             .clipped()
                     }
                 }
+                
                 HStack {
                     Text(audio.author.name)
                     Spacer()
@@ -76,7 +77,7 @@ struct AudioTile: View {
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
         .frame(height: 150)
-        .frame(maxWidth: 400)
+        .frame(maxWidth: 350)
         .padding()
     }
 }

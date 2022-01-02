@@ -18,14 +18,70 @@ struct TagView: View {
     
     var body: some View {
             VStack {
-                HStack() {
+                HStack {
                     Text(tag.name)
                         .fontWeight(.bold)
                         .font(.largeTitle)
-                        .padding()
+                    
                     Spacer()
+                    
+                    if let category = tag as? Category {
+                        DownloadableImage(object: category)
+                            .frame(width: 100, height: 70)
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
+                            .clipped()
+                            .shadow(radius: UI.shadowRadius)
+                    }
                 }
-                Spacer()
+                .padding([.horizontal, .top])
+                
+                Divider()
+                
+                ScrollView(.horizontal) {
+                    LazyHStack {
+                        ForEach(tags, id: \.name) { tag in
+                            if tag == self.tag {
+                                if #available(iOS 15.0, *) {
+                                    Button {
+                                        
+                                    } label: {
+                                        Text(tag.name)
+                                            .font(.caption2)
+                                    }
+                                    .buttonStyle(BorderedButtonStyle())
+                                    .disabled(true)
+                                    .overlay(Color.black.opacity(0.1))
+                                } else {
+                                    Button {
+                                        
+                                    } label: {
+                                        Text(tag.name)
+                                            .font(.caption2)
+                                    }
+                                }
+                            } else {
+                                if #available(iOS 15.0, *) {
+                                    Button {
+                                        
+                                    } label: {
+                                        Text(tag.name)
+                                            .font(.caption2)
+                                    }
+                                    .buttonStyle(BorderedButtonStyle())
+                                } else {
+                                    Button {
+                                        
+                                    } label: {
+                                        Text(tag.name)
+                                            .font(.caption2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 ScrollView {
                     VStack {
                         HStack {

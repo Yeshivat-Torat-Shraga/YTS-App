@@ -10,12 +10,23 @@ import CoreData
 import Firebase
 import FirebaseStorage
 import AVKit
+import FirebaseAppCheck
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let providerFactory: AppCheckProviderFactory
+                
+        #if targetEnvironment(simulator)
+                providerFactory = AppCheckDebugProviderFactory()
+        #else
+                providerFactory = KHKAppCheckProviderFactory()
+        #endif
+                
+        AppCheck.setAppCheckProviderFactory(providerFactory)
+        
         FirebaseApp.configure()
 #if EMULATORS
         print("""
