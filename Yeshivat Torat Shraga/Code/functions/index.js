@@ -465,9 +465,30 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 			let content = [];
 			let rebbeim = [];
 
-			rawContent.map(doc => {
-				content.push(doc.data());
-			});
+			await Promise.all(rawContent.map(async (doc) => {
+				const data = doc.data();
+				let url, author;
+				try {
+					url = await getURLFor(data.source_path);
+					author = await getRabbiFor(data.attributionID, searchOptions.content.includeDetailedAuthorInfo);
+					const documentData = {
+						id: doc.id,
+						attributionID: data.attributionID,
+						title: data.title,
+						description: data.description,
+						duration: data.duration,
+						date: data.date,
+						type: data.type,
+						source_url: url,
+						author: author
+					};
+
+					content.push(documentData);
+				} catch (err) {
+					content.push(null);
+					errors.push(err);
+				}
+			}));
 
 			rawRebbeim.map(doc => {
 				rebbeim.push(doc.data());
