@@ -459,7 +459,7 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 		for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
 		return docs;
 	}))
-		.then(docs => {
+		.then(async docs => {
 			let rawContent = docs[0];
 			let rawRebbeim = docs[1];
 			let content = [];
