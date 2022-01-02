@@ -10,7 +10,7 @@ const childProcessPromise = require('child-process-promise');
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
