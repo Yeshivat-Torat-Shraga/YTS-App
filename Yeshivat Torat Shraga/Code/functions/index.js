@@ -431,7 +431,18 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 
 	// For each collection, run the following async function:
 	return Promise.all(["content", "rebbeim"].map(async (collectionName) => {
-		if (searchOptions[collectionName].limit <= 0) return [];
+		if (!Number.isInteger(searchOptions[collectionName].limit)) {
+			errors.push("Limit must be an integer.");
+			return [];
+		}
+		if (searchOptions[collectionName].limit <= 0) {
+			errors.push(`Limit for ${collectionName} is less than 0.`);
+			return [];
+		}
+		if (searchOptions[collectionName].limit > 30) {
+			searchOptions[collectionName].limit = 30;
+			errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
+		}
 		// Get the collection
 		query = db.collection(collectionName);
 		query = query.where("search_index", "array-contains-any", searchArray);
@@ -447,11 +458,7 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 		// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
 		if (searchOptions[collectionName].startFromDocumentID)
 			query = query.startAt(searchOptions[collectionName].startFromDocumentID);
-		let limit = searchOptions[collectionName].limit;
-		if (!Number.isInteger(limit)) {
-			errors.push("Limit must be an integer.");
-			return [];
-		}
+
 		query = query.limit(searchOptions[collectionName].limit || 5);
 		if (searchOptions[collectionName].includeThumbnailURLs);
 		if (searchOptions[collectionName].includeDetailedAuthorInfo);
