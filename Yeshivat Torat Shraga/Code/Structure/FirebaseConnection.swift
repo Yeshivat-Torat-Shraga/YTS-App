@@ -32,7 +32,7 @@ final class FirebaseConnection {
 
     static func searchFirestore(
         query: String,
-        searchOptions: NSDictionary?,
+        searchOptions: [String: Any],
         completion: @escaping (
             _ results: (
                 videos: [Video],
@@ -95,11 +95,11 @@ final class FirebaseConnection {
     ) {
         var rebbeim: [Rabbi] = []
         
-        let data: NSDictionary
+        var data: [String: Any] = ["count": requestedCount]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data = NSDictionary(dictionary: ["lastLoadedDocumentID": lastLoadedDocumentID, "count": requestedCount, "includePictureURLs": includeProfilePictureURLs])
-        } else {
-            data = NSDictionary(dictionary: ["count": requestedCount])
+            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+            data["count"] = requestedCount
+            data["includePictureURLs"] = includeProfilePictureURLs
         }
         
         let httpsCallable = functions.httpsCallable("loadRebbeim")
@@ -174,16 +174,17 @@ final class FirebaseConnection {
                             completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var content: Content = (videos: [], audios: [])
         
-        var dictionary: [String: Any] = ["count": requestedCount,
-                                         "search": searchData as Any, // Explicitly cast to 'Any' with 'as Any' to silence this warning
-                                         "includeThumbnailURLs": includeThumbnailURLs,
-                                         "includeAllAuthorData": includeAllAuthorData]
+        var data: [String: Any] = [
+            "count": requestedCount,
+            "search": searchData as Any, // Explicitly cast to 'Any' with 'as Any' to silence this warning
+            "includeThumbnailURLs": includeThumbnailURLs,
+            "includeAllAuthorData": includeAllAuthorData
+        ]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
-            dictionary["lastLoadedDocumentID"] = lastLoadedDocumentID
+            data["lastLoadedDocumentID"] = lastLoadedDocumentID
         }
         
-        let data: NSDictionary = NSDictionary(dictionary: dictionary)
-        
+    
         let httpsCallable = functions.httpsCallable("loadContent")
         
         httpsCallable.call(data) { callResult, callError in
