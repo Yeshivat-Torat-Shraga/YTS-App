@@ -16,18 +16,19 @@ final class FirebaseConnection {
     /// Searches Firestore using the SearchFirestore cloud function
     /// - Parameters:
     ///   - query: The text to search Firestore for
-    ///   - searchOptions: Controls how the search operates. The following parameters are available:
-    ///     - `limit`: Number of results to return. *Defaults to ALL RESULTS!!*
-    ///     - `startAtDocumentWithID`: Pages results starting from first element afterwards.
-    ///     - `orderBy`: A dictionary containing sorting instructions. The following parameters are available:
-    ///         - `rabbi &| content`
-    ///           - `field`: The field to sort by.
-    ///           - `order`: The sort order. Must be one of the following:
-    ///             - `asc`
-    ///             - `desc`
+    ///   - searchOptions: Controls how the search operates. Parameters are expected in the following structure:
+    ///     - `content`: The options for searching through the content
+    ///         - `limit`: The maximum number of results to return.
+    ///         - `includeThumbnailURLs`: Whether or not to generate URLs for the thumbnails
+    ///         - `includeDetailedAuthorInfo`: Whether or not to generate URLs for Author profile pictures
+    ///         - `startFromDocumentID`: Firestore ID used for pagination
+    ///     - `rebbeim`: The options for searching through the rebbeim
+    ///         - `limit`: The maximum number of results to return.
+    ///         - `includePictureURLs`: Whether or not to generate URLs for the profile pictures
+    ///         - `startFromDocumentID`: Firestore ID used for pagination
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`
     /// - Returns:
-    /// ((`Video`, `Audio`, `Rabbi`, metadata), `Error?`)
+    /// ((`Content`, `[Rabbi]`)), metadata), `Error?`)
     ///
 
     static func searchFirestore(
