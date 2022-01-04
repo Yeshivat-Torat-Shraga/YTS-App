@@ -29,7 +29,7 @@ class SearchModel: ObservableObject, ErrorShower {
             "rebbeim":
                 [
                     "limit": 5,
-                    "includePictureURLs": false,
+                    "includePictureURLs": true,
                     "startFromDocumentID": nil
                     
                 ]
