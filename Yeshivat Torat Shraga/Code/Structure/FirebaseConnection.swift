@@ -46,11 +46,10 @@ final class FirebaseConnection {
         var rabbis: [Rabbi] = []
         
         // === Prepare data for Firebase function call ===
-        let data: NSDictionary
-        data = NSDictionary(dictionary: [
+        let data: [String: Any] = [
             "searchQuery": query,
-            "searchOptions": searchOptions as Any
-        ])
+            "searchOptions": searchOptions
+        ]
         
         // === Call the function ===
         let httpsCallable = functions.httpsCallable("searchFirestore")
@@ -239,7 +238,9 @@ final class FirebaseConnection {
                     continue
                 }
                 
-                guard let authorID = author["id"] as? FirestoreID, let authorName = author["name"] as? String else {
+                guard let authorID = author["id"] as? FirestoreID,
+                      let authorName = author["name"] as? String
+                else {
                     print("Invalid author value. Exiting scope.")
                     group.leave()
                     continue
@@ -282,11 +283,22 @@ final class FirebaseConnection {
                             group.leave()
                             continue
                         }
-                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                        rabbi = DetailedRabbi(
+                            id: authorID,
+                            name: authorName,
+                            profileImageURL: authorProfilePictureURL)
                     } else {
                         rabbi = Rabbi(id: authorID, name: authorName)
                     }
-                    content.audios.append(Audio(id: id, sourceURL: sourceURL, title: title, author: rabbi, description: description, date: date, duration: duration, tags: []))
+                    content.audios.append(Audio(
+                        id: id,
+                        sourceURL: sourceURL,
+                        title: title,
+                        author: rabbi,
+                        description: description,
+                        date: date,
+                        duration: duration,
+                        tags: []))
                     group.leave()
                     continue
                 default:
