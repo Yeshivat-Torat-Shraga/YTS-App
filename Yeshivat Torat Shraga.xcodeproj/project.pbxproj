@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
+		0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0847BA282784A22A0097910A /* RabbiCardView.swift */; };
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
@@ -59,6 +60,7 @@
 /* Begin PBXFileReference section */
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
+		0847BA282784A22A0097910A /* RabbiCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiCardView.swift; sourceTree = "<group>"; };
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
 				08469DE62762D878007EF981 /* NewsView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
+				0847BA282784A22A0097910A /* RabbiCardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -352,6 +355,7 @@
 				08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */,
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
+				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
