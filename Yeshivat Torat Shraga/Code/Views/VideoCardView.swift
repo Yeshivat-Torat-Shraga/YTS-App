@@ -65,7 +65,8 @@ struct VideoCardView: View {
                     .font(.footnote)
                 }
                 
-                .padding()
+                .padding([.vertical, .trailing])
+                .padding(.leading, 5)
             }
         }
         .buttonStyle(BackZStackButtonStyle())
