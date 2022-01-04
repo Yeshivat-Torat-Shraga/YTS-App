@@ -36,15 +36,16 @@ final class FirebaseConnection {
         searchOptions: [String: Any],
         completion: @escaping (
             _ results: (
-                videos: [Video],
-                audios: [Audio],
-                rabbis: [Rabbi]
+                contentAndRabbis: (content: Content, rebbeim: [Rabbi]),
+                metadata: (
+                    newLastLoadedDocumentID: FirestoreID?,
+                    includesLastElement: Bool
+                )
             )?, _ error: Error?) -> Void
     ) {
         // === Store results here: ===
-        var videos: [Video] = []
-        var audios: [Audio] = []
-        var rabbis: [Rabbi] = []
+        var content: Content = (videos: [], audios: [])
+        var rebbeim: [Rabbi] = []
         
         // === Prepare data for Firebase function call ===
         let data: [String: Any] = [
@@ -64,9 +65,166 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let rebbeim = response["rebbeim"] as? [[String: Any]] else {
+            guard let rabbiDocuments = response["rebbeim"] as? [[String: Any]] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
+            }
+            guard let contentDocuments = response["content"] as? [[String: Any]] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            guard let appliedSearchOptions = response["searchOptions"] as? [String: [String: Any]] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            let includesLastElement = true//response["includesLastElement"] as? Bool,
+            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            
+            let group = DispatchGroup()
+            
+            for _ in contentDocuments {
+                group.enter()
+            }
+            
+            for contentDocument in contentDocuments {
+                guard let id = contentDocument["id"] as? FirestoreID,
+                      let title = contentDocument["title"] as? String,
+                      let description = contentDocument["description"] as? String,
+                      let dateDictionary = contentDocument["date"] as? [String: Int],
+                      let type = contentDocument["type"] as? String,
+                      let author = contentDocument["author"] as? [String: Any],
+                      let sourceURLString = contentDocument["source_url"] as? String
+                else {
+                    print("Document missing sufficient data. Continuing to next document.")
+                    group.leave()
+                    continue
+                }
+                
+                guard let sourceURL = URL(string: sourceURLString) else {
+                    print("Source URL is invalid. Continuing to next document.")
+                    group.leave()
+                    continue
+                }
+                
+                
+                let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
+                
+                guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
+                    print("Invalid date value. Exiting scope.")
+                    group.leave()
+                    continue
+                }
+                
+                guard let authorID = author["id"] as? FirestoreID,
+                      let authorName = author["name"] as? String
+                else {
+                    print("Invalid author value. Exiting scope.")
+                    group.leave()
+                    continue
+                }
+                
+                switch type {
+                case "video":
+                    let rabbi: Rabbi
+                    if appliedSearchOptions["content"]!["includeDetailedAuthorInfo"] as! Bool == true {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                        else {
+                            print("Author profile picture URL is invalid, continuing to next document.")
+                            group.leave()
+                            continue
+                        }
+                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                    } else {
+                        rabbi = Rabbi(id: authorID, name: authorName)
+                    }
+                    content.videos.append(Video(
+                        id: id,
+                        sourceURL: sourceURL,
+                        title: title,
+                        author: rabbi,
+                        description: description,
+                        date: date,
+                        duration: duration,
+                        tags: [],
+                        thumbnail: Image("test-thumbnail")))
+                    group.leave()
+                    continue
+                case "audio":
+                    let rabbi: Rabbi
+                    if appliedSearchOptions["content"]!["includeDetailedAuthorInfo"] as! Bool == true {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                        else {
+                            print("Author profile picture URL is invalid, continuing to next document.")
+                            group.leave()
+                            continue
+                        }
+                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                    } else {
+                        rabbi = Rabbi(id: authorID, name: authorName)
+                    }
+                    content.audios.append(Audio(
+                        id: id,
+                        sourceURL: sourceURL,
+                        title: title,
+                        author: rabbi,
+                        description: description,
+                        date: date,
+                        duration: duration,
+                        tags: []))
+                    group.leave()
+                    continue
+                default:
+                    print("Type unrecognized.")
+                    group.leave()
+                    continue
+                }
+            }
+            
+            for _ in rabbiDocuments {
+                group.enter()
+            }
+            
+            for rabbiDocument in rabbiDocuments {
+                guard let id = rabbiDocument["id"] as? FirestoreID,
+                      let name = rabbiDocument["name"] as? String else {
+                          print("Document missing sufficient data. Continuing to next document.")
+                          group.leave()
+                          continue
+                      }
+
+                if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String,
+                   let profilePictureURL = URL(string: profilePictureURLString) {
+                    rebbeim.append(DetailedRabbi(id: id, name: name, profileImageURL: profilePictureURL))
+                    group.leave()
+                    continue
+                } else if let profilePictureFilename = rabbiDocument["profile_picture_filename"] as? String {
+                    rebbeim.append(Rabbi(id: id, name: name))
+                    print("""
+/**
+ * No valid profile_picture_url was provided, but did receive a profile_picture_filename.
+ * As of now, there is no set way to handle that, so we are creating a NON-Detailed Rabbi
+ * object to store the data.
+ */
+""")
+                    group.leave()
+                    continue
+                } else {
+                    print("No picture was given for this Rabbi.")
+                    rebbeim.append(Rabbi(id: id, name: name))
+                    group.leave()
+                    continue
+                }
+            }
+            
+            group.notify(queue: .main) {
+                completion((contentAndRabbis: (content: content,
+                                               rebbeim: rebbeim),
+                    metadata: (
+                        newLastLoadedDocumentID: newLastLoadedDocumentID,
+                        includesLastElement: includesLastElement)
+                ), callError)
             }
         }
     }
