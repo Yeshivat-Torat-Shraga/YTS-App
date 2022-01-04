@@ -514,7 +514,7 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 					const documentData = {
 						id: doc.id,
 						name: data.name,
-						profile_picture_filename: pfpFilename,
+						// profile_picture_filename: pfpFilename,
 						profile_picture_url: url
 					};
 
