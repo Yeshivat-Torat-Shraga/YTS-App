@@ -404,7 +404,7 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
  */
 exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 	const db = admin.firestore();
-	const searchQuery = callData.searchQuery;
+	const searchQuery = callData.searchQuery.toLowerCase();
 	let errors = [];
 	if (!searchQuery) return {
 		error: "No search query provided."
