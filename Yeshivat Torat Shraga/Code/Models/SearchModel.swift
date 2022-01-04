@@ -48,7 +48,8 @@ class SearchModel: ObservableObject, ErrorShower {
             }
             
             withAnimation {
-                
+                self.sortables = []
+                self.rebbeim = []
                 self.content = contents
                 for audio in self.content!.audios {
                     self.sortables.append(audio.sortable)
