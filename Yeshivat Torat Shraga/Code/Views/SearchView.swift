@@ -9,10 +9,11 @@ import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var model = SearchModel()
+    @State var selectedResultType = "Rebbeim"
     @State var searchText = ""
     @State var showAlert = false
     var body: some View {
-        VStack {
+        ScrollView {
             ZStack {
                 Rectangle()
                     .foregroundColor(Color("ShragaBlue"))
@@ -20,13 +21,12 @@ struct SearchView: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
                     TextField("", text: $searchText, onCommit: {
-                        showAlert = true
+                        model.search(searchText)
                     })
                     .placeholder(when: searchText.isEmpty) {
                         Text("Search...").foregroundColor(Color("ShragaGold"))
                     }
                     
-//                                .foregroundColor(Color("ShragaGold"))
                 }
                 .foregroundColor(Color("ShragaGold"))
                 .padding(.leading, 13)
@@ -34,8 +34,44 @@ struct SearchView: View {
             }
             .frame(height: 40)
             .cornerRadius(13)
-            .padding()
-            Spacer()
+            .padding([.top, .horizontal])
+
+            Picker("Result Type", selection: $selectedResultType) {
+                Text("Rebbeim")
+                    .tag("Rebbeim")
+                Text("Shiurim")
+                    .tag("Shiurim")
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding(.horizontal)
+            
+            if selectedResultType == "Shiurim" {
+                if let sortables = model.sortables {
+                    ForEach(sortables, id: \.self) { sortable in
+                        if let video = sortable.video {
+                            VideoCardView(video: video)
+                                .contextMenu {
+                                    Button("Play") {}
+                                }
+                                .padding([.horizontal, .top])
+                        } else if let audio = sortable.audio {
+                            AudioCardView(audio: audio)
+                                .contextMenu {
+                                    Button("Play") {}
+                                }
+                                .padding([.horizontal, .top])
+                        }
+                    }
+                }
+            } else if selectedResultType == "Rebbeim" {
+                if let rebbeim = model.rebbeim {
+                    ForEach(rebbeim, id: \.self) { rabbi in
+//                        RabbiCardView(rabbi: rabbi)
+                        Text(rabbi.name)
+//                            .padding()
+                    }
+                }
+            }
         }
         .alert(isPresented: $showAlert, content: {
             Alert(title: Text("Search Submitted"), message: Text(searchText), dismissButton: Alert.Button.default(Text("OK")))
