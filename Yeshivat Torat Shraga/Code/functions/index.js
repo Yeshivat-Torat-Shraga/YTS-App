@@ -432,10 +432,11 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 	// For each collection, run the following async function:
 	return Promise.all(["content", "rebbeim"].map(async (collectionName) => {
 		if (!Number.isInteger(searchOptions[collectionName].limit)) {
-			errors.push("Limit must be an integer.");
+			errors.push(`Limit for ${collectionName} is not an integer.`);
 			return [];
 		}
-		if (searchOptions[collectionName].limit <= 0) {
+		if (searchOptions[collectionName].limit == 0) return [];
+		if (searchOptions[collectionName].limit < 0) {
 			errors.push(`Limit for ${collectionName} is less than 0.`);
 			return [];
 		}
@@ -459,7 +460,7 @@ exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 		if (searchOptions[collectionName].startFromDocumentID)
 			query = query.startAt(searchOptions[collectionName].startFromDocumentID);
 
-		query = query.limit(searchOptions[collectionName].limit || 5);
+		query = query.limit(searchOptions[collectionName].limit);
 		if (searchOptions[collectionName].includeThumbnailURLs);
 		if (searchOptions[collectionName].includeDetailedAuthorInfo);
 
