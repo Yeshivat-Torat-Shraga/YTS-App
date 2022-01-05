@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
+		0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0847BA282784A22A0097910A /* RabbiCardView.swift */; };
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
 		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
-		08A05B2527653DAA00FEE15F /* TagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagViewModel.swift */; };
+		08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagModel.swift */; };
 		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
+		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -26,7 +28,7 @@
 		B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */; };
 		B1ACF927274456F900079F9A /* LogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF926274456F900079F9A /* LogoView.swift */; };
 		B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503C273C868B00CF18D6 /* HomeView.swift */; };
-		B1BF503F273D1C9A00CF18D6 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */; };
+		B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */; };
 		B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5042273D2A2200CF18D6 /* TileCardView.swift */; };
 		B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5045273D37BD00CF18D6 /* UI.swift */; };
 		B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */; };
@@ -58,11 +60,13 @@
 /* Begin PBXFileReference section */
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
+		0847BA282784A22A0097910A /* RabbiCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiCardView.swift; sourceTree = "<group>"; };
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
 		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
-		08A05B2427653DAA00FEE15F /* TagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViewModel.swift; sourceTree = "<group>"; };
+		08A05B2427653DAA00FEE15F /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
+		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -76,7 +80,7 @@
 		B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRabbiModel.swift; sourceTree = "<group>"; };
 		B1ACF926274456F900079F9A /* LogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoView.swift; sourceTree = "<group>"; };
 		B1BF503C273C868B00CF18D6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeModel.swift; sourceTree = "<group>"; };
 		B1BF5042273D2A2200CF18D6 /* TileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileCardView.swift; sourceTree = "<group>"; };
 		B1BF5045273D37BD00CF18D6 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardView.swift; sourceTree = "<group>"; };
@@ -193,6 +197,7 @@
 				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
 				08469DE62762D878007EF981 /* NewsView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
+				0847BA282784A22A0097910A /* RabbiCardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -201,13 +206,14 @@
 			isa = PBXGroup;
 			children = (
 				F230C4C9273B110900F7ACCC /* RootModel.swift */,
-				B1BF503E273D1C9A00CF18D6 /* HomeViewModel.swift */,
+				B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */,
 				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
 				B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */,
 				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
 				F29FFB2827529D3A005D6355 /* PlayBarModel.swift */,
 				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
-				08A05B2427653DAA00FEE15F /* TagViewModel.swift */,
+				08A05B2427653DAA00FEE15F /* TagModel.swift */,
+				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -340,14 +346,16 @@
 				F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */,
 				B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */,
 				08469DE72762D878007EF981 /* NewsView.swift in Sources */,
-				B1BF503F273D1C9A00CF18D6 /* HomeViewModel.swift in Sources */,
+				B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */,
 				F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
 				B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */,
+				08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */,
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
+				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
@@ -368,7 +376,7 @@
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
 				F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */,
 				B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */,
-				08A05B2527653DAA00FEE15F /* TagViewModel.swift in Sources */,
+				08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */,
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,

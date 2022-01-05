@@ -10,7 +10,7 @@ const childProcessPromise = require('child-process-promise');
 
 admin.initializeApp({
 	projectId: "yeshivat-torat-shraga",
-	//credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
@@ -404,76 +404,132 @@ exports.generateThumbnail = functions.storage.bucket().object().onFinalize(async
  */
 exports.searchFirestore = functions.https.onCall(async (callData, context) => {
 	const db = admin.firestore();
-	const searchQuery = callData.searchQuery;
-	const searchOptions = callData.searchOptions;
+	const searchQuery = callData.searchQuery.toLowerCase();
+	let errors = [];
+	if (!searchQuery) return {
+		error: "No search query provided."
+	};
 	const searchArray = searchQuery.split(" ");
 	let documentsThatMeetSearchCriteria = [];
-	let error = {
-		error_occured: false,
+	const defaultSearchOptions = {
+		content: {
+			limit: 5,
+			includeThumbnailURLs: false,
+			includeDetailedAuthorInfo: false,
+			startFromDocumentID: null
+		},
+		rebbeim: {
+			limit: 10,
+			includePictureURLs: false,
+			startFromDocumentID: null
+		}
 	};
-	// Rabbis: order by name
-	// Content: order by date
+
+	// Ensure that all options are set
+	let searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
+
 
 	// For each collection, run the following async function:
 	return Promise.all(["content", "rebbeim"].map(async (collectionName) => {
-
+		if (!Number.isInteger(searchOptions[collectionName].limit)) {
+			errors.push(`Limit for ${collectionName} is not an integer.`);
+			return [];
+		}
+		if (searchOptions[collectionName].limit == 0) return [];
+		if (searchOptions[collectionName].limit < 0) {
+			errors.push(`Limit for ${collectionName} is less than 0.`);
+			return [];
+		}
+		if (searchOptions[collectionName].limit > 30) {
+			searchOptions[collectionName].limit = 30;
+			errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
+		}
 		// Get the collection
 		query = db.collection(collectionName);
-
-		// Limit the query with the options given.
-		// These options should be given as a JSON object.
-		// Options include:
-		// - limit: The number of documents to return.
-		// - orderBy: A dictionary of the form 
-		// rabbi: {
-		// 		field: "name",
-		// 		order: "asc"
-		// 	}, content: {
-		// 		field: "date",
-		// 		order: "desc"
-		// 	}
-		// 
-
-		// - startAtDocumentWithID: The documentID to start the query at.
-		if (searchOptions.limit) query = query.limit(searchOptions.limit);
-		if (searchOptions.startAtDocumentWithID) query = query.startAt(searchOptions.startAtDocumentWithID);
 		query = query.where("search_index", "array-contains-any", searchArray);
-		if (searchOptions.orderBy.content) {
-			if (searchOptions.orderBy.content.field && searchOptions.orderBy.content.order) {
-				query = query.orderBy(searchOptions.orderBy.content.field, searchOptions.orderBy.content.order);
-			} else query = query.orderBy("date", "desc");
+		switch (collectionName) {
+			case "content":
+				query = query.orderBy("date", "desc");
+				break;
+			case "rebbeim":
+				query = query.orderBy("name", "asc");
+				break;
 		}
 
-		if (searchOptions.orderBy.rabbi &&
-			searchOptions.orderBy.rabbi.field &&
-			searchOptions.orderBy.rabbi.order) {
-			query = query.orderBy(searchOptions.orderBy.rabbi.field, searchOptions.orderBy.rabbi.order);
-		} else query = query.orderBy("date", "desc");
+		// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
+		if (searchOptions[collectionName].startFromDocumentID)
+			query = query.startAt(searchOptions[collectionName].startFromDocumentID);
 
-		// else if (collectionName === "rebbeim")
+		query = query.limit(searchOptions[collectionName].limit);
+		if (searchOptions[collectionName].includeThumbnailURLs);
+		if (searchOptions[collectionName].includeDetailedAuthorInfo);
 
 		let contentSnapshot = await query.get();
 		let docs = contentSnapshot.docs;
 		for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
 		return docs;
 	}))
-		.then(docs => {
+		.then(async docs => {
 			let rawContent = docs[0];
 			let rawRebbeim = docs[1];
 			let content = [];
 			let rebbeim = [];
 
-			rawContent.map(doc => {
-				content.push(doc.data());
-			});
+			await Promise.all(rawContent.map(async (doc) => {
+				const data = doc.data();
+				let url, author;
+				try {
+					url = await getURLFor(data.source_path);
+					author = await getRabbiFor(data.attributionID, searchOptions.content.includeDetailedAuthorInfo);
+					const documentData = {
+						id: doc.id,
+						attributionID: data.attributionID,
+						title: data.title,
+						description: data.description,
+						duration: data.duration,
+						date: data.date,
+						type: data.type,
+						source_url: url,
+						author: author
+					};
 
-			rawRebbeim.map(doc => {
-				rebbeim.push(doc.data());
-			});
+					content.push(documentData);
+				} catch (err) {
+					content.push(null);
+					errors.push(err);
+				}
+			}));
 
+			await Promise.all(rawRebbeim.map(async (doc) => {
+				// Get the document data.
+				const data = doc.data();
+
+				const pfpFilename = data.profile_picture_filename;
+
+				try {
+					let url;
+					if (searchOptions.rebbeim.includePictureURLs)
+						url = await getRabbiProfilePictureURLFor(pfpFilename);
+
+					const documentData = {
+						id: doc.id,
+						name: data.name,
+						// profile_picture_filename: pfpFilename,
+						profile_picture_url: url
+					};
+
+					rebbeim.push(documentData);
+				} catch (err) {
+					rebbeim.push(null);
+					errors.push(err);
+				}
+			}));
+			// rebbeim.push(await getRabbiDataFromDoc(doc, searchOptions.rebbeim.includePictureURLs));
 			return {
-				content: content,
-				rebbeim: rebbeim,
+				content,
+				rebbeim,
+				searchOptions,
+				errors
 			};
 		});
 });
@@ -489,8 +545,8 @@ async function getRabbiProfilePictureURLFor(filename) {
 		});
 }
 
-async function getURLFor(path) {
-	return new Promise(async (resolve, reject) => {
+function getURLFor(path) {
+	return new Promise((resolve, reject) => {
 		// let db = admin.firestore();
 		const bucket = admin.storage().bucket("yeshivat-torat-shraga.appspot.com");
 		bucket.file(path).getSignedUrl({
@@ -545,11 +601,6 @@ function getRabbiFor(id, includeProfilePictureURL) {
 	});
 }
 
-function appendToEndOfFilename(filename, text) {
-	const components = filename.split('.');
-	components[components.length - 2] = components[components.length - 2].concat(text);
-	return components.join('.');
-}
 
 function strippedFilename(filename) {
 	// Remove directory path
@@ -567,3 +618,22 @@ function log(data, structured = false) {
 
 
 
+/**
+ * Merge two objects together, supplying default values for any missing keys.
+ * @param {Object} def 
+ * @param {Object} prov 
+ * @returns {Object} copy of def with prov's properties overriding def's
+ */
+function supplyDefaultParameters(def, prov) {
+	// def = default parameters
+	// prov = provided parameters
+	if (!prov) return def;
+	for (const key in def) {
+		if (!Object.prototype.hasOwnProperty.call(prov, key) || prov[key] === undefined) {
+			prov[key] = def[key];
+		} else if (prov[key] === Object(prov[key])) {
+			prov[key] = supplyDefaultParameters(def[key], prov[key]);
+		}
+	}
+	return prov;
+}
