@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var model = SearchModel()
-    @State var selectedResultType = "Rebbeim"
+    @State var selectedResultTag = "Rebbeim"
+    @State var selectedResultType = ""
     @State var searchText = ""
     @State var showAlert = false
     @State var alertBody = ""
@@ -40,13 +41,18 @@ struct SearchView: View {
                 .cornerRadius(13)
                 .padding([.top, .horizontal])
                 
-                Picker("Result Type", selection: $selectedResultType) {
+                Picker("Result Type", selection: $selectedResultTag) {
                     Text("Rebbeim")
                         .tag("Rebbeim")
                     Text("All")
                         .tag("All")
                     Text("Shiurim")
                         .tag("Shiurim")
+                }
+                .onChange(of: selectedResultTag) { value in
+                    withAnimation {
+                        selectedResultType = value
+                    }
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding([.horizontal, .bottom])
@@ -92,7 +98,6 @@ struct SearchView: View {
                     }
                 }
             }
-            .padding(.bottom)
             .alert(isPresented: $showAlert, content: {
                 Alert(title: Text(alertTitle), message: Text(alertBody), dismissButton: Alert.Button.default(Text("OK")))
         })
