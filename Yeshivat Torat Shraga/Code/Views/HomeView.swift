@@ -103,13 +103,13 @@ struct HomeView: View {
                 .padding(.bottom)
                 .navigationTitle("Home")
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        HStack(spacing: 0.0) {
+                    ToolbarItem(placement: .navigationBarLeading) {
                         LogoView(size: .small)
-                            EllipseButton(action: {
-                                self.presentingSearchView = true
-                            }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
-                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        EllipseButton(action: {
+                            self.presentingSearchView = true
+                        }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
                     }
                 }
             }.alert(isPresented: Binding(get: {
