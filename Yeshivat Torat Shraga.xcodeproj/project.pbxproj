@@ -16,6 +16,7 @@
 		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
 		08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagModel.swift */; };
 		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
+		08B7A8452790358000B0EBC3 /* ImageCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B7A8442790358000B0EBC3 /* ImageCarouselView.swift */; };
 		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
@@ -66,6 +67,7 @@
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
 		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		08A05B2427653DAA00FEE15F /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
+		08B7A8442790358000B0EBC3 /* ImageCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCarouselView.swift; sourceTree = "<group>"; };
 		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				08469DE62762D878007EF981 /* NewsView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
 				0847BA282784A22A0097910A /* RabbiCardView.swift */,
+				08B7A8442790358000B0EBC3 /* ImageCarouselView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -379,6 +382,7 @@
 				08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */,
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
+				08B7A8452790358000B0EBC3 /* ImageCarouselView.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
