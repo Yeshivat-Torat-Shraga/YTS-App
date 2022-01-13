@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-struct ImageCarouselView<Content: View>: View {
+struct SlideshowView<Content: View>: View {
     private var numberOfImages: Int
     private var content: Content
     
@@ -38,7 +38,7 @@ struct ImageCarouselView<Content: View>: View {
 struct ImageCarouselView_Previews: PreviewProvider {
     static var previews: some View {
         GeometryReader { geometry in
-            ImageCarouselView(numberOfImages: 3) {
+            SlideshowView(numberOfImages: 3) {
                 Image("SampleRabbi")
                     .resizable()
                     .scaledToFill()

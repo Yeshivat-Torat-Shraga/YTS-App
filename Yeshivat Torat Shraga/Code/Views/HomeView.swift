@@ -99,6 +99,18 @@ struct HomeView: View {
                         }
                         Divider().padding(.horizontal)
                     }
+                    
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Slideshow")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        SlideshowView()
+                    }
                 }
                 .padding(.bottom)
                 .navigationTitle("Home")
