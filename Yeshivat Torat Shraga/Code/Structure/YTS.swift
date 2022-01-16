@@ -11,28 +11,6 @@ import SwiftUI
 typealias FirestoreID = String
 typealias FileID = String
 
-final class SlideshowImage: Identifiable, View {
-    var image: Image
-    var id: UUID
-    init(image: Image) {
-        self.image = image
-        self.id = UUID()
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    static func == (lhs: SlideshowImage, rhs: SlideshowImage) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    var body: some View {
-        self.image
-    }
-}
-
-
 class Rabbi: Hashable {
     /// The `FirestoreID` associated with this object in Firestore
     private(set) var firestoreID: FirestoreID

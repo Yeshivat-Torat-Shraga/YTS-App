@@ -133,6 +133,27 @@ class AsyncImageLoader: ObservableObject {
     }
 }
 
+final class SlideshowImage: Identifiable, View {
+    var image: Image
+    var id: UUID
+    init(image: Image) {
+        self.image = image
+        self.id = UUID()
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: SlideshowImage, rhs: SlideshowImage) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    var body: some View {
+        self.image
+    }
+}
+
 protocol URLImageable {
     var image: Image? { get set }
     var imageURL: URL? { get }
