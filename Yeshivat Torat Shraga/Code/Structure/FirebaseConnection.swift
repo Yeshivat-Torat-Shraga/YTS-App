@@ -13,6 +13,87 @@ import SwiftUI
 final class FirebaseConnection {
     static var functions = Functions.functions()
     
+    static func loadNews(
+        lastLoadedDocumentID: FirestoreID? = nil,
+        limit: Int = 15,
+        completion: @escaping (
+            _ results: (
+                articles: [NewsArticle],
+                metadata: (
+                    newLastLoadedDocumentID: FirestoreID?,
+                    includesLastElement: Bool
+                )
+            )?, _ error: Error?) -> Void
+    ) {
+        var articles: [NewsArticle] = []
+        let httpsCallable = functions.httpsCallable("loadNews")
+        var data: [String: Any] = [
+            "count": limit
+        ]
+        if let lastLoadedDocumentID = lastLoadedDocumentID {
+            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+        }
+        httpsCallable.call(data) { callResult, callError in
+            // Check if there was any data received
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            // Check if response contains valid data
+            guard let urlDocuments = response["newsDocuments"] as? [[String: Any]] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            let includesLastElement = response["includesLastElement"] as? Bool ?? true
+            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            
+            let group = DispatchGroup()
+            for _ in urlDocuments {
+                group.enter()
+            }
+            
+            for document in urlDocuments {
+                var imageURLs: [URL] = []
+
+                guard let body       = document["body"]     as? String,
+                      let title      = document["title"]    as? String,
+                      let author     = document["author"]   as? String,
+                      let uploadDict = document["uploaded"] as? [String: Int]
+                else {
+                    completion(nil, callError ?? YTSError.invalidDataReceived)
+                    return
+                }
+                guard let uploaded = Date(firebaseTimestampDictionary: uploadDict) else {
+                    print("Invalid date value. Exiting scope.")
+                    group.leave()
+                    continue
+                }
+                
+                
+                if let urls = document["imageURLs"] as? [String] {
+                    for url in urls {
+                        let urlObject = URL(string: url)!
+                        imageURLs.append(urlObject)
+                    }
+                }
+                
+                let article = NewsArticle(
+                    title: title,
+                    body: body,
+                    uploaded: uploaded,
+                    author: author,
+                    imageURLs: imageURLs)
+                articles.append(article)
+                group.leave()
+            }
+            group.notify(queue: .main) {
+                completion((articles: articles, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+            }
+        }
+    }
+    
+    
     static func loadSlideshowImages(
         lastLoadedDocumentID: FirestoreID? = nil,
         limit: Int,
@@ -251,12 +332,12 @@ final class FirebaseConnection {
                 } else if let profilePictureFilename = rabbiDocument["profile_picture_filename"] as? String {
                     rebbeim.append(Rabbi(id: id, name: name))
                     print("""
-/**
- * No valid profile_picture_url was provided, but did receive a profile_picture_filename.
- * As of now, there is no set way to handle that, so we are creating a NON-Detailed Rabbi
- * object to store the data.
- */
-""")
+                        /**
+                        * No valid profile_picture_url was provided, but did receive a profile_picture_filename.
+                        * As of now, there is no set way to handle that, so we are creating a NON-Detailed Rabbi
+                        * object to store the data.
+                        */
+                        """)
                     group.leave()
                     continue
                 } else {
@@ -349,8 +430,8 @@ final class FirebaseConnection {
                     rebbeim.append(DetailedRabbi(id: id, name: name, profileImageURL: profilePictureURL))
                     group.leave()
                     continue
-                } else if let profilePictureFilename = rabbiDocument["profile_picture_filename"] as? String {
-                    fatalError("This feature has not been implemented")
+//                } else if let profilePictureFilename = rabbiDocument["profile_picture_filename"] as? String {
+//                    fatalError("This feature has not been implemented")
                 } else {
                     print("Document missing sufficient data. Continuing to next document.")
                     group.leave()
