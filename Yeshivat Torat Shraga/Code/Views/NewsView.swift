@@ -8,11 +8,25 @@
 import SwiftUI
 
 struct NewsView: View {
+    @ObservedObject var model = NewsModel()
     var body: some View {
         NavigationView {
-            Text("News View")
+            ScrollView {
+                if let articles = model.articles {
+                    ForEach(articles) { article in
+                        NavigationLink(destination: Text(article.title)) {                        
+                            NewsArticleCardView(article)
+                                .padding(.horizontal)
+                        }
+//                        .background(Color.white.cornerRadius(10).shadow(radius: UI.shadowRadius))
+                    }
+                }
+            }
                 .navigationTitle("YTS News")
         }
+//        .onAppear {
+//            self.model.load()
+//        }
     }
 }
 
