@@ -115,7 +115,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 
 	// Get the last loaded document, if provided.
 	// This is used for pagination.
-	let documentOfLastPageID = callData.lastLoadedDocumentID;
+	let documentIdOfLastPage = callData.lastLoadedDocumentID;
 	// Get the number of documents to load.
 	// If not specified, load 10.
 	let requestedCount = callData.count || 10;
@@ -140,9 +140,9 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	let query = db.collection('rebbeim').orderBy('name', 'asc');
 
 	// If documentOfLastPageID is specified, check if it's a non empty String.
-	if (typeof documentOfLastPageID == "string" && documentOfLastPageID != "") {
+	if (typeof documentIdOfLastPage == "string" && documentIdOfLastPage != "") {
 		// Fetch the document with the specified ID from Firestore.
-		let snapshot = await db.collection("rebbeim").doc(documentOfLastPageID).get();
+		let snapshot = await db.collection("rebbeim").doc(documentIdOfLastPage).get();
 		// Overwrite the query to start after the specified document.
 		query = query.startAfter(snapshot);
 		log(`Starting after document '${snapshot}'`);
