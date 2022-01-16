@@ -13,6 +13,55 @@ import SwiftUI
 final class FirebaseConnection {
     static var functions = Functions.functions()
     
+    static func loadSlideshowImages(
+        lastLoadedDocumentID: FirestoreID? = nil,
+        limit: Int,
+        completion: @escaping (
+            _ results: (
+                images: [DownloadableImage<SlideshowImage>],
+                metadata: (
+                    newLastLoadedDocumentID: FirestoreID?,
+                    includesLastElement: Bool
+                )
+            )?, _ error: Error?) -> Void
+    ) {
+        var images: [DownloadableImage<SlideshowImage>] = []
+        let httpsCallable = functions.httpsCallable("loadSlideshow")
+        var data: [String: Any] = [
+            "count": limit
+        ]
+        if let lastLoadedDocumentID = lastLoadedDocumentID {
+            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+        }
+        httpsCallable.call(data) { callResult, callError in
+            // Check if there was any data received
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            // Check if response contains valid data
+            guard let urlDocuments = response["imageURLs"] as? [[String: Any]] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            let includesLastElement = response["includesLastElement"] as? Bool ?? true
+            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            
+            for document in urlDocuments {
+                guard let url = document["url"] as? String else {
+                    completion(nil, callError ?? YTSError.invalidDataReceived)
+                    return
+                }
+                let urlObject = URL(string: url)
+                let slideshowImage = SlideshowImage(url: urlObject!)
+                let downloadableImage = DownloadableImage(object: slideshowImage)
+                images.append(downloadableImage)
+            }
+            completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+        }
+    }
+    
     /// Searches Firestore using the SearchFirestore cloud function
     /// - Parameters:
     ///   - query: The text to search Firestore for
@@ -253,11 +302,12 @@ final class FirebaseConnection {
     ) {
         var rebbeim: [Rabbi] = []
         
-        var data: [String: Any] = ["count": requestedCount]
+        var data: [String: Any] = [
+            "count": requestedCount,
+            "includePictureURLs": includeProfilePictureURLs
+        ]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
             data["lastLoadedDocumentID"] = lastLoadedDocumentID
-            data["count"] = requestedCount
-            data["includePictureURLs"] = includeProfilePictureURLs
         }
         
         let httpsCallable = functions.httpsCallable("loadRebbeim")
