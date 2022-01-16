@@ -13,6 +13,97 @@ admin.initializeApp({
 	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
+exports.loadSlideshow = functions.https.onCall(async (callData, context) => {
+
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	// 	throw new functions.https.HttpsError(
+	// 		'failed-precondition',
+	// 		'The function must be called from an App Check verified app.')
+	// }
+
+	// Get the last loaded document, if provided.
+	// This is used for pagination.
+	let documentIdOfLastPage = callData.lastLoadedDocumentID;
+	// Get the number of documents to load.
+	// If not specified, load 10.
+	let requestedCount = callData.count || 10;
+
+
+	let imageURLs = [];
+
+	// Create an object that represents the connection to the Firestore database.
+	let db = admin.firestore();
+	// Build a query to get the documents sorted by upload date.
+	let query = db.collection('slideshowImages').orderBy('uploaded', 'desc');
+
+	// If documentOfLastPageID is specified, check if it's a non empty String.
+	if (typeof documentIdOfLastPage == "string" && documentIdOfLastPage != "") {
+		// Fetch the document with the specified ID from Firestore.
+		let snapshot = await db.collection("slideshowImages").doc(documentIdOfLastPage).get();
+		// Overwrite the query to start after the specified document.
+		query = query.startAfter(snapshot);
+		log(`Starting after document '${snapshot}'`);
+	}
+
+	// Execute the query.
+	let imagesSnapshot = await query.limit(requestedCount).get();
+	// Set a variable to hold the ID of the last document returned from the query.
+	// This is so the client can use this ID to load the next page of documents.
+	let lastDocumentFromQueryID;
+	// Get the documents returned from the query.
+	let docs = imagesSnapshot.docs;
+
+	// If docs is null, return.
+	if (!docs || docs.length == 0) {
+		return {
+			lastLoadedDocumentID: lastDocumentFromQueryID,
+			includesLastElement: (requestedCount > imageURLs.length),
+			imageURLs: null
+		};
+	}
+	// Assign the last document returned from the query to lastDocumentFromQueryID.
+	lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+	// Loop through the documents returned from the query.
+	// For each document, get the desired data and add it to the rebbeim array.
+	// Since we are using the await keyword, we need to make the
+	// function asynchronous. Because of this, the function returns a Promise and
+	// in turn, docs.map() returns an array of Promises.
+	// To deal with this, we are passing that array of Promises to Promise.all(), which
+	// returns a Promise that resolves when all the Promises in the array resolve.
+	// To finish it off, we use await to wait for the Promise returned by Promise.all()
+	await Promise.all(docs.map(async (doc) => {
+		// Get the document data.
+		const data = doc.data();
+
+		const imagePath = data.image_name;
+
+		let url;
+		try {
+			url = await getURLFor(`slideshow/${imagePath}`);
+			console.log(url);
+		} catch (error) {
+			console.error(error);
+		}
+
+		const documentData = {
+			id: doc.id,
+			name: data.image_name,
+			url: url
+		};
+
+		imageURLs.push(documentData);
+	}));
+
+	// Once we are done looping through the documents, return the data.
+	return {
+		lastLoadedDocumentID: lastDocumentFromQueryID,
+		includesLastElement: (requestedCount > imageURLs.length),
+		imageURLs: imageURLs
+	};
+});
+
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 
 	// === APP CHECK ===
