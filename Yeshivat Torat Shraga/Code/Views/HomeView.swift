@@ -20,6 +20,8 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
+                    
+                    // MARK: - Recently Uploaded
                     VStack(spacing: 0.0) {
                         HStack {
                             Text("Recently Uploaded")
@@ -52,6 +54,7 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    // MARK: - Rebbeim
                     VStack(spacing: 0) {
                         HStack {
                             Text("Rebbeim")
@@ -80,6 +83,7 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
 
+                    // MARK: - CATEGORIES
                     VStack(spacing: 0) {
                         HStack {
                             Text("Categories")
@@ -100,6 +104,7 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    // MARK: - SLIDESHOW
                     if let slideshowImages = model.slideshowImages {
                         VStack(spacing: 0) {
                             HStack {
