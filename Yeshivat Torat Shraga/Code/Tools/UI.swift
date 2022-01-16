@@ -133,11 +133,17 @@ class AsyncImageLoader: ObservableObject {
     }
 }
 
-final class SlideshowImage: Identifiable, View {
-    var image: Image
+final class SlideshowImage: Identifiable, View, URLImageable {
+    var imageURL: URL?
     var id: UUID
+    var image: Image?
     init(image: Image) {
         self.image = image
+        self.id = UUID()
+    }
+    
+    init(url: URL) {
+        self.imageURL = url
         self.id = UUID()
     }
     
@@ -150,7 +156,7 @@ final class SlideshowImage: Identifiable, View {
     }
     
     var body: some View {
-        self.image
+        DownloadableImage(object: self)
     }
 }
 

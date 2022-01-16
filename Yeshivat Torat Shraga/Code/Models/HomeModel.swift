@@ -16,6 +16,7 @@ class HomeModel: ObservableObject, ErrorShower {
     @Published var recentlyUploadedContent: Content?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
+    @Published var slideshowImages: [DownloadableImage<SlideshowImage>]?
     
     init() {
         load()

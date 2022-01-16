@@ -10,12 +10,12 @@ import Combine
 
 struct SlideshowView: View {
     private var timerDelay: Double = 7
-    private var slideshowImages: [SlideshowImage]
+    private var slideshowImages: [DownloadableImage<SlideshowImage>]
     private let swipeThreshhold: CGFloat = 50
     @State private var imageTabIndex = 0
     @State private var timer: Publishers.Autoconnect<Timer.TimerPublisher>
     
-    init(_ slideshowImages: [SlideshowImage]) {
+    init(_ slideshowImages: [DownloadableImage<SlideshowImage>]) {
         self.slideshowImages = slideshowImages
         self.timer = Timer.publish(every: timerDelay, on: .main, in: .common).autoconnect()
     }
@@ -40,9 +40,9 @@ struct SlideshowView: View {
 //        SingleAxisGeometryReader(axis: .vertical) { height in
             TabView(selection: $imageTabIndex) {
                 ForEach(slideshowImages.indices) { index in
-                    let image = slideshowImages[index].image
+                    let image = slideshowImages[index]
                     image
-                        .resizable()
+//                        .resizable()
                         .scaledToFill()
                         .clipped()
                         .tag(index)
@@ -69,11 +69,11 @@ struct SlideshowView: View {
 }
 
 struct ImageCarouselView_Previews: PreviewProvider {
-    static let images: [SlideshowImage] = [
-        SlideshowImage(image:Image("SampleRabbi")),
-        SlideshowImage(image:Image("Logo")),
-        SlideshowImage(image:Image("parsha")),
-        SlideshowImage(image:Image("chanuka")),
+    static let images: [DownloadableImage<SlideshowImage>] = [
+        DownloadableImage(object: SlideshowImage(image:Image("SampleRabbi"))),
+        DownloadableImage(object: SlideshowImage(image:Image("Logo"))),
+        DownloadableImage(object: SlideshowImage(image:Image("parsha"))),
+        DownloadableImage(object: SlideshowImage(image:Image("chanuka"))),
     ]
     
     static var previews: some View {
