@@ -79,7 +79,7 @@ struct HomeView: View {
                         }
                         Divider().padding(.horizontal)
                     }
-                    
+
                     VStack(spacing: 0) {
                         HStack {
                             Text("Categories")
@@ -88,7 +88,7 @@ struct HomeView: View {
                             Spacer()
                         }
                         .padding(.horizontal)
-                        
+
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(tags, id: \.name) { tag in
@@ -100,16 +100,21 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("Slideshow")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
+                    if let slideshowImages = model.slideshowImages {
+                        VStack(spacing: 0) {
+                            HStack {
+                                Text("Featured Photos")
+                                    .font(.title3)
+                                    .bold()
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                                SlideshowView(slideshowImages)
+                                .frame(height: 250)
+                                .cornerRadius(UI.cornerRadius)
+                                .shadow(radius: UI.shadowRadius)
+                                .padding()
                         }
-                        .padding(.horizontal)
-                        
-                        SlideshowView()
                     }
                 }
                 .padding(.bottom)
