@@ -115,7 +115,7 @@ exports.loadNews = functions.https.onCall(async (callData, context) => {
 	// Once we are done looping through the documents, return the data.
 	return {
 		lastLoadedDocumentID: lastDocumentFromQueryID,
-		includesLastElement: (requestedCount > newsDocuments.length),
+		includesLastElement: (requestedCount >= newsDocuments.length),
 		newsDocuments: newsDocuments
 	};
 });
@@ -198,9 +198,10 @@ exports.loadSlideshow = functions.https.onCall(async (callData, context) => {
 
 		const documentData = {
 
+			url: url,
 			id: doc.id,
 			name: data.title || null,
-			url: url
+			uploaded: data.uploaded,
 		};
 
 		imageURLs.push(documentData);
@@ -209,7 +210,7 @@ exports.loadSlideshow = functions.https.onCall(async (callData, context) => {
 	// Once we are done looping through the documents, return the data.
 	return {
 		lastLoadedDocumentID: lastDocumentFromQueryID,
-		includesLastElement: (requestedCount > imageURLs.length),
+		includesLastElement: (requestedCount >= imageURLs.length),
 		imageURLs: imageURLs
 	};
 });
@@ -270,7 +271,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	if (!docs || docs.length == 0) {
 		return {
 			lastLoadedDocumentID: lastDocumentFromQueryID,
-			includesLastElement: (requestedCount > rebbeim.length),
+			includesLastElement: (requestedCount >= rebbeim.length),
 			rebbeim: null
 		};
 	}
@@ -457,7 +458,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 		// which, in turn, will be returned by the function.
 		return {
 			lastLoadedDocumentID: lastLoadedDocumentID,
-			includesLastElement: (requestedCount > contentDataArray.length),
+			includesLastElement: (requestedCount >= contentDataArray.length),
 			content: contentDataArray,
 			error_occured: error_occured
 		};
