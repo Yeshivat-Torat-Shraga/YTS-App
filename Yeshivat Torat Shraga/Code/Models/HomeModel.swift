@@ -59,8 +59,10 @@ class HomeModel: ObservableObject, ErrorShower {
             }
         }
         
-        FirebaseConnection.loadSlideshowImages(limit: 15) { results, error in
-            self.slideshowImages = results?.images
+        FirebaseConnection.loadSlideshowImages(limit: 25) { results, error in
+            self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
+                lhs.uploaded > rhs.uploaded
+            })
         }
     }
 }
