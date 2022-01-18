@@ -197,8 +197,9 @@ exports.loadSlideshow = functions.https.onCall(async (callData, context) => {
 		}
 
 		const documentData = {
+
 			id: doc.id,
-			name: data.image_name,
+			name: data.title || null,
 			url: url
 		};
 
