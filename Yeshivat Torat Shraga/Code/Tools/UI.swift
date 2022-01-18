@@ -170,9 +170,19 @@ class SlideshowImage: Identifiable, URLImageable {
     var id: UUID
     var downloadableImage: DownloadableImage<SlideshowImage>?
     var image: Image?
+    var uploaded: Date
     var name: String?
-    init(image: Image, name: String? = nil) {
+    init(image: Image, name: String? = nil, uploaded: Date = Date(timeIntervalSince1970: 0)) {
+        self.uploaded = uploaded
         self.image = image
+        self.name = name
+        self.id = UUID()
+        applyImage()
+    }
+    
+    init(url: URL, name: String? = nil, uploaded: Date = Date(timeIntervalSince1970: 0)) {
+        self.uploaded = uploaded
+        self.imageURL = url
         self.name = name
         self.id = UUID()
         applyImage()
@@ -180,13 +190,6 @@ class SlideshowImage: Identifiable, URLImageable {
     
     func applyImage() {
         self.downloadableImage = DownloadableImage(object: self)
-    }
-    
-    init(url: URL, name: String? = nil) {
-        self.imageURL = url
-        self.name = name
-        self.id = UUID()
-        applyImage()
     }
     
     func hash(into hasher: inout Hasher) {

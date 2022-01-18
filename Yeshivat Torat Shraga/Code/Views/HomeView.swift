@@ -116,6 +116,7 @@ struct HomeView: View {
                             .padding(.horizontal)
                                 SlideshowView(slideshowImages)
                                 .frame(height: 250)
+                                .clipped()
                                 .cornerRadius(UI.cornerRadius)
                                 .shadow(radius: UI.shadowRadius)
                                 .padding()

@@ -130,13 +130,16 @@ final class FirebaseConnection {
             let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
             
             for document in urlDocuments {
-                guard let url = document["url"] as? String else {
+                guard let url = document["url"] as? String,
+                      let uploadDict = document["uploaded"] as? [String: Int],
+                      let uploaded = Date(firebaseTimestampDictionary: uploadDict)
+                else {
                     completion(nil, callError ?? YTSError.invalidDataReceived)
                     return
                 }
                 let title = document["name"] as? String
                 let urlObject = URL(string: url)
-                let slideshowImage = SlideshowImage(url: urlObject!, name: title)
+                let slideshowImage = SlideshowImage(url: urlObject!, name: title, uploaded: uploaded)
                 images.append(slideshowImage)
             }
             completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
