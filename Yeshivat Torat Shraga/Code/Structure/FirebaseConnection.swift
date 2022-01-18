@@ -99,14 +99,14 @@ final class FirebaseConnection {
         limit: Int,
         completion: @escaping (
             _ results: (
-                images: [DownloadableImage<SlideshowImage>],
+                images: [SlideshowImage],
                 metadata: (
                     newLastLoadedDocumentID: FirestoreID?,
                     includesLastElement: Bool
                 )
             )?, _ error: Error?) -> Void
     ) {
-        var images: [DownloadableImage<SlideshowImage>] = []
+        var images: [SlideshowImage] = []
         let httpsCallable = functions.httpsCallable("loadSlideshow")
         var data: [String: Any] = [
             "count": limit
@@ -134,10 +134,10 @@ final class FirebaseConnection {
                     completion(nil, callError ?? YTSError.invalidDataReceived)
                     return
                 }
+                let title = document["name"] as? String
                 let urlObject = URL(string: url)
-                let slideshowImage = SlideshowImage(url: urlObject!)
-                let downloadableImage = DownloadableImage(object: slideshowImage)
-                images.append(downloadableImage)
+                let slideshowImage = SlideshowImage(url: urlObject!, name: title)
+                images.append(slideshowImage)
             }
             completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
         }

@@ -133,18 +133,60 @@ class AsyncImageLoader: ObservableObject {
     }
 }
 
-final class SlideshowImage: Identifiable, View, URLImageable {
+struct SingleAxisGeometryReader<Content: View>: View
+{
+    private struct SizeKey: PreferenceKey
+    {
+        static var defaultValue: CGFloat { 10 }
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat)
+        {
+            value = max(value, nextValue())
+        }
+    }
+
+    @State private var size: CGFloat = SizeKey.defaultValue
+
+    var axis: Axis
+    var alignment: Alignment = .center
+    let content: (CGFloat)->Content
+
+    var body: some View
+    {
+        content(size)
+            .frame(maxWidth:  axis == .horizontal ? .infinity : nil,
+                   maxHeight: axis == .vertical   ? .infinity : nil,
+                   alignment: alignment)
+            .background(GeometryReader
+            {
+                proxy in
+                Color.clear.preference(key: SizeKey.self, value: axis == .horizontal ? proxy.size.width : proxy.size.height)
+            })
+            .onPreferenceChange(SizeKey.self) { size = $0 }
+    }
+}
+
+class SlideshowImage: Identifiable, URLImageable {
     var imageURL: URL?
     var id: UUID
+    var downloadableImage: DownloadableImage<SlideshowImage>?
     var image: Image?
-    init(image: Image) {
+    var name: String?
+    init(image: Image, name: String? = nil) {
         self.image = image
+        self.name = name
         self.id = UUID()
+        applyImage()
     }
     
-    init(url: URL) {
+    func applyImage() {
+        self.downloadableImage = DownloadableImage(object: self)
+    }
+    
+    init(url: URL, name: String? = nil) {
         self.imageURL = url
+        self.name = name
         self.id = UUID()
+        applyImage()
     }
     
     func hash(into hasher: inout Hasher) {
@@ -155,9 +197,9 @@ final class SlideshowImage: Identifiable, View, URLImageable {
         lhs.id == rhs.id
     }
     
-    var body: some View {
-        DownloadableImage(object: self)
-    }
+//    var body: some View {
+//        DownloadableImage(object: self)
+//    }
 }
 
 protocol URLImageable {

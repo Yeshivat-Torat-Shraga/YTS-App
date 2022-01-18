@@ -10,12 +10,12 @@ import Combine
 
 struct SlideshowView: View {
     private var timerDelay: Double = 7
-    private var slideshowImages: [DownloadableImage<SlideshowImage>]
+    private var slideshowImages: [SlideshowImage]
     private let swipeThreshhold: CGFloat = 50
     @State private var imageTabIndex = 0
     @State private var timer: Publishers.Autoconnect<Timer.TimerPublisher>
     
-    init(_ slideshowImages: [DownloadableImage<SlideshowImage>]) {
+    init(_ slideshowImages: [SlideshowImage]) {
         self.slideshowImages = slideshowImages
         self.timer = Timer.publish(every: timerDelay, on: .main, in: .common).autoconnect()
     }
@@ -36,14 +36,31 @@ struct SlideshowView: View {
     }
     
     var body: some View {
-            
-//        SingleAxisGeometryReader(axis: .vertical) { height in
+        SingleAxisGeometryReader(axis: .horizontal) { width in
             TabView(selection: $imageTabIndex) {
                 ForEach(slideshowImages.indices) { index in
-                    let image = slideshowImages[index]
+                    let image = slideshowImages[index].downloadableImage
                     image
-//                        .resizable()
                         .scaledToFill()
+                        .frame(width: width, height: 250)
+                        .overlay(
+                            VStack(alignment: .leading) {
+                                if let title = slideshowImages[index].name {
+                                    Spacer()
+                                    HStack {
+                                        Text(title)
+                                            .foregroundColor(.white)
+                                            .padding(5)
+                                            .font(.system(size: 12, weight: .medium ))
+                                            .background(
+                                                VisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
+                                                    .cornerRadius(UI.cornerRadius, corners: [.topRight])
+                                            )
+                                        Spacer()
+                                    }
+                                }
+                            }
+                        )
                         .clipped()
                         .tag(index)
                         .highPriorityGesture(
@@ -56,28 +73,26 @@ struct SlideshowView: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle())
-//            .frame(height: 250)
-//            .cornerRadius(14)
             .onReceive(self.timer) { _ in
                 withAnimation {
                     imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
                 }
             }
-//        }
-        //        .clipped()
+        }
     }
 }
 
 struct ImageCarouselView_Previews: PreviewProvider {
-    static let images: [DownloadableImage<SlideshowImage>] = [
-        DownloadableImage(object: SlideshowImage(image:Image("SampleRabbi"))),
-        DownloadableImage(object: SlideshowImage(image:Image("Logo"))),
-        DownloadableImage(object: SlideshowImage(image:Image("parsha"))),
-        DownloadableImage(object: SlideshowImage(image:Image("chanuka"))),
+    static let images: [SlideshowImage] = [
+        SlideshowImage(image:Image("SampleRabbi"), name: "Rabbi Silber"),
+//        SlideshowImage(image:Image("Logo"), name: "Shraga Logo"),
+        SlideshowImage(image:Image("parsha")),
+        SlideshowImage(image:Image("chanuka")),
     ]
     
     static var previews: some View {
-        SlideshowView(images)
-//            .cornerRadius(14)
+        HomeView()
+            .foregroundColor(Color("ShragaBlue"))
+            .accentColor(Color("ShragaBlue"))
     }
 }

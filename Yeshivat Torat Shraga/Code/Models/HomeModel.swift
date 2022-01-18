@@ -16,7 +16,7 @@ class HomeModel: ObservableObject, ErrorShower {
     @Published var recentlyUploadedContent: Content?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
-    @Published var slideshowImages: [DownloadableImage<SlideshowImage>]?
+    @Published var slideshowImages: [SlideshowImage]?
     
     init() {
         load()
@@ -59,7 +59,7 @@ class HomeModel: ObservableObject, ErrorShower {
             }
         }
         
-        FirebaseConnection.loadSlideshowImages(limit: 10) { results, error in
+        FirebaseConnection.loadSlideshowImages(limit: 15) { results, error in
             self.slideshowImages = results?.images
         }
     }
