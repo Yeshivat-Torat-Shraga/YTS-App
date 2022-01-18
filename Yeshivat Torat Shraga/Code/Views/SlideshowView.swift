@@ -42,7 +42,8 @@ struct SlideshowView: View {
                     let image = slideshowImages[index].downloadableImage
                     image
                         .scaledToFill()
-                        .frame(width: width, height: 250)
+                        .frame(width: width)
+                        .frame(minHeight: 250)
                         .overlay(
                             VStack(alignment: .leading) {
                                 if let title = slideshowImages[index].name {
@@ -61,6 +62,22 @@ struct SlideshowView: View {
                                 }
                             }
                         )
+                        .contextMenu {
+                            if let image = slideshowImages[index].image {
+                                Button(action: {
+                                    let activityController = UIActivityViewController(activityItems: [image], applicationActivities: [])
+                                    
+                                    UIApplication.shared.windows.first?.rootViewController!.present(activityController, animated: true, completion: nil)
+                                    
+                                }) {
+                                    HStack {
+                                        Text("Share")
+                                        Spacer()
+                                        Image(systemName: "square.and.arrow.up")
+                                    }
+                                }
+                            }
+                        }
                         .clipped()
                         .tag(index)
                         .highPriorityGesture(
