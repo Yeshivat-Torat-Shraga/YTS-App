@@ -55,18 +55,18 @@ struct DisplayRabbiView: View {
                 .padding(.horizontal)
             }
         }
-
+        
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
+            ToolbarItem(placement: .navigationBarLeading) {
+                LogoView(size: .small)
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
-                HStack {
-                    LogoView(size: .small)
-                    DownloadableImage(object: model.rabbi)
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                        .shadow(radius: UI.shadowRadius)
-                }
+                DownloadableImage(object: model.rabbi)
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                    .shadow(radius: UI.shadowRadius)
             }
         })
         .onAppear {

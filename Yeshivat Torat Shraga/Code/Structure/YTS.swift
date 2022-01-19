@@ -12,6 +12,29 @@ typealias FirestoreID = String
 typealias FileID = String
 
 
+class NewsArticle: Identifiable {
+    var imageURLs: [URL]?
+    var title: String
+    var body: String
+    var uploaded: Date
+    var author: String
+    
+    init(title: String, body: String, uploaded: Date, author: String, imageURLs: [URL]? = nil) {
+        self.title = title
+        self.body = body
+        self.uploaded = uploaded
+        self.author = author
+        self.imageURLs = imageURLs
+    }
+    
+    static public var sample = NewsArticle(title: "Sample Article!!",
+                                           body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi lacinia ultrices interdum. Praesent cursus nec erat cursus vehicula. Quisque ac ornare mauris. Duis vitae sem consequat, accumsan tellus eget, ullamcorper ipsum. Vivamus in euismod nisi, at lacinia mi. Etiam vitae euismod est. Morbi commodo suscipit urna sit amet iaculis.  Sed massa turpis, faucibus eu lectus vel, sollicitudin fermentum urna. Nunc vulputate efficitur sodales. Quisque ex neque, dignissim sit amet suscipit sed, dapibus id justo. Ut suscipit ut tellus eu accumsan. Aliquam vehicula egestas rutrum. Cras sagittis erat sed justo scelerisque consectetur vitae in urna. Phasellus magna lacus, tristique aliquam neque sit amet, porta varius neque. Sed quis felis feugiat, venenatis nulla et, tincidunt leo. Praesent ut purus quis mauris rutrum dignissim. Quisque libero risus, pharetra nec velit quis, ullamcorper mattis arcu. Pellentesque laoreet mi ac eleifend tempor. Fusce nunc eros, malesuada eu mi pulvinar, dictum dapibus eros. In hac habitasse platea dictumst. Integer non finibus tellus, at gravida augue.  Fusce convallis magna sem, ac bibendum diam ultrices et. Sed ac lectus ultricies, dapibus libero eget, mattis sapien. Aliquam erat volutpat. In nec ligula ut tellus tincidunt consequat nec sit amet nisl. Nam vitae ullamcorper neque. Nullam placerat pharetra mi, eget aliquam arcu pharetra in. Mauris et neque egestas mi scelerisque congue. Nulla id erat vitae quam convallis vehicula. Morbi commodo erat non tristique venenatis.  Aliquam magna quam, dapibus vel posuere non, pulvinar et mauris. Aenean enim tellus, viverra nec viverra quis, aliquet at tortor. Curabitur ligula lorem, ornare eget lectus quis, condimentum pellentesque purus. Vivamus dictum et metus eu vestibulum. Duis a nibh pulvinar felis lobortis ornare. Sed leo purus, eleifend id placerat ac, pulvinar sit amet metus. Nulla vitae ex ut leo egestas venenatis vestibulum vitae dui.  Suspendisse imperdiet velit mattis nunc facilisis, in tristique arcu suscipit. Vestibulum tristique ligula est, vitae sodales lacus accumsan sit amet. Pellentesque sollicitudin dignissim felis, eget lacinia dolor hendrerit et. Donec vel felis ante. Donec faucibus dui nunc, sit amet efficitur libero consequat id. Fusce arcu mi, pharetra sit amet efficitur semper, blandit quis eros. Nunc purus enim, consequat vitae facilisis eget, tincidunt quis sem. Fusce porttitor viverra velit, vel luctus tortor euismod eu.",
+                                           uploaded: Date(timeIntervalSince1970: 1642351054),
+                                           author: "Benji Tusk")
+}
+
+
+
 class Rabbi: Hashable {
     /// The `FirestoreID` associated with this object in Firestore
     private(set) var firestoreID: FirestoreID

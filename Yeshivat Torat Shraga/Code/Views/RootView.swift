@@ -26,7 +26,7 @@ struct RootView: View {
                 }
             NewsView()
                 .tabItem {
-                    Label("News", systemImage: "newspaper")
+                    Label("News", systemImage: "newspaper.fill")
                 }
             SettingsView()
                 .tabItem {

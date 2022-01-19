@@ -16,6 +16,7 @@ class HomeModel: ObservableObject, ErrorShower {
     @Published var recentlyUploadedContent: Content?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
+    @Published var slideshowImages: [SlideshowImage]?
     
     init() {
         load()
@@ -56,6 +57,12 @@ class HomeModel: ObservableObject, ErrorShower {
                     return lhs.date! > rhs.date!
                 })
             }
+        }
+        
+        FirebaseConnection.loadSlideshowImages(limit: 25) { results, error in
+            self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
+                lhs.uploaded > rhs.uploaded
+            })
         }
     }
 }

@@ -133,6 +133,78 @@ class AsyncImageLoader: ObservableObject {
     }
 }
 
+struct SingleAxisGeometryReader<Content: View>: View
+{
+    private struct SizeKey: PreferenceKey
+    {
+        static var defaultValue: CGFloat { 10 }
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat)
+        {
+            value = max(value, nextValue())
+        }
+    }
+
+    @State private var size: CGFloat = SizeKey.defaultValue
+
+    var axis: Axis
+    var alignment: Alignment = .center
+    let content: (CGFloat)->Content
+
+    var body: some View
+    {
+        content(size)
+            .frame(maxWidth:  axis == .horizontal ? .infinity : nil,
+                   maxHeight: axis == .vertical   ? .infinity : nil,
+                   alignment: alignment)
+            .background(GeometryReader
+            {
+                proxy in
+                Color.clear.preference(key: SizeKey.self, value: axis == .horizontal ? proxy.size.width : proxy.size.height)
+            })
+            .onPreferenceChange(SizeKey.self) { size = $0 }
+    }
+}
+
+class SlideshowImage: Identifiable, URLImageable {
+    var imageURL: URL?
+    var id: UUID
+    var downloadableImage: DownloadableImage<SlideshowImage>?
+    var image: Image?
+    var uploaded: Date
+    var name: String?
+    init(image: Image, name: String? = nil, uploaded: Date = Date(timeIntervalSince1970: 0)) {
+        self.uploaded = uploaded
+        self.image = image
+        self.name = name
+        self.id = UUID()
+        applyImage()
+    }
+    
+    init(url: URL, name: String? = nil, uploaded: Date = Date(timeIntervalSince1970: 0)) {
+        self.uploaded = uploaded
+        self.imageURL = url
+        self.name = name
+        self.id = UUID()
+        applyImage()
+    }
+    
+    func applyImage() {
+        self.downloadableImage = DownloadableImage(object: self)
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: SlideshowImage, rhs: SlideshowImage) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+//    var body: some View {
+//        DownloadableImage(object: self)
+//    }
+}
+
 protocol URLImageable {
     var image: Image? { get set }
     var imageURL: URL? { get }

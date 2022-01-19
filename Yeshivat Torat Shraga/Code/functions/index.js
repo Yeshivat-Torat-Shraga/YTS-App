@@ -13,6 +13,208 @@ admin.initializeApp({
 	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
 });
 
+exports.loadNews = functions.https.onCall(async (callData, context) => {
+
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	// 	throw new functions.https.HttpsError(
+	// 		'failed-precondition',
+	// 		'The function must be called from an App Check verified app.')
+	// }
+
+	// Get the last loaded document, if provided.
+	// This is used for pagination.
+	let documentIdOfLastPage = callData.lastLoadedDocumentID;
+	// Get the number of documents to load.
+	// If not specified, load 10.
+	let requestedCount = callData.count || 10;
+
+	let includePictureURLs;
+	if (callData.includePictureURLs == undefined) {
+		// If not specified, default to true
+		includePictureURLs = true;
+	} else {
+		// If specified, check if it is a Boolean true or a String "true".
+		// If so, set includePictureURLs to true. Otherwise, set it to false.
+		includePictureURLs = (callData.includePictureURLs == "true" || callData.includePictureURLs == true);
+	}
+
+	let newsDocuments = [];
+
+	// Create an object that represents the connection to the Firestore database.
+	let db = admin.firestore();
+
+	const COLLECTION = "news";
+	// Build a query to get the documents sorted by upload date.
+	let query = db.collection(COLLECTION).orderBy('date', 'desc');
+
+	// If documentOfLastPageID is specified, check if it's a non empty String.
+	if (typeof documentIdOfLastPage == "string" && documentIdOfLastPage != "") {
+		// Fetch the document with the specified ID from Firestore.
+		let snapshot = await db.collection(COLLECTION).doc(documentIdOfLastPage).get();
+		// Overwrite the query to start after the specified document.
+		query = query.startAfter(snapshot);
+		log(`Starting after document '${snapshot}'`);
+	}
+
+	// Execute the query.
+	let imagesSnapshot = await query.limit(requestedCount).get();
+	// Set a variable to hold the ID of the last document returned from the query.
+	// This is so the client can use this ID to load the next page of documents.
+	let lastDocumentFromQueryID;
+	// Get the documents returned from the query.
+	let docs = imagesSnapshot.docs;
+
+	// If docs is null, return.
+	if (!docs || docs.length == 0) {
+		return {
+			lastLoadedDocumentID: lastDocumentFromQueryID,
+			includesLastElement: (requestedCount > newsDocuments.length),
+			newsDocuments: null
+		};
+	}
+	// Assign the last document returned from the query to lastDocumentFromQueryID.
+	lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+	// Loop through the documents returned from the query.
+	// For each document, get the desired data and add it to the rebbeim array.
+	// Since we are using the await keyword, we need to make the
+	// function asynchronous. Because of this, the function returns a Promise and
+	// in turn, docs.map() returns an array of Promises.
+	// To deal with this, we are passing that array of Promises to Promise.all(), which
+	// returns a Promise that resolves when all the Promises in the array resolve.
+	// To finish it off, we use await to wait for the Promise returned by Promise.all()
+	await Promise.all(docs.map(async (doc) => {
+		// Get the document data.
+		const data = doc.data();
+
+		let imagePaths = [];
+		if (includePictureURLs) {
+			// Get the image paths from the document.
+			for (const path in data.imagePaths) {
+				try {
+					imagePaths.push(await getURLFor(`newsImages/${path}`));
+				} catch (err) {
+					log(`Failed to get URL for image path '${path}'. Error: ${err}`);
+				}
+			}
+		}
+
+		const documentData = {
+			id: doc.id,
+			title: data.title,
+			author: data.author,
+			body: data.body,
+			uploaded: data.date,
+			imageURLs: imagePaths
+		};
+
+		newsDocuments.push(documentData);
+	}));
+
+	// Once we are done looping through the documents, return the data.
+	return {
+		lastLoadedDocumentID: lastDocumentFromQueryID,
+		includesLastElement: (requestedCount >= newsDocuments.length),
+		newsDocuments: newsDocuments
+	};
+});
+
+exports.loadSlideshow = functions.https.onCall(async (callData, context) => {
+
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	// 	throw new functions.https.HttpsError(
+	// 		'failed-precondition',
+	// 		'The function must be called from an App Check verified app.')
+	// }
+
+	// Get the last loaded document, if provided.
+	// This is used for pagination.
+	let documentIdOfLastPage = callData.lastLoadedDocumentID;
+	// Get the number of documents to load.
+	// If not specified, load 10.
+	let requestedCount = callData.count || 10;
+
+
+	let imageURLs = [];
+
+	// Create an object that represents the connection to the Firestore database.
+	let db = admin.firestore();
+
+	const COLLECTION = "slideshowImages";
+	// Build a query to get the documents sorted by upload date.
+	let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
+
+	// If documentOfLastPageID is specified, check if it's a non empty String.
+	if (typeof documentIdOfLastPage == "string" && documentIdOfLastPage != "") {
+		// Fetch the document with the specified ID from Firestore.
+		let snapshot = await db.collection(COLLECTION).doc(documentIdOfLastPage).get();
+		// Overwrite the query to start after the specified document.
+		query = query.startAfter(snapshot);
+		log(`Starting after document '${snapshot}'`);
+	}
+
+	// Execute the query.
+	let imagesSnapshot = await query.limit(requestedCount).get();
+	// Set a variable to hold the ID of the last document returned from the query.
+	// This is so the client can use this ID to load the next page of documents.
+	let lastDocumentFromQueryID;
+	// Get the documents returned from the query.
+	let docs = imagesSnapshot.docs;
+
+	// If docs is null, return.
+	if (!docs || docs.length == 0) {
+		return {
+			lastLoadedDocumentID: lastDocumentFromQueryID,
+			includesLastElement: (requestedCount > imageURLs.length),
+			imageURLs: null
+		};
+	}
+	// Assign the last document returned from the query to lastDocumentFromQueryID.
+	lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+	// Loop through the documents returned from the query.
+	// For each document, get the desired data and add it to the rebbeim array.
+	// Since we are using the await keyword, we need to make the
+	// function asynchronous. Because of this, the function returns a Promise and
+	// in turn, docs.map() returns an array of Promises.
+	// To deal with this, we are passing that array of Promises to Promise.all(), which
+	// returns a Promise that resolves when all the Promises in the array resolve.
+	// To finish it off, we use await to wait for the Promise returned by Promise.all()
+	await Promise.all(docs.map(async (doc) => {
+		// Get the document data.
+		const data = doc.data();
+
+		const imagePath = data.image_name;
+
+		let url;
+		try {
+			url = await getURLFor(`slideshow/${imagePath}`);
+			console.log(url);
+		} catch (error) {
+			console.error(error);
+		}
+
+		const documentData = {
+
+			url: url,
+			id: doc.id,
+			name: data.title || null,
+			uploaded: data.uploaded,
+		};
+
+		imageURLs.push(documentData);
+	}));
+
+	// Once we are done looping through the documents, return the data.
+	return {
+		lastLoadedDocumentID: lastDocumentFromQueryID,
+		includesLastElement: (requestedCount >= imageURLs.length),
+		imageURLs: imageURLs
+	};
+});
+
 exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 
 	// === APP CHECK ===
@@ -24,7 +226,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 
 	// Get the last loaded document, if provided.
 	// This is used for pagination.
-	let documentOfLastPageID = callData.lastLoadedDocumentID;
+	let documentIdOfLastPage = callData.lastLoadedDocumentID;
 	// Get the number of documents to load.
 	// If not specified, load 10.
 	let requestedCount = callData.count || 10;
@@ -49,9 +251,9 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	let query = db.collection('rebbeim').orderBy('name', 'asc');
 
 	// If documentOfLastPageID is specified, check if it's a non empty String.
-	if (typeof documentOfLastPageID == "string" && documentOfLastPageID != "") {
+	if (typeof documentIdOfLastPage == "string" && documentIdOfLastPage != "") {
 		// Fetch the document with the specified ID from Firestore.
-		let snapshot = await db.collection("rebbeim").doc(documentOfLastPageID).get();
+		let snapshot = await db.collection("rebbeim").doc(documentIdOfLastPage).get();
 		// Overwrite the query to start after the specified document.
 		query = query.startAfter(snapshot);
 		log(`Starting after document '${snapshot}'`);
@@ -69,7 +271,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 	if (!docs || docs.length == 0) {
 		return {
 			lastLoadedDocumentID: lastDocumentFromQueryID,
-			includesLastElement: (requestedCount > rebbeim.length),
+			includesLastElement: (requestedCount >= rebbeim.length),
 			rebbeim: null
 		};
 	}
@@ -93,7 +295,7 @@ exports.loadRebbeim = functions.https.onCall(async (callData, context) => {
 		let url;
 		if (includePictureURLs) {
 			url = await getRabbiProfilePictureURLFor(pfpFilename);
-			console.log(url);
+			// console.log(url);
 		}
 
 		const documentData = {
@@ -256,7 +458,7 @@ exports.loadContent = functions.https.onCall(async (callData, context) => {
 		// which, in turn, will be returned by the function.
 		return {
 			lastLoadedDocumentID: lastLoadedDocumentID,
-			includesLastElement: (requestedCount > contentDataArray.length),
+			includesLastElement: (requestedCount >= contentDataArray.length),
 			content: contentDataArray,
 			error_occured: error_occured
 		};
@@ -284,7 +486,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 
 		const inputPath = tempFilePath;
 		const outputDir = path.join(os.tmpdir(), `HLSStreams`);
-		log(`${process.cwd()}`);
+		// log(`${process.cwd()}`);
 		log(`Input path: ${inputPath}`);
 		log(`Output path: ${outputDir}`);
 
@@ -321,7 +523,7 @@ exports.generateHLSStream = functions.storage.bucket().object().onFinalize(async
 
 		const filenames = fs.readdirSync(outputDir);
 		// fs.readdir(outputDir, async (error, filenames) => {
-		log(filenames);
+		// log(filenames);
 		await Promise.all(filenames.map((filename) => {
 			const fp = path.join(outputDir, filename);
 			log(`Uploading ${fp}...`);
@@ -611,6 +813,8 @@ function strippedFilename(filename) {
 
 
 function log(data, structured = false) {
+	console.log(data);
+	return;
 	functions.logger.info(data, {
 		structuredData: structured
 	});

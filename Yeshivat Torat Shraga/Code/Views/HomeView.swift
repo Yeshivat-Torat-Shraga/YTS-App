@@ -20,6 +20,8 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack {
+                    
+                    // MARK: - Recently Uploaded
                     VStack(spacing: 0.0) {
                         HStack {
                             Text("Recently Uploaded")
@@ -52,6 +54,7 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    // MARK: - Rebbeim
                     VStack(spacing: 0) {
                         HStack {
                             Text("Rebbeim")
@@ -79,7 +82,8 @@ struct HomeView: View {
                         }
                         Divider().padding(.horizontal)
                     }
-                    
+
+                    // MARK: - CATEGORIES
                     VStack(spacing: 0) {
                         HStack {
                             Text("Categories")
@@ -88,7 +92,7 @@ struct HomeView: View {
                             Spacer()
                         }
                         .padding(.horizontal)
-                        
+
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(tags, id: \.name) { tag in
@@ -99,17 +103,36 @@ struct HomeView: View {
                         }
                         Divider().padding(.horizontal)
                     }
+                    
+                    // MARK: - SLIDESHOW
+                    if let slideshowImages = model.slideshowImages {
+                        VStack(spacing: 0) {
+                            HStack {
+                                Text("Featured Photos")
+                                    .font(.title3)
+                                    .bold()
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                                SlideshowView(slideshowImages)
+                                .frame(height: 250)
+                                .clipped()
+                                .cornerRadius(UI.cornerRadius)
+                                .shadow(radius: UI.shadowRadius)
+                                .padding()
+                        }
+                    }
                 }
                 .padding(.bottom)
                 .navigationTitle("Home")
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        HStack(spacing: 0.0) {
+                    ToolbarItem(placement: .navigationBarLeading) {
                         LogoView(size: .small)
-                            EllipseButton(action: {
-                                self.presentingSearchView = true
-                            }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
-                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        EllipseButton(action: {
+                            self.presentingSearchView = true
+                        }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
                     }
                 }
             }.alert(isPresented: Binding(get: {
