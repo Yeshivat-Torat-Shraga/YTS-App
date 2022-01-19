@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action="/" method="POST" enctype="multipart/form-data">
+    <label  for="title">Name</label>
+
+    <input name="title" id="title" type="text"><br><br>
+
+    <label for="rabbis">Choose a Rabbi:</label><br>
+    <select name="rabbis" id="rabbis">
+        {% for rabbi in rabbis %}
+            <option value="{{ rabbi }}">{{ rabbi }}</option>
+        {% endfor %}   
+    </select><br><br>
+
+    <label for="file">Profile Picture</label>
+    <input name="file" id="file" type="file">
+    <button type="submit">Submit</button>
+</form>
+{% endblock content %}
