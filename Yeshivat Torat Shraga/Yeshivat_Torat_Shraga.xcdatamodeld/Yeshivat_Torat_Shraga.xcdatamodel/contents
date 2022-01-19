@@ -5,7 +5,7 @@
         <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="fileID" optional="YES" attributeType="String"/>
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="source" optional="YES" attributeType="URI"/>
+        <attribute name="sourceURL" optional="YES" attributeType="URI"/>
         <attribute name="tags" optional="YES" attributeType="Transformable"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -18,7 +18,7 @@
         <attribute name="profileImageData" optional="YES" attributeType="Binary"/>
     </entity>
     <elements>
-        <element name="CDAudio" positionX="-45" positionY="27" width="128" height="14"/>
+        <element name="CDAudio" positionX="-45" positionY="27" width="128" height="164"/>
         <element name="CDPerson" positionX="-63" positionY="-18" width="128" height="89"/>
     </elements>
 </model>

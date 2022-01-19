@@ -24,6 +24,14 @@ class Rabbi: Hashable {
         self.name = name
     }
     
+    convenience init?(cdPerson: CDPerson) {
+        guard let firestoreID = cdPerson.firestoreID, let name = cdPerson.name else {
+            return nil
+        }
+        
+        self.init(id: firestoreID, name: name)
+    }
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(firestoreID)
     }
@@ -71,6 +79,19 @@ class DetailedRabbi: Rabbi, Tileable {
     init(id firestoreID: FirestoreID, name: String, profileImageURL: URL) {
         super.init(id: firestoreID, name: name)
         self.profileImageURL = profileImageURL
+    }
+    
+    init?(cdPerson: CDPerson) {
+        guard let firestoreID = cdPerson.firestoreID, let name = cdPerson.name, let profileImageData = cdPerson.profileImageData else {
+            return nil
+        }
+        
+        guard let profileUIImage = UIImage(data: profileImageData) else {
+            return nil
+        }
+        
+        self.profileImage = Image(uiImage: profileUIImage)
+        super.init(id: firestoreID, name: name)
     }
     
     static public var samples: [DetailedRabbi] = [
@@ -143,7 +164,7 @@ extension YTSContent {
     }
 }
 
-class Video: YTSContent {
+class Video: YTSContent, URLImageable {
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
     var sourceURL: URL
@@ -246,10 +267,7 @@ class Video: YTSContent {
 }
 
 class Audio: YTSContent, Hashable {
-    var name: String
-    
-    var image: Image?
-    
+    var image: Image? = Image("AudioPlaceholder")
     var imageURL: URL?
     
     internal var firestoreID: FirestoreID
@@ -261,6 +279,10 @@ class Audio: YTSContent, Hashable {
     var date: Date
     var duration: TimeInterval?
     var tags: [Tag]
+    
+    var name: String {
+        return title
+    }
     
     /// Standard initializer for an `Audio`
     /// - Parameters:
@@ -283,8 +305,23 @@ class Audio: YTSContent, Hashable {
         self.date = date
         self.duration = duration
         self.tags = tags
-        self.name = title
+    }
+    
+    convenience init?(cdAudio: CDAudio) {
+        guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let url = cdAudio.sourceURL, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
+            return nil
+        }
         
+        let duration = TimeInterval(cdAudio.duration)
+        
+//        MARK: TAGS HARD-CODED EMPTY
+        if let author = DetailedRabbi(cdPerson: author) {
+            self.init(id: firestoreID, fileID: fileID, sourceURL: url, title: title, author: author, description: description, date: uploadDate, duration: duration, tags: [])
+        } else if let author = Rabbi(cdPerson: author) {
+            self.init(id: firestoreID, fileID: fileID, sourceURL: url, title: title, author: author, description: description, date: uploadDate, duration: duration, tags: [])
+        } else {
+            return nil
+        }
     }
     
     func hash(into hasher: inout Hasher) {
