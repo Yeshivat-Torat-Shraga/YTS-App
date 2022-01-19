@@ -152,18 +152,25 @@ class Favorites {
                     favoritePeople = []
                 }
                 for personEntity in personEntities {
-                    if personEntity.owned == false {
-                        if let name = personEntity.name, let id = personEntity.firestoreID, let profileImageData = personEntity.profileImageData {
-                            guard let profileUIImage = UIImage(data: profileImageData) else {
-                                print("Failed to load picture from data for person with Firestore ID '\(id)'")
-                                continue
-                            }
-                            
-                            let person = DetailedRabbi(id: id, name: name, profileImage: Image(uiImage: profileUIImage))
-                            favoritePeople?.append(person)
-                        }
+                    guard let person = DetailedRabbi(cdPerson: personEntity) else {
+                        continue
                     }
+                    
+                    favoritePeople?.append(person)
                 }
+//                for personEntity in personEntities {
+//                    if personEntity.owned == false {
+//                        if let name = personEntity.name, let id = personEntity.firestoreID, let profileImageData = personEntity.profileImageData {
+//                            guard let profileUIImage = UIImage(data: profileImageData) else {
+//                                print("Failed to load picture from data for person with Firestore ID '\(id)'")
+//                                continue
+//                            }
+//                            
+//                            let person = DetailedRabbi(id: id, name: name, profileImage: Image(uiImage: profileUIImage))
+//                            favoritePeople?.append(person)
+//                        }
+//                    }
+//                }
             }
             group.leave()
         }
