@@ -2,6 +2,7 @@ export interface LoadData {
 	metadata: {
 		lastLoadedDocID: string;
 		includesLastElement: boolean;
+		error?: string;
 	};
 	content: any[] | null;
 }
@@ -22,6 +23,24 @@ export interface SlideshowImageDocument {
 	uploaded: Date;
 }
 
+export interface RebbeimDocument {
+	id: string;
+	name: string;
+	profile_picture_url: string;
+}
+
+export interface ContentDocument {
+	id: string;
+	attributionID: string;
+	title: string;
+	description: string;
+	duration: number;
+	date: Date;
+	type: string;
+	source_url: string;
+	author: Author;
+}
+
 export interface NewsFirebaseDocument {
 	author: string;
 	body: string;
@@ -35,4 +54,30 @@ export interface SlideshowImageFirebaseDocument {
 	image_name: string;
 	title: string;
 	uploaded: Date;
+}
+
+export interface RebbeimFirebaseDocument {
+	name: string;
+	profile_picture_filename: string;
+	search_index: string;
+}
+
+export interface ContentFirebaseDocument {
+	attributionID: string;
+	author: string;
+	date: Date;
+	description: string;
+	duration: number;
+	search_index: string[];
+	source_path: string;
+	tags: string[];
+	title: string;
+	type: string;
+}
+
+export interface Author {
+	id: string;
+	name: string;
+	profile_picture_filename: string;
+	profile_picture_url?: string;
 }

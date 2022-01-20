@@ -1,13 +1,23 @@
 import admin from 'firebase-admin';
 import functions from 'firebase-functions';
+import ffmpeg from '@ffmpeg-installer/ffmpeg';
+import childProcessPromise from 'child-process-promise';
+
+import os from 'os';
 import {
+	ContentDocument,
+	ContentFirebaseDocument,
 	LoadData,
 	NewsDocument,
 	NewsFirebaseDocument,
+	RebbeimDocument,
+	RebbeimFirebaseDocument,
 	SlideshowImageDocument,
 	SlideshowImageFirebaseDocument,
 } from './types';
-import { log, getURLFor } from './helpers';
+import { log, getURLFor, getRabbiFor, strippedFilename, supplyDefaultParameters } from './helpers';
+import path from 'path';
+import { readdirSync, unlinkSync } from 'fs';
 const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
@@ -102,17 +112,15 @@ exports.loadNews = functions.https.onCall(async (data, context): Promise<LoadDat
 	);
 
 	// Return the data
-	const returnData: LoadData = {
+	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
 			// This may not work, because the query may return
 			// fewer documents than the limit if there are few documents left.
-			includesLastElement: newsDocs.length == queryOptions.limit,
+			includesLastElement: false,
 		},
 		content: newsDocs,
 	};
-
-	return returnData;
 });
 
 exports.loadSlideshow = functions.https.onCall(async (data, context): Promise<LoadData> => {
@@ -194,12 +202,490 @@ exports.loadSlideshow = functions.https.onCall(async (data, context): Promise<Lo
 			}
 		})
 	);
-	const returnData: LoadData = {
+	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
 			includesLastElement: false,
 		},
 		content: imageDocs.filter((doc) => doc != null),
 	};
-	return returnData;
+});
+
+exports.loadRebbeim = functions.https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	//   throw new functions.https.HttpsError(
+	//     'failed-precondition',
+	//     'The function must be called from an App Check verified app.'
+	//   )
+	// }
+
+	// Get the query options
+	const queryOptions = {
+		limit: (data.limit as number) || 10,
+		previousDocID: data.lastLoadedDocID as string | undefined,
+		includePictureURLs: data.includePictureURLs as boolean | undefined,
+	};
+
+	const COLLECTION = 'rebbeim';
+	let db = admin.firestore();
+	let query = db.collection(COLLECTION).orderBy('name', 'asc');
+	if (queryOptions.previousDocID) {
+		// Fetch the document with the specified ID from Firestore.
+		let snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+		// Overwrite the query to start after the specified document.
+		query = query.startAfter(snapshot);
+		log(`Starting after document '${snapshot}'`);
+	}
+
+	// Execute the query
+	const rebbeimSnapshot = await query.limit(queryOptions.limit).get();
+	// Get the documents returned from the query
+	const docs = rebbeimSnapshot.docs;
+	// if null, return
+	if (!docs || docs.length == 0) {
+		return {
+			metadata: {
+				lastLoadedDocID: queryOptions.previousDocID ?? '',
+				includesLastElement: false,
+			},
+			content: null,
+		};
+	}
+
+	// Set a variable to hold the ID of the last document returned from the query.
+	// This is so the client can use this ID to load the next page of documents.
+	let lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+	// Loop through the documents returned from the query.
+	// For each document, get the desired data and add it to the rebbeim array.
+	// Since we are using the await keyword, we need to make the
+	// function asynchronous. Because of this, the function returns a Promise and
+	// in turn, docs.map() returns an array of Promises.
+	// To deal with this, we are passing that array of Promises to Promise.all(), which
+	// returns a Promise that resolves when all the Promises in the array resolve.
+	// To finish it off, we use await to wait for the Promise returned by Promise.all()
+	// to resolve.
+	let rebbeimDocs: (RebbeimDocument | null)[] = await Promise.all(
+		docs.map(async (doc) => {
+			// Get the document data
+			const data = doc.data() as RebbeimFirebaseDocument;
+			// Get the image path
+			const path = data.profile_picture_filename;
+			// Get the image URL
+			try {
+				const pfpURL = await getURLFor(`profile-pictures/${path}`);
+				// return the document data
+				const document: RebbeimDocument = {
+					id: doc.id,
+					name: data.name,
+					profile_picture_url: pfpURL,
+				};
+				return document;
+			} catch (err) {
+				log(`Error getting image for '${path}': ${err}`, true);
+				return null;
+			}
+		})
+	);
+
+	return {
+		metadata: {
+			lastLoadedDocID: lastDocumentFromQueryID,
+			includesLastElement: false,
+		},
+		content: rebbeimDocs.filter((doc) => doc != null),
+	};
+});
+
+exports.loadContent = functions.https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	// 	throw new functions.https.HttpsError(
+	// 		'failed-precondition',
+	// 		'The function must be called from an App Check verified app.')
+	// }
+
+	// Get the query options
+	const queryOptions = {
+		limit: (data.limit as number) || 10,
+		previousDocID: data.lastLoadedDocID as string | undefined,
+		includeThumbnailURLs: data.includeThumbnailURLs as boolean,
+		includeAllAuthorData: (data.includeAllAuthorData as boolean) || false,
+		search: data.search as
+			| {
+					field: string;
+					value: string;
+			  }
+			| undefined,
+	};
+
+	const COLLECTION = 'content';
+	let db = admin.firestore();
+	let query = db.collection(COLLECTION);
+	if (queryOptions.search) {
+		if (queryOptions.search.field == 'tag') {
+			query = query.where('tags', 'array-contains', queryOptions.search.value) as any;
+			log(`Only getting content where [tags] contains ${queryOptions.search.value}`);
+		} else {
+			query = query.where(queryOptions.search.field, '==', queryOptions.search.value) as any;
+			log(
+				`Only getting content where ${queryOptions.search.field} == ${queryOptions.search.value}`
+			);
+		}
+	} else {
+		log(`Not filtering by search. queryOptions.search: ${queryOptions.search}`);
+	}
+
+	if (queryOptions.previousDocID) {
+		// Fetch the document with the specified ID from Firestore.
+		let snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+		// Overwrite the query to start after the specified document.
+		query = query.startAfter(snapshot) as any;
+		log(`Starting after document '${snapshot}'`);
+	}
+
+	// Execute the query
+	const contentSnapshot = await query.limit(queryOptions.limit).get();
+	// Get the documents returned from the query
+	const docs = contentSnapshot.docs;
+	// If null, return
+	if (!docs || docs.length == 0) {
+		return {
+			metadata: {
+				lastLoadedDocID: queryOptions.previousDocID ?? '',
+				includesLastElement: false,
+			},
+			content: null,
+		};
+	}
+
+	// Set a variable to hold the ID of the last document returned from the query.
+	// This is so the client can use this ID to load the next page of documents.
+	let lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+	// Loop through the documents returned from the query.
+	// For each document, get the desired data and add it to the content array.
+	// Since we are using the await keyword, we need to make the
+	// function asynchronous. Because of this, the function returns a Promise and
+	// in turn, docs.map() returns an array of Promises.
+	// To deal with this, we are passing that array of Promises to Promise.all(), which
+	// returns a Promise that resolves when all the Promises in the array resolve.
+	// To finish it off, we use await to wait for the Promise returned by Promise.all()
+	// to resolve.
+	let contentDocs: (ContentDocument | null)[] = await Promise.all(
+		docs.map(async (doc) => {
+			// Get the document data
+			const data = doc.data() as ContentFirebaseDocument;
+			try {
+				let source_path = await getURLFor(`${data.source_path}`);
+				let author = await getRabbiFor(doc.id, queryOptions.includeAllAuthorData);
+				return {
+					id: doc.id,
+					attributionID: data.attributionID,
+					title: data.title,
+					description: data.description,
+					duration: data.duration,
+					date: data.date,
+					type: data.type,
+					source_url: source_path,
+					author: author,
+				};
+			} catch (err) {
+				log(`Error getting data for docID: '${doc.id}': ${err}`, true);
+				return null;
+			}
+		})
+	);
+
+	return {
+		metadata: {
+			lastLoadedDocID: lastDocumentFromQueryID,
+			includesLastElement: false,
+		},
+		content: contentDocs.filter((doc) => doc != null),
+	};
+});
+
+exports.generateHLSStream = functions.storage
+	.bucket()
+	.object()
+	.onFinalize(async (object) => {
+		// Exit if this is triggered on a file that is not uplaoded to the content folder.
+		if (!object.name!.startsWith('content/'))
+			return log(`File ${object.name} is not in the content folder. Exiting...`);
+		const storage = new Storage();
+		const bucket = storage.bucket(object.bucket);
+
+		const filepath = object.name!;
+		const filename = strippedFilename(filepath);
+		const tempFilePath = path.join(os.tmpdir(), filename);
+
+		// Download file from bucket.
+		await bucket.file(filepath).download({
+			destination: tempFilePath,
+			validation: false,
+		});
+
+		const foldername = filename;
+
+		const inputPath = tempFilePath;
+		const outputDir = path.join(os.tmpdir(), 'HLSStreams');
+		log(`Input path: ${inputPath}`);
+		log(`Output dir: ${outputDir}`);
+
+		// Create the output directory if it does not exist
+		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
+		// Empty the output directory if it exists
+		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
+
+		// Create the HLS stream
+		try {
+			await childProcessPromise.spawn(
+				ffmpeg.path,
+				[
+					'-y',
+					'-i',
+					inputPath,
+					'-hls_list_size',
+					'0',
+					'-hls_time',
+					'10',
+					'-hls_segment_filename',
+					`${outputDir}/${foldername}-%03d.ts`,
+					`${outputDir}/${foldername}.m3u8`,
+				],
+				{
+					stdio: 'inherit',
+				}
+			);
+		} catch (err) {
+			log(`Error creating HLS stream for ${filename}: ${err}`);
+		}
+
+		log(`Uploading HLS stream from ${outputDir}`);
+
+		const filenames = readdirSync(outputDir);
+
+		// Upload the HLS stream to the bucket asynchronously
+		await Promise.all(
+			filenames.map((filename) => {
+				const fp = path.join(outputDir, filename);
+				log(`Uploading ${fp}...`);
+				return bucket.upload(fp, {
+					destination: `HLSStreams/${object.contentType!.split('/')[0]}/${foldername}/${filename}`,
+					metadata: {
+						'Cache-Control': 'public,max-age=3600',
+					},
+				});
+			})
+		);
+		console.log('Uploaded all files.');
+
+		// Delete the file in the content folder
+		bucket.file(filepath).delete();
+	});
+
+exports.generateThumbnail = functions.storage
+	.bucket()
+	.object()
+	.onFinalize(async (object) => {
+		// Step 1: Preliminary filetype check
+		// Exit if this is triggered on a file that is not a video.
+		if (!object.contentType!.startsWith('video/'))
+			return log(`File ${object.name} is not a video. Exiting...`);
+		// Step 2: Download the file from the bucket to a temporary folder
+		const filepath = object.name;
+		const filename = strippedFilename(filepath!);
+		const storage = new Storage();
+		const bucket = storage.bucket(object.bucket);
+		const tempFilePath = path.join(os.tmpdir(), filename);
+		await bucket.file(filepath).download({
+			destination: tempFilePath,
+			validation: false,
+		});
+		const inputPath = tempFilePath;
+		const outputDir = path.join(os.tmpdir(), `thumbnails`);
+		// Step 3: Create the output folder
+		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
+		// delete everything in the output directory
+		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
+
+		// Step 4: Generate the thumbnail using ffmpeg
+		try {
+			await childProcessPromise.spawn(
+				ffmpeg.path,
+				[
+					'-ss',
+					'0',
+					'-i',
+					inputPath,
+					'-y',
+					'-vframes',
+					'1',
+					'-vf',
+					`scale=512:-1`,
+					`-update`,
+					`1`,
+					`${outputDir}/${filename}.jpg`,
+				],
+				{ stdio: 'inherit' }
+			);
+		} catch (error) {
+			functions.logger.error(`Error: ${error}`);
+		}
+		// Step 5: Upload the thumbnail to the bucket
+		const metadata = {
+			contentType: 'image/jpeg',
+			// To enable Client-side caching you can set the Cache-Control headers here:
+			'Cache-Control': 'public,max-age=3600',
+		};
+		await bucket.upload(`${outputDir}/${filename}.jpg`, {
+			destination: `thumbnails/${filename}.jpg`,
+			metadata: metadata,
+		});
+		// Step 6: Delete the temporary file
+		unlinkSync(tempFilePath);
+	});
+
+exports.searchFirestore = functions.https.onCall(async (callData, context): Promise<any> => {
+	const defaultSearchOptions = {
+		content: {
+			limit: 5,
+			includeThumbnailURLs: false,
+			includeDetailedAuthorInfo: false,
+			startFromDocumentID: null,
+		},
+		rebbeim: {
+			limit: 10,
+			includePictureURLs: false,
+			startFromDocumentID: null,
+		},
+	};
+	let searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
+	let errors: string[] = [];
+	const db = admin.firestore();
+	const searchQuery = callData.searchQuery.toLowerCase();
+	if (!searchQuery) {
+		return {
+			metadata: {
+				lastLoadedDocID: '',
+				includesLastElement: false,
+			},
+			content: null,
+		};
+	}
+	const searchArray = searchQuery.split(' ');
+	let documentsThatMeetSearchCriteria = [];
+	// For each collection, run the following async function:
+	return Promise.all(
+		['content', 'rebbeim'].map(async (collectionName) => {
+			if (!Number.isInteger(searchOptions[collectionName].limit)) {
+				errors.push(`Limit for ${collectionName} is not an integer.`);
+				return [];
+			}
+			if (searchOptions[collectionName].limit == 0) return [];
+			if (searchOptions[collectionName].limit < 0) {
+				errors.push(`Limit for ${collectionName} is less than 0.`);
+				return [];
+			}
+			if (searchOptions[collectionName].limit > 30) {
+				searchOptions[collectionName].limit = 30;
+				errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
+			}
+			// Get the collection
+			let query = db.collection(collectionName);
+			query = query.where('search_index', 'array-contains-any', searchArray) as any;
+			switch (collectionName) {
+				case 'content':
+					query = query.orderBy('date', 'desc') as any;
+					break;
+				case 'rebbeim':
+					query = query.orderBy('name', 'asc') as any;
+					break;
+			}
+
+			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
+			if (searchOptions[collectionName].startFromDocumentID)
+				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
+
+			query = query.limit(searchOptions[collectionName].limit) as any;
+			// if (searchOptions[collectionName].includeThumbnailURLs);
+			// if (searchOptions[collectionName].includeDetailedAuthorInfo);
+
+			let contentSnapshot = await query.get();
+			let docs = contentSnapshot.docs;
+			for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
+			return docs;
+		})
+	).then(async (docs) => {
+		let rawContent = docs[0];
+		let rawRebbeim = docs[1];
+		let content: any[] = [];
+		let rebbeim: any[] = [];
+
+		await Promise.all(
+			rawContent.map(async (doc) => {
+				const data = doc.data();
+				let url, author;
+				try {
+					url = await getURLFor(data.source_path);
+					author = await getRabbiFor(
+						data.attributionID,
+						searchOptions.content.includeDetailedAuthorInfo
+					);
+					const documentData = {
+						id: doc.id,
+						attributionID: data.attributionID,
+						title: data.title,
+						description: data.description,
+						duration: data.duration,
+						date: data.date,
+						type: data.type,
+						source_url: url,
+						author: author,
+					};
+
+					content.push(documentData);
+				} catch (err) {
+					content.push(null);
+					errors.push(err as string);
+				}
+			})
+		);
+
+		await Promise.all(
+			rawRebbeim.map(async (doc) => {
+				// Get the document data.
+				const data = doc.data();
+
+				const pfpFilename = data.profile_picture_filename;
+
+				try {
+					let url;
+					if (searchOptions.rebbeim.includePictureURLs)
+						url = await getURLFor(`profile-pictures/${pfpFilename}`);
+
+					const documentData = {
+						id: doc.id,
+						name: data.name,
+						// profile_picture_filename: pfpFilename,
+						profile_picture_url: url,
+					};
+
+					rebbeim.push(documentData);
+				} catch (err) {
+					rebbeim.push(null);
+					errors.push(err as string);
+				}
+			})
+		);
+		// rebbeim.push(await getRabbiDataFromDoc(doc, searchOptions.rebbeim.includePictureURLs));
+		return {
+			content,
+			rebbeim,
+			searchOptions,
+			errors,
+		};
+	});
 });
