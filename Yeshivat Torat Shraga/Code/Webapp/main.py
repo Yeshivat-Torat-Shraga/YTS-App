@@ -19,24 +19,27 @@ app.config["BASIC_AUTH_FORCE"] = True
 
 @app.route("/shiurim/upload/", methods=["GET", "POST"])
 def shiurim_upload():
-    rabbis = []
     db = firestore.client()
-    collection = db.collection("rebbeim")
+    rebbeim_collection = db.collection("rebbeim")
+    tags_collection = db.collection("tags")
     if request.method == "GET":
-        # documents = collection.list_documents()
-        rabbis = [
-            {
-                "name": "Rabbi Shlomo",
-                "id": "shlomo",
-            }
-        ]
-        # for doc in documents:
-        #     doc = doc.get()
-        #     doc_dict = doc.to_dict()
-        #     doc_dict["id"] = doc.id
-        #     rabbis.append(doc_dict)
-        # rabbis = [rabbi.get().to_dict().get("name") for rabbi in documents]
-        return render_template("shiur_upload.html", rabbis=rabbis, type="Shiurim")
+        rebbeim_docs = rebbeim_collection.list_documents()
+        tag_docs = tags_collection.list_documents()
+        rabbis = []
+        tags = []
+        for doc in rebbeim_docs:
+            doc = doc.get()
+            doc_dict = doc.to_dict()
+            doc_dict["id"] = doc.id
+            rabbis.append(doc_dict)
+        for tag in tag_docs:
+            tag = tag.get()
+            tag_dict = tag.to_dict()
+            tag_dict["id"] = tag.id
+            tags.append(tag_dict)
+        return render_template(
+            "shiur_upload.html", rabbis=rabbis, type="Shiurim", tags=tags
+        )
     else:
         # The firestore document for content has the following structure:
         # {
@@ -63,7 +66,7 @@ def shiurim_upload():
         # Rename the file to the document ID of the firestore document we will create
         # In the cloud function, we will use the filename to identify the document
         # and then use the document ID to update the document with the correct source_path
-        collection.add(
+        rebbeim_collection.add(
             {
                 "attributionID": attributionID,
                 "author": name,
