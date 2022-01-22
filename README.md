@@ -17,9 +17,13 @@ _some_ of the tools we learned how to use while working on this project:
 - Google Cloud Functions
 - Firestore Suite (Backend As A Service)
 - JavaScript Promises and async/await
+- TypeScript
+- Workflow automation
 - SwiftUI
 - UIKit
 - Collaboration with Git
+- Flask
+- Jinja
 
 ## I was looking through your code and I found something that I really liked. Can I copy it?
 That's a good question. We have not yet added a licence for this repository,
