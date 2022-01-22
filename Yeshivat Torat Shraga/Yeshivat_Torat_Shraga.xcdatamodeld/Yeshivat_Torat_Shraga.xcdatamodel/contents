@@ -6,7 +6,7 @@
         <attribute name="fileID" optional="YES" attributeType="String"/>
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
         <attribute name="sourceURL" optional="YES" attributeType="URI"/>
-        <attribute name="tags" optional="YES" attributeType="Transformable"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="author" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPerson"/>

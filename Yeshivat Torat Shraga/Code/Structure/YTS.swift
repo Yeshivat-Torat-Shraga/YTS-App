@@ -330,21 +330,30 @@ class Audio: YTSContent, Hashable {
         self.tags = tags
     }
     
-    convenience init?(cdAudio: CDAudio) {
+    init?(cdAudio: CDAudio) {
         guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let url = cdAudio.sourceURL, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
             return nil
         }
         
         let duration = TimeInterval(cdAudio.duration)
         
-//        MARK: TAGS HARD-CODED EMPTY
         if let author = DetailedRabbi(cdPerson: author) {
-            self.init(id: firestoreID, fileID: fileID, sourceURL: url, title: title, author: author, description: description, date: uploadDate, duration: duration, tags: [])
+            self.author = author
         } else if let author = Rabbi(cdPerson: author) {
-            self.init(id: firestoreID, fileID: fileID, sourceURL: url, title: title, author: author, description: description, date: uploadDate, duration: duration, tags: [])
+            self.author = author
         } else {
             return nil
         }
+        
+        self.firestoreID = firestoreID
+        self.fileID = fileID
+        self.sourceURL = url
+        self.title = title
+        self.description = description
+//            MARK: TAGS HARD-PASSED IN
+        self.tags = []
+        self.date = uploadDate
+        self.duration = TimeInterval(cdAudio.duration)
     }
     
     func hash(into hasher: inout Hasher) {

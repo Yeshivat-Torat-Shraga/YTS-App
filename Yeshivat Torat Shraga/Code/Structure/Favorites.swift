@@ -11,8 +11,9 @@ import SwiftUI
 
 class Favorites {
     static unowned let delegate = (UIApplication.shared.delegate as! AppDelegate)
-    /*
-    static func save(_ audioToSave: Audio, completion: ((_ favorites: (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)?, _ error: Error?) -> Void)? = nil) {
+    typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
+    
+    static func save(_ audioToSave: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             let group = DispatchGroup()
             
@@ -25,7 +26,9 @@ class Favorites {
             if let authorProfilePicture = authorProfilePicture {
                 DispatchQueue.main.async {
                     guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
-                        completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.invalidDataProvided)
+                        DispatchQueue.main.async {
+                            loadFavorites(completion: completion)
+                        }
                         return
                     }
                     authorProfilePictureData = data
@@ -34,7 +37,7 @@ class Favorites {
             } else if let authorProfilePictureURL = authorProfilePictureURL {
                 guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
                     DispatchQueue.main.async {
-                        completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.unknownError)
+                        loadFavorites(completion: completion)
                     }
                     return
                 }
@@ -44,98 +47,56 @@ class Favorites {
                 group.leave()
             }
             
-            group.enter()
-            var thumbnailData: Data?
-            DispatchQueue.main.async {
-                if let thumbnail = videoToSave.thumbnail {
-                    guard let data = thumbnail.asUIImage().jpegData(compressionQuality: 1.0) else {
-                        completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.invalidDataProvided)
-                        return
-                    }
-                    thumbnailData = data
-                    group.leave()
-                } else if let thumbnailURL = videoToSave.thumbnailURL {
-                    guard let data = try? Data(contentsOf: thumbnailURL) else {
-                        DispatchQueue.main.async {
-                            completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.unknownError)
-                        }
-                        return
-                    }
-                    thumbnailData = data
-                    group.leave()
-                } else {
-                    videoToSave.getThumbnail { thumbnail in
-                        guard let thumbnail = thumbnail else {
-                            DispatchQueue.main.async {
-                                completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.unknownError)
-                            }
-                            return
-                        }
-                        guard let data = thumbnail.asUIImage().jpegData(compressionQuality: 1.0) else {
-                            completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.invalidDataProvided)
-                            return
-                        }
-                        thumbnailData = data
-                        group.leave()
-                    }
-                }
-            }
-            
-            guard let duration = videoToSave.duration else {
+            guard let duration = audioToSave.duration else {
                 DispatchQueue.main.async {
-                    completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), KHKInternalError.invalidDataProvided)
+                    loadFavorites(completion: completion)
                 }
                 return
             }
             
-            
             let managedContext = delegate.persistentContainer.viewContext
             
-            let entity = CDVideo.entity()
+            let entity = CDAudio.entity()
             
-            let cdVideo = CDVideo(entity: entity,
+            let cdAudio = CDAudio(entity: entity,
                                   insertInto: managedContext)
             
-            cdVideo.firestoreID = videoToSave.firestoreDocumentID
-            cdVideo.fileID = videoToSave.fileID
-            cdVideo.url = videoToSave.url
-            cdVideo.title = videoToSave.title
-            cdVideo.body = videoToSave.description
-            cdVideo.categories = videoToSave.categories
-            cdVideo.uploadDate = videoToSave.uploadDate
-            cdVideo.duration = Int64(duration)
+            cdAudio.firestoreID = audioToSave.firestoreID
+            cdAudio.fileID = audioToSave.fileID
+            cdAudio.sourceURL = audioToSave.sourceURL
+            cdAudio.title = audioToSave.title
+            cdAudio.body = audioToSave.description
+//            MARK: NOT SAVING TAGS
+//            cdAudio.tags = audioToSave.tags
+            cdAudio.uploadDate = audioToSave.date
+            cdAudio.duration = Int64(duration)
             
             let cdAuthor = CDPerson(context: managedContext)
-            cdAuthor.firestoreID = author.firestoreID
-            cdAuthor.name = author.name
-            cdAuthor.type = author.type?.rawValue
+            cdAuthor.firestoreID = audioToSave.author.firestoreID
+            cdAuthor.name = audioToSave.author.name
             cdAuthor.owned = true
             
-            cdVideo.author = cdAuthor
+            cdAudio.author = cdAuthor
             
             group.notify(queue: .main) {
-                cdVideo.thumbnailData = thumbnailData
                 cdAuthor.profileImageData = authorProfilePictureData
                 
                 do {
                     try managedContext.save()
-                    favoriteVideos?.append(videoToSave)
                     DispatchQueue.main.async {
-                        completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), nil)
+                        loadFavorites(completion: completion)
                     }
                 } catch let error as NSError {
                     print("Could not save. \(error), \(error.userInfo)")
                     DispatchQueue.main.async {
-                        completion?((favoriteVideos, favoriteAudios, favoritePeople, favoriteSeries), error)
+                        loadFavorites(completion: completion)
                     }
                 }
             }
         }
     }
-    */
     
-    
-    func loadFavorites(completion: ((_ favorites: (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)?, _ error: Error?) -> Void)? = nil) {
+    static func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = Favorites.delegate.persistentContainer.viewContext
         
         let group = DispatchGroup()
