@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-
-
 <form action="#" method="post">
 	<div class="form-group">
 		<label for="title">Title<span>Use title case to get a better result</span></label>
@@ -28,8 +26,7 @@
 		<label for="author">Author<span>Pick the Rebbi this shiur will be attributed to</span></label>
 		<select name="author" id="rabbi" class="form-control" value="value" required>
 			{% for rabbi in rabbis %}
-                {% if rabbi == shiur.author %}
-                    <h1>Helllooo</h1>
+                {% if rabbi.name == shiur.author %}
 			        <option value="{{ rabbi.id }}~{{ rabbi.name }}" selected>{{ rabbi.name }} </option>
                 {% else %}
                     <option value="{{ rabbi.id }}~{{ rabbi.name }}">{{ rabbi.name }}</option>
