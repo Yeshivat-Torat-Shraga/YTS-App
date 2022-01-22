@@ -34,3 +34,4 @@ but if you shoot us an email, I'm sure we can work something out, easy-peasy.
 We are reachable through email.
 - David Reese: david@reesedevelopment.com
 - Benji Tusk: benjitusk1@gmail.com
+- Eliyahu Masinter: eliyahumasinter@gmail.com
