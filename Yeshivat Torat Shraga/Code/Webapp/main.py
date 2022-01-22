@@ -12,9 +12,9 @@ initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 app = Flask(__name__)
 basic_auth = BasicAuth(app)
 
-app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
-app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
-app.config["BASIC_AUTH_FORCE"] = True
+# app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
+# app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
+# app.config["BASIC_AUTH_FORCE"] = True
 
 
 @app.route("/shiurim/upload/", methods=["GET", "POST"])
