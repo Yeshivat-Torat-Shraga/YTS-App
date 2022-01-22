@@ -14,7 +14,7 @@ struct NewsView: View {
             ScrollView {
                 if let articles = model.articles {
                     ForEach(articles) { article in
-                        NavigationLink(destination: Text(article.title)) {                        
+                        NavigationLink(destination: NewsArticleView(article)) {                        
                             NewsArticleCardView(article)
                                 .padding(.horizontal)
                         }

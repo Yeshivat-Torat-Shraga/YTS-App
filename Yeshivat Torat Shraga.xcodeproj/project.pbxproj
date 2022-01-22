@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083AE1022799A770003A36ED /* NewsArticleView.swift */; };
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
 		0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0847BA282784A22A0097910A /* RabbiCardView.swift */; };
@@ -61,6 +62,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		083AE1022799A770003A36ED /* NewsArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleView.swift; sourceTree = "<group>"; };
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
 		0847BA282784A22A0097910A /* RabbiCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiCardView.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				0847BA282784A22A0097910A /* RabbiCardView.swift */,
 				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
 				084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */,
+				083AE1022799A770003A36ED /* NewsArticleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 				F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */,
 				08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */,
 				F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */,
+				083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */,
 				087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */,
 				087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
