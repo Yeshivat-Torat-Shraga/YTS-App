@@ -16,6 +16,25 @@ app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
 app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
 app.config["BASIC_AUTH_FORCE"] = True
 
+@app.route("/shiurim/", methods=["GET"])
+def shiurim():
+    db = firestore.client()
+    collection = [(shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()]
+    return render_template("shiurim.html", data=collection)
+
+@app.route("/shiurim/<ID>/", methods=["GET"])
+def shiurimDetail(ID):
+    db = firestore.client()
+    collection = db.collection("content").document(ID).get().to_dict()
+    rabbis = []
+    rabbicollection = db.collection("rebbeim")
+    documents = rabbicollection.list_documents()
+    for doc in documents:
+        doc = doc.get()
+        doc_dict = doc.to_dict()
+        doc_dict["id"] = doc.id
+        rabbis.append(doc_dict)
+    return render_template("shiurimdetail.html", shiur = collection, rabbis=rabbis)
 
 @app.route("/shiurim/upload/", methods=["GET", "POST"])
 def shiurim_upload():
@@ -35,7 +54,7 @@ def shiurim_upload():
         #     doc_dict = doc.to_dict()
         #     doc_dict["id"] = doc.id
         #     rabbis.append(doc_dict)
-        # rabbis = [rabbi.get().to_dict().get("name") for rabbi in documents]
+
         return render_template("shiur_upload.html", rabbis=rabbis, type="Shiurim")
     else:
         # The firestore document for content has the following structure:
