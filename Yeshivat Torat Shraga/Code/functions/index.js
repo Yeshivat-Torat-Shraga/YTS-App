@@ -814,7 +814,6 @@ function strippedFilename(filename) {
 
 function log(data, structured = false) {
 	console.log(data);
-	return;
 	functions.logger.info(data, {
 		structuredData: structured
 	});
