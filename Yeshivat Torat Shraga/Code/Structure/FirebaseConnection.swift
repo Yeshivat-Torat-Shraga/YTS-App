@@ -54,7 +54,6 @@ final class FirebaseConnection {
             }
             
             for document in urlDocuments {
-                var imageURLs: [URL] = []
 
                 guard let body       = document["body"]     as? String,
                       let title      = document["title"]    as? String,
@@ -70,12 +69,15 @@ final class FirebaseConnection {
                     continue
                 }
                 
+                var slideshow: [SlideshowImage] = []
                 
                 if let urls = document["imageURLs"] as? [String] {
-                    for url in urls {
-                        let urlObject = URL(string: url)!
-                        imageURLs.append(urlObject)
-                    }
+//                    for url in urls {
+//                        let urlObject = URL(string: url)!
+//                        let image = SlideshowImage(url: urlObject, name: nil, uploaded: Date.init(timeIntervalSince1970: 0))
+//                        slideshow.append(image)
+                    slideshow.append(SlideshowImage(image: Image("SampleRabbi")))
+//                    }
                 }
                 
                 let article = NewsArticle(
@@ -83,7 +85,7 @@ final class FirebaseConnection {
                     body: body,
                     uploaded: uploaded,
                     author: author,
-                    imageURLs: imageURLs)
+                    images: slideshow)
                 articles.append(article)
                 group.leave()
             }
@@ -122,12 +124,14 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let urlDocuments = response["imageURLs"] as? [[String: Any]] else {
+            guard let urlDocuments = response["content"] as? [[String: Any]],
+                  let metadata     = response["metadata"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            let includesLastElement = response["includesLastElement"] as? Bool ?? true
-            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            let includesLastElement = metadata["includesLastElement"] as? Bool ?? true
+            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
             
             for document in urlDocuments {
                 guard let url = document["url"] as? String,
@@ -137,7 +141,7 @@ final class FirebaseConnection {
                     completion(nil, callError ?? YTSError.invalidDataReceived)
                     return
                 }
-                let title = document["name"] as? String
+                let title = document["title"] as? String
                 let urlObject = URL(string: url)
                 let slideshowImage = SlideshowImage(url: urlObject!, name: title, uploaded: uploaded)
                 images.append(slideshowImage)

@@ -114,12 +114,13 @@ struct HomeView: View {
                                 Spacer()
                             }
                             .padding(.horizontal)
-                                SlideshowView(slideshowImages)
-                                .frame(height: 250)
-                                .clipped()
-                                .cornerRadius(UI.cornerRadius)
-                                .shadow(radius: UI.shadowRadius)
-                                .padding()
+                            
+                            SlideshowView(slideshowImages)
+                            .frame(height: 250)
+                            .clipped()
+                            .cornerRadius(UI.cornerRadius)
+                            .shadow(radius: UI.shadowRadius)
+                            .padding()
                         }
                     }
                 }

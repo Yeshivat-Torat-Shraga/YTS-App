@@ -13,18 +13,18 @@ typealias FileID = String
 
 
 class NewsArticle: Identifiable {
-    var imageURLs: [URL]?
+    var images: [SlideshowImage]
     var title: String
     var body: String
     var uploaded: Date
     var author: String
     
-    init(title: String, body: String, uploaded: Date, author: String, imageURLs: [URL]? = nil) {
+    init(title: String, body: String, uploaded: Date, author: String, images: [SlideshowImage] = []) {
         self.title = title
         self.body = body
         self.uploaded = uploaded
         self.author = author
-        self.imageURLs = imageURLs
+        self.images = images
     }
     
     static public var sample = NewsArticle(title: "Sample Article!!",

@@ -104,7 +104,7 @@ struct NewsArticleCardView: View {
     }
 }
 
-struct NewsArticleView_Previews: PreviewProvider {
+struct NewsArticleCardView_Previews: PreviewProvider {
     static var previews: some View {
         NewsArticleCardView(.sample)
         //            .previewLayout(.sizeThatFits)
