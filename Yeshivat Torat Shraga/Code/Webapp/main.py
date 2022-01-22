@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for
 from flask_basicauth import BasicAuth
 import cv2
 
@@ -17,7 +17,39 @@ basic_auth = BasicAuth(app)
 # app.config["BASIC_AUTH_FORCE"] = True
 
 
-@app.route("/shiurim/upload/", methods=["GET", "POST"])
+@app.route("/shiurim/", methods=["GET"])
+def shiurim():
+    db = firestore.client()
+    collection = [
+        (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
+    ]
+    return render_template("shiurim.html", data=collection)
+
+
+@app.route("/shiurim/<ID>", methods=["GET", "POST"])
+def shiurimDetail(ID):
+    if request.method == "GET":
+        db = firestore.client()
+        collection = db.collection("content").document(ID).get().to_dict()
+        rabbis = []
+        rabbicollection = db.collection("rebbeim")
+        documents = rabbicollection.list_documents()
+        for doc in documents:
+            doc = doc.get()
+            doc_dict = doc.to_dict()
+            doc_dict["id"] = doc.id
+            rabbis.append(doc_dict)
+        return render_template(
+            "shiurimdetail.html", shiur=collection, rabbis=rabbis, ID=ID
+        )
+    else:
+        db = firestore.client()
+        collection = db.collection("content").document(ID)
+        collection.delete()
+        return redirect(url_for("shiurim"))
+
+
+@app.route("/shiurim/upload", methods=["GET", "POST"])
 def shiurim_upload():
     db = firestore.client()
     rebbeim_collection = db.collection("rebbeim")
