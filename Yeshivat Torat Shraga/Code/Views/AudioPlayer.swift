@@ -268,7 +268,11 @@ struct AudioPlayer: View {
 
                 if #available(iOS 15.0, *) {
                     Button(action: {
-                        
+                        if let audio = audio {
+                            Favorites.save(audio) { favorites, error in
+                                print(favorites, error)
+                            }
+                        }
                     }, label: {
                         Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)

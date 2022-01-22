@@ -56,6 +56,7 @@
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
 		F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCE178276A63DA009ABAC1 /* VideoTile.swift */; };
+		F2D78B71278695EB003996A8 /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D78B70278695EB003996A8 /* Favorites.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
 		F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */; };
 		F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F69C4E277C3A790069DCAE /* AppValidation.swift */; };
@@ -109,6 +110,7 @@
 		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2CCE178276A63DA009ABAC1 /* VideoTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTile.swift; sourceTree = "<group>"; };
+		F2D78B70278695EB003996A8 /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
 		F2F69C4E277C3A790069DCAE /* AppValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppValidation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -246,6 +248,7 @@
 				F230C4D4273BE81E00F7ACCC /* Errors.swift */,
 				F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */,
 				F2F69C4E277C3A790069DCAE /* AppValidation.swift */,
+				F2D78B70278695EB003996A8 /* Favorites.swift */,
 			);
 			path = Structure;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */,
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */,
+				F2D78B71278695EB003996A8 /* Favorites.swift in Sources */,
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
@@ -483,7 +487,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = SST62H5AK8;
+				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -622,7 +626,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = SST62H5AK8;
+				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -645,7 +649,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
-				DEVELOPMENT_TEAM = SST62H5AK8;
+				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "Yeshivat Torat Shraga/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
