@@ -1,0 +1,63 @@
+{% extends 'base.html' %} {% block content %}
+
+<form action="/shiurim/upload/" method="post" enctype="multipart/form-data">
+	<div class="form-group">
+		<label for="title">Title<span>Use title case to get a better result</span></label>
+		<input
+			type="text"
+			name="title"
+			id="title"
+			class="form-control"
+			placeholder="The title that will show up in the Shraga App"
+			required
+		/>
+	</div>
+
+	<div class="form-group">
+		<label for="title">Description<span>Small bite-size discription of the shiur</span></label>
+		<input
+			type="text"
+			name="description"
+			id="title"
+			class="form-control"
+			placeholder="An optional description that will be displayed in the app"
+		/>
+	</div>
+
+	<div class="form-group">
+		<label for="author">Author<span>Pick the Rebbi this shiur will be attributed to</span></label>
+		<select name="author" id="rabbi" class="form-control" required>
+			<option hidden disabled selected value>-- Please select a Rebbi --</option>
+			{% for rabbi in rabbis %}
+			<option value="{{ rabbi.id }}~{{ rabbi.name }}">{{ rabbi.name }}</option>
+			{% endfor %}
+		</select>
+	</div>
+
+	<div class="form-group">
+		<label for="type">Content Type<span>Choose the type of content you are uploading</span></label>
+		<select name="type" id="type" class="form-control" required>
+			<option hidden disabled selected value>-- Please select a type --</option>
+			<option value="audio">Audio recording</option>
+			<option value="video">Video recording</option>
+		</select>
+	</div>
+
+	<div class="form-group file-area">
+		<label for="file">
+			Shiur<span>This <strong>must</strong> be an audio or video file.</span>
+		</label>
+		<input type="file" id="file" name="file" />
+		<div class="file-dummy">
+			<div class="success">File uploaded successfully</div>
+			<div class="default">Please select one shiur</div>
+		</div>
+	</div>
+
+	<br />
+
+	<div class="form-group">
+		<button type="submit">Submit changes to Firebase</button>
+	</div>
+</form>
+{% endblock content %}
