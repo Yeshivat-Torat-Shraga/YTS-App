@@ -9,3 +9,8 @@ Yeshivat Torat Shraga/Code/functions/.vscode/launch.json
 firebase-export*
 Yeshivat Torat Shraga/Code/.vscode/launch.json
 Yeshivat Torat Shraga.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+Yeshivat Torat Shraga/Code/Webapp/.vscode/launch.json
+Yeshivat Torat Shraga/Code/Webapp/settings.py
+Yeshivat Torat Shraga/Code/Webapp/cred.json
+__pycache__/
+.vscode/
