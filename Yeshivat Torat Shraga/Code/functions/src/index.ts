@@ -414,7 +414,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
       try {
         const sourcePath = await getURLFor(`${data.source_path}`);
         const author = await getRabbiFor(
-          doc.id,
+          data.attributionID,
           queryOptions.includeAllAuthorData
         );
         return {

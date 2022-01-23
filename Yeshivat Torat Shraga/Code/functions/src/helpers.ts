@@ -1,9 +1,9 @@
-import functions from "firebase-functions";
+import { logger } from "firebase-functions";
 import admin from "firebase-admin";
-import {Author} from "./types";
+import { Author } from "./types";
 
 export function log(data: any, structured = false) {
-  functions.logger.info(data, {
+  logger.info(data, {
     structuredData: structured,
   });
 }
