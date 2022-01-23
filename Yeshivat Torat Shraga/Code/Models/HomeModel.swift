@@ -39,20 +39,20 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
-            
+
             withAnimation {
                 self.recentlyUploadedContent = content
-                
+
                 var sortables: [SortableYTSContent] = []
-                
+
                 for video in content.videos {
                     sortables.append(video.sortable)
                 }
-                
+
                 for audio in content.audios {
                     sortables.append(audio.sortable)
                 }
-                
+
                 self.sortables = sortables.sorted(by: { lhs, rhs in
                     return lhs.date! > rhs.date!
                 })

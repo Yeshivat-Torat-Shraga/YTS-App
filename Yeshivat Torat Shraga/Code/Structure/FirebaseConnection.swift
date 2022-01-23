@@ -72,12 +72,12 @@ final class FirebaseConnection {
                 var slideshow: [SlideshowImage] = []
                 
                 if let urls = document["imageURLs"] as? [String] {
-//                    for url in urls {
-//                        let urlObject = URL(string: url)!
-//                        let image = SlideshowImage(url: urlObject, name: nil, uploaded: Date.init(timeIntervalSince1970: 0))
-//                        slideshow.append(image)
-                    slideshow.append(SlideshowImage(image: Image("SampleRabbi")))
-//                    }
+                    for url in urls {
+                        let urlObject = URL(string: url)!
+                        let image = SlideshowImage(url: urlObject, name: nil, uploaded: Date.init(timeIntervalSince1970: 0))
+                        slideshow.append(image)
+//                        slideshow.append(SlideshowImage(image: Image("SampleRabbi")))
+                    }
                 }
                 
                 let article = NewsArticle(
@@ -406,14 +406,16 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let rabbiDocuments = response["rebbeim"] as? [[String: Any]] else {
+            guard let rabbiDocuments = response["content"] as? [[String: Any]],
+                  let metadata       = response["metadata"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
             
-            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
             
-            guard let includesLastElement = response["includesLastElement"] as? Bool else {
+            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -489,14 +491,16 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let contentDocuments = response["content"] as? [[String: Any]] else {
+            guard let contentDocuments = response["content"] as? [[String: Any]],
+                  let metadata         = response["metadata"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
             
-            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
             
-            guard let includesLastElement = response["includesLastElement"] as? Bool else {
+            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
