@@ -25,5 +25,6 @@ module.exports = {
     "arrow-body-style": ["error", "always"],
     "max-len": 0,
     "indent": 0,
+    "noTab": 0,
   },
 };

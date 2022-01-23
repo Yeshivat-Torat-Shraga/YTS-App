@@ -9,54 +9,54 @@ export function log(data: any, structured = false) {
 }
 
 export function getRabbiFor(
-    id: string,
-    includeAllAuthorData: boolean
+  id: string,
+  includeAllAuthorData: boolean
 ): Promise<Author> {
   return new Promise(async (resolve, reject) => {
     const db = admin.firestore();
     db.collection("rebbeim")
-        .doc(id)
-        .get()
-        .then(async (personSnapshot) => {
-          const personData = personSnapshot.data();
+      .doc(id)
+      .get()
+      .then(async (personSnapshot) => {
+        const personData = personSnapshot.data();
 
-          if (personData == undefined) {
-            reject("Rabbi doesn't exist");
-            return;
-          }
+        if (personData == undefined) {
+          reject("Rabbi doesn't exist");
+          return;
+        }
 
-          if (includeAllAuthorData) {
-            const bucket = admin
-                .storage()
-                .bucket("yeshivat-torat-shraga.appspot.com");
-            const filename = personData.profile_picture_filename; // appendToEndOfFilename(personData.profilepic, '_300x1000');
-            // bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
-            bucket
-                .file(`profile-pictures/${filename}`)
-                .getSignedUrl({
-                  action: "read",
-                  expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
-                })
-                .then((url) => {
-                  resolve({
-                    id: id,
-                    name: personData.name,
-                    profile_picture_filename: personData.profile_picture_filename,
-                    profile_picture_url: url[0],
-                  });
-                })
-                .catch((reason) => {
-                  reject(reason);
-                  log(`Rejected getRabbiFor(). Reason: ${reason}`);
-                });
-          } else {
-            resolve({
-              id: id,
-              name: personData.name,
-              profile_picture_filename: personData.profile_picture_filename,
+        if (includeAllAuthorData) {
+          const bucket = admin
+            .storage()
+            .bucket("yeshivat-torat-shraga.appspot.com");
+          const filename = personData.profile_picture_filename; // appendToEndOfFilename(personData.profilepic, '_300x1000');
+          // bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
+          bucket
+            .file(`profile-pictures/${filename}`)
+            .getSignedUrl({
+              action: "read",
+              expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week
+            })
+            .then((url) => {
+              resolve({
+                id: id,
+                name: personData.name,
+                profile_picture_filename: personData.profile_picture_filename,
+                profile_picture_url: url[0],
+              });
+            })
+            .catch((reason) => {
+              reject(reason);
+              log(`Rejected getRabbiFor(). Reason: ${reason}`);
             });
-          }
-        });
+        } else {
+          resolve({
+            id: id,
+            name: personData.name,
+            profile_picture_filename: personData.profile_picture_filename,
+          });
+        }
+      });
   });
 }
 
@@ -64,18 +64,18 @@ export async function getURLFor(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const bucket = admin.storage().bucket("yeshivat-torat-shraga.appspot.com");
     bucket
-        .file(path)
-        .getSignedUrl({
-          action: "read",
-          expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days
-        })
-        .then((url) => {
-          resolve(url[0]);
-        })
-        .catch((err) => {
-          reject(err);
-          log(`Rejected getURLFor('${path}') becuase ${err}`, true);
-        });
+      .file(path)
+      .getSignedUrl({
+        action: "read",
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days
+      })
+      .then((url) => {
+        resolve(url[0]);
+      })
+      .catch((err) => {
+        reject(err);
+        log(`Rejected getURLFor('${path}') becuase ${err}`, true);
+      });
   });
 }
 
@@ -87,8 +87,8 @@ export function strippedFilename(filename: string) {
 }
 
 export function supplyDefaultParameters(
-    def: any,
-    prov: any
+  def: any,
+  prov: any
 ): {
   [key: string]: any;
   content: {
