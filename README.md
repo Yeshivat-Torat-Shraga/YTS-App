@@ -17,7 +17,7 @@ We also saw this project as an amazing opportunity to learn about app dev in the
 Here are just _some_ of the tools we learned how to use while working on this project:
 - Google Cloud Storage
 - Google Cloud Functions
-- Firebase Suite (Backend As A Service)
+- Firebase Suite (backend-as-a-service)
 - Javascript Backend (Node.js)
 - JavaScript Frontend (jQuery)
 - JavaScript Promises and async/await
