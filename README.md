@@ -11,11 +11,13 @@ Pictures, news, and recorded _shiurim_ are all available here, allowing students
 ## Why did you create this app?
 One of the rabbis in Yeshiva came up with this idea and asked us if we can make it a reality.
 We told him that we'd love an opportunity to give back to the Yeshiva and that we're glad to help.
-We also saw this project as an amazing opportunity to learn about app dev in the real world. Here are just
-_some_ of the tools we learned how to use while working on this project:
+We also saw this project as an amazing opportunity to learn about app dev in the real world.
+
+## Did you learn anything new with this project?
+Here are just _some_ of the tools we learned how to use while working on this project:
 - Google Cloud Storage
 - Google Cloud Functions
-- Firestore Suite (Backend As A Service)
+- Firebase Suite (Backend As A Service)
 - Javascript Backend (Node.js)
 - JavaScript Frontend (jQuery)
 - JavaScript Promises and async/await
