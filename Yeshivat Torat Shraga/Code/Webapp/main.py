@@ -10,7 +10,7 @@ cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 
 app = Flask(__name__)
-basic_auth = BasicAuth(app)
+# basic_auth = BasicAuth(app)
 
 # app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
 # app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
