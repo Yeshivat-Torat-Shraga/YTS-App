@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AppCheck.setAppCheckProviderFactory(providerFactory)
         
         FirebaseApp.configure()
-#if EMULATORS
+        #if EMULATORS
         print("""
         *************************************
         **      +  === = === = ===  +      **
@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         *************************************
         """)
         Functions.functions().useEmulator(withHost: "http://localhost", port: 5001)
-#endif
+        #endif
         
         let audioSession = AVAudioSession.sharedInstance()
         
