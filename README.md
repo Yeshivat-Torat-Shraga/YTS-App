@@ -31,6 +31,14 @@ Here are just _some_ of the tools we learned how to use while working on this pr
 - Flask
 - Jinja
 
+## When will the iOS app be available?
+This is a tough question to answer, as we haven't perfected our fortune telling abilities, but as of Feb. 2022,
+it seems like we should be ready to launch within 2 months.
+
+## Are you going to make an Android version?
+Due to the nature of such a project, we currently cannot afford the time to do so. However, we are
+considering taking it up over the summer.
+
 ## I was looking through your code and I found something that I really liked. Can I copy it?
 That's a good question. We have not yet added a licence for this repository,
 meaning that it is **THEFT OF INTELLECTUAL PROPERTY** to use any of this code until we license it,
