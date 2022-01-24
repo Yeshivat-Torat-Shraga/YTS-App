@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if targetEnvironment(simulator)
                 providerFactory = AppCheckDebugProviderFactory()
         #else
-                providerFactory = KHKAppCheckProviderFactory()
+                providerFactory = YTSAppCheckProviderFactory()
         #endif
                 
         AppCheck.setAppCheckProviderFactory(providerFactory)
