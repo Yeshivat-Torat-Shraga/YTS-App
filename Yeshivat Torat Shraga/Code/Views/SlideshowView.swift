@@ -80,7 +80,8 @@ struct SlideshowView: View {
                         }
                         .clipped()
                         .tag(index)
-                        .highPriorityGesture(
+                        .onTapGesture{}
+                        .gesture(
                             DragGesture()
                                 .onEnded {
                                     handleSwipe(translation: $0.translation.width)
