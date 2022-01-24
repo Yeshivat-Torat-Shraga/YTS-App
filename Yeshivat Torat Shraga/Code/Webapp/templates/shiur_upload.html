@@ -1,18 +1,16 @@
 {% extends 'base.html' %} {% block content %}
-
-<form action="/shiurim/upload/" method="post" enctype="multipart/form-data">
+<link rel="stylesheet" href="/static/bootstrap-datetimepicker.min.css">
+<script src="/static/bootstrap-datetimepicker.min.js"></script>
+<style>
+  td i.fa {
+    color: lightskyblue
+  }
+</style>
+<form action="/shiurim/upload" method="post" enctype="multipart/form-data">
   <div class="form-group">
-    <label for="title"
-      >Title<span>Use title case to get a better result</span></label
-    >
-    <input
-      type="text"
-      name="title"
-      id="title"
-      class="form-control"
-      placeholder="The title that will show up in the Shraga App"
-      required
-    />
+    <label for="title">Title<span>Use title case to get a better result</span></label>
+    <input type="text" name="title" id="title" class="form-control"
+      placeholder="The title that will show up in the Shraga App" required />
   </div>
 
   <div class="form-group">
@@ -20,13 +18,8 @@
       Description
       <span>Small bite-size discription of the shiur</span>
     </label>
-    <input
-      type="text"
-      name="description"
-      id="title"
-      class="form-control"
-      placeholder="An optional description that will be displayed in the app"
-    />
+    <input type="text" name="description" id="title" class="form-control"
+      placeholder="An optional description that will be displayed in the app" />
   </div>
 
   <div class="form-group">
@@ -43,22 +36,14 @@
   </div>
 
   <div class="form-group">
-    <label for="tag">
+    <label for="tags">
       Tags
       <span>Select tags to be associated with this Shiur.</span>
     </label>
-    <input
-      type="text"
-      placeholder="Content tag"
-      class="flexdatalist form-control"
-      data-min-length="1"
-      multiple="multiple"
-      list="tags"
-      name="tag"
-      required
-    />
+    <input type="text" placeholder="Content tag" class="flexdatalist form-control" data-min-length="1"
+      multiple="multiple" list="tag-list" name="tags" />
 
-    <datalist id="tags">
+    <datalist id="tag-list">
       {% for tag in tags %}
       <option value="{{tag.name}}">{{ tag.name }}</option>
       {% endfor %}
@@ -76,11 +61,18 @@
     </select>
   </div>
 
+  <div class="form-group">
+    <label for="date">
+      Date<span>Select the time and date of the recording.</span>
+    </label>
+    <input type="text" name="date" id="datePicker" class="form-control" readonly required>
+  </div>
+
   <div class="form-group file-area">
     <label for="file">
       Shiur<span>This <strong>must</strong> be an audio or video file.</span>
     </label>
-    <input type="file" id="file" name="file" />
+    <input type="file" id="file" name="file" required />
     <div class="file-dummy">
       <div class="success">File uploaded successfully</div>
       <div class="default">Please select one shiur</div>
@@ -93,4 +85,19 @@
     <button type="submit">Submit changes to Firebase</button>
   </div>
 </form>
+
+<script>
+  $(".flexdatalist").flexdatalist({
+    noResultsText:
+      "Press ENTER ↵ to add <strong>{keyword}</strong> as a new tag.",
+    placeholder: "Add a tag to the video",
+  });
+
+  $('#datePicker').datetimepicker({
+    format: 'YYYY-MM-DD HH:mm:ss',
+    defaultDate: new Date(),
+    sideBySide: true,
+    ignoreReadonly: true,
+  });
+</script>
 {% endblock content %}
