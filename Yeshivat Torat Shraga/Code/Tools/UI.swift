@@ -165,6 +165,35 @@ struct SingleAxisGeometryReader<Content: View>: View
     }
 }
 
+/// https://stackoverflow.com/a/68088712/13368672
+/// Haptics.shared.play(.heavy)
+/// Haptics.shared.play(.light)
+/// Haptics.shared.play(.medium)
+/// Haptics.shared.play(.rigid)
+/// Haptics.shared.play(.soft)
+/// 
+/// Haptics.shared.notify(.error)
+/// Haptics.shared.notify(.success)
+/// Haptics.shared.notify(.warning)
+class Haptics {
+    static let shared = Haptics()
+    
+    private init() { }
+
+    func play(_ feedbackStyle: UIImpactFeedbackGenerator.FeedbackStyle) {
+        UIImpactFeedbackGenerator(style: feedbackStyle).impactOccurred()
+    }
+    
+    func notify(_ feedbackType: UINotificationFeedbackGenerator.FeedbackType) {
+        UINotificationFeedbackGenerator().notificationOccurred(feedbackType)
+    }
+    
+    func impact() {
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
+}
+
+
 class SlideshowImage: Identifiable, URLImageable {
     var imageURL: URL?
     var id: UUID

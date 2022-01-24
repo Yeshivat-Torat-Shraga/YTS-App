@@ -82,7 +82,7 @@ struct HomeView: View {
                         }
                         Divider().padding(.horizontal)
                     }
-
+                    
                     // MARK: - CATEGORIES
                     VStack(spacing: 0) {
                         HStack {
@@ -92,7 +92,7 @@ struct HomeView: View {
                             Spacer()
                         }
                         .padding(.horizontal)
-
+                        
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(tags, id: \.name) { tag in
@@ -116,11 +116,11 @@ struct HomeView: View {
                             .padding(.horizontal)
                             
                             SlideshowView(slideshowImages)
-                            .frame(height: 250)
-                            .clipped()
-                            .cornerRadius(UI.cornerRadius)
-                            .shadow(radius: UI.shadowRadius)
-                            .padding()
+                                .frame(height: 250)
+                                .clipped()
+                                .cornerRadius(UI.cornerRadius)
+                                .shadow(radius: UI.shadowRadius)
+                                .padding()
                         }
                     }
                 }
@@ -154,6 +154,11 @@ struct HomeView: View {
                             }
                         }))
             })
+                .onChange(of: model.showError) { v in
+                    if (v){
+                        Haptics.shared.notify(.error)
+                    }
+                }
         }
         .sheet(isPresented: $presentingSearchView) {
             SearchView()
