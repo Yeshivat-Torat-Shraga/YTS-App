@@ -2,7 +2,7 @@
 Official repository for the Yeshivat Torat Shraga app.
 
 ## What is this repository?
-This is where all code written for the Torat Shraga iOS app is kept.
+This is where all code written for the Torat Shraga iOS app and Firebase Uploader WebUI is kept.
 
 ## What does this app do?
 The app is targeted towards Torat Shraga alumni, as a way for students to keep in touch with the Yeshiva.
@@ -16,9 +16,13 @@ _some_ of the tools we learned how to use while working on this project:
 - Google Cloud Storage
 - Google Cloud Functions
 - Firestore Suite (Backend As A Service)
+- Javascript Backend (Node.js)
+- JavaScript Frontend (jQuery)
 - JavaScript Promises and async/await
 - TypeScript
 - Workflow automation
+  - Git Hooks
+  - npm scripts
 - SwiftUI
 - UIKit
 - Collaboration with Git
