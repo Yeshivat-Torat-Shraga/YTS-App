@@ -13,6 +13,66 @@ class Favorites {
     static let delegate = (UIApplication.shared.delegate as! AppDelegate)
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
     
+    static func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        DispatchQueue.global(qos: .background).async {
+            let group = DispatchGroup()
+            
+            group.enter()
+            var profilePictureData: Data?
+            
+            let profilePicture = rabbiToSave.profileImage
+            let profilePictureURL = rabbiToSave.profileImageURL
+            
+            if let profilePicture = profilePicture {
+                DispatchQueue.main.async {
+                    guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
+                        DispatchQueue.main.async {
+                            loadFavorites(completion: completion)
+                        }
+                        return
+                    }
+                    profilePictureData = data
+                    group.leave()
+                }
+            } else if let profilePictureURL = profilePictureURL {
+                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
+                    DispatchQueue.main.async {
+                        loadFavorites(completion: completion)
+                    }
+                    return
+                }
+                profilePictureData = data
+                group.leave()
+            } else {
+                group.leave()
+            }
+            
+            let managedContext = delegate.persistentContainer.viewContext
+            
+            var cdAuthor: CDPerson
+            cdAuthor = CDPerson(context: managedContext)
+            
+            cdAuthor.firestoreID = rabbiToSave.firestoreID
+            cdAuthor.name = rabbiToSave.name
+            cdAuthor.owned = false
+            
+            group.notify(queue: .main) {
+                cdAuthor.profileImageData = profilePictureData
+                
+                
+                    DispatchQueue.main.async {
+                do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                } catch let error as NSError {
+                    print("Could not save. \(error), \(error.userInfo)")
+                        loadFavorites(completion: completion)
+                }
+                    }
+            }
+        }
+    }
+    
     static func save(_ videoToSave: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             let group = DispatchGroup()
