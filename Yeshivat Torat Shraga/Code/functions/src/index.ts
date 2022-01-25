@@ -390,7 +390,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 				lastLoadedDocID: queryOptions.previousDocID || '',
 				includesLastElement: false,
 			},
-			content: null,
+			content: docs ? [] : null,
 		};
 	}
 
