@@ -512,7 +512,7 @@ final class FirebaseConnection {
             }
             
             for contentDocument in contentDocuments {
-                guard let id = contentDocument["id"] as? FirestoreID,
+                guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID,
                       let title = contentDocument["title"] as? String,
                       let description = contentDocument["description"] as? String,
                       let dateDictionary = contentDocument["date"] as? [String: Int],
@@ -564,6 +564,7 @@ final class FirebaseConnection {
                     }
                     content.videos.append(Video(
                         id: id,
+                        fileID: fileID,
                         sourceURL: sourceURL,
                         title: title,
                         author: rabbi,
@@ -593,6 +594,7 @@ final class FirebaseConnection {
                     }
                     content.audios.append(Audio(
                         id: id,
+                        fileID: fileID,
                         sourceURL: sourceURL,
                         title: title,
                         author: rabbi,

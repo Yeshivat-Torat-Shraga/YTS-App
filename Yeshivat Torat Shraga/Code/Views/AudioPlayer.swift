@@ -18,7 +18,8 @@ struct AudioPlayer: View {
     mutating func set(audio: Audio) {
         self.audio = audio
         
-        let playerItem = AVPlayerItem(url: audio.sourceURL)
+        if let sourceURL = audio.sourceURL {
+        let playerItem = AVPlayerItem(url: sourceURL)
         let player = AVPlayer(playerItem: playerItem)
         //            self.avPlayer.prepareToPlay()
         //            avPlayer.volume = 1.0
@@ -26,6 +27,9 @@ struct AudioPlayer: View {
         //            self.model = AudioPlayerModel(player: player)
         //            self.avPlayer = player
         self.player.set(avPlayer: player)
+        } else {
+            print("Audio sourceURL is nil, could not set audio.")
+        }
     }
     
     mutating func play(audio: Audio) {

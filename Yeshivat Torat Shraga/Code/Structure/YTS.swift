@@ -154,7 +154,7 @@ protocol YTSContent: Tileable {
     var fileID: FileID? { get }
     
     /// The `URL` that links to the source content
-    var sourceURL: URL { get }
+    var sourceURL: URL? { get }
     
     /// The content title
     var title: String { get }
@@ -190,7 +190,7 @@ extension YTSContent {
 class Video: YTSContent, URLImageable {
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
-    var sourceURL: URL
+    var sourceURL: URL?
     var title: String
     var author: Rabbi
     var description: String
@@ -267,6 +267,35 @@ class Video: YTSContent, URLImageable {
         self.thumbnailURL = thumbnailURL
     }
     
+    init?(cdVideo: CDVideo) {
+        guard let firestoreID = cdVideo.firestoreID, let fileID = cdVideo.fileID, let title = cdVideo.title, let description = cdVideo.body, let uploadDate = cdVideo.uploadDate, let author = cdVideo.author, let thumbnailData = cdVideo.thumbnailData else {
+            return nil
+        }
+        
+        guard let thumbnailUIImage = UIImage(data: thumbnailData) else {
+            return nil
+        }
+        
+        self.thumbnail = Image(uiImage: thumbnailUIImage)
+        
+        if let author = DetailedRabbi(cdPerson: author) {
+            self.author = author
+        } else if let author = Rabbi(cdPerson: author) {
+            self.author = author
+        } else {
+            return nil
+        }
+        
+        self.firestoreID = firestoreID
+        self.fileID = fileID
+        self.title = title
+        self.description = description
+//            MARK: TAGS HARD-PASSED IN
+        self.tags = []
+        self.date = uploadDate
+        self.duration = TimeInterval(cdVideo.duration)
+    }
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(firestoreID)
     }
@@ -295,7 +324,7 @@ class Audio: YTSContent, Hashable {
     
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
-    var sourceURL: URL
+    var sourceURL: URL?
     var title: String
     var author: Rabbi
     var description: String
@@ -331,11 +360,9 @@ class Audio: YTSContent, Hashable {
     }
     
     init?(cdAudio: CDAudio) {
-        guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let url = cdAudio.sourceURL, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
+        guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
             return nil
         }
-        
-        let duration = TimeInterval(cdAudio.duration)
         
         if let author = DetailedRabbi(cdPerson: author) {
             self.author = author
@@ -347,7 +374,6 @@ class Audio: YTSContent, Hashable {
         
         self.firestoreID = firestoreID
         self.fileID = fileID
-        self.sourceURL = url
         self.title = title
         self.description = description
 //            MARK: TAGS HARD-PASSED IN
