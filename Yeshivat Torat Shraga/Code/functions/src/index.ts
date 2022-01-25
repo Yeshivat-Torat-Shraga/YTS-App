@@ -71,7 +71,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID ?? '',
+				lastLoadedDocID: queryOptions.previousDocID || '',
 				includesLastElement: false,
 			},
 			content: null,
@@ -172,7 +172,7 @@ exports.loadSlideshow = https.onCall(
 		if (!docs || docs.length == 0) {
 			return {
 				metadata: {
-					lastLoadedDocID: queryOptions.previousDocID ?? '',
+					lastLoadedDocID: queryOptions.previousDocID || '',
 					includesLastElement: false,
 				},
 				content: null,
@@ -265,7 +265,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID ?? '',
+				lastLoadedDocID: queryOptions.previousDocID || '',
 				includesLastElement: false,
 			},
 			content: null,
@@ -387,7 +387,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID ?? '',
+				lastLoadedDocID: queryOptions.previousDocID || '',
 				includesLastElement: false,
 			},
 			content: null,
@@ -419,6 +419,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 				);
 				return {
 					id: doc.id,
+					fileID: strippedFilename(data.source_path),
 					attributionID: data.attributionID,
 					title: data.title,
 					description: data.description,

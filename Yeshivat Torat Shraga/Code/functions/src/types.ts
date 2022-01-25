@@ -31,6 +31,7 @@ export interface RebbeimDocument {
 
 export interface ContentDocument {
   id: string;
+  fileID: string;
   attributionID: string;
   title: string;
   description: string;
