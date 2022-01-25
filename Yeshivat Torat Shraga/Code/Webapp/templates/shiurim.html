@@ -2,19 +2,28 @@
 {% block content %}
 
 {% for shuir in data %}
-    <a href="{{ url_for('shiurimDetail', ID=shuir[1]) }}"><b>ID: {{ shuir[1] }}<br></b></a>
+<a href="{{ url_for('shiurimDetail', ID=shuir[1]) }}"><b>ID: {{ shuir[1] }}<br></b></a>
 
-    Title: {{ shuir[0].title }}<br>
-    Date: {{ shuir[0].date }}<br>
-    Author: {{ shuir[0].author }}<br>
-    Tags:
-    <ul>
-    {% for tag in shuir[0].tags %}
-        <li>{{ tag }}</li>
+Attribution ID: {{ shuir[0].attributionID }}<br>
+Author: {{ shuir[0].author }}<br>
+Date: {{ shuir[0].date }}<br>
+Description: {{ shuir[0].description }}<br>
+Search Indices:
+<ul>
+    {% for index in shuir[0].search_index %}
+    <li>{{ index }}</li>
     {% endfor %}
-    </ul>
-    <br>
-    <hr>
+</ul>
+<br>
+Tags:
+<ul>
+    {% for tag in shuir[0].tags %}
+    <li>{{ tag }}</li>
+    {% endfor %}
+</ul>
+<br>
+Title: {{ shuir[0].title }}<br>
+<hr>
 {% endfor %}
 
 
