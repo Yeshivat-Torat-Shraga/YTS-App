@@ -58,7 +58,7 @@ struct DisplayRabbiView: View {
         
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {
-            ToolbarItem(placement: .navigationBarLeading) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 LogoView(size: .small)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
