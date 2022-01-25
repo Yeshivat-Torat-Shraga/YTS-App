@@ -13,21 +13,16 @@ One of the rabbis in Yeshiva came up with this idea and asked us if we can make 
 We told him that we'd love an opportunity to give back to the Yeshiva and that we're glad to help.
 We also saw this project as an amazing opportunity to learn about app dev in the real world.
 
-## Did you learn anything new with this project?
-Here are just _some_ of the tools we learned how to use while working on this project:
+## What frameworks were used in this project?
+Here are just _some_ of the frameworks we used while working on this project:
 - Google Cloud Storage
 - Google Cloud Functions
 - Firebase Suite (backend-as-a-service)
 - Javascript Backend (Node.js)
 - JavaScript Frontend (jQuery)
-- JavaScript Promises and async/await
 - TypeScript
-- Workflow automation
-  - Git Hooks
-  - npm scripts
 - SwiftUI
 - UIKit
-- Collaboration with Git
 - Flask
 - Jinja
 
