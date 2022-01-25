@@ -25,7 +25,7 @@ class Favorites {
             
             if let profilePicture = profilePicture {
                 DispatchQueue.main.async {
-                    guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
+                    guard let data = profilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
                         DispatchQueue.main.async {
                             loadFavorites(completion: completion)
                         }
@@ -35,7 +35,7 @@ class Favorites {
                     group.leave()
                 }
             } else if let profilePictureURL = profilePictureURL {
-                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
+                guard let data = try? Data(contentsOf: profilePictureURL) else {
                     DispatchQueue.main.async {
                         loadFavorites(completion: completion)
                     }
