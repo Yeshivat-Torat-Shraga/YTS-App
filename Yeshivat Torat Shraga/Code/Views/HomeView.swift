@@ -47,8 +47,12 @@ struct HomeView: View {
                                 .padding(.horizontal)
                             }
                         } else {
-                            ProgressView()
-                                .padding(.bottom)
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
                         }
                         
                         Divider().padding(.horizontal)
