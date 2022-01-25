@@ -5,7 +5,6 @@
         <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="fileID" optional="YES" attributeType="String"/>
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="sourceURL" optional="YES" attributeType="URI"/>
         <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -17,8 +16,20 @@
         <attribute name="owned" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="profileImageData" optional="YES" attributeType="Binary"/>
     </entity>
+    <entity name="CDVideo" representedClassName="CDVideo" syncable="YES" codeGenerationType="class">
+        <attribute name="body" optional="YES" attributeType="String"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="fileID" optional="YES" attributeType="String"/>
+        <attribute name="firestoreID" optional="YES" attributeType="String"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="author" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="CDPerson"/>
+    </entity>
     <elements>
-        <element name="CDAudio" positionX="-45" positionY="27" width="128" height="164"/>
+        <element name="CDAudio" positionX="-45" positionY="27" width="128" height="149"/>
         <element name="CDPerson" positionX="-63" positionY="-18" width="128" height="89"/>
+        <element name="CDVideo" positionX="-54" positionY="63" width="128" height="164"/>
     </elements>
 </model>

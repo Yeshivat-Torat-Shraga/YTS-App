@@ -10,8 +10,124 @@ import UIKit
 import SwiftUI
 
 class Favorites {
-    static unowned let delegate = (UIApplication.shared.delegate as! AppDelegate)
+    static let delegate = (UIApplication.shared.delegate as! AppDelegate)
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
+    
+    static func save(_ videoToSave: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        DispatchQueue.global(qos: .background).async {
+            let group = DispatchGroup()
+            
+            group.enter()
+            var authorProfilePictureData: Data?
+            
+            let authorProfilePicture = (videoToSave.author as? DetailedRabbi)?.profileImage
+            let authorProfilePictureURL = (videoToSave.author as? DetailedRabbi)?.profileImageURL
+            
+            if let authorProfilePicture = authorProfilePicture {
+                DispatchQueue.main.async {
+                    guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
+                        DispatchQueue.main.async {
+                            loadFavorites(completion: completion)
+                        }
+                        return
+                    }
+                    authorProfilePictureData = data
+                    group.leave()
+                }
+            } else if let authorProfilePictureURL = authorProfilePictureURL {
+                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
+                    DispatchQueue.main.async {
+                        loadFavorites(completion: completion)
+                    }
+                    return
+                }
+                authorProfilePictureData = data
+                group.leave()
+            } else {
+                group.leave()
+            }
+            
+            group.enter()
+            var thumbnailData: Data?
+            
+            let thumbnail = videoToSave.thumbnail
+            let thumbnailURL = videoToSave.thumbnailURL
+            
+            if let thumbnail = thumbnail {
+                DispatchQueue.main.async {
+                    guard let data = thumbnail.asUIImage().jpegData(compressionQuality: 1.0) else {
+                        DispatchQueue.main.async {
+                            loadFavorites(completion: completion)
+                        }
+                        return
+                    }
+                    thumbnailData = data
+                    group.leave()
+                }
+            } else if let thumbnailURL = thumbnailURL {
+                guard let data = try? Data(contentsOf: thumbnailURL) else {
+                    DispatchQueue.main.async {
+                        loadFavorites(completion: completion)
+                    }
+                    return
+                }
+                thumbnailData = data
+                group.leave()
+            } else {
+                group.leave()
+            }
+            
+            
+            guard let duration = videoToSave.duration else {
+                DispatchQueue.main.async {
+                    loadFavorites(completion: completion)
+                }
+                return
+            }
+            
+            let managedContext = delegate.persistentContainer.viewContext
+            
+            let entity = CDVideo.entity()
+            
+            let cdVideo = CDVideo(entity: entity,
+                                  insertInto: managedContext)
+            
+            cdVideo.firestoreID = videoToSave.firestoreID
+            cdVideo.fileID = videoToSave.fileID
+            cdVideo.title = videoToSave.title
+            cdVideo.body = videoToSave.description
+//            MARK: NOT SAVING TAGS
+//            cdAudio.tags = audioToSave.tags
+            cdVideo.uploadDate = videoToSave.date
+            cdVideo.duration = Int64(duration)
+            
+            
+            var cdAuthor: CDPerson
+            cdAuthor = CDPerson(context: managedContext)
+            
+            cdAuthor.firestoreID = videoToSave.author.firestoreID
+            cdAuthor.name = videoToSave.author.name
+            cdAuthor.owned = true
+            
+            cdVideo.author = cdAuthor
+            
+            group.notify(queue: .main) {
+                cdAuthor.profileImageData = authorProfilePictureData
+                cdVideo.thumbnailData = thumbnailData
+                
+                
+                    DispatchQueue.main.async {
+                do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                } catch let error as NSError {
+                    print("Could not save. \(error), \(error.userInfo)")
+                        loadFavorites(completion: completion)
+                }
+                    }
+            }
+        }
+    }
     
     static func save(_ audioToSave: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
@@ -63,7 +179,6 @@ class Favorites {
             
             cdAudio.firestoreID = audioToSave.firestoreID
             cdAudio.fileID = audioToSave.fileID
-            cdAudio.sourceURL = audioToSave.sourceURL
             cdAudio.title = audioToSave.title
             cdAudio.body = audioToSave.description
 //            MARK: NOT SAVING TAGS
@@ -71,7 +186,10 @@ class Favorites {
             cdAudio.uploadDate = audioToSave.date
             cdAudio.duration = Int64(duration)
             
-            let cdAuthor = CDPerson(context: managedContext)
+            
+            var cdAuthor: CDPerson
+            cdAuthor = CDPerson(context: managedContext)
+            
             cdAuthor.firestoreID = audioToSave.author.firestoreID
             cdAuthor.name = audioToSave.author.name
             cdAuthor.owned = true
@@ -81,17 +199,16 @@ class Favorites {
             group.notify(queue: .main) {
                 cdAuthor.profileImageData = authorProfilePictureData
                 
-                do {
-                    try managedContext.save()
+                
                     DispatchQueue.main.async {
+                do {
+                        try managedContext.save()
                         loadFavorites(completion: completion)
-                    }
                 } catch let error as NSError {
                     print("Could not save. \(error), \(error.userInfo)")
-                    DispatchQueue.main.async {
                         loadFavorites(completion: completion)
-                    }
                 }
+                    }
             }
         }
     }
@@ -102,10 +219,9 @@ class Favorites {
         let group = DispatchGroup()
         let queue = DispatchQueue(label: "favorites_queue", attributes: .concurrent)
         
+        group.enter()
         var favoritePeople: [DetailedRabbi]? = nil
-        
         queue.async {
-            group.enter()
             let fetchRequest = CDPerson.fetchRequest()
             
             if let personEntities = try? managedContext.fetch(fetchRequest) {
@@ -121,48 +237,34 @@ class Favorites {
                     favoritePeople?.append(person)
                     }
                 }
-//                for personEntity in personEntities {
-//                    if personEntity.owned == false {
-//                        if let name = personEntity.name, let id = personEntity.firestoreID, let profileImageData = personEntity.profileImageData {
-//                            guard let profileUIImage = UIImage(data: profileImageData) else {
-//                                print("Failed to load picture from data for person with Firestore ID '\(id)'")
-//                                continue
-//                            }
-//
-//                            let person = DetailedRabbi(id: id, name: name, profileImage: Image(uiImage: profileUIImage))
-//                            favoritePeople?.append(person)
-//                        }
-//                    }
-//                }
             }
             group.leave()
         }
         
-//        queue.async {
-//            group.enter()
-//            let fetchRequest = CDVideo.fetchRequest()
-//
-//            if let videoEntities = try? managedContext.fetch(fetchRequest) {
-//                if favoriteVideos == nil {
-//                    favoriteVideos = []
-//                }
-//                for videoEntity in videoEntities {
-//                    guard let video = KHKVideo(cdVideo: videoEntity) else {
-//                        continue
-//                    }
-//
-//                    favoriteVideos?.append(video)
-//                }
-//            }
-//            group.leave()
-//        }
-        
+        group.enter()
         var favoriteVideos: [Video]? = nil
-        
-        var favoriteAudios: [Audio]? = nil
-        
         queue.async {
-            group.enter()
+            let fetchRequest = CDVideo.fetchRequest()
+            
+            if let videoEntities = try? managedContext.fetch(fetchRequest) {
+                if favoriteVideos == nil {
+                    favoriteVideos = []
+                }
+                for videoEntity in videoEntities {
+                    guard let video = Video(cdVideo: videoEntity) else {
+                        continue
+                    }
+                    
+                    favoriteVideos?.append(video)
+                }
+            }
+            group.leave()
+        }
+        
+        
+        group.enter()
+        var favoriteAudios: [Audio]? = nil
+        queue.async {
             let fetchRequest = CDAudio.fetchRequest()
             
             if let audioEntities = try? managedContext.fetch(fetchRequest) {
