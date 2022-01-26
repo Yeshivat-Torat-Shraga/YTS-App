@@ -9,11 +9,20 @@ import Foundation
 import SwiftUI
 
 class TagModel: ObservableObject {
-    let tag: Tag
+    @Published var tag: Tag
     @Published var sortables: [SortableYTSContent]?
     @Published var content: Content?
+    
     init(tag: Tag) {
         self.tag = tag
+    }
+    
+    func set(tag: Tag) {
+        withAnimation {
+        self.tag = tag
+        self.content = nil
+        self.load()
+        }
     }
     
     func load() {
