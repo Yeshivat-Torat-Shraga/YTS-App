@@ -10,12 +10,12 @@ import SwiftUI
 struct RootView: View {
 //    @AppStorage("tapCount") private var tapCount = 0
 //    @AppStorage("feedback") private var feedback: UIImpactFeedbackGenerator.FeedbackStyle = .light
-    @StateObject var root = RootModel()
+    @StateObject var model = RootModel()
     @State var selectedView = 0
     
     var body: some View {
         TabView(selection: $selectedView) {
-            HomeView()
+            model.homeView
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }.tag(0)
@@ -23,15 +23,15 @@ struct RootView: View {
                     Spacer()
                     PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
                 })
-            FavoritesView()
+            model.favoritesView
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
                 }.tag(1)
-            NewsView()
+            model.newsView
                 .tabItem {
                     Label("News", systemImage: "newspaper.fill")
                 }.tag(2)
-            SettingsView()
+            model.settingsView
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }.tag(3)
