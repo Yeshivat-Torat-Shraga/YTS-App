@@ -41,7 +41,7 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let urlDocuments = response["newsDocuments"] as? [[String: Any]] else {
+            guard let urlDocuments = response["content"] as? [[String: Any]] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
