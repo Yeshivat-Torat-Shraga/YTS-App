@@ -13,11 +13,13 @@ struct RabbiCardView: View {
         VStack {
             HStack {
                 Text(rabbi.name)
+                    .fontWeight(.thin)
                     .font(.title)
-                    .bold()
+//                    .bold()
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
+                    .foregroundColor(Color("ShragaGold"))
                     .padding(.trailing)
                 Spacer()
                 if let detailedRabbi = rabbi as? DetailedRabbi {
@@ -62,12 +64,34 @@ struct RabbiCardView: View {
 //                .font(.caption)
         }
         .padding()
-        .background(Color(UIColor.systemBackground))
+        .background(
+            Rectangle()
+            
+            // START GRADIENT {
+            
+                .fill(LinearGradient(
+                    gradient: Gradient(
+                        stops: [
+                            Gradient.Stop(
+                                color: Color(
+                                    hue: 0.610,
+                                    saturation: 0.5,
+                                    brightness: 0.19),
+                                location: 0),
+                            Gradient.Stop(
+                                color: Color(
+                                    hue: 0.616,
+                                    saturation: 0.431,
+                                    brightness: 0.510),
+                                location: 1)]),
+                    startPoint: UnitPoint.bottomLeading,
+                    endPoint: UnitPoint.trailing))
+        )
 //        .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
 //        .frame(height: 150)
-        .frame(maxWidth: 350)
+//        .frame(maxWidth: 350)
 //        .padding()
     }
 }
@@ -76,5 +100,7 @@ struct RabbiCardView: View {
 struct RabbiCardView_Previews: PreviewProvider {
     static var previews: some View {
         RabbiCardView(rabbi: DetailedRabbi.samples[0])
+            .foregroundColor(Color("ShragaBlue"))
+            .accentColor(Color("ShragaBlue"))
     }
 }
