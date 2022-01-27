@@ -9,23 +9,21 @@ import SwiftUI
 
 struct TagView: View {
     @ObservedObject var model: TagModel
-    var tag: Tag
     
     init(tag: Tag) {
-        self.tag = tag
         self.model = TagModel(tag: tag)
     }
     
     var body: some View {
             VStack {
                 HStack {
-                    Text(tag.name)
+                    Text(model.tag.name)
                         .fontWeight(.bold)
                         .font(.largeTitle)
                     
                     Spacer()
                     
-                    if let category = tag as? Category {
+                    if let category = model.tag as? Category {
                         DownloadableImage(object: category)
                             .frame(width: 100, height: 70)
                             .aspectRatio(contentMode: .fill)
@@ -39,9 +37,10 @@ struct TagView: View {
                 Divider()
                 
                 ScrollView(.horizontal) {
-                    LazyHStack {
+                    HStack {
+                        Spacer()
                         ForEach(tags, id: \.name) { tag in
-                            if tag == self.tag {
+                            if tag == self.model.tag {
                                 if #available(iOS 15.0, *) {
                                     Button {
                                         
@@ -59,16 +58,17 @@ struct TagView: View {
                                         Text(tag.name)
                                             .font(.caption2)
                                     }
+                                    .disabled(true)
+                                    .overlay(Color.black.opacity(0.1))
                                 }
                             } else {
                                 if #available(iOS 15.0, *) {
                                     Button {
-                                        
+                                        self.model.set(tag: tag)
                                     } label: {
                                         Text(tag.name)
                                             .font(.caption2)
-                                    }
-                                    .buttonStyle(BorderedButtonStyle())
+                                    } .buttonStyle(BorderedButtonStyle())
                                 } else {
                                     Button {
                                         
@@ -79,6 +79,7 @@ struct TagView: View {
                                 }
                             }
                         }
+                        Spacer()
                     }
                 }
                 
@@ -95,15 +96,21 @@ struct TagView: View {
                                 if let video = sortable.video {
                                     VideoCardView(video: video)
                                         .contextMenu {
-                                            Button("Play") {}
+                                            Button(action: {}, label: {
+                                                Label("Play", systemImage: "play.fill")
+                                            })
                                         }
                                 } else if let audio = sortable.audio {
                                     AudioCardView(audio: audio)
                                         .contextMenu {
-                                            Button("Play") {}
+                                            Button(action: {}, label: {
+                                                Label("Play", systemImage: "play.fill")
+                                            })
                                         }
                                 }
                             }
+                        } else {
+                            Text("Waiting to implement sequential loading.")
                         }
                     }
                     .padding([.horizontal, .top])

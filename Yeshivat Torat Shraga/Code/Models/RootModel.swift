@@ -16,6 +16,12 @@ class RootModel: ObservableObject {
         audioPlayer = val
     }
     
+    var homeView = HomeView()
+    var favoritesView = FavoritesView()
+    var newsView = NewsView()
+    var settingsView = SettingsView()
+    
+    
     init() {
         let appearance = UITabBar.appearance()
         appearance.standardAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
