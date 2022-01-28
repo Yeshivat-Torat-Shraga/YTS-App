@@ -14,7 +14,7 @@ We told him that we'd love an opportunity to give back to the Yeshiva and that w
 We also saw this project as an amazing opportunity to learn about app dev in the real world.
 
 ## What frameworks were used in this project?
-Here are just _some_ of the frameworks we used while working on this project:
+Here is a non-exhaustive list of the frameworks we used while working on this project:
 - Google Cloud Storage
 - Google Cloud Functions
 - Firebase Suite (backend-as-a-service)

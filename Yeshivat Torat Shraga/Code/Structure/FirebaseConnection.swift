@@ -41,7 +41,7 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let urlDocuments = response["newsDocuments"] as? [[String: Any]] else {
+            guard let urlDocuments = response["content"] as? [[String: Any]] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -202,18 +202,14 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let rabbiDocuments = response["rebbeim"] as? [[String: Any]] else {
+            guard let rabbiDocuments = response["rebbeim"] as? [[String: Any]],
+                  let contentDocuments = response["content"] as? [[String: Any]],
+                  let appliedSearchOptions = response["searchOptions"] as? [String: [String: Any]]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            guard let contentDocuments = response["content"] as? [[String: Any]] else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
-            guard let appliedSearchOptions = response["searchOptions"] as? [String: [String: Any]] else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
+            
             let includesLastElement = true//response["includesLastElement"] as? Bool,
             let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
             
@@ -492,7 +488,8 @@ final class FirebaseConnection {
             }
             
             guard let contentDocuments = response["content"] as? [[String: Any]],
-                  let metadata         = response["metadata"] as? [String: Any]
+                  let metadata = response["metadata"] as? [String: Any],
+                  let includesLastElement = metadata["includesLastElement"] as? Bool
             else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
@@ -500,10 +497,6 @@ final class FirebaseConnection {
             
             let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
             
             let group = DispatchGroup()
             
