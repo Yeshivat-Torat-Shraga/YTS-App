@@ -161,6 +161,12 @@ protocol SequentialLoader: ObservableObject {
     var lastLoadedDocumentID: FirestoreID? { get set }
     
     /// Determines whether or not the ``initialLoad`` function was ever called.
+    ///
+    /// Default: `false`
+    ///
+    /// Recommended access modifier: `internal`
+    ///
+    /// Recommended @attribute: none
     var calledInitialLoad: Bool { get set }
     
     //    func load(range: ClosedRange<Int>)
