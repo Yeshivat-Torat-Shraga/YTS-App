@@ -5,7 +5,7 @@
 //  Created by David Reese on 11/24/21.
 //
 
-import Foundation
+import SwiftUI
 
 func timeFormatted(totalSeconds: TimeInterval) -> String {
     let seconds: Int = Int((totalSeconds).truncatingRemainder(dividingBy: 60))
@@ -34,6 +34,19 @@ func timeFormattedMini(totalSeconds: TimeInterval) -> String {
             str.removeFirst()
         }
         return str
+    }
+}
+
+// https://stackoverflow.com/a/56894458/13368672
+extension Color {
+    init(hex: UInt, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xff) / 255,
+            green: Double((hex >> 08) & 0xff) / 255,
+            blue: Double((hex >> 00) & 0xff) / 255,
+            opacity: alpha
+        )
     }
 }
 
