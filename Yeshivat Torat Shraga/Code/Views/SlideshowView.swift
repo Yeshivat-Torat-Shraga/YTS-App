@@ -9,30 +9,16 @@ import SwiftUI
 import Combine
 
 struct SlideshowView: View {
-    private var timerDelay: Double = 7
+    private let slideDuration = 7 // Seconds
     private var slideshowImages: [SlideshowImage]
     private let swipeThreshhold: CGFloat = 50
+    @State private var timerSeconds = 0
     @State private var imageTabIndex = 0
-    @State private var timer: Publishers.Autoconnect<Timer.TimerPublisher>
+    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     init(_ slideshowImages: [SlideshowImage]) {
         self.slideshowImages = slideshowImages
-        self.timer = Timer.publish(every: timerDelay, on: .main, in: .common).autoconnect()
-    }
-    
-    func handleSwipe(translation: CGFloat) {
-        timer.upstream.connect().cancel()
-        timer = Timer.publish(every: timerDelay, on: .main, in: .common).autoconnect()
-        withAnimation {
-            if translation < -swipeThreshhold {
-                imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
-            } else if translation > swipeThreshhold {
-                imageTabIndex = (imageTabIndex - 1) % slideshowImages.count
-                if imageTabIndex < 0 {
-                    imageTabIndex = slideshowImages.count - 1
-                }
-            }
-        }
+        
     }
     
     var body: some View {
@@ -80,22 +66,24 @@ struct SlideshowView: View {
                         }
                         .clipped()
                         .tag(index)
-                        .onTapGesture{}
-                        .gesture(
-                            DragGesture()
-                                .onEnded {
-                                    handleSwipe(translation: $0.translation.width)
-                                }
-                        )
                     
                 }
             }
             .tabViewStyle(PageTabViewStyle())
             .onReceive(self.timer) { _ in
-                withAnimation {
-                    imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
+                timerSeconds += 1
+                if timerSeconds >= slideDuration {
+                    timerSeconds = 0
+                    withAnimation {
+                        imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
+                    }
                 }
             }
+        }
+        .onChange(of: imageTabIndex) { _ in
+            // Reset the timer that auto-changes the slides,
+            // because we just manually changed the slide.
+            timerSeconds = 0
         }
     }
 }
