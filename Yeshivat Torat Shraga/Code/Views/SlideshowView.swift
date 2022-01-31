@@ -9,16 +9,16 @@ import SwiftUI
 import Combine
 
 struct SlideshowView: View {
-    private let slideDuration = 7 // Seconds
+    private let slideDuration = 8.0 // Seconds
     private var slideshowImages: [SlideshowImage]
     private let swipeThreshhold: CGFloat = 50
-    @State private var timerSeconds = 0
+    @State private var timerSeconds = 0.0
     @State private var imageTabIndex = 0
-    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var timer: Publishers.Autoconnect<Timer.TimerPublisher>
     
     init(_ slideshowImages: [SlideshowImage]) {
         self.slideshowImages = slideshowImages
-        
+        timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     }
     
     var body: some View {
@@ -70,7 +70,7 @@ struct SlideshowView: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle())
-            .onReceive(self.timer) { _ in
+            .onReceive(timer) { _ in
                 timerSeconds += 1
                 if timerSeconds >= slideDuration {
                     timerSeconds = 0
@@ -84,6 +84,12 @@ struct SlideshowView: View {
             // Reset the timer that auto-changes the slides,
             // because we just manually changed the slide.
             timerSeconds = 0
+        }
+        .onDisappear {
+            self.timer.upstream.connect().cancel()
+        }
+        .onAppear {
+            timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
         }
     }
 }
