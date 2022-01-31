@@ -62,6 +62,18 @@ extension String {
     }
 }
 
+// https://stackoverflow.com/a/52114574/13368672
+extension Float {
+    func trim() -> String {
+        let formatter = NumberFormatter()
+        let number = NSNumber(value: self)
+        formatter.minimumFractionDigits = 1
+        formatter.maximumFractionDigits = (self.description.components(separatedBy: ".").last)!.count
+        return String(formatter.string(from: number) ?? "")
+    }
+}
+
+
 extension Date {
     func get(_ components: Calendar.Component..., calendar: Calendar = Calendar.current) -> DateComponents {
         return calendar.dateComponents(Set(components), from: self)
