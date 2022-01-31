@@ -13,6 +13,8 @@ struct FavoritesView: View {
         NavigationView {
             ScrollView {
                 VStack {
+                    
+                    // MARK: Audio Favorites
                     HStack {
                         Text("Audio")
                             .font(.title3)
@@ -25,6 +27,56 @@ struct FavoritesView: View {
                             HStack {
                                 ForEach(audios, id: \.self) { audio in
                                     AudioCardView(audio: audio)
+                                        .padding(.vertical)
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    } else {
+                        VStack {
+                            Text("Yikes, it seems like you don't have any saved Audio Shiurim right now.")
+                        }
+                        .padding()
+                    }
+                    
+                    // MARK: Video Favorites
+                    HStack {
+                        Text("Videos")
+                            .font(.title3)
+                            .bold()
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    if let videos = model.videos {
+                        ScrollView(showsIndicators: false) {
+                            HStack {
+                                ForEach(videos, id: \.self) { video in
+                                    VideoCardView(video: video)
+                                        .padding(.vertical)
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    } else {
+                        VStack {
+                            Text("Yikes, it seems like you don't have any saved Video Shiurim right now.")
+                        }
+                        .padding()
+                    }
+                    
+                    // MARK: Rebbeim Favorites
+                    HStack {
+                        Text("Rebbeim")
+                            .font(.title3)
+                            .bold()
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    if let rebbeim = model.rebbeim {
+                        ScrollView(showsIndicators: false) {
+                            HStack {
+                                ForEach(rebbeim, id: \.self) { rebbi in
+                                    TileCardView(content: rebbi, size: .medium)
                                         .padding(.vertical)
                                 }
                             }
