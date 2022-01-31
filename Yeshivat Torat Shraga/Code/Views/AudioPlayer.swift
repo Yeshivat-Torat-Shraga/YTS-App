@@ -270,7 +270,6 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
 
-                if #available(iOS 15.0, *) {
                     Button(action: {
                         if let audio = audio {
                             Favorites.save(audio) { favorites, error in
@@ -280,43 +279,21 @@ struct AudioPlayer: View {
                     }, label: {
                         Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
+                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
                     
                     Button(action: {
                         
                     }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color("Gray"))
+                        Image(systemName: "square.and.arrow.up").foregroundColor(.gray)
                             .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
+                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
                     
                     Button(action: {
                         
                     }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(Color(uiColor: .lightGray))
+                        Image(systemName: "ellipsis").foregroundColor(.gray)
                             .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                } else {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    })
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    }).padding()
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    })
-                }
+                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
             Spacer()
