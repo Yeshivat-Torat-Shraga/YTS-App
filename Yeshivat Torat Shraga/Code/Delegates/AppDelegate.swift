@@ -143,15 +143,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
-
+    
     
     func registerForPushNotifications() {
         UNUserNotificationCenter.current()
-            .requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            .requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, _ in
                 print("Permission Granted: \(granted)")
+                guard granted else { return }
+                self?.getNotificationSettings()
             }
     }
-
+    
+    func getNotificationSettings() {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                print("Notification settings: \(settings)")
+                guard settings.authorizationStatus == .authorized else { return }
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
+    }
+    
     
 }
 
