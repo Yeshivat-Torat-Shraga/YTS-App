@@ -19,13 +19,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         let providerFactory: AppCheckProviderFactory
                 
-        #if targetEnvironment(simulator)
-                providerFactory = AppCheckDebugProviderFactory()
-        #else
-                providerFactory = YTSAppCheckProviderFactory()
-        #endif
-                
-        AppCheck.setAppCheckProviderFactory(providerFactory)
+//        #if targetEnvironment(simulator)
+//                providerFactory = AppCheckDebugProviderFactory()
+//        #else
+//                providerFactory = YTSAppCheckProviderFactory()
+//        #endif
+//                
+//        AppCheck.setAppCheckProviderFactory(providerFactory)
         
         FirebaseApp.configure()
         #if EMULATORS
