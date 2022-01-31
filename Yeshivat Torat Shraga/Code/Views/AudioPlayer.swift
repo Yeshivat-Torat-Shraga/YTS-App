@@ -12,6 +12,10 @@ import MediaPlayer
 struct AudioPlayer: View {
     @ObservedObject var player = Player()
     var audio: Audio?
+    let speeds: [Float] = [0.75, 1.00, 1.25,
+                           1.50, 1.75, 2.00]
+    @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
+    
     
     init() {}
     
@@ -273,25 +277,29 @@ struct AudioPlayer: View {
                     Button(action: {
                         if let audio = audio {
                             Favorites.save(audio) { favorites, error in
-                                print(favorites, error)
+                                print(favorites as Any, error as Any)
                             }
                         }
                     }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
+                        Image(systemName: "heart")
+                            .foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                
+                Button(action: {
+                    selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
+                    player.avPlayer?.rate = speeds[selectedSpeedIndex]
+                }, label: {
+                    Text("x\(speeds[selectedSpeedIndex].trim())")
+                        .foregroundColor(.gray)
+                        .frame(width: 45, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                     
                     Button(action: {
                         
                     }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(.gray)
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(.gray)
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.gray)
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
