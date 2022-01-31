@@ -11,6 +11,7 @@ import Firebase
 import FirebaseStorage
 import AVKit
 import FirebaseAppCheck
+import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -46,6 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch  {
             print("Audio session failed")
         }
+        
+        registerForPushNotifications()
         return true
     }
 
@@ -141,5 +144,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    
+    func registerForPushNotifications() {
+        UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+                print("Permission Granted: \(granted)")
+            }
+    }
+
+    
 }
 
