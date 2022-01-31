@@ -108,3 +108,66 @@ extension Error {
         }
     }
 }
+
+
+/// This protocol is sourced from the Kol Hatorah Kulah App repository.
+/// - https://github.com/davidreese/Kol-Hatorah-Kulah-SwiftUI
+protocol SequentialLoader: ObservableObject {
+    /// Whether or not the class is loading content from Firebase.
+    ///
+    /// Default: `false`
+    ///
+    /// Recommended access modifier: `internal`
+    ///
+    /// Recommended @attribute: `@Published`
+    var loadingContent: Bool { get set }
+    
+    /// Whether or not the class is reloading all the data from Firebase that it's responsible for.
+    ///
+    /// Default: `false`
+    ///
+    /// Recommended access modifier: `internal`
+    ///
+    /// Recommended @attribute: none
+    var reloadingContent: Bool { get set }
+    
+    /// Whether or not the class has attempted to get all Firebase data.
+    ///
+    /// Default: `false`
+    ///
+    /// Recommended access modifier: `internal`
+    ///
+    /// Recommended @attribute: `@Published`
+    var retreivedAllContent: Bool { get set }
+    
+    /*
+     /// Description: indexes of content, ordered in Firebase, that have been attempted to load.
+     ///
+     /// Default: `[]`
+     ///
+     /// Recommended access modifier: `private`
+     ///
+     /// Recommended @attribute: none
+     var contentIndexesLoaded: [Int] { get set }
+     */
+    
+    /// `firestoreID` of last content entity, ordered in Firebase, that was received.
+    ///
+    /// Default: `nil`
+    ///
+    /// Recommended access modifier: `internal`
+    ///
+    /// Recommended @attribute: none
+    var lastLoadedDocumentID: FirestoreID? { get set }
+    
+    /// Determines whether or not the ``initialLoad`` function was ever called.
+    var calledInitialLoad: Bool { get set }
+    
+    //    func load(range: ClosedRange<Int>)
+    
+    func load(next increment: Int)
+    
+    func initialLoad()
+    
+    func reload()
+}
