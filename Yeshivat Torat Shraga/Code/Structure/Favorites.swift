@@ -13,7 +13,7 @@ class Favorites {
     static let delegate = (UIApplication.shared.delegate as! AppDelegate)
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
     
-    private static var favorites: FavoritesTuple? = loadFavorites()
+    private static var favorites: FavoritesTuple?// = loadFavorites()
     
     /// Retreives the most updated favorites tuple for the device.
     static func getFavorites(completion: @escaping ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)) {
@@ -75,7 +75,7 @@ class Favorites {
                         try managedContext.save()
                         loadFavorites(completion: completion)
                     } catch let error as NSError {
-                        print("Could not save. \(error), \(error.userInfo)")
+                        print("Failed to save: \(error), \(error.userInfo)")
                         loadFavorites(completion: completion)
                     }
                 }
@@ -191,7 +191,7 @@ class Favorites {
                         try managedContext.save()
                         loadFavorites(completion: completion)
                     } catch let error as NSError {
-                        print("Could not save. \(error), \(error.userInfo)")
+                        print("Failed to save: \(error), \(error.userInfo)")
                         loadFavorites(completion: completion)
                     }
                 }
@@ -275,11 +275,86 @@ class Favorites {
                         try managedContext.save()
                         loadFavorites(completion: completion)
                     } catch let error as NSError {
-                        print("Could not save. \(error), \(error.userInfo)")
+                        print("Failed to save: \(error), \(error.userInfo)")
                         loadFavorites(completion: completion)
                     }
                 }
             }
+        }
+    }
+    
+    static func delete(_ rabbiToDelete: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        let managedContext = delegate.persistentContainer.viewContext
+        let fetchRequest = CDPerson.fetchRequest()
+        
+        do {
+            let result = try managedContext.fetch(fetchRequest)
+            
+                if let match = result.first(where: { r in
+                    r.firestoreID == rabbiToDelete.firestoreID
+                }) {
+                    managedContext.delete(match)
+                    
+                    do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                    } catch {
+                        print("Failed to delete: \(error)")
+                        loadFavorites(completion: completion)
+                    }
+                }
+        } catch {
+            print("Failed to delete: \(error)")
+        }
+    }
+    
+    static func delete(_ videoToDelete: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        let managedContext = delegate.persistentContainer.viewContext
+        let fetchRequest = CDVideo.fetchRequest()
+        
+        do {
+            let result = try managedContext.fetch(fetchRequest)
+            
+                if let match = result.first(where: { v in
+                    v.firestoreID == videoToDelete.firestoreID
+                }) {
+                    managedContext.delete(match)
+                    
+                    do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                    } catch {
+                        print("Failed to delete: \(error)")
+                        loadFavorites(completion: completion)
+                    }
+                }
+        } catch {
+            print("Failed to delete: \(error)")
+        }
+    }
+    
+    static func delete(_ audioToDelete: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        let managedContext = delegate.persistentContainer.viewContext
+        let fetchRequest = CDAudio.fetchRequest()
+        
+        do {
+            let result = try managedContext.fetch(fetchRequest)
+            
+                if let match = result.first(where: { a in
+                    a.firestoreID == audioToDelete.firestoreID
+                }) {
+                    managedContext.delete(match)
+                    
+                    do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                    } catch {
+                        print("Failed to delete: \(error)")
+                        loadFavorites(completion: completion)
+                    }
+                }
+        } catch {
+            print("Failed to delete: \(error)")
         }
     }
     
