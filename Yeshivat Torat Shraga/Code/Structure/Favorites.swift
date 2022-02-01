@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import SwiftUI
+import CoreData
 
 class Favorites {
     static let delegate = (UIApplication.shared.delegate as! AppDelegate)
@@ -21,6 +22,19 @@ class Favorites {
             completion(favorites, nil)
         } else {
             loadFavorites(completion: completion)
+        }
+    }
+    
+    static func clearFavorites() {
+        let entities = [CDVideo.entity(), CDAudio.entity(), CDPerson.entity()]
+        for entity in entities {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity.name!)
+            let deleteReqest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            do {
+                try delegate.persistentContainer.viewContext.execute(deleteReqest)
+            } catch {
+                print(error)
+            }
         }
     }
     
