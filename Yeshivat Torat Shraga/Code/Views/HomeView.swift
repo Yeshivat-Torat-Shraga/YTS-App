@@ -12,6 +12,10 @@ struct HomeView: View {
     
     @State var presentingSearchView = false
     
+    init(hideLoadingScreenClosure: @escaping (() -> Void)) {
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure)
+    }
+    
     init() {
         self.model = HomeModel()
     }
