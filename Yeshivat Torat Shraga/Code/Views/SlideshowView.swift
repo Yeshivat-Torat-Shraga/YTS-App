@@ -50,22 +50,6 @@ struct SlideshowView: View {
                                 }
                             }
                         )
-                        .contextMenu {
-                            if let image = slideshowImages[index].image {
-                                Button(action: {
-                                    let activityController = UIActivityViewController(activityItems: [image], applicationActivities: [])
-                                    
-                                    UIApplication.shared.windows.first?.rootViewController!.present(activityController, animated: true, completion: nil)
-                                    
-                                }) {
-                                    HStack {
-                                        Text("Share")
-                                        Spacer()
-                                        Image(systemName: "square.and.arrow.up")
-                                    }
-                                }
-                            }
-                        }
                         .clipped()
                         .tag(index)
                     
