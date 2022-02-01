@@ -34,7 +34,7 @@ struct FavoritesView: View {
                         }
                     } else {
                         VStack {
-                            Text("Yikes, it seems like you don't have any saved Audio Shiurim right now.")
+                            Text("It seems like you don't have any saved audio shiurim right now.")
                         }
                         .padding()
                     }
@@ -59,7 +59,7 @@ struct FavoritesView: View {
                         }
                     } else {
                         VStack {
-                            Text("Yikes, it seems like you don't have any saved Video Shiurim right now.")
+                            Text("It seems like you don't have any saved video shiurim right now.")
                         }
                         .padding()
                     }
@@ -84,7 +84,7 @@ struct FavoritesView: View {
                         }
                     } else {
                         VStack {
-                            Text("Yikes, it seems like you don't have any saved Audio Shiurim right now.")
+                            Text("It seems like you don't have any favorite rebbeim right now.")
                         }
                         .padding()
                     }
