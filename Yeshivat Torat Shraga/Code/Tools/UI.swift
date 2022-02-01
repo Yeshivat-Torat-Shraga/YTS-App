@@ -14,6 +14,16 @@ struct UI {
 //    static var
 }
 
+struct iOS14BorderedProminentButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(Color(hex: 0x526B98))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+}
+
 
 struct Gif: UIViewRepresentable {
     var name: String
