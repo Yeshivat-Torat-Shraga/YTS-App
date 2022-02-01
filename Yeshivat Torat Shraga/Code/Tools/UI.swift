@@ -10,8 +10,12 @@ import SwiftUI
 struct UI {
     static let shadowRadius: CGFloat = 2
     static let cornerRadius: CGFloat = 8
-    static let navLinkFeedback: UIImpactFeedbackGenerator.FeedbackStyle = .light
-//    static var
+    class Haptics {
+        static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
+        static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light
+    }
+    //    static let openContentFeedback
+    //    static var
 }
 
 struct iOS14BorderedProminentButtonStyle: ButtonStyle {

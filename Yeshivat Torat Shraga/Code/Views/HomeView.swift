@@ -77,7 +77,7 @@ struct HomeView: View {
                                         .simultaneousGesture(
                                             TapGesture()
                                                 .onEnded {
-                                                    Haptics.shared.play(UI.navLinkFeedback)
+                                                    Haptics.shared.play(UI.Haptics.navLink)
                                                 })
                                         .padding(.vertical)
                                     }
@@ -139,7 +139,7 @@ struct HomeView: View {
                                         .simultaneousGesture(
                                             TapGesture()
                                                 .onEnded {
-                                                    Haptics.shared.play(UI.navLinkFeedback)
+                                                    Haptics.shared.play(UI.Haptics.navLink)
                                                 })
 
                                 }

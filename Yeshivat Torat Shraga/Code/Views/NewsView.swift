@@ -21,7 +21,7 @@ struct NewsView: View {
                         .simultaneousGesture(
                             TapGesture()
                                 .onEnded {
-                                    Haptics.shared.play(UI.navLinkFeedback)
+                                    Haptics.shared.play(UI.Haptics.navLink)
                                 })
                     }
                 }

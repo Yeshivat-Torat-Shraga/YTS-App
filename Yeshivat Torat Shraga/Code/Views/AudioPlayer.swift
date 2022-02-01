@@ -317,7 +317,7 @@ struct AudioPlayer: View {
                         
                     }, label: {
                         Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.red)
+                            .foregroundColor(.gray)
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
