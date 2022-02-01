@@ -20,6 +20,8 @@
 		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
 		08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagModel.swift */; };
 		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
+		08A5439927A8684400B97D0F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08A5439827A8684400B97D0F /* GoogleService-Info.plist */; };
+		08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AF240D27A35315001331EA /* FavoritesModel.swift */; };
 		08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B7A8442790358000B0EBC3 /* SlideshowView.swift */; };
 		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
@@ -76,6 +78,8 @@
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
 		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		08A05B2427653DAA00FEE15F /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
+		08A5439827A8684400B97D0F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		08AF240D27A35315001331EA /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
 		08B7A8442790358000B0EBC3 /* SlideshowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideshowView.swift; sourceTree = "<group>"; };
 		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -231,6 +235,7 @@
 				08A05B2427653DAA00FEE15F /* TagModel.swift */,
 				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
 				084E99C22794760D00CCEED6 /* NewsModel.swift */,
+				08AF240D27A35315001331EA /* FavoritesModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -347,6 +352,7 @@
 			files = (
 				F29D917D27A7FF6700DEC93A /* GoogleService-Info.plist in Resources */,
 				B12AB840273B104300B17CC0 /* LaunchScreen.storyboard in Resources */,
+				08A5439927A8684400B97D0F /* GoogleService-Info.plist in Resources */,
 				B12AB83D273B104300B17CC0 /* Preview Assets.xcassets in Resources */,
 				B12AB83A273B104300B17CC0 /* Assets.xcassets in Resources */,
 			);
@@ -378,6 +384,7 @@
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
+				08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
 				F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */,

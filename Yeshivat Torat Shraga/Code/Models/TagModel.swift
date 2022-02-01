@@ -31,7 +31,7 @@ class TagModel: ObservableObject {
 //                    self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                     fatalError(error!.localizedDescription)
                 }
-                print(results)
+//                print(results)
                 withAnimation {
                     self.content = results.content
                     
