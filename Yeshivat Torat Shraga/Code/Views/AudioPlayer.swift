@@ -290,7 +290,7 @@ struct AudioPlayer: View {
                 
                 Button(action: {
                     selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
-                    player.avPlayer?.rate = speeds[selectedSpeedIndex]
+                    player.setRate(speeds[selectedSpeedIndex])
                 }, label: {
                     Text("x\(speeds[selectedSpeedIndex].trim())")
                         .foregroundColor(.gray)
