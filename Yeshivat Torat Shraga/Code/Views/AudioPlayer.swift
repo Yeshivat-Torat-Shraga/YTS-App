@@ -297,7 +297,11 @@ struct AudioPlayer: View {
                     }).buttonStyle(BorderedProminentButtonStyle())
                 } else {
                     Button(action: {
-                        
+                        if let audio = audio {
+                            Favorites.save(audio) { favorites, error in
+                                print(favorites, error)
+                            }
+                        }
                     }, label: {
                         Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
