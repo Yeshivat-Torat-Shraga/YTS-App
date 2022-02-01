@@ -15,7 +15,7 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
-    
+    @State private var isFavorited = false
     
     init() {}
     
@@ -286,7 +286,12 @@ struct AudioPlayer: View {
                     Button(action: {
                         if let audio = audio {
                             Favorites.save(audio) { favorites, error in
-                                Haptics.shared.notify(.success)
+                                isFavorited.toggle()
+                                if isFavorited {
+                                    Haptics.shared.notify(.success)
+                                } else {
+                                    Haptics.shared.notify(.warning)
+                                }
                                 // .warning, if removing from favorites.
                                 
                                 print(favorites as Any, error as Any)
@@ -299,6 +304,7 @@ struct AudioPlayer: View {
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 
                 Button(action: {
+                    Haptics.shared.play(.rigid)
                     selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
                     player.setRate(speeds[selectedSpeedIndex])
                 }, label: {
@@ -311,7 +317,7 @@ struct AudioPlayer: View {
                         
                     }, label: {
                         Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.red)
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
