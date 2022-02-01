@@ -117,6 +117,7 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
+                        Divider().padding(.horizontal)
                     }
                     
                     // MARK: - CATEGORIES
@@ -137,7 +138,6 @@ struct HomeView: View {
                                 }
                             }.padding(.horizontal)
                         }
-                        Divider().padding(.horizontal)
                     }
                 }
                 .padding(.bottom)
