@@ -296,8 +296,8 @@ struct AudioPlayer: View {
                         .foregroundColor(.gray)
                         .frame(width: 45, height: 20)
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
-                    
-                    Button(action: {
+              
+                Button(action: {
                         
                     }, label: {
                         Image(systemName: "square.and.arrow.up")
