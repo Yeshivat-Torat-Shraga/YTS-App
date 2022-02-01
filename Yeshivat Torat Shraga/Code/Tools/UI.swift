@@ -6,12 +6,41 @@
 //
 
 import SwiftUI
+import SwiftyGif
 
 struct UI {
     static var shadowRadius: CGFloat = 2
     static var cornerRadius: CGFloat = 8
 //    static var
 }
+
+
+struct Gif: UIViewRepresentable {
+    var name: String
+    @Binding var playing: Bool
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        let gif = try! UIImage(gifName: name)
+        let imageView = UIImageView(gifImage: gif)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            imageView.widthAnchor.constraint(equalTo: view.widthAnchor)
+        ])
+        return view
+        
+    }
+
+    func updateUIView(_ gifImageView: UIView, context: Context) {
+        if let gifimage = gifImageView as? UIImageView {
+            if playing == true {
+                gifimage.startAnimatingGif()
+            } else {
+                gifimage.stopAnimatingGif()
+            }
+        }
+    }}
 
 
 /// Source: https://stackoverflow.com/questions/56760335/round-specific-corners-swiftui
