@@ -16,7 +16,7 @@ class FavoritesModel: ObservableObject {
     }
     
     func load() {
-        Favorites.loadFavorites() { dataTuple, err in
+        Favorites.getFavorites() { dataTuple, err in
             guard let data = dataTuple else {
                 print("The dataTuple returned nil from the favorites loader")
                 return
