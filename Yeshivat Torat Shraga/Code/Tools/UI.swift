@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct UI {
-    static var shadowRadius: CGFloat = 2
-    static var cornerRadius: CGFloat = 8
+    static let shadowRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 8
+    static let navLinkFeedback: UIImpactFeedbackGenerator.FeedbackStyle = .light
 //    static var
 }
 
