@@ -155,6 +155,7 @@ struct AudioPlayer: View {
             Group {
                 if self.player.itemDuration >= 0 {
                     Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
+                        Haptics.shared.impact()
                         if scrubStarted {
                             self.player.scrubState = .scrubStarted
                         } else {
@@ -198,6 +199,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.rigid)
                     }, label: {
                         Image(systemName: "gobackward.30")
                             .resizable()
@@ -208,6 +210,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.soft)
                     }, label: {
                         Image(systemName: "backward.fill")
                             .resizable()
@@ -221,6 +224,7 @@ struct AudioPlayer: View {
                     
                     if RootModel.audioPlayer.player.timeControlStatus == .paused {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             self.play()
                         }, label: {
                             Image(systemName: "play.fill")
@@ -230,6 +234,7 @@ struct AudioPlayer: View {
                             .frame(width: 30)
                     } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             self.pause()
                         }, label: {
                             Image(systemName: "pause.fill")
@@ -245,6 +250,7 @@ struct AudioPlayer: View {
                 
                 Group {
                     Button(action: {
+                        Haptics.shared.play(.light)
                     }, label: {
                         Image(systemName: "forward.fill")
                             .resizable()
@@ -254,6 +260,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.rigid)
                     }, label: {
                         Image(systemName: "goforward.30")
                             .resizable()
