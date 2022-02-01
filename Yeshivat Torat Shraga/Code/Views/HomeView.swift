@@ -22,7 +22,7 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack {
                     
                     // MARK: - Recently Uploaded
