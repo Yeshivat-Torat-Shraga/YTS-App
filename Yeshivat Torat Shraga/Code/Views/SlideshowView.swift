@@ -12,6 +12,8 @@ struct SlideshowView: View {
     private let slideDuration = 8.0 // Seconds
     private var slideshowImages: [SlideshowImage]
     private let swipeThreshhold: CGFloat = 50
+    @AppStorage("slideshowAutoScroll") private var enableTimer = true
+    private let enableAutoScroll = false // Maybe make this a toggle in settings?
     @State private var timerSeconds = 0.0
     @State private var imageTabIndex = 0
     @State private var timer: Publishers.Autoconnect<Timer.TimerPublisher>
@@ -71,11 +73,13 @@ struct SlideshowView: View {
             }
             .tabViewStyle(PageTabViewStyle())
             .onReceive(timer) { _ in
-                timerSeconds += 1
-                if timerSeconds >= slideDuration {
-                    timerSeconds = 0
-                    withAnimation {
-                        imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
+                if enableTimer {
+                    timerSeconds += 1
+                    if timerSeconds >= slideDuration {
+                        timerSeconds = 0
+                        withAnimation {
+                            imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
+                        }
                     }
                 }
             }
