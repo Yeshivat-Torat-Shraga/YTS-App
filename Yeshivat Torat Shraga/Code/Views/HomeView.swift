@@ -72,7 +72,13 @@ struct HomeView: View {
                                     ForEach(rebbeim, id: \.self) { rabbi in
                                         NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
                                             TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
-                                        }.padding(.vertical)
+                                        }
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.navLinkFeedback)
+                                                })
+                                        .padding(.vertical)
                                     }
                                 }.padding(.horizontal)
                             }
@@ -102,6 +108,12 @@ struct HomeView: View {
                                 ForEach(tags, id: \.name) { tag in
                                     TagTileView(tag)
                                         .padding(.vertical)
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.navLinkFeedback)
+                                                })
+
                                 }
                             }.padding(.horizontal)
                         }
@@ -158,8 +170,8 @@ struct HomeView: View {
                             }
                         }))
             })
-                .onChange(of: model.showError) { v in
-                    if (v){
+                .onChange(of: model.showError) { errVal in
+                    if (errVal){
                         Haptics.shared.notify(.error)
                     }
                 }
