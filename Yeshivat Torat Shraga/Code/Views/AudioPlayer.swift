@@ -202,6 +202,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        player.scrub(seconds: -30)
                     }, label: {
                         Image(systemName: "gobackward.30")
                             .resizable()
@@ -258,6 +259,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        player.scrub(seconds: 30)
                     }, label: {
                         Image(systemName: "goforward.30")
                             .resizable()
