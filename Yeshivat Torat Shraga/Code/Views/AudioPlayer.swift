@@ -281,7 +281,9 @@ struct AudioPlayer: View {
                     Button(action: {
                         if let audio = audio {
                             Favorites.save(audio) { favorites, error in
-                                print(favorites, error)
+                                Haptics.shared.notify(.success)
+                                // .warning, if removing from favorites.
+                                
                             }
                         }
                     }, label: {
