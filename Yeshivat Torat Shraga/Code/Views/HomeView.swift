@@ -58,6 +58,7 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    
                     // MARK: - Rebbeim
                     VStack(spacing: 0) {
                         HStack {
@@ -93,6 +94,33 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    // MARK: - SLIDESHOW
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Featured Photos")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        if let slideshowImages = model.slideshowImages {
+                            SlideshowView(slideshowImages)
+                                .frame(height: 250)
+                                .clipped()
+                                .cornerRadius(UI.cornerRadius)
+                                .shadow(radius: UI.shadowRadius)
+                                .padding()
+                        } else {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
+                        }
+                    }
+                    
                     // MARK: - CATEGORIES
                     VStack(spacing: 0) {
                         HStack {
@@ -118,26 +146,6 @@ struct HomeView: View {
                             }.padding(.horizontal)
                         }
                         Divider().padding(.horizontal)
-                    }
-                    
-                    // MARK: - SLIDESHOW
-                    if let slideshowImages = model.slideshowImages {
-                        VStack(spacing: 0) {
-                            HStack {
-                                Text("Featured Photos")
-                                    .font(.title3)
-                                    .bold()
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            
-                            SlideshowView(slideshowImages)
-                                .frame(height: 250)
-                                .clipped()
-                                .cornerRadius(UI.cornerRadius)
-                                .shadow(radius: UI.shadowRadius)
-                                .padding()
-                        }
                     }
                 }
                 .padding(.bottom)

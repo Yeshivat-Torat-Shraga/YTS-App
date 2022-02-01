@@ -12,6 +12,10 @@ import MediaPlayer
 struct AudioPlayer: View {
     @ObservedObject var player = Player()
     var audio: Audio?
+    let speeds: [Float] = [0.75, 1.00, 1.25,
+                           1.50, 1.75, 2.00]
+    @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
+    
     
     init() {}
     
@@ -200,6 +204,7 @@ struct AudioPlayer: View {
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
+                        player.scrub(seconds: -30)
                     }, label: {
                         Image(systemName: "gobackward.30")
                             .resizable()
@@ -261,6 +266,7 @@ struct AudioPlayer: View {
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
+                        player.scrub(seconds: 30)
                     }, label: {
                         Image(systemName: "goforward.30")
                             .resizable()
@@ -277,55 +283,37 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
 
-                if #available(iOS 15.0, *) {
                     Button(action: {
                         if let audio = audio {
                             Favorites.save(audio) { favorites, error in
                                 Haptics.shared.notify(.success)
                                 // .warning, if removing from favorites.
                                 
+                                print(favorites as Any, error as Any)
                             }
                         }
                     }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
+                        Image(systemName: "heart")
+                            .foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                    
-                    Button(action: {
+                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                
+                Button(action: {
+                    selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
+                    player.setRate(speeds[selectedSpeedIndex])
+                }, label: {
+                    Text("x\(speeds[selectedSpeedIndex].trim())")
+                        .foregroundColor(.gray)
+                        .frame(width: 45, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+              
+                Button(action: {
                         
                     }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color("Gray"))
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.gray)
                             .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(Color(uiColor: .lightGray))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                } else {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    })
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    }).padding()
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    })
-                }
+                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
             Spacer()

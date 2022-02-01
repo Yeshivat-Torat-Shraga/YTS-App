@@ -8,10 +8,35 @@
 import Foundation
 import UIKit
 import SwiftUI
+import CoreData
 
 class Favorites {
     static let delegate = (UIApplication.shared.delegate as! AppDelegate)
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
+    
+    private static var favorites: FavoritesTuple?// = loadFavorites()
+    
+    /// Retreives the most updated favorites tuple for the device.
+    static func getFavorites(completion: @escaping ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)) {
+        if let favorites = favorites {
+            completion(favorites, nil)
+        } else {
+            loadFavorites(completion: completion)
+        }
+    }
+    
+    static func clearFavorites() {
+        let entities = [CDVideo.entity(), CDAudio.entity(), CDPerson.entity()]
+        for entity in entities {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity.name!)
+            let deleteReqest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            do {
+                try delegate.persistentContainer.viewContext.execute(deleteReqest)
+            } catch {
+                print(error)
+            }
+        }
+    }
     
     static func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
@@ -59,16 +84,15 @@ class Favorites {
             group.notify(queue: .main) {
                 cdAuthor.profileImageData = profilePictureData
                 
-                
-                    DispatchQueue.main.async {
-                do {
+                DispatchQueue.main.async {
+                    do {
                         try managedContext.save()
                         loadFavorites(completion: completion)
-                } catch let error as NSError {
-                    print("Could not save. \(error), \(error.userInfo)")
+                    } catch let error as NSError {
+                        print("Failed to save: \(error), \(error.userInfo)")
                         loadFavorites(completion: completion)
-                }
                     }
+                }
             }
         }
     }
@@ -156,8 +180,8 @@ class Favorites {
             cdVideo.fileID = videoToSave.fileID
             cdVideo.title = videoToSave.title
             cdVideo.body = videoToSave.description
-//            MARK: NOT SAVING TAGS
-//            cdAudio.tags = audioToSave.tags
+            //            MARK: NOT SAVING TAGS
+            //            cdAudio.tags = audioToSave.tags
             cdVideo.uploadDate = videoToSave.date
             cdVideo.duration = Int64(duration)
             
@@ -176,15 +200,15 @@ class Favorites {
                 cdVideo.thumbnailData = thumbnailData
                 
                 
-                    DispatchQueue.main.async {
-                do {
+                DispatchQueue.main.async {
+                    do {
                         try managedContext.save()
                         loadFavorites(completion: completion)
-                } catch let error as NSError {
-                    print("Could not save. \(error), \(error.userInfo)")
+                    } catch let error as NSError {
+                        print("Failed to save: \(error), \(error.userInfo)")
                         loadFavorites(completion: completion)
-                }
                     }
+                }
             }
         }
     }
@@ -241,8 +265,8 @@ class Favorites {
             cdAudio.fileID = audioToSave.fileID
             cdAudio.title = audioToSave.title
             cdAudio.body = audioToSave.description
-//            MARK: NOT SAVING TAGS
-//            cdAudio.tags = audioToSave.tags
+            //            MARK: NOT SAVING TAGS
+            //            cdAudio.tags = audioToSave.tags
             cdAudio.uploadDate = audioToSave.date
             cdAudio.duration = Int64(duration)
             
@@ -260,20 +284,95 @@ class Favorites {
                 cdAuthor.profileImageData = authorProfilePictureData
                 
                 
-                    DispatchQueue.main.async {
-                do {
+                DispatchQueue.main.async {
+                    do {
                         try managedContext.save()
                         loadFavorites(completion: completion)
-                } catch let error as NSError {
-                    print("Could not save. \(error), \(error.userInfo)")
+                    } catch let error as NSError {
+                        print("Failed to save: \(error), \(error.userInfo)")
                         loadFavorites(completion: completion)
-                }
                     }
+                }
             }
         }
     }
     
-    static func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+    static func delete(_ rabbiToDelete: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        let managedContext = delegate.persistentContainer.viewContext
+        let fetchRequest = CDPerson.fetchRequest()
+        
+        do {
+            let result = try managedContext.fetch(fetchRequest)
+            
+                if let match = result.first(where: { r in
+                    r.firestoreID == rabbiToDelete.firestoreID
+                }) {
+                    managedContext.delete(match)
+                    
+                    do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                    } catch {
+                        print("Failed to delete: \(error)")
+                        loadFavorites(completion: completion)
+                    }
+                }
+        } catch {
+            print("Failed to delete: \(error)")
+        }
+    }
+    
+    static func delete(_ videoToDelete: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        let managedContext = delegate.persistentContainer.viewContext
+        let fetchRequest = CDVideo.fetchRequest()
+        
+        do {
+            let result = try managedContext.fetch(fetchRequest)
+            
+                if let match = result.first(where: { v in
+                    v.firestoreID == videoToDelete.firestoreID
+                }) {
+                    managedContext.delete(match)
+                    
+                    do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                    } catch {
+                        print("Failed to delete: \(error)")
+                        loadFavorites(completion: completion)
+                    }
+                }
+        } catch {
+            print("Failed to delete: \(error)")
+        }
+    }
+    
+    static func delete(_ audioToDelete: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        let managedContext = delegate.persistentContainer.viewContext
+        let fetchRequest = CDAudio.fetchRequest()
+        
+        do {
+            let result = try managedContext.fetch(fetchRequest)
+            
+                if let match = result.first(where: { a in
+                    a.firestoreID == audioToDelete.firestoreID
+                }) {
+                    managedContext.delete(match)
+                    
+                    do {
+                        try managedContext.save()
+                        loadFavorites(completion: completion)
+                    } catch {
+                        print("Failed to delete: \(error)")
+                        loadFavorites(completion: completion)
+                    }
+                }
+        } catch {
+            print("Failed to delete: \(error)")
+        }
+    }
+    
+    private static func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = Favorites.delegate.persistentContainer.viewContext
         
         let group = DispatchGroup()
@@ -290,11 +389,11 @@ class Favorites {
                 }
                 for personEntity in personEntities {
                     if personEntity.owned == false {
-                    guard let person = DetailedRabbi(cdPerson: personEntity) else {
-                        continue
-                    }
-                    
-                    favoritePeople?.append(person)
+                        guard let person = DetailedRabbi(cdPerson: personEntity) else {
+                            continue
+                        }
+                        
+                        favoritePeople?.append(person)
                     }
                 }
             }
@@ -343,7 +442,67 @@ class Favorites {
         }
         
         group.notify(queue: .main) {
-            completion?((videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople), nil)
+            let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
+            self.favorites = favorites
+            completion?(favorites, nil)
         }
+    }
+    
+    private static func loadFavorites() -> FavoritesTuple? {
+        let managedContext = Favorites.delegate.persistentContainer.viewContext
+        
+        var favoritePeople: [DetailedRabbi]? = nil
+        let peopleFetchRequest = CDPerson.fetchRequest()
+        
+        if let personEntities = try? managedContext.fetch(peopleFetchRequest) {
+            if favoritePeople == nil {
+                favoritePeople = []
+            }
+            for personEntity in personEntities {
+                if personEntity.owned == false {
+                    guard let person = DetailedRabbi(cdPerson: personEntity) else {
+                        continue
+                    }
+                    
+                    favoritePeople?.append(person)
+                }
+            }
+        }
+        
+        var favoriteVideos: [Video]? = nil
+        let videoFetchRequest = CDVideo.fetchRequest()
+        
+        if let videoEntities = try? managedContext.fetch(videoFetchRequest) {
+            if favoriteVideos == nil {
+                favoriteVideos = []
+            }
+            for videoEntity in videoEntities {
+                guard let video = Video(cdVideo: videoEntity) else {
+                    continue
+                }
+                
+                favoriteVideos?.append(video)
+            }
+        }
+        
+        var favoriteAudios: [Audio]? = nil
+        let audioFetchRequest = CDAudio.fetchRequest()
+        
+        if let audioEntities = try? managedContext.fetch(audioFetchRequest) {
+            if favoriteAudios == nil {
+                favoriteAudios = []
+            }
+            for audioEntity in audioEntities {
+                guard let audio = Audio(cdAudio: audioEntity) else {
+                    continue
+                }
+                
+                favoriteAudios?.append(audio)
+            }
+        }
+        
+        let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
+        self.favorites = favorites
+        return favorites
     }
 }
