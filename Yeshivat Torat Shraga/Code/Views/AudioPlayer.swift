@@ -15,7 +15,7 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
-    
+    @State private var isFavorited = false
     
     init() {}
     
@@ -283,7 +283,7 @@ struct AudioPlayer: View {
                             }
                         }
                     }, label: {
-                        Image(systemName: "heart")
+                        Image(systemName: isFavorited ? "heart.fill" : "heart")
                             .foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
