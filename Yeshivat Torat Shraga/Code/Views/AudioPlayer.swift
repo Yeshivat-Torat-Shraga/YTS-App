@@ -15,7 +15,7 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
-    
+    @State private var isFavorited = false
     
     init() {}
     
@@ -159,6 +159,7 @@ struct AudioPlayer: View {
             Group {
                 if self.player.itemDuration >= 0 {
                     Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
+                        Haptics.shared.impact()
                         if scrubStarted {
                             self.player.scrubState = .scrubStarted
                         } else {
@@ -202,6 +203,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.rigid)
                         player.scrub(seconds: -30)
                     }, label: {
                         Image(systemName: "gobackward.30")
@@ -213,6 +215,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.soft)
                     }, label: {
                         Image(systemName: "backward.fill")
                             .resizable()
@@ -226,6 +229,7 @@ struct AudioPlayer: View {
                     
                     if RootModel.audioPlayer.player.timeControlStatus == .paused {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             self.play()
                         }, label: {
                             Image(systemName: "play.fill")
@@ -235,6 +239,7 @@ struct AudioPlayer: View {
                             .frame(width: 30)
                     } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             self.pause()
                         }, label: {
                             Image(systemName: "pause.fill")
@@ -251,6 +256,7 @@ struct AudioPlayer: View {
                 
                 Group {
                     Button(action: {
+                        Haptics.shared.play(.light)
                     }, label: {
                         Image(systemName: "forward.fill")
                             .resizable()
@@ -260,6 +266,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.rigid)
                         player.scrub(seconds: 30)
                     }, label: {
                         Image(systemName: "goforward.30")
@@ -280,6 +287,14 @@ struct AudioPlayer: View {
                     Button(action: {
                         if let audio = audio {
                             Favorites.save(audio) { favorites, error in
+                                isFavorited.toggle()
+                                if isFavorited {
+                                    Haptics.shared.notify(.success)
+                                } else {
+                                    Haptics.shared.notify(.warning)
+                                }
+                                // .warning, if removing from favorites.
+                                
                                 print(favorites as Any, error as Any)
                             }
                         }
@@ -290,6 +305,7 @@ struct AudioPlayer: View {
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 
                 Button(action: {
+                    Haptics.shared.play(.rigid)
                     selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
                     player.setRate(speeds[selectedSpeedIndex])
                 }, label: {

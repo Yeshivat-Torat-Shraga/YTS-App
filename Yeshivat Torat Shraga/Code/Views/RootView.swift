@@ -39,11 +39,6 @@ struct RootView: View {
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
                         }.tag(3)
-                    HapticTestingView()
-                        .tabItem {
-                            Label("Haptics", systemImage: "iphone.radiowaves.left.and.right")
-                        }.tag(4)
-                    
                 }
                 .onChange(of: selectedView) { _ in
                     Haptics.shared.impact()

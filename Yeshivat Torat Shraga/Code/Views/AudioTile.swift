@@ -11,7 +11,9 @@ struct AudioTile: View {
     var audio: Audio
     
     var body: some View {
-        Button(action: {}) {
+        Button(action: {
+            Haptics.shared.play(UI.Haptics.openContent)
+        }) {
             VStack {
                 HStack {
                     Text(audio.title)
