@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 
+/// Progress View Style for throughout the YTS App
+/// - Author: Sourced from [SwiftUI Recipies](https://swiftuirecipes.com/blog/custom-progress-view-in-swiftui)
 struct YTSProgressViewStyle: ProgressViewStyle {
     private let defaultSize: CGFloat = 18
     private let lineWidth: CGFloat = 2
