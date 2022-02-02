@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftyGif
 
 struct RootView: View {
-    @Environment(\.colorScheme) var colorScheme
     @StateObject var model = RootModel()
     @State private var imageData: Data? = nil
     @State var selectedView = 0
@@ -17,24 +16,7 @@ struct RootView: View {
     var body: some View {
         Group {
             if (model.showLoadingScreen) {
-                VStack {
-                    Spacer()
-                    if colorScheme == .dark {
-                        Gif(name: "logoDarkMode.gif", playing: $model.showLoadingScreen)
-                            .scaleEffect(1.25)
-                            .aspectRatio(1.0, contentMode: .fit)
-                    } else {
-                        Gif(name: "logoLightMode.gif", playing: $model.showLoadingScreen)
-                            .scaleEffect(1.25)
-                            .aspectRatio(1, contentMode: .fit)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Developed by David Reese and Benji Tusk")
-                        .font(.callout)
-                        .multilineTextAlignment(.center)
-                }
+                LoadingPage()
             } else {
                 TabView(selection: $selectedView) {
                     model.homeView
@@ -57,11 +39,6 @@ struct RootView: View {
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
                         }.tag(3)
-                    HapticTestingView()
-                        .tabItem {
-                            Label("Haptics", systemImage: "iphone.radiowaves.left.and.right")
-                        }.tag(4)
-                    
                 }
                 .onChange(of: selectedView) { _ in
                     Haptics.shared.impact()

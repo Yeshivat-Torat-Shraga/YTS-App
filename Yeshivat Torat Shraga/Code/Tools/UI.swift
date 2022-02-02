@@ -9,9 +9,14 @@ import SwiftUI
 import SwiftyGif
 
 struct UI {
-    static var shadowRadius: CGFloat = 2
-    static var cornerRadius: CGFloat = 8
-//    static var
+    static let shadowRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 8
+    class Haptics {
+        static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
+        static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light
+    }
+    //    static let openContentFeedback
+    //    static var
 }
 
 struct iOS14BorderedProminentButtonStyle: ButtonStyle {
@@ -27,7 +32,13 @@ struct iOS14BorderedProminentButtonStyle: ButtonStyle {
 
 struct Gif: UIViewRepresentable {
     var name: String
-    @Binding var playing: Bool
+    var playing: Binding<Bool>
+    
+    init(name: String, playing: Binding<Bool> = .constant(true)) {
+        self.name = name
+        self.playing = playing
+    }
+    
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         let gif = try! UIImage(gifName: name)
@@ -44,7 +55,7 @@ struct Gif: UIViewRepresentable {
 
     func updateUIView(_ gifImageView: UIView, context: Context) {
         if let gifimage = gifImageView as? UIImageView {
-            if playing == true {
+            if playing.wrappedValue == true {
                 gifimage.startAnimatingGif()
             } else {
                 gifimage.stopAnimatingGif()
@@ -306,6 +317,7 @@ struct DownloadableImage<Object: URLImageable>: View {
         } else if let imageURL = model.object.imageURL {
             URLImage(url: imageURL, placeholder: {
                 ProgressView()
+                    .progressViewStyle(YTSProgressViewStyle())
             }, completion: { image in
                 model.object.image = image
             })

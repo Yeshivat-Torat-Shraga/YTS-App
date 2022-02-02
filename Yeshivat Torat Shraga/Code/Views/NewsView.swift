@@ -18,6 +18,11 @@ struct NewsView: View {
                             NewsArticleCardView(article)
                                 .padding(.horizontal)
                         }
+                        .simultaneousGesture(
+                            TapGesture()
+                                .onEnded {
+                                    Haptics.shared.play(UI.Haptics.navLink)
+                                })
                     }
                 }
             }
