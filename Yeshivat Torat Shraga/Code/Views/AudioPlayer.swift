@@ -243,6 +243,7 @@ struct AudioPlayer: View {
                         }).frame(width: 25)
                     } else {
                         ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
                     }
                     
                     Spacer()
