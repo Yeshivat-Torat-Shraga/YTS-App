@@ -23,6 +23,9 @@ struct LoadingPage: View {
                     .aspectRatio(1, contentMode: .fit)
             }
             
+            ProgressView()
+                .progressViewStyle(YTSProgressViewStyle())
+            
             Spacer()
             
             Text("Developed by David Reese and Benji Tusk")
