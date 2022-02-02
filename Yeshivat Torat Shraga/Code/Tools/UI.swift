@@ -312,6 +312,7 @@ struct DownloadableImage<Object: URLImageable>: View {
         } else if let imageURL = model.object.imageURL {
             URLImage(url: imageURL, placeholder: {
                 ProgressView()
+                    .progressViewStyle(YTSProgressViewStyle())
             }, completion: { image in
                 model.object.image = image
             })
