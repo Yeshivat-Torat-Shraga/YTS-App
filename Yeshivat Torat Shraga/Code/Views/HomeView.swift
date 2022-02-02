@@ -39,12 +39,10 @@ struct HomeView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
                                     ForEach(sortables, id: \.self) { sortable in
-                                        Group {
-                                            if let audio = sortable.audio {
-                                                AudioTile(audio: audio)
-                                            } else if let video = sortable.video {
-                                                VideoTile(video: video)
-                                            }
+                                        if let audio = sortable.audio {
+                                            ContentCardView(content: audio)
+                                        } else if let video = sortable.video {
+                                            ContentCardView(content: video)
                                         }
                                     }
                                 }

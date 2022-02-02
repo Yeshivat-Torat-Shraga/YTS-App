@@ -64,7 +64,7 @@ class Rabbi: Hashable {
     }
 }
 
-class DetailedRabbi: Rabbi, Tileable {
+class DetailedRabbi: Rabbi, URLImageable {
     /// The profile image associated with this object
     var profileImage: Image?
     
@@ -141,12 +141,9 @@ class DetailedRabbi: Rabbi, Tileable {
      */
 }
 
-protocol Tileable: URLImageable, Hashable {
-    var name: String { get }
-}
 
 /// A content object modeled like a Firestore content document
-protocol YTSContent: Tileable {
+protocol YTSContent: URLImageable, Hashable {
     /// The `FirestoreID` associated with this object in Firestore
     var firestoreID: FirestoreID { get }
     
@@ -174,6 +171,8 @@ protocol YTSContent: Tileable {
     
     /// `Tag` references to this object's topics
     var tags: [Tag] { get }
+    
+    var name: String { get }
 }
 
 extension YTSContent {
