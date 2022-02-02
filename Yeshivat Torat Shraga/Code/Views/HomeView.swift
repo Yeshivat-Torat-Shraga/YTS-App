@@ -41,8 +41,10 @@ struct HomeView: View {
                                     ForEach(sortables, id: \.self) { sortable in
                                         if let audio = sortable.audio {
                                             ContentCardView(content: audio)
+                                                .padding(.vertical)
                                         } else if let video = sortable.video {
                                             ContentCardView(content: video)
+                                                .padding(.vertical)
                                         }
                                     }
                                 }
