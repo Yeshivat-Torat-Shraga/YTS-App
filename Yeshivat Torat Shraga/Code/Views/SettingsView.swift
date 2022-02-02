@@ -10,13 +10,14 @@ import SwiftUI
 struct SettingsView: View {
     @State private var enableNotifications = false
     @State var showClearFavoritesConfirmation = false
-    
+    @AppStorage("slideshowAutoScroll") private var enableTimer = true
     
     var body: some View {
         NavigationView {
             List {
                 Section {
                     Toggle("Enable Notifications", isOn: $enableNotifications)
+                    Toggle("Slideshow Autoscroll", isOn: $enableTimer)
                 }
                 
                 Section {

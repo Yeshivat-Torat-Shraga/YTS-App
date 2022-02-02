@@ -12,13 +12,17 @@ struct HomeView: View {
     
     @State var presentingSearchView = false
     
+    init(hideLoadingScreenClosure: @escaping (() -> Void)) {
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure)
+    }
+    
     init() {
         self.model = HomeModel()
     }
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack {
                     
                     // MARK: - Recently Uploaded
