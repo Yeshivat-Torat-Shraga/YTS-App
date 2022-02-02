@@ -34,8 +34,8 @@ struct DisplayRabbiView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
+                
                 VStack {
-                    
                     if let sortables = model.sortables {
                         ForEach(sortables, id: \.self) { sortable in
                             if let video = sortable.video {
