@@ -27,7 +27,13 @@ struct iOS14BorderedProminentButtonStyle: ButtonStyle {
 
 struct Gif: UIViewRepresentable {
     var name: String
-    @Binding var playing: Bool
+    var playing: Binding<Bool>
+    
+    init(name: String, playing: Binding<Bool> = .constant(true)) {
+        self.name = name
+        self.playing = playing
+    }
+    
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         let gif = try! UIImage(gifName: name)
@@ -44,7 +50,7 @@ struct Gif: UIViewRepresentable {
 
     func updateUIView(_ gifImageView: UIView, context: Context) {
         if let gifimage = gifImageView as? UIImageView {
-            if playing == true {
+            if playing.wrappedValue == true {
                 gifimage.startAnimatingGif()
             } else {
                 gifimage.stopAnimatingGif()
