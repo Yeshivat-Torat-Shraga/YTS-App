@@ -48,6 +48,8 @@ class HomeModel: ObservableObject, ErrorShower {
             
         }
         
+        // The results of this call will be shown as "Recently Uploaded" content.
+        // We should probably set a limit (7? 10?) on how many results are returned
         FirebaseConnection.loadContent(includeThumbnailURLs: true, includeAllAuthorData: true) { results, error in
             guard let content = results?.content else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)

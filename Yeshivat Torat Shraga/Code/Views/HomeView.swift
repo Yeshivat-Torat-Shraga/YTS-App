@@ -76,7 +76,7 @@ struct HomeView: View {
                                 HStack {
                                     ForEach(rebbeim, id: \.self) { rabbi in
                                         NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                            TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
+                                            RabbiTileView(rabbi: rabbi, size: .medium)
                                         }.padding(.vertical)
                                     }
                                 }.padding(.horizontal)

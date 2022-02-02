@@ -308,9 +308,7 @@ class Video: YTSContent, URLImageable {
                               fileID: "testvideo",
                               sourceURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/HLSStreams/video/SSStest.mp4/test.mp4.m3u8")!,
                               title: "Test Video",
-                              author: Rabbi(
-                                id: "8h33fFYYSIn5V4crue8f",
-                                name: "Test Uploader"),
+                              author: DetailedRabbi.samples[2],
                               description: "Testing Video",
                               date: .distantPast,
                               duration: 100,
