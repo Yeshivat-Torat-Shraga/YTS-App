@@ -783,7 +783,7 @@ final class FirebaseConnection {
         
         var data: [String: Any] = [
             "count": requestedCount,
-            "search": ["field": "tag", "value": matchingTag.name],
+            "search": ["field": "tag", "value": matchingTag.name.lowercased()],
             "includeThumbnailURLs": includeThumbnailURLs,
             "includeAllAuthorData": includeAllAuthorData
         ]

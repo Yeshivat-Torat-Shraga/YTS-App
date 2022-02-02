@@ -16,6 +16,7 @@
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
+		0898033B27AAB13E00415E02 /* ContentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0898033A27AAB13E00415E02 /* ContentCardView.swift */; };
 		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
 		08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagModel.swift */; };
 		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
@@ -38,7 +39,7 @@
 		B1ACF927274456F900079F9A /* LogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF926274456F900079F9A /* LogoView.swift */; };
 		B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503C273C868B00CF18D6 /* HomeView.swift */; };
 		B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */; };
-		B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5042273D2A2200CF18D6 /* TileCardView.swift */; };
+		B1BF5043273D2A2200CF18D6 /* RabbiTileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */; };
 		B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5045273D37BD00CF18D6 /* UI.swift */; };
 		B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */; };
 		B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */; };
@@ -60,7 +61,6 @@
 		F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2827529D3A005D6355 /* PlayBarModel.swift */; };
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
-		F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCE178276A63DA009ABAC1 /* VideoTile.swift */; };
 		F2D78B71278695EB003996A8 /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D78B70278695EB003996A8 /* Favorites.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
 		F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */; };
@@ -77,6 +77,7 @@
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
+		0898033A27AAB13E00415E02 /* ContentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCardView.swift; sourceTree = "<group>"; };
 		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		08A05B2427653DAA00FEE15F /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
 		08AF240D27A35315001331EA /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
@@ -99,7 +100,7 @@
 		B1ACF926274456F900079F9A /* LogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoView.swift; sourceTree = "<group>"; };
 		B1BF503C273C868B00CF18D6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeModel.swift; sourceTree = "<group>"; };
-		B1BF5042273D2A2200CF18D6 /* TileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileCardView.swift; sourceTree = "<group>"; };
+		B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiTileView.swift; sourceTree = "<group>"; };
 		B1BF5045273D37BD00CF18D6 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardView.swift; sourceTree = "<group>"; };
 		B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardModel.swift; sourceTree = "<group>"; };
@@ -118,7 +119,6 @@
 		F29FFB2827529D3A005D6355 /* PlayBarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarModel.swift; sourceTree = "<group>"; };
 		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		F2CCE178276A63DA009ABAC1 /* VideoTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTile.swift; sourceTree = "<group>"; };
 		F2D78B70278695EB003996A8 /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
 		F2F69C4E277C3A790069DCAE /* AppValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppValidation.swift; sourceTree = "<group>"; };
@@ -207,14 +207,12 @@
 				08756445275E6EC300D22856 /* SettingsView.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
 				F22C91392770A260007A9424 /* SearchView.swift */,
-				B1BF5042273D2A2200CF18D6 /* TileCardView.swift */,
+				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
 				B1ACF926274456F900079F9A /* LogoView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
-				F263DE7F2761195200486D58 /* AudioTile.swift */,
-				F2CCE178276A63DA009ABAC1 /* VideoTile.swift */,
 				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
 				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
@@ -390,7 +388,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F263DE802761195200486D58 /* AudioTile.swift in Sources */,
 				F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */,
 				F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */,
 				B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */,
@@ -410,7 +407,7 @@
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */,
-				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
+				B1BF5043273D2A2200CF18D6 /* RabbiTileView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
 				F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */,
 				F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */,
@@ -425,7 +422,6 @@
 				F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */,
 				F2235D4727661CA3005E6086 /* EllipseButton.swift in Sources */,
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
-				F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */,
 				F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */,
 				F22C913A2770A260007A9424 /* SearchView.swift in Sources */,
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
