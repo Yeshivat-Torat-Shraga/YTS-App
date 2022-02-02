@@ -171,14 +171,13 @@
 		B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */ = {
 			isa = PBXGroup;
 			children = (
-				08EFBACC27A9996400900A90 /* logoDarkMode.gif */,
-				08EFBACE27A9B67700900A90 /* logoLightMode.gif */,
 				08EFBABA27A962A800900A90 /* GoogleService-Info.plist */,
 				F230C4DA274044DD00F7ACCC /* Code */,
 				B12AB839273B104300B17CC0 /* Assets.xcassets */,
 				B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */,
 				B12AB841273B104300B17CC0 /* Info.plist */,
 				B12AB836273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld */,
+				F2570DE127AAD89700BF7E7A /* GifAssets */,
 				B12AB83B273B104300B17CC0 /* Preview Content */,
 			);
 			path = "Yeshivat Torat Shraga";
@@ -289,6 +288,15 @@
 			children = (
 			);
 			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		F2570DE127AAD89700BF7E7A /* GifAssets */ = {
+			isa = PBXGroup;
+			children = (
+				08EFBACC27A9996400900A90 /* logoDarkMode.gif */,
+				08EFBACE27A9B67700900A90 /* logoLightMode.gif */,
+			);
+			path = GifAssets;
 			sourceTree = "<group>";
 		};
 		F2F44C71274A6D0700F7D337 /* Styles */ = {
