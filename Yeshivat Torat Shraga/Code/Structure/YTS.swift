@@ -416,7 +416,7 @@ class Tag: Hashable {
         lhs.name == rhs.name
     }
     
-    static var sample = Tag("Sample")
+    static var sample = Tag("Parsha")
 }
 
 /// An enhanced wrapper on a ``Tag`` which includes an icon
