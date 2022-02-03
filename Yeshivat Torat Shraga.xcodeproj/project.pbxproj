@@ -16,7 +16,7 @@
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
-		0898033B27AAB13E00415E02 /* ContentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0898033A27AAB13E00415E02 /* ContentCardView.swift */; };
+		087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087B985427ABD5CB00B09A90 /* ContentCardView.swift */; };
 		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
 		08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagModel.swift */; };
 		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
@@ -52,7 +52,6 @@
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
 		F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */; };
-		F263DE802761195200486D58 /* AudioTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F263DE7F2761195200486D58 /* AudioTile.swift */; };
 		F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F28E291E2756A78700D9F4AF /* FirebaseAnalytics */; };
 		F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29202756A78700D9F4AF /* FirebaseFirestore */; };
 		F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29222756A78700D9F4AF /* FirebaseFunctions */; };
@@ -77,7 +76,7 @@
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
-		0898033A27AAB13E00415E02 /* ContentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentCardView.swift; sourceTree = "<group>"; };
+		087B985427ABD5CB00B09A90 /* ContentCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentCardView.swift; sourceTree = "<group>"; };
 		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		08A05B2427653DAA00FEE15F /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
 		08AF240D27A35315001331EA /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
@@ -113,7 +112,6 @@
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
 		F25038A3274EA1EC006FF802 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingPage.swift; sourceTree = "<group>"; };
-		F263DE7F2761195200486D58 /* AudioTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTile.swift; sourceTree = "<group>"; };
 		F28E293A2758E2FB00D9F4AF /* TagTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTileView.swift; sourceTree = "<group>"; };
 		F29FFB2627529CD4005D6355 /* PlayBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBar.swift; sourceTree = "<group>"; };
 		F29FFB2827529D3A005D6355 /* PlayBarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarModel.swift; sourceTree = "<group>"; };
@@ -206,6 +204,7 @@
 				F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */,
 				08756445275E6EC300D22856 /* SettingsView.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
+				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
 				F22C91392770A260007A9424 /* SearchView.swift */,
 				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
@@ -394,6 +393,7 @@
 				08469DE72762D878007EF981 /* NewsView.swift in Sources */,
 				B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */,
 				F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */,
+				087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
