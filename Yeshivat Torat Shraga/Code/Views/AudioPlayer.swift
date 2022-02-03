@@ -15,9 +15,13 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
-    @State private var isFavorited = false
+    @State private var isFavorited: Bool = false
+    @State private var showFavoritesAlert = false
+    @State private var favoriteErr: Error?
     
-    init() {}
+    init() {
+        if let fav = audio?.isFavorite {isFavorited = fav}
+    }
     
     mutating func set(audio: Audio) {
         self.audio = audio
@@ -286,20 +290,12 @@ struct AudioPlayer: View {
 
                     Button(action: {
                         if let audio = audio {
-                            Favorites.save(audio) { favorites, error in
-                                isFavorited.toggle()
-                                if isFavorited {
-                                    Haptics.shared.notify(.success)
-                                } else {
-                                    Haptics.shared.notify(.warning)
-                                }
-                                // .warning, if removing from favorites.
-                                
-                                print(favorites as Any, error as Any)
-                            }
+                            favoriteErr = audio.toggleFavorites()
                         }
                     }, label: {
-                        Image(systemName: "heart")
+                        Image(systemName: audio?.isFavorite ?? false
+                              ? "heart.fill"
+                              : "heart")
                             .foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())
@@ -329,6 +325,22 @@ struct AudioPlayer: View {
             colors: [Color("ShragaBlue"), Color(white: 0.8)],
             startPoint: .bottomLeading, endPoint: .topTrailing)
                         .ignoresSafeArea())
+        
+        .alert(isPresented: Binding (get: {
+            favoriteErr != nil
+        }, set: {
+            favoriteErr = $0 ? favoriteErr : nil
+        })) {
+            Alert(
+                title: Text("Error"),
+                message: Text(
+                    favoriteErr?.getUIDescription() ??
+                    "An unknown error occured while saving your changes."),
+                dismissButton: Alert.Button.default(
+                    Text("OK")
+                )
+            )
+        }
     }
 }
 

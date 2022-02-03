@@ -15,6 +15,27 @@ class Favorites {
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
     
     private static var favorites: FavoritesTuple?// = loadFavorites()
+    static func getfavoriteIDs() -> [FirestoreID] {
+        var IDs: [FirestoreID] = []
+        if let favs = loadFavorites() {
+            if let videos = favs.videos {
+                for video in videos {
+                    IDs.append(video.firestoreID)
+                }
+            }
+            if let audios = favs.audios {
+                for audio in audios {
+                    IDs.append(audio.firestoreID)
+                }
+            }
+            if let people = favs.people {
+                for person in people {
+                    IDs.append(person.firestoreID)
+                }
+            }
+        }
+        return IDs
+    }
     
     /// Retreives the most updated favorites tuple for the device.
     static func getFavorites(completion: @escaping ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)) {
@@ -410,7 +431,7 @@ class Favorites {
                     favoriteVideos = []
                 }
                 for videoEntity in videoEntities {
-                    guard let video = Video(cdVideo: videoEntity) else {
+                    guard let video = Video(cdVideo: videoEntity, isFavorite: true) else {
                         continue
                     }
                     
@@ -431,7 +452,7 @@ class Favorites {
                     favoriteAudios = []
                 }
                 for audioEntity in audioEntities {
-                    guard let audio = Audio(cdAudio: audioEntity) else {
+                    guard let audio = Audio(cdAudio: audioEntity, isFavorite: true) else {
                         continue
                     }
                     

@@ -29,7 +29,7 @@ class HomeModel: ObservableObject, ErrorShower {
     }
     
     func load() {
-        
+        let savedFavorites:[FirestoreID] = Favorites.getfavoriteIDs()
         let group = DispatchGroup()
         
         for _ in ["Rebbeim", "Sortables", "Slideshow images"] {
@@ -42,7 +42,11 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
-            
+            for rebbi in rebbeim {
+                if savedFavorites.contains(rebbi.firestoreID) {
+                    rebbi.isFavorite = true
+                }
+            }
             self.rebbeim = rebbeim
             group.leave()
             
@@ -61,10 +65,16 @@ class HomeModel: ObservableObject, ErrorShower {
             var sortables: [SortableYTSContent] = []
             
             for video in content.videos {
+                if savedFavorites.contains(video.firestoreID) {
+                    video.isFavorite = true
+                }
                 sortables.append(video.sortable)
             }
             
             for audio in content.audios {
+                if savedFavorites.contains(audio.firestoreID) {
+                    audio.isFavorite = true
+                }
                 sortables.append(audio.sortable)
             }
             

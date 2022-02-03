@@ -41,18 +41,20 @@ class Rabbi: Hashable {
     
     /// The name associated with this object
     var name: String
+    var isFavorite: Bool
     
-    init(id firestoreID: FirestoreID, name: String) {
+    init(id firestoreID: FirestoreID, name: String, isFavorite: Bool = false) {
         self.firestoreID = firestoreID
         self.name = name
+        self.isFavorite = isFavorite
     }
     
-    convenience init?(cdPerson: CDPerson) {
+    convenience init?(cdPerson: CDPerson, isFavorite: Bool = false) {
         guard let firestoreID = cdPerson.firestoreID, let name = cdPerson.name else {
             return nil
         }
         
-        self.init(id: firestoreID, name: name)
+        self.init(id: firestoreID, name: name, isFavorite: isFavorite)
     }
     
     func hash(into hasher: inout Hasher) {
@@ -89,8 +91,8 @@ class DetailedRabbi: Rabbi, URLImageable {
     ///   - firestoreID: The `FirestoreID` associated with this object in Firestore
     ///   - name: The name associated with this object
     ///   - profileImage: The profile image associated with this object
-    init(id firestoreID: FirestoreID, name: String, profileImage: Image) {
-        super.init(id: firestoreID, name: name)
+    init(id firestoreID: FirestoreID, name: String, profileImage: Image, isFavorite: Bool = false) {
+        super.init(id: firestoreID, name: name, isFavorite: isFavorite)
         self.profileImage = profileImage
     }
     
@@ -99,12 +101,12 @@ class DetailedRabbi: Rabbi, URLImageable {
     ///   - firestoreID: The `FirestoreID` associated with this object in Firestore
     ///   - name: The name associated with this object
     ///   - profileImageURL: The `URL` that links to this object's profile image
-    init(id firestoreID: FirestoreID, name: String, profileImageURL: URL) {
-        super.init(id: firestoreID, name: name)
+    init(id firestoreID: FirestoreID, name: String, profileImageURL: URL, isFavorite: Bool = false) {
+        super.init(id: firestoreID, name: name, isFavorite: isFavorite)
         self.profileImageURL = profileImageURL
     }
     
-    init?(cdPerson: CDPerson) {
+    init?(cdPerson: CDPerson, isFavorite: Bool = false) {
         guard let firestoreID = cdPerson.firestoreID, let name = cdPerson.name, let profileImageData = cdPerson.profileImageData else {
             return nil
         }
@@ -114,7 +116,32 @@ class DetailedRabbi: Rabbi, URLImageable {
         }
         
         self.profileImage = Image(uiImage: profileUIImage)
-        super.init(id: firestoreID, name: name)
+        super.init(id: firestoreID, name: name, isFavorite: isFavorite)
+    }
+    
+    func toggleFavorites() -> Error? {
+        var error: Error? = nil
+        self.isFavorite.toggle()
+        if self.isFavorite {
+            Favorites.save(self) { favorites, err in
+                if err != nil {
+                    Haptics.shared.notify(.error)
+                    error = err
+                } else {
+                    Haptics.shared.notify(.success)
+                }
+            }
+        } else {
+            Favorites.delete(self) { favorites, err in
+                if err != nil {
+                    Haptics.shared.notify(.error)
+                    error = err
+                } else {
+                    Haptics.shared.notify(.warning)
+                }
+            }
+        }
+        return error
     }
     
     static public var samples: [DetailedRabbi] = [
@@ -173,6 +200,10 @@ protocol YTSContent: URLImageable, Hashable {
     var tags: [Tag] { get }
     
     var name: String { get }
+    
+    var isFavorite: Bool { get set }
+    
+    func toggleFavorites() -> Error?
 }
 
 extension YTSContent {
@@ -187,6 +218,7 @@ extension YTSContent {
 }
 
 class Video: YTSContent, URLImageable {
+    
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
     var sourceURL: URL?
@@ -196,9 +228,9 @@ class Video: YTSContent, URLImageable {
     var date: Date
     var duration: TimeInterval?
     var tags: [Tag]
-    
     var thumbnail: Image?
     var thumbnailURL: URL?
+    var isFavorite: Bool
     
     var name: String {
         return title
@@ -227,7 +259,7 @@ class Video: YTSContent, URLImageable {
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
     ///   - thumbnail: The thumbnail associated with this content
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnail: Image) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnail: Image, isFavorite: Bool = false) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -238,6 +270,7 @@ class Video: YTSContent, URLImageable {
         self.duration = duration
         self.tags = tags
         self.thumbnail = thumbnail
+        self.isFavorite = isFavorite
     }
     
     /// Standard initializer for a `Video`
@@ -252,7 +285,7 @@ class Video: YTSContent, URLImageable {
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
     ///   - thumbnailURL: The `URL` associated with this content's thumbnail image
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnailURL: URL) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnailURL: URL, isFavorite: Bool = false) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -262,11 +295,11 @@ class Video: YTSContent, URLImageable {
         self.date = date
         self.duration = duration
         self.tags = tags
-        
         self.thumbnailURL = thumbnailURL
+        self.isFavorite = isFavorite
     }
     
-    init?(cdVideo: CDVideo) {
+    init?(cdVideo: CDVideo, isFavorite: Bool = false) {
         guard let firestoreID = cdVideo.firestoreID, let fileID = cdVideo.fileID, let title = cdVideo.title, let description = cdVideo.body, let uploadDate = cdVideo.uploadDate, let author = cdVideo.author, let thumbnailData = cdVideo.thumbnailData else {
             return nil
         }
@@ -293,6 +326,7 @@ class Video: YTSContent, URLImageable {
         self.tags = []
         self.date = uploadDate
         self.duration = TimeInterval(cdVideo.duration)
+        self.isFavorite = isFavorite
     }
     
     func hash(into hasher: inout Hasher) {
@@ -301,6 +335,31 @@ class Video: YTSContent, URLImageable {
     
     static func == (lhs: Video, rhs: Video) -> Bool {
         lhs.firestoreID == rhs.firestoreID
+    }
+    
+    func toggleFavorites() -> Error? {
+        var error: Error? = nil
+        self.isFavorite.toggle()
+        if self.isFavorite {
+            Favorites.save(self) { favorites, err in
+                if err != nil {
+                    Haptics.shared.notify(.error)
+                    error = err
+                } else {
+                    Haptics.shared.notify(.success)
+                }
+            }
+        } else {
+            Favorites.delete(self) { favorites, err in
+                if err != nil {
+                    Haptics.shared.notify(.error)
+                    error = err
+                } else {
+                    Haptics.shared.notify(.warning)
+                }
+            }
+        }
+        return error
     }
     
     static let sample = Video(id: "7g5JY4X1bYURqv8votbB",
@@ -312,7 +371,8 @@ class Video: YTSContent, URLImageable {
                               date: .distantPast,
                               duration: 100,
                               tags: [],
-                              thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!)
+                              thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!,
+                              isFavorite: true)
 }
 
 class Audio: YTSContent, Hashable {
@@ -328,6 +388,7 @@ class Audio: YTSContent, Hashable {
     var date: Date
     var duration: TimeInterval?
     var tags: [Tag]
+    var isFavorite: Bool
     
     var name: String {
         return title
@@ -344,7 +405,7 @@ class Audio: YTSContent, Hashable {
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag]) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], isFavorite: Bool = false) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -354,9 +415,10 @@ class Audio: YTSContent, Hashable {
         self.date = date
         self.duration = duration
         self.tags = tags
+        self.isFavorite = isFavorite
     }
     
-    init?(cdAudio: CDAudio) {
+    init?(cdAudio: CDAudio, isFavorite: Bool = false) {
         guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
             return nil
         }
@@ -377,10 +439,36 @@ class Audio: YTSContent, Hashable {
         self.tags = []
         self.date = uploadDate
         self.duration = TimeInterval(cdAudio.duration)
+        self.isFavorite = isFavorite
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(firestoreID)
+    }
+    
+    func toggleFavorites() -> Error? {
+        var error: Error? = nil
+        self.isFavorite.toggle()
+        if self.isFavorite {
+            Favorites.save(self) { favorites, err in
+                if err != nil {
+                    Haptics.shared.notify(.error)
+                    error = err
+                } else {
+                    Haptics.shared.notify(.success)
+                }
+            }
+        } else {
+            Favorites.delete(self) { favorites, err in
+                if err != nil {
+                    Haptics.shared.notify(.error)
+                    error = err
+                } else {
+                    Haptics.shared.notify(.warning)
+                }
+            }
+        }
+        return error
     }
     
     static func == (lhs: Audio, rhs: Audio) -> Bool {
@@ -446,7 +534,15 @@ let tags: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(nam
 
 typealias Content = (videos: [Video], audios: [Audio])
 
-struct SortableYTSContent: Hashable {
+class SortableYTSContent: Hashable {
+    static func == (lhs: SortableYTSContent, rhs: SortableYTSContent) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(hashValue)
+    }
+
+    
     var video: Video?
     var audio: Audio?
     var date: Date? {
