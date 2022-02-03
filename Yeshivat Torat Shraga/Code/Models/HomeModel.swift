@@ -29,9 +29,18 @@ class HomeModel: ObservableObject, ErrorShower {
     }
     
     func load() {
-        let savedFavorites:[FirestoreID] = Favorites.getfavoriteIDs()
-        let group = DispatchGroup()
+//        self.rebbeim = DetailedRabbi.samples
+//        self.sortables = [SortableYTSContent(audio: .sample),
+//                          SortableYTSContent(video: .sample),
+//                          SortableYTSContent(audio: .sample),
+//                          SortableYTSContent(video: .sample),
+//                          SortableYTSContent(video: .sample),
+//                          SortableYTSContent(audio: .sample)]
         
+        let savedFavorites:[FirestoreID] = Favorites.getfavoriteIDs()
+        
+        let group = DispatchGroup()
+
         for _ in ["Rebbeim", "Sortables", "Slideshow images"] {
             group.enter()
         }
@@ -49,39 +58,33 @@ class HomeModel: ObservableObject, ErrorShower {
             }
             self.rebbeim = rebbeim
             group.leave()
-            
+
         }
         
-        // The results of this call will be shown as "Recently Uploaded" content.
-        // We should probably set a limit (7? 10?) on how many results are returned
+//         The results of this call will be shown as "Recently Uploaded" content.
+//         We should probably set a limit (7? 10?) on how many results are returned
         FirebaseConnection.loadContent(includeThumbnailURLs: true, includeAllAuthorData: true) { results, error in
             guard let content = results?.content else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
-            
+
             self.recentlyUploadedContent = content
-            
+
             var sortables: [SortableYTSContent] = []
-            
+
             for video in content.videos {
-                if savedFavorites.contains(video.firestoreID) {
-                    video.isFavorite = true
-                }
                 sortables.append(video.sortable)
             }
-            
+
             for audio in content.audios {
-                if savedFavorites.contains(audio.firestoreID) {
-                    audio.isFavorite = true
-                }
                 sortables.append(audio.sortable)
             }
-            
+
             self.sortables = sortables.sorted(by: { lhs, rhs in
                 return lhs.date! > rhs.date!
             })
-            
+
             group.leave()
         }
         
@@ -89,7 +92,7 @@ class HomeModel: ObservableObject, ErrorShower {
             self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
                 lhs.uploaded > rhs.uploaded
             })
-            
+
             group.leave()
         }
         
