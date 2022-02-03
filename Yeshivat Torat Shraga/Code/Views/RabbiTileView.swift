@@ -13,7 +13,7 @@ import SwiftUI
 // Shiurim (A/V), Rebbeim, Categories/Topics
 // and maybe the slideshow. Not sure about that yet.
 
-struct TileCardView<Content: Tileable>: View {
+struct RabbiTileView: View {
     enum TileSize {
         case small
         case medium
@@ -21,7 +21,7 @@ struct TileCardView<Content: Tileable>: View {
         case large
     }
     
-    var content: Content
+    var rabbi: DetailedRabbi
     var size: TileSize
     
     private var frameSize: (width: CGFloat, height: CGFloat) {
@@ -48,16 +48,16 @@ struct TileCardView<Content: Tileable>: View {
         }
     }
     
-    init(content: Content, size: TileSize) {
+    init(rabbi: DetailedRabbi, size: TileSize) {
         self.size = size
-        self.content = content
-        if (self.content.image == nil && self.content.imageURL == nil) {
-            self.content.image = Image("AudioPlaceholder")
+        self.rabbi = rabbi
+        if (self.rabbi.image == nil && self.rabbi.imageURL == nil) {
+            self.rabbi.image = Image("AudioPlaceholder")
         }
     }
     
     var body: some View {
-        DownloadableImage(object: content)
+        DownloadableImage(object: rabbi)
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
             .clipped()
@@ -65,7 +65,7 @@ struct TileCardView<Content: Tileable>: View {
                 VStack {
                     Spacer()
                     HStack {
-                        Text(content.name)
+                        Text(rabbi.name)
                             .foregroundColor(.white)
                             .padding(5)
                             .font(.system(size: fontSize, weight: .medium ))
@@ -84,6 +84,6 @@ struct TileCardView<Content: Tileable>: View {
 
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
-        TileCardView<DetailedRabbi>(content: DetailedRabbi.samples[0], size: .medium)
+        RabbiTileView(rabbi: DetailedRabbi.samples[0], size: .medium)
     }
 }

@@ -76,7 +76,7 @@ struct FavoritesView: View {
                         ScrollView(showsIndicators: false) {
                             HStack {
                                 ForEach(rebbeim, id: \.self) { rebbi in
-                                    TileCardView(content: rebbi, size: .medium)
+                                    RabbiTileView(rabbi: rebbi, size: .medium)
                                         .padding(.vertical)
                                 }
                             }

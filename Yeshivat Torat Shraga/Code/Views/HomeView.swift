@@ -12,13 +12,17 @@ struct HomeView: View {
     
     @State var presentingSearchView = false
     
+    init(hideLoadingScreenClosure: @escaping (() -> Void)) {
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure)
+    }
+    
     init() {
         self.model = HomeModel()
     }
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack {
                     
                     // MARK: - Recently Uploaded
@@ -35,12 +39,12 @@ struct HomeView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
                                     ForEach(sortables, id: \.self) { sortable in
-                                        Group {
-                                            if let audio = sortable.audio {
-                                                AudioTile(audio: audio)
-                                            } else if let video = sortable.video {
-                                                VideoTile(video: video)
-                                            }
+                                        if let audio = sortable.audio {
+                                            ContentCardView(content: audio)
+                                                .padding(.vertical)
+                                        } else if let video = sortable.video {
+                                            ContentCardView(content: video)
+                                                .padding(.vertical)
                                         }
                                     }
                                 }
@@ -58,6 +62,7 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    
                     // MARK: - Rebbeim
                     VStack(spacing: 0) {
                         HStack {
@@ -71,11 +76,45 @@ struct HomeView: View {
                                 HStack {
                                     ForEach(rebbeim, id: \.self) { rabbi in
                                         NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                            TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
-                                        }.padding(.vertical)
+                                            RabbiTileView(rabbi: rabbi, size: .medium)
+                                        }
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.Haptics.navLink)
+                                                })
+                                        .padding(.vertical)
                                     }
                                 }.padding(.horizontal)
                             }
+                        } else {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
+                        }
+                        Divider().padding(.horizontal)
+                    }
+                    
+                    // MARK: - SLIDESHOW
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Featured Photos")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        if let slideshowImages = model.slideshowImages {
+                            SlideshowView(slideshowImages)
+                                .frame(height: 250)
+                                .clipped()
+                                .cornerRadius(UI.cornerRadius)
+                                .shadow(radius: UI.shadowRadius)
+                                .padding()
                         } else {
                             HStack {
                                 Spacer()
@@ -102,29 +141,14 @@ struct HomeView: View {
                                 ForEach(tags, id: \.name) { tag in
                                     TagTileView(tag)
                                         .padding(.vertical)
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.Haptics.navLink)
+                                                })
+
                                 }
                             }.padding(.horizontal)
-                        }
-                        Divider().padding(.horizontal)
-                    }
-                    
-                    // MARK: - SLIDESHOW
-                    if let slideshowImages = model.slideshowImages {
-                        VStack(spacing: 0) {
-                            HStack {
-                                Text("Featured Photos")
-                                    .font(.title3)
-                                    .bold()
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            
-                            SlideshowView(slideshowImages)
-                                .frame(height: 250)
-                                .clipped()
-                                .cornerRadius(UI.cornerRadius)
-                                .shadow(radius: UI.shadowRadius)
-                                .padding()
                         }
                     }
                 }
@@ -158,8 +182,8 @@ struct HomeView: View {
                             }
                         }))
             })
-                .onChange(of: model.showError) { v in
-                    if (v){
+                .onChange(of: model.showError) { errVal in
+                    if (errVal){
                         Haptics.shared.notify(.error)
                     }
                 }
