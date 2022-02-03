@@ -35,7 +35,6 @@ struct DisplayRabbiView: View {
                 }
                 .padding(.horizontal)
                 VStack {
-                    
                     if let sortables = model.sortables {
                         ForEach(sortables, id: \.self) { sortable in
                             if let video = sortable.video {
@@ -69,9 +68,6 @@ struct DisplayRabbiView: View {
                     .shadow(radius: UI.shadowRadius)
             }
         })
-        .onAppear {
-            self.model.load()
-        }
     }
 }
 

@@ -267,6 +267,29 @@ class Video: YTSContent, URLImageable {
         self.thumbnailURL = thumbnailURL
     }
     
+    /// Standard initializer for a `Video`
+    /// - Parameters:
+    ///   - firestoreID: The `FirestoreID` associated with this object in Firestore
+    ///   - fileID: The `FileID` associated with this object's files in Firestore
+    ///   - sourceURL: The `URL` that links to the source content
+    ///   - title: The content title
+    ///   - author: The `Rabbi` object credited with authoring this object
+    ///   - description: The content description
+    ///   - date: The time that this content was uploaded to the server
+    ///   - duration: The duration of the content in seconds
+    ///   - tags: `Tag` references to this object's topics
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag]) {
+        self.firestoreID = firestoreID
+        self.fileID = fileID
+        self.sourceURL = sourceURL
+        self.title = title
+        self.author = author
+        self.description = description
+        self.date = date
+        self.duration = duration
+        self.tags = tags
+    }
+    
     init?(cdVideo: CDVideo) {
         guard let firestoreID = cdVideo.firestoreID, let fileID = cdVideo.fileID, let title = cdVideo.title, let description = cdVideo.body, let uploadDate = cdVideo.uploadDate, let author = cdVideo.author, let thumbnailData = cdVideo.thumbnailData else {
             return nil
