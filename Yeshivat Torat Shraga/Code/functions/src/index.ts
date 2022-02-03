@@ -146,15 +146,14 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 		//   )
 		// }
 
-
 		// Get the query options
 		const queryOptions = {
 			limit: (data.limit as number) || 10,
 			previousDocID: data.lastLoadedDocID as string | undefined,
 		};
 
-		const db = admin.firestore();
 		const COLLECTION = 'slideshowImages';
+		const db = admin.firestore();
 
 		let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
 		if (queryOptions.previousDocID) {
@@ -177,12 +176,14 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 		if (!docs || docs.length == 0) {
 			return {
 				metadata: {
-					lastLoadedDocID: queryOptions.previousDocID || null,
+					lastLoadedDocID: null,
 					includesLastElement: false,
 				},
 				results: docs ? [] : null,
 			};
 		}
+
+		log(`Loaded ${docs.length} image docs.`);
 
 		// Set a variable to hold the ID of the last document returned from the query.
 		// This is so the client can use this ID to load the next page of documents.
@@ -218,7 +219,7 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 					const document: SlideshowImageDocument = {
 						title: data.title || null,
 						id: doc.id,
-						url: url[0],
+						url: url,
 						uploaded: data.uploaded,
 					};
 
@@ -259,6 +260,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const COLLECTION = 'rebbeim';
 	const db = admin.firestore();
+
 	let query = db.collection(COLLECTION).orderBy('name', 'asc');
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
@@ -273,6 +275,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	// Execute the query
 	const rebbeimSnapshot = await query.limit(queryOptions.limit).get();
+	
 	// Get the documents returned from the query
 	const docs = rebbeimSnapshot.docs;
 	// if null, return
@@ -309,6 +312,8 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 			} catch {
 				return null;
 			}
+
+			log(`Loading rabbi: '${JSON.stringify(data)}'`);
 
 			// Get the image path
 			const path = data.profile_picture_filename;

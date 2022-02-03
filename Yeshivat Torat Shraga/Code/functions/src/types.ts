@@ -76,12 +76,13 @@ export class SlideshowImageFirebaseDocument {
   /** The name of the file inside of the cloud storage folder */
   image_name: string;
   title: string;
-  uploaded: FirebaseFirestore.Timestamp;
+  uploaded: Date;
 
   constructor(data: FirebaseFirestore.DocumentData) {
+    log(typeof data.uploaded);
     if (
-      isString(data.image_name) &&
-      data.uploaded instanceof FirebaseFirestore.Timestamp
+      isString(data.image_name)// &&
+      // data.uploaded instanceof FirebaseFirestore.Timestamp
     ) {
       this.image_name = data.image_name;
       this.title = data.title;
@@ -141,7 +142,7 @@ export class ContentFirebaseDocument {
     ) {
       this.attributionID = data.attributionID;
       this.author = data.author;
-      this.date = data.date.toDate();
+      this.date = data.date;
       this.description = data.description;
       this.duration = data.duration;
       this.search_index = data.search_index;
