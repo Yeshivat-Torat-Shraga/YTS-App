@@ -36,8 +36,7 @@ class HomeModel: ObservableObject, ErrorShower {
             group.enter()
         }
         
-        
-        FirebaseConnection.loadRebbeim(includeProfilePictureURLs: true) { results, error in
+        FirebaseConnection.loadRebbeim() { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
