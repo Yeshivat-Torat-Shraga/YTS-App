@@ -1,3 +1,4 @@
+import { log } from "firebase-functions/logger";
 import { isString } from "./helpers";
 
 export interface LoadData {
@@ -6,7 +7,7 @@ export interface LoadData {
     includesLastElement: boolean;
     error?: string;
   };
-  content: any[] | null;
+  results: any[] | null;
 }
 
 export interface NewsDocument {
@@ -65,6 +66,7 @@ export class NewsFirebaseDocument {
       this.imageURLs = data.imageURLs;
       this.title = data.title;
     } else {
+      log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
     }
   }
@@ -86,6 +88,7 @@ export class SlideshowImageFirebaseDocument {
       this.title = data.title;
       this.uploaded = data.uploaded;
     } else {
+      log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
     }
   }
@@ -94,18 +97,19 @@ export class SlideshowImageFirebaseDocument {
 export class RebbeimFirebaseDocument {
   name: string;
   profile_picture_filename: string;
-  search_index: string;
+  search_index: string[];
 
   constructor(data: FirebaseFirestore.DocumentData) {
     if (
       isString(data.name) &&
       isString(data.profile_picture_filename) &&
-      isString(data.search_index)
+      Array.isArray(data.search_index)
     ) {
       this.name = data.name;
       this.profile_picture_filename = data.profile_picture_filename;
       this.search_index = data.search_index;
     } else {
+      log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
     }
   }
@@ -127,7 +131,7 @@ export class ContentFirebaseDocument {
     if (
       isString(data.attributionID) &&
       isString(data.author) &&
-      data.date instanceof Date &&
+      data.date instanceof FirebaseFirestore.Timestamp &&
       isString(data.description) &&
       typeof data.duration === "number" &&
       Array.isArray(data.search_index) &&
@@ -138,7 +142,7 @@ export class ContentFirebaseDocument {
     ) {
       this.attributionID = data.attributionID;
       this.author = data.author;
-      this.date = data.date;
+      this.date = data.date.toDate();
       this.description = data.description;
       this.duration = data.duration;
       this.search_index = data.search_index;
@@ -147,6 +151,7 @@ export class ContentFirebaseDocument {
       this.title = data.title;
       this.type = data.type;
     } else {
+      log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
     }
   }
@@ -170,6 +175,7 @@ export class Author {
       this.profile_picture_filename = data.profile_picture_filename;
       this.profile_picture_url = data.profile_picture_url;
     } else {
+      log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
     }
   }

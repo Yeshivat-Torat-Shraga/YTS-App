@@ -21,7 +21,8 @@
     "firebase-functions": "^3.14.1",
     "fs": "0.0.1-security",
     "os": "^0.1.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "ts-interface-checker": "^1.0.2"
   },
   "devDependencies": {
     "@types/child-process-promise": "^2.2.2",
