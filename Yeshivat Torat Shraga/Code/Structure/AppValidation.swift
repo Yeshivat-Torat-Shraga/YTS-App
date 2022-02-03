@@ -5,9 +5,6 @@
 //  Created by David Reese on 12/29/21.
 //
 
-import Foundation
-
-import Foundation
 import Firebase
 import FirebaseAppCheck
 
