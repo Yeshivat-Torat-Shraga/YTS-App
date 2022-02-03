@@ -137,8 +137,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-exports.loadSlideshow = https.onCall(
-	async (data, context): Promise<LoadData> => {
+exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> => {
 		// === APP CHECK ===
 		// if (context.app == undefined) {
 		//   throw new https.HttpsError(
@@ -146,6 +145,7 @@ exports.loadSlideshow = https.onCall(
 		//     'The function must be called from an App Check verified app.'
 		//   )
 		// }
+
 
 		// Get the query options
 		const queryOptions = {
@@ -197,6 +197,7 @@ exports.loadSlideshow = https.onCall(
 		// returns a Promise that resolves when all the Promises in the array resolve.
 		// To finish it off, we use await to wait for the Promise returned by Promise.all()
 		// to resolve.
+
 		const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
 			docs.map(async (doc) => {
 				// Get the document data
@@ -205,6 +206,8 @@ exports.loadSlideshow = https.onCall(
 				} catch {
 					return null;
 				}
+
+				log(`Loading image: '${JSON.stringify(data)}'`);
 
 				// Get the image path
 				const path = data.image_name;
@@ -215,9 +218,10 @@ exports.loadSlideshow = https.onCall(
 					const document: SlideshowImageDocument = {
 						title: data.title || null,
 						id: doc.id,
-						url: url,
+						url: url[0],
 						uploaded: data.uploaded,
 					};
+
 					return document;
 				} catch (err) {
 					log(`Error getting image for '${path}': ${err}`, true);
@@ -281,6 +285,8 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 			results: docs ? [] : null,
 		};
 	}
+
+	log(`Loaded ${docs.length} rebbeim documents.`);
 
 	// Set a variable to hold the ID of the last document returned from the query.
 	// This is so the client can use this ID to load the next page of documents.
@@ -626,10 +632,12 @@ exports.search = https.onCall(
 				startFromDocumentID: null,
 			},
 		};
+
 		const searchOptions = supplyDefaultParameters(
 			defaultSearchOptions,
 			callData.searchOptions
 		);
+
 		const errors: string[] = [];
 		const db = admin.firestore();
 		const searchQuery = callData.searchQuery.toLowerCase();

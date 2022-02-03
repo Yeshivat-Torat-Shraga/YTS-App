@@ -15,7 +15,7 @@ export interface NewsDocument {
   title: string;
   author: string;
   body: string;
-  uploaded: Date;
+  uploaded: FirebaseFirestore.Timestamp;
   imageURLs: string[] | null;
 }
 
@@ -23,7 +23,7 @@ export interface SlideshowImageDocument {
   url: string;
   id: string;
   title: string | null;
-  uploaded: Date;
+  uploaded: FirebaseFirestore.Timestamp;
 }
 
 export interface RebbeimDocument {
@@ -39,7 +39,7 @@ export interface ContentDocument {
   title: string;
   description: string;
   duration: number;
-  date: Date;
+  date: FirebaseFirestore.Timestamp;
   type: string;
   source_url: string;
   author: Author;
@@ -48,7 +48,7 @@ export interface ContentDocument {
 export class NewsFirebaseDocument {
   author: string;
   body: string;
-  date: Date;
+  date: FirebaseFirestore.Timestamp;
   imageURLs: string[];
   title: string;
 
@@ -56,7 +56,7 @@ export class NewsFirebaseDocument {
     if (
       isString(data.author) &&
       isString(data.body) &&
-      data.date instanceof Date &&
+      data.date instanceof FirebaseFirestore.Timestamp &&
       Array.isArray(data.imageURLs) &&
       isString(data.title)
     ) {
@@ -76,13 +76,12 @@ export class SlideshowImageFirebaseDocument {
   /** The name of the file inside of the cloud storage folder */
   image_name: string;
   title: string;
-  uploaded: Date;
+  uploaded: FirebaseFirestore.Timestamp;
 
   constructor(data: FirebaseFirestore.DocumentData) {
     if (
       isString(data.image_name) &&
-      isString(data.title) &&
-      data.uploaded instanceof Date
+      data.uploaded instanceof FirebaseFirestore.Timestamp
     ) {
       this.image_name = data.image_name;
       this.title = data.title;
@@ -118,7 +117,7 @@ export class RebbeimFirebaseDocument {
 export class ContentFirebaseDocument {
   attributionID: string;
   author: string;
-  date: Date;
+  date: FirebaseFirestore.Timestamp;
   description: string;
   duration: number;
   search_index: string[];
