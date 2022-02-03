@@ -646,7 +646,7 @@ exports.searchFirestore = https.onCall(
 		const searchArray = searchQuery.split(' ');
 		const documentsThatMeetSearchCriteria = [];
 		// For each collection, run the following async function:
-		return Promise.all(
+		const docs = await Promise.all(
 			['content', 'rebbeim'].map(async (collectionName) => {
 				if (!Number.isInteger(searchOptions[collectionName].limit)) {
 					errors.push(`Limit for ${collectionName} is not an integer.`);
@@ -695,67 +695,68 @@ exports.searchFirestore = https.onCall(
 				for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
 				return docs;
 			})
-		).then(async (docs) => {
+		);
+
 			const rawContent = docs[0];
 			const rawRebbeim = docs[1];
-			const content: any[] = [];
-			const rebbeim: any[] = [];
 
-			await Promise.all(
-				rawContent.map(async (doc) => {
-					const data = doc.data();
-					let url;
-					let author;
-					try {
-						url = await getURLFor(data.source_path);
-						author = await getRabbiFor(
-							data.attributionID,
-							searchOptions.content.includeDetailedAuthorInfo
-						);
-						const documentData = {
-							id: doc.id,
-							attributionID: data.attributionID,
-							title: data.title,
-							description: data.description,
-							duration: data.duration,
-							date: data.date,
-							type: data.type,
-							source_url: url,
-							author: author,
-						};
+			const content: (ContentDocument | null)[] = await Promise.all(rawContent.map(async (doc) => {
+					// Get the document data
+			try {
+				var data = new ContentFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+			
+			try {
+				const sourcePath = await getURLFor(`${data.source_path}`);
+				const author = await getRabbiFor(
+					data.attributionID,
+					searchOptions.content.includeDetailedAuthorInfo
+				);
 
-						content.push(documentData);
+				return {
+					id: doc.id,
+					fileID: strippedFilename(data.source_path),
+					attributionID: data.attributionID,
+					title: data.title,
+					description: data.description,
+					duration: data.duration,
+					date: data.date,
+					type: data.type,
+					source_url: sourcePath,
+					author: author,
+				};
 					} catch (err) {
-						content.push(null);
 						errors.push(err as string);
+						return null;
 					}
 				})
 			);
 
-			await Promise.all(
-				rawRebbeim.map(async (doc) => {
-					// Get the document data.
-					const data = doc.data();
+			const rebbeim: (RebbeimDocument | null)[] = await Promise.all(rawRebbeim.map(async (doc) => {
+					// Get the document data
+			try {
+				var data = new RebbeimFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
 
-					const pfpFilename = data.profile_picture_filename;
-
-					try {
-						let url;
-						if (searchOptions.rebbeim.includePictureURLs) {
-							url = await getURLFor(`profile-pictures/${pfpFilename}`);
-						}
-
-						const documentData = {
-							id: doc.id,
-							name: data.name,
-							// profile_picture_filename: pfpFilename,
-							profile_picture_url: url,
-						};
-
-						rebbeim.push(documentData);
+			// Get the image path
+			const path = data.profile_picture_filename;
+			// Get the image URL
+			try {
+				const pfpURL = await getURLFor(`profile-pictures/${path}`);
+				// return the document data
+				const document: RebbeimDocument = {
+					id: doc.id,
+					name: data.name,
+					profile_picture_url: pfpURL,
+				};
+				return document;
 					} catch (err) {
-						rebbeim.push(null);
 						errors.push(err as string);
+						return null
 					}
 				})
 			);
@@ -766,6 +767,5 @@ exports.searchFirestore = https.onCall(
 				searchOptions,
 				errors,
 			};
-		});
 	}
 );
