@@ -2,7 +2,7 @@ import admin from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
-import { createCheckers } from "ts-interface-checker";
+// import { createCheckers } from "ts-interface-checker";
 
 import os from 'os';
 import {
