@@ -75,7 +75,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 				lastLoadedDocID: queryOptions.previousDocID || null,
 				includesLastElement: false,
 			},
-			content: docs ? [] : null,
+			results: docs ? [] : null,
 		};
 	}
 
@@ -133,7 +133,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 			lastLoadedDocID: lastDocumentFromQueryID,
 			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: newsDocs.filter((doc) => doc != null),
+		results: newsDocs.filter((doc) => doc != null),
 	};
 });
 
@@ -180,7 +180,7 @@ exports.loadSlideshow = https.onCall(
 					lastLoadedDocID: queryOptions.previousDocID || null,
 					includesLastElement: false,
 				},
-				content: docs ? [] : null,
+				results: docs ? [] : null,
 			};
 		}
 
@@ -230,7 +230,7 @@ exports.loadSlideshow = https.onCall(
 				lastLoadedDocID: lastDocumentFromQueryID,
 				includesLastElement: queryOptions.limit > docs.length,
 			},
-			content: imageDocs.filter((doc) => {
+			results: imageDocs.filter((doc) => {
 				return doc != null;
 			}),
 		};
@@ -278,7 +278,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 				lastLoadedDocID: null,
 				includesLastElement: false,
 			},
-			content: docs ? [] : null,
+			results: docs ? [] : null,
 		};
 	}
 
@@ -328,7 +328,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 			lastLoadedDocID: lastDocumentFromQueryID,
 			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: rebbeimDocs.filter((doc) => {
+		results: rebbeimDocs.filter((doc) => {
 			return doc != null;
 		}),
 	};
@@ -405,7 +405,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 				lastLoadedDocID: null,
 				includesLastElement: false,
 			},
-			content: docs ? [] : null,
+			results: docs ? [] : null,
 		};
 	}
 
@@ -461,7 +461,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 			lastLoadedDocID: lastDocumentFromQueryID,
 			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: contentDocs.filter((doc) => {
+		results: contentDocs.filter((doc) => {
 			return doc != null;
 		}),
 	};
@@ -766,7 +766,7 @@ exports.search = https.onCall(
 				rebbeim: rebbeim
 			},
 			errors: errors,
-			query: searchOptions,
+			request: searchOptions,
 			metadata: {
 				content: {
 					lastLoadedDocID: rawContent[rawContent.length - 1].id,
