@@ -37,7 +37,7 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let urlDocuments = response["content"] as? [[String: Any]] else {
+            guard let urlDocuments = response["results"] as? [[String: Any]] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -103,7 +103,8 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let imageDocuments = response["results"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
+            guard let imageDocuments = response["results"] as? [[String: Any]],
+                  let metadata = response["metadata"] as? [String: Any] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -122,7 +123,11 @@ final class FirebaseConnection {
             }
             
             for imageDoc in imageDocuments {
-                guard let urlString = imageDoc["url"] as? String, let url = URL(string: urlString), let uploadDict = imageDoc["uploaded"] as? [String: Int], let uploaded = Date(firebaseTimestampDictionary: uploadDict) else {
+                guard let urlString = imageDoc["url"] as? String,
+                      let url = URL(string: urlString),
+                      let uploadDict = imageDoc["uploaded"] as? [String: Int],
+                      let uploaded = Date(firebaseTimestampDictionary: uploadDict)
+                else {
                     print("Skipping this element, data invalid.")
                     group.leave()
                     continue
@@ -416,7 +421,9 @@ final class FirebaseConnection {
             return
         }
         
-        guard let contentDocuments = response["content"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
+        guard let contentDocuments = response["results"] as? [[String: Any]],
+              let metadata = response["metadata"] as? [String: Any]
+            else {
             completion(nil, callError ?? YTSError.invalidDataReceived)
             return
         }
