@@ -204,7 +204,9 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 				// Get the document data
 				try {
 					var data = new SlideshowImageFirebaseDocument(doc.data());
-				} catch {
+					log(`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`);
+				} catch (err) {
+					log(`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`);
 					return null;
 				}
 

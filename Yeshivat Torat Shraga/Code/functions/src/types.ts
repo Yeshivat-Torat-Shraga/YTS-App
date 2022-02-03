@@ -1,3 +1,5 @@
+import admin from 'firebase-admin';
+const FirebaseFirestore = admin.firestore;
 import { log } from "firebase-functions/logger";
 import { isString } from "./helpers";
 
@@ -23,7 +25,7 @@ export interface SlideshowImageDocument {
   url: string;
   id: string;
   title: string | null;
-  uploaded: FirebaseFirestore.Timestamp;
+  uploaded: Date;
 }
 
 export interface RebbeimDocument {
@@ -79,14 +81,14 @@ export class SlideshowImageFirebaseDocument {
   uploaded: Date;
 
   constructor(data: FirebaseFirestore.DocumentData) {
-    log(typeof data.uploaded);
     if (
-      isString(data.image_name)// &&
-      // data.uploaded instanceof FirebaseFirestore.Timestamp
+      isString(data.image_name) &&
+      data.uploaded instanceof FirebaseFirestore.Timestamp
     ) {
       this.image_name = data.image_name;
       this.title = data.title;
-      this.uploaded = data.uploaded;
+      this.uploaded = data.uploaded.toDate();
+      log(`Succeeded initializing new object: ${JSON.stringify(data)}`);
     } else {
       log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
