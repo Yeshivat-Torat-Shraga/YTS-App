@@ -26,7 +26,7 @@ class TagModel: ObservableObject {
     }
     
     func load() {
-        FirebaseConnection.loadContent(matchingTag: tag, includeThumbnailURLs: false) { results, error in
+        FirebaseConnection.loadContent(matching: tag) { results, error in
                 guard let results = results else {
 //                    self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                     fatalError(error!.localizedDescription)

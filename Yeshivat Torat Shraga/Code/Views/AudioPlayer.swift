@@ -299,7 +299,7 @@ struct AudioPlayer: View {
                             }
                         }
                     }, label: {
-                        Image(systemName: "heart")
+                        Image(systemName: isFavorited ? "heart.fill" : "heart")
                             .foregroundColor(Color("ShragaGold"))
                             .frame(width: 20, height: 20)
                     }).buttonStyle(iOS14BorderedProminentButtonStyle())

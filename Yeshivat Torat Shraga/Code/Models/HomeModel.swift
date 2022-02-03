@@ -36,8 +36,7 @@ class HomeModel: ObservableObject, ErrorShower {
             group.enter()
         }
         
-        
-        FirebaseConnection.loadRebbeim(includeProfilePictureURLs: true) { results, error in
+        FirebaseConnection.loadRebbeim() { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
@@ -48,9 +47,7 @@ class HomeModel: ObservableObject, ErrorShower {
             
         }
         
-        // The results of this call will be shown as "Recently Uploaded" content.
-        // We should probably set a limit (7? 10?) on how many results are returned
-        FirebaseConnection.loadContent(includeThumbnailURLs: true, includeAllAuthorData: true) { results, error in
+        FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startFromDocumentID: nil)) { results, error in
             guard let content = results?.content else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return

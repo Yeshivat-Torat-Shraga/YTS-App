@@ -28,7 +28,9 @@ const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	// credential: admin.credential.cert(require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json'))
+	// credential: admin.credential.cert(
+	// 	require('/Users/benjitusk/Downloads/firebase.json')
+	// ),
 });
 
 exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
@@ -71,10 +73,10 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || '',
+				lastLoadedDocID: queryOptions.previousDocID || null,
 				includesLastElement: false,
 			},
-			content: null,
+			results: docs ? [] : null,
 		};
 	}
 
@@ -94,7 +96,12 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	const newsDocs = await Promise.all(
 		docs.map(async (doc) => {
 			// get the document data
-			const data = doc.data() as NewsFirebaseDocument;
+			try {
+				var data = new NewsFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
 			const imageURLs: string[] = [];
 			// load the images
 			if (queryOptions.includePictures) {
@@ -124,11 +131,9 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			// This may not work, because the query may return
-			// fewer documents than the limit if there are few documents left.
-			includesLastElement: false,
+			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: newsDocs,
+		results: newsDocs.filter((doc) => doc != null),
 	};
 });
 
@@ -148,8 +153,8 @@ exports.loadSlideshow = https.onCall(
 			previousDocID: data.lastLoadedDocID as string | undefined,
 		};
 
-		const db = admin.firestore();
 		const COLLECTION = 'slideshowImages';
+		const db = admin.firestore();
 
 		let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
 		if (queryOptions.previousDocID) {
@@ -172,12 +177,14 @@ exports.loadSlideshow = https.onCall(
 		if (!docs || docs.length == 0) {
 			return {
 				metadata: {
-					lastLoadedDocID: queryOptions.previousDocID || '',
+					lastLoadedDocID: null,
 					includesLastElement: false,
 				},
-				content: null,
+				results: docs ? [] : null,
 			};
 		}
+
+		log(`Loaded ${docs.length} image docs.`);
 
 		// Set a variable to hold the ID of the last document returned from the query.
 		// This is so the client can use this ID to load the next page of documents.
@@ -192,10 +199,24 @@ exports.loadSlideshow = https.onCall(
 		// returns a Promise that resolves when all the Promises in the array resolve.
 		// To finish it off, we use await to wait for the Promise returned by Promise.all()
 		// to resolve.
+
 		const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
 			docs.map(async (doc) => {
 				// Get the document data
-				const data = doc.data() as SlideshowImageFirebaseDocument;
+				try {
+					var data = new SlideshowImageFirebaseDocument(doc.data());
+					log(
+						`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`
+					);
+				} catch (err) {
+					log(
+						`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`
+					);
+					return null;
+				}
+
+				// log(`Loading image: '${JSON.stringify(data)}'`);
+
 				// Get the image path
 				const path = data.image_name;
 				// Get the image URL
@@ -208,6 +229,8 @@ exports.loadSlideshow = https.onCall(
 						url: url,
 						uploaded: data.uploaded,
 					};
+					log(`Returning data: '${JSON.stringify(document)}'`);
+
 					return document;
 				} catch (err) {
 					log(`Error getting image for '${path}': ${err}`, true);
@@ -218,9 +241,9 @@ exports.loadSlideshow = https.onCall(
 		return {
 			metadata: {
 				lastLoadedDocID: lastDocumentFromQueryID,
-				includesLastElement: false,
+				includesLastElement: queryOptions.limit > docs.length,
 			},
-			content: imageDocs.filter((doc) => {
+			results: imageDocs.filter((doc) => {
 				return doc != null;
 			}),
 		};
@@ -245,6 +268,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const COLLECTION = 'rebbeim';
 	const db = admin.firestore();
+
 	let query = db.collection(COLLECTION).orderBy('name', 'asc');
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
@@ -259,18 +283,21 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	// Execute the query
 	const rebbeimSnapshot = await query.limit(queryOptions.limit).get();
+
 	// Get the documents returned from the query
 	const docs = rebbeimSnapshot.docs;
 	// if null, return
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || '',
+				lastLoadedDocID: null,
 				includesLastElement: false,
 			},
-			content: null,
+			results: docs ? [] : null,
 		};
 	}
+
+	log(`Loaded ${docs.length} rebbeim documents.`);
 
 	// Set a variable to hold the ID of the last document returned from the query.
 	// This is so the client can use this ID to load the next page of documents.
@@ -288,7 +315,14 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	const rebbeimDocs: (RebbeimDocument | null)[] = await Promise.all(
 		docs.map(async (doc) => {
 			// Get the document data
-			const data = doc.data() as RebbeimFirebaseDocument;
+			try {
+				var data = new RebbeimFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
+			log(`Loading rabbi: '${JSON.stringify(data)}'`);
+
 			// Get the image path
 			const path = data.profile_picture_filename;
 			// Get the image URL
@@ -311,9 +345,9 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: false,
+			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: rebbeimDocs.filter((doc) => {
+		results: rebbeimDocs.filter((doc) => {
 			return doc != null;
 		}),
 	};
@@ -387,10 +421,10 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || '',
+				lastLoadedDocID: null,
 				includesLastElement: false,
 			},
-			content: docs ? [] : null,
+			results: docs ? [] : null,
 		};
 	}
 
@@ -410,7 +444,12 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	const contentDocs: (ContentDocument | null)[] = await Promise.all(
 		docs.map(async (doc) => {
 			// Get the document data
-			const data = doc.data() as ContentFirebaseDocument;
+			try {
+				var data = new ContentFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
 			try {
 				const sourcePath = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(
@@ -439,9 +478,9 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: false,
+			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: contentDocs.filter((doc) => {
+		results: contentDocs.filter((doc) => {
 			return doc != null;
 		}),
 	};
@@ -592,160 +631,174 @@ exports.generateThumbnail = storage
 		unlinkSync(tempFilePath);
 	});
 
-exports.searchFirestore = https.onCall(
-	async (callData, context): Promise<any> => {
-		const defaultSearchOptions = {
+exports.search = https.onCall(async (callData, context): Promise<any> => {
+	const defaultSearchOptions = {
+		content: {
+			limit: 5,
+			includeThumbnailURLs: false,
+			includeDetailedAuthorInfo: false,
+			startFromDocumentID: null,
+		},
+		rebbeim: {
+			limit: 10,
+			includePictureURLs: false,
+			startFromDocumentID: null,
+		},
+	};
+
+	const searchOptions = supplyDefaultParameters(
+		defaultSearchOptions,
+		callData.searchOptions
+	);
+
+	const errors: string[] = [];
+	const db = admin.firestore();
+	const searchQuery = callData.searchQuery.toLowerCase();
+	if (!searchQuery) {
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				includesLastElement: false,
+			},
+			content: null,
+		};
+	}
+	const searchArray = searchQuery.split(' ');
+	const documentsThatMeetSearchCriteria = [];
+	// For each collection, run the following async function:
+	const docs = await Promise.all(
+		['content', 'rebbeim'].map(async (collectionName) => {
+			if (!Number.isInteger(searchOptions[collectionName].limit)) {
+				errors.push(`Limit for ${collectionName} is not an integer.`);
+				return [];
+			}
+			if (searchOptions[collectionName].limit == 0) return [];
+			if (searchOptions[collectionName].limit < 0) {
+				errors.push(`Limit for ${collectionName} is less than 0.`);
+				return [];
+			}
+			if (searchOptions[collectionName].limit > 30) {
+				searchOptions[collectionName].limit = 30;
+				errors.push(
+					`Limit for ${collectionName} is greater than 30. Setting limit to 30.`
+				);
+			}
+			// Get the collection
+			let query = db.collection(collectionName);
+			query = query.where(
+				'search_index',
+				'array-contains-any',
+				searchArray
+			) as any;
+			switch (collectionName) {
+				case 'content':
+					query = query.orderBy('date', 'desc') as any;
+					break;
+				case 'rebbeim':
+					query = query.orderBy('name', 'asc') as any;
+					break;
+			}
+
+			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
+			if (searchOptions[collectionName].startFromDocumentID) {
+				query = query.startAt(
+					searchOptions[collectionName].startFromDocumentID
+				) as any;
+			}
+
+			query = query.limit(searchOptions[collectionName].limit) as any;
+			// if (searchOptions[collectionName].includeThumbnailURLs);
+			// if (searchOptions[collectionName].includeDetailedAuthorInfo);
+
+			const contentSnapshot = await query.get();
+			const docs = contentSnapshot.docs;
+			for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
+			return docs;
+		})
+	);
+
+	const rawContent = docs[0];
+	const rawRebbeim = docs[1];
+
+	const content: (ContentDocument | null)[] = await Promise.all(
+		rawContent.map(async (doc) => {
+			// Get the document data
+			try {
+				var data = new ContentFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
+			try {
+				const sourcePath = await getURLFor(`${data.source_path}`);
+				const author = await getRabbiFor(
+					data.attributionID,
+					searchOptions.content.includeDetailedAuthorInfo
+				);
+
+				return {
+					id: doc.id,
+					fileID: strippedFilename(data.source_path),
+					attributionID: data.attributionID,
+					title: data.title,
+					description: data.description,
+					duration: data.duration,
+					date: data.date,
+					type: data.type,
+					source_url: sourcePath,
+					author: author,
+				};
+			} catch (err) {
+				errors.push(err as string);
+				return null;
+			}
+		})
+	);
+
+	const rebbeim: (RebbeimDocument | null)[] = await Promise.all(
+		rawRebbeim.map(async (doc) => {
+			// Get the document data
+			try {
+				var data = new RebbeimFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
+			// Get the image path
+			const path = data.profile_picture_filename;
+			// Get the image URL
+			try {
+				const pfpURL = await getURLFor(`profile-pictures/${path}`);
+				// return the document data
+				const document: RebbeimDocument = {
+					id: doc.id,
+					name: data.name,
+					profile_picture_url: pfpURL,
+				};
+				return document;
+			} catch (err) {
+				errors.push(err as string);
+				return null;
+			}
+		})
+	);
+
+	return {
+		results: {
+			content: content,
+			rebbeim: rebbeim,
+		},
+		errors: errors,
+		request: searchOptions,
+		metadata: {
 			content: {
-				limit: 5,
-				includeThumbnailURLs: false,
-				includeDetailedAuthorInfo: false,
-				startFromDocumentID: null,
+				lastLoadedDocID: rawContent[rawContent.length - 1].id,
+				includesLastElement: searchOptions.content.limit > rawContent.length,
 			},
 			rebbeim: {
-				limit: 10,
-				includePictureURLs: false,
-				startFromDocumentID: null,
+				lastLoadedDocID: rawRebbeim[rawRebbeim.length - 1].id,
+				includesLastElement: searchOptions.rebbeim.limit > rawRebbeim.length,
 			},
-		};
-		const searchOptions = supplyDefaultParameters(
-			defaultSearchOptions,
-			callData.searchOptions
-		);
-		const errors: string[] = [];
-		const db = admin.firestore();
-		const searchQuery = callData.searchQuery.toLowerCase();
-		if (!searchQuery) {
-			return {
-				metadata: {
-					lastLoadedDocID: '',
-					includesLastElement: false,
-				},
-				content: null,
-			};
-		}
-		const searchArray = searchQuery.split(' ');
-		const documentsThatMeetSearchCriteria = [];
-		// For each collection, run the following async function:
-		return Promise.all(
-			['content', 'rebbeim'].map(async (collectionName) => {
-				if (!Number.isInteger(searchOptions[collectionName].limit)) {
-					errors.push(`Limit for ${collectionName} is not an integer.`);
-					return [];
-				}
-				if (searchOptions[collectionName].limit == 0) return [];
-				if (searchOptions[collectionName].limit < 0) {
-					errors.push(`Limit for ${collectionName} is less than 0.`);
-					return [];
-				}
-				if (searchOptions[collectionName].limit > 30) {
-					searchOptions[collectionName].limit = 30;
-					errors.push(
-						`Limit for ${collectionName} is greater than 30. Setting limit to 30.`
-					);
-				}
-				// Get the collection
-				let query = db.collection(collectionName);
-				query = query.where(
-					'search_index',
-					'array-contains-any',
-					searchArray
-				) as any;
-				switch (collectionName) {
-					case 'content':
-						query = query.orderBy('date', 'desc') as any;
-						break;
-					case 'rebbeim':
-						query = query.orderBy('name', 'asc') as any;
-						break;
-				}
-
-				// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
-				if (searchOptions[collectionName].startFromDocumentID) {
-					query = query.startAt(
-						searchOptions[collectionName].startFromDocumentID
-					) as any;
-				}
-
-				query = query.limit(searchOptions[collectionName].limit) as any;
-				// if (searchOptions[collectionName].includeThumbnailURLs);
-				// if (searchOptions[collectionName].includeDetailedAuthorInfo);
-
-				const contentSnapshot = await query.get();
-				const docs = contentSnapshot.docs;
-				for (const doc of docs) documentsThatMeetSearchCriteria.push(doc);
-				return docs;
-			})
-		).then(async (docs) => {
-			const rawContent = docs[0];
-			const rawRebbeim = docs[1];
-			const content: any[] = [];
-			const rebbeim: any[] = [];
-
-			await Promise.all(
-				rawContent.map(async (doc) => {
-					const data = doc.data();
-					let url;
-					let author;
-					try {
-						url = await getURLFor(data.source_path);
-						author = await getRabbiFor(
-							data.attributionID,
-							searchOptions.content.includeDetailedAuthorInfo
-						);
-						const documentData = {
-							id: doc.id,
-							attributionID: data.attributionID,
-							title: data.title,
-							description: data.description,
-							duration: data.duration,
-							date: data.date,
-							type: data.type,
-							source_url: url,
-							author: author,
-						};
-
-						content.push(documentData);
-					} catch (err) {
-						content.push(null);
-						errors.push(err as string);
-					}
-				})
-			);
-
-			await Promise.all(
-				rawRebbeim.map(async (doc) => {
-					// Get the document data.
-					const data = doc.data();
-
-					const pfpFilename = data.profile_picture_filename;
-
-					try {
-						let url;
-						if (searchOptions.rebbeim.includePictureURLs) {
-							url = await getURLFor(`profile-pictures/${pfpFilename}`);
-						}
-
-						const documentData = {
-							id: doc.id,
-							name: data.name,
-							// profile_picture_filename: pfpFilename,
-							profile_picture_url: url,
-						};
-
-						rebbeim.push(documentData);
-					} catch (err) {
-						rebbeim.push(null);
-						errors.push(err as string);
-					}
-				})
-			);
-
-			return {
-				content,
-				rebbeim,
-				searchOptions,
-				errors,
-			};
-		});
-	}
-);
+		},
+	};
+});
