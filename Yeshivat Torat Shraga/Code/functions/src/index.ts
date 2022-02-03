@@ -2,7 +2,7 @@ import admin from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
-import {createCheckers} from "ts-interface-checker";
+import { createCheckers } from "ts-interface-checker";
 
 import os from 'os';
 import {
@@ -350,9 +350,9 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 		includeAllAuthorData: (data.includeAllAuthorData as boolean) || false,
 		search: data.search as
 			| {
-					field: string;
-					value: string;
-			  }
+				field: string;
+				value: string;
+			}
 			| undefined,
 	};
 
@@ -430,7 +430,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 			} catch {
 				return null;
 			}
-			
+
 			try {
 				const sourcePath = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(
@@ -534,9 +534,8 @@ exports.generateHLSStream = storage
 				const fp = path.join(outputDir, filename);
 				log(`Uploading ${fp}...`);
 				return bucket.upload(fp, {
-					destination: `HLSStreams/${
-						object.contentType!.split('/')[0]
-					}/${filename}/${filename}`,
+					destination: `HLSStreams/${object.contentType!.split('/')[0]
+						}/${filename}/${filename}`,
 					metadata: {
 						'Cache-Control': 'public,max-age=3600',
 					},
@@ -612,7 +611,7 @@ exports.generateThumbnail = storage
 		unlinkSync(tempFilePath);
 	});
 
-exports.searchFirestore = https.onCall(
+exports.search = https.onCall(
 	async (callData, context): Promise<any> => {
 		const defaultSearchOptions = {
 			content: {
@@ -697,17 +696,17 @@ exports.searchFirestore = https.onCall(
 			})
 		);
 
-			const rawContent = docs[0];
-			const rawRebbeim = docs[1];
+		const rawContent = docs[0];
+		const rawRebbeim = docs[1];
 
-			const content: (ContentDocument | null)[] = await Promise.all(rawContent.map(async (doc) => {
-					// Get the document data
+		const content: (ContentDocument | null)[] = await Promise.all(rawContent.map(async (doc) => {
+			// Get the document data
 			try {
 				var data = new ContentFirebaseDocument(doc.data());
 			} catch {
 				return null;
 			}
-			
+
 			try {
 				const sourcePath = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(
@@ -727,15 +726,15 @@ exports.searchFirestore = https.onCall(
 					source_url: sourcePath,
 					author: author,
 				};
-					} catch (err) {
-						errors.push(err as string);
-						return null;
-					}
-				})
-			);
+			} catch (err) {
+				errors.push(err as string);
+				return null;
+			}
+		})
+		);
 
-			const rebbeim: (RebbeimDocument | null)[] = await Promise.all(rawRebbeim.map(async (doc) => {
-					// Get the document data
+		const rebbeim: (RebbeimDocument | null)[] = await Promise.all(rawRebbeim.map(async (doc) => {
+			// Get the document data
 			try {
 				var data = new RebbeimFirebaseDocument(doc.data());
 			} catch {
@@ -754,18 +753,30 @@ exports.searchFirestore = https.onCall(
 					profile_picture_url: pfpURL,
 				};
 				return document;
-					} catch (err) {
-						errors.push(err as string);
-						return null
-					}
-				})
-			);
+			} catch (err) {
+				errors.push(err as string);
+				return null
+			}
+		})
+		);
 
-			return {
-				content,
-				rebbeim,
-				searchOptions,
-				errors,
-			};
+		return {
+			results: {
+				content: content,
+				rebbeim: rebbeim
+			},
+			errors: errors,
+			query: searchOptions,
+			metadata: {
+				content: {
+					lastLoadedDocID: rawContent[rawContent.length - 1].id,
+					includesLastElement: searchOptions.content.limit > rawContent.length
+				},
+				rebbeim: {
+					lastLoadedDocID: rawRebbeim[rawRebbeim.length - 1].id,
+					includesLastElement: searchOptions.rebbeim.limit > rawRebbeim.length
+				}
+			}
+		};
 	}
 );
