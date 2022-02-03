@@ -1,3 +1,5 @@
+import admin from 'firebase-admin';
+const FirebaseFirestore = admin.firestore;
 import { log } from "firebase-functions/logger";
 import { isString } from "./helpers";
 
@@ -15,7 +17,7 @@ export interface NewsDocument {
   title: string;
   author: string;
   body: string;
-  uploaded: Date;
+  uploaded: FirebaseFirestore.Timestamp;
   imageURLs: string[] | null;
 }
 
@@ -39,7 +41,7 @@ export interface ContentDocument {
   title: string;
   description: string;
   duration: number;
-  date: Date;
+  date: FirebaseFirestore.Timestamp;
   type: string;
   source_url: string;
   author: Author;
@@ -48,7 +50,7 @@ export interface ContentDocument {
 export class NewsFirebaseDocument {
   author: string;
   body: string;
-  date: Date;
+  date: FirebaseFirestore.Timestamp;
   imageURLs: string[];
   title: string;
 
@@ -56,7 +58,7 @@ export class NewsFirebaseDocument {
     if (
       isString(data.author) &&
       isString(data.body) &&
-      data.date instanceof Date &&
+      data.date instanceof FirebaseFirestore.Timestamp &&
       Array.isArray(data.imageURLs) &&
       isString(data.title)
     ) {
@@ -81,12 +83,12 @@ export class SlideshowImageFirebaseDocument {
   constructor(data: FirebaseFirestore.DocumentData) {
     if (
       isString(data.image_name) &&
-      isString(data.title) &&
-      data.uploaded instanceof Date
+      data.uploaded instanceof FirebaseFirestore.Timestamp
     ) {
       this.image_name = data.image_name;
       this.title = data.title;
-      this.uploaded = data.uploaded;
+      this.uploaded = data.uploaded.toDate();
+      log(`Succeeded initializing new object: ${JSON.stringify(data)}`);
     } else {
       log(`Failed to initialize new object: ${JSON.stringify(data)}`);
       throw new Error("Invalid data");
@@ -118,7 +120,7 @@ export class RebbeimFirebaseDocument {
 export class ContentFirebaseDocument {
   attributionID: string;
   author: string;
-  date: Date;
+  date: FirebaseFirestore.Timestamp;
   description: string;
   duration: number;
   search_index: string[];
@@ -142,7 +144,7 @@ export class ContentFirebaseDocument {
     ) {
       this.attributionID = data.attributionID;
       this.author = data.author;
-      this.date = data.date.toDate();
+      this.date = data.date;
       this.description = data.description;
       this.duration = data.duration;
       this.search_index = data.search_index;

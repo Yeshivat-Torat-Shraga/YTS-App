@@ -137,8 +137,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-exports.loadSlideshow = https.onCall(
-	async (data, context): Promise<LoadData> => {
+exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> => {
 		// === APP CHECK ===
 		// if (context.app == undefined) {
 		//   throw new https.HttpsError(
@@ -153,8 +152,8 @@ exports.loadSlideshow = https.onCall(
 			previousDocID: data.lastLoadedDocID as string | undefined,
 		};
 
-		const db = admin.firestore();
 		const COLLECTION = 'slideshowImages';
+		const db = admin.firestore();
 
 		let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
 		if (queryOptions.previousDocID) {
@@ -177,12 +176,14 @@ exports.loadSlideshow = https.onCall(
 		if (!docs || docs.length == 0) {
 			return {
 				metadata: {
-					lastLoadedDocID: queryOptions.previousDocID || null,
+					lastLoadedDocID: null,
 					includesLastElement: false,
 				},
 				results: docs ? [] : null,
 			};
 		}
+
+		log(`Loaded ${docs.length} image docs.`);
 
 		// Set a variable to hold the ID of the last document returned from the query.
 		// This is so the client can use this ID to load the next page of documents.
@@ -197,14 +198,19 @@ exports.loadSlideshow = https.onCall(
 		// returns a Promise that resolves when all the Promises in the array resolve.
 		// To finish it off, we use await to wait for the Promise returned by Promise.all()
 		// to resolve.
+
 		const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
 			docs.map(async (doc) => {
 				// Get the document data
 				try {
 					var data = new SlideshowImageFirebaseDocument(doc.data());
-				} catch {
+					log(`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`);
+				} catch (err) {
+					log(`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`);
 					return null;
 				}
+
+				log(`Loading image: '${JSON.stringify(data)}'`);
 
 				// Get the image path
 				const path = data.image_name;
@@ -218,6 +224,7 @@ exports.loadSlideshow = https.onCall(
 						url: url,
 						uploaded: data.uploaded,
 					};
+
 					return document;
 				} catch (err) {
 					log(`Error getting image for '${path}': ${err}`, true);
@@ -255,6 +262,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const COLLECTION = 'rebbeim';
 	const db = admin.firestore();
+
 	let query = db.collection(COLLECTION).orderBy('name', 'asc');
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
@@ -269,6 +277,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	// Execute the query
 	const rebbeimSnapshot = await query.limit(queryOptions.limit).get();
+	
 	// Get the documents returned from the query
 	const docs = rebbeimSnapshot.docs;
 	// if null, return
@@ -281,6 +290,8 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 			results: docs ? [] : null,
 		};
 	}
+
+	log(`Loaded ${docs.length} rebbeim documents.`);
 
 	// Set a variable to hold the ID of the last document returned from the query.
 	// This is so the client can use this ID to load the next page of documents.
@@ -303,6 +314,8 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 			} catch {
 				return null;
 			}
+
+			log(`Loading rabbi: '${JSON.stringify(data)}'`);
 
 			// Get the image path
 			const path = data.profile_picture_filename;
@@ -626,10 +639,12 @@ exports.search = https.onCall(
 				startFromDocumentID: null,
 			},
 		};
+
 		const searchOptions = supplyDefaultParameters(
 			defaultSearchOptions,
 			callData.searchOptions
 		);
+
 		const errors: string[] = [];
 		const db = admin.firestore();
 		const searchQuery = callData.searchQuery.toLowerCase();
