@@ -47,7 +47,7 @@ class HomeModel: ObservableObject, ErrorShower {
             
         }
         
-        FirebaseConnection.loadContent(includeThumbnailURLs: true, includeAllAuthorData: true) { results, error in
+        FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startFromDocumentID: nil)) { results, error in
             guard let content = results?.content else {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
