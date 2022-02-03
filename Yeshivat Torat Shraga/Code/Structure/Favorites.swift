@@ -201,6 +201,7 @@ class Favorites {
             cdVideo.fileID = videoToSave.fileID
             cdVideo.title = videoToSave.title
             cdVideo.body = videoToSave.description
+            cdVideo.favoritedAt = videoToSave.favoritedAt
             //            MARK: NOT SAVING TAGS
             //            cdAudio.tags = audioToSave.tags
             cdVideo.uploadDate = videoToSave.date
@@ -286,6 +287,7 @@ class Favorites {
             cdAudio.fileID = audioToSave.fileID
             cdAudio.title = audioToSave.title
             cdAudio.body = audioToSave.description
+            cdAudio.favoritedAt = audioToSave.favoritedAt
             //            MARK: NOT SAVING TAGS
             //            cdAudio.tags = audioToSave.tags
             cdAudio.uploadDate = audioToSave.date
@@ -431,7 +433,7 @@ class Favorites {
                     favoriteVideos = []
                 }
                 for videoEntity in videoEntities {
-                    guard let video = Video(cdVideo: videoEntity, isFavorite: true) else {
+                    guard let video = Video(cdVideo: videoEntity) else {
                         continue
                     }
                     
@@ -452,7 +454,7 @@ class Favorites {
                     favoriteAudios = []
                 }
                 for audioEntity in audioEntities {
-                    guard let audio = Audio(cdAudio: audioEntity, isFavorite: true) else {
+                    guard let audio = Audio(cdAudio: audioEntity) else {
                         continue
                     }
                     

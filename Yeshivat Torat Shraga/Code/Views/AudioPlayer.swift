@@ -20,7 +20,7 @@ struct AudioPlayer: View {
     @State private var favoriteErr: Error?
     
     init() {
-        if let fav = audio?.isFavorite {isFavorited = fav}
+        self.isFavorited = (audio?.favoritedAt != nil)
     }
     
     mutating func set(audio: Audio) {
@@ -293,7 +293,7 @@ struct AudioPlayer: View {
                             favoriteErr = audio.toggleFavorites()
                         }
                     }, label: {
-                        Image(systemName: audio?.isFavorite ?? false
+                        Image(systemName: audio?.favoritedAt != nil
                               ? "heart.fill"
                               : "heart")
                             .foregroundColor(Color("ShragaGold"))

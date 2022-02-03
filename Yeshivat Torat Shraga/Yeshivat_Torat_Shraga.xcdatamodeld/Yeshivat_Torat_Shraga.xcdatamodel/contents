@@ -3,9 +3,9 @@
     <entity name="CDAudio" representedClassName="CDAudio" syncable="YES" codeGenerationType="class">
         <attribute name="body" optional="YES" attributeType="String"/>
         <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="favoritedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="fileID" optional="YES" attributeType="String"/>
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -20,9 +20,9 @@
     <entity name="CDVideo" representedClassName="CDVideo" syncable="YES" codeGenerationType="class">
         <attribute name="body" optional="YES" attributeType="String"/>
         <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="favoritedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="fileID" optional="YES" attributeType="String"/>
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
         <attribute name="title" optional="YES" attributeType="String"/>
@@ -30,8 +30,8 @@
         <relationship name="author" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="CDPerson"/>
     </entity>
     <elements>
-        <element name="CDAudio" positionX="157.3817749023438" positionY="-107.6398010253906" width="128" height="178"/>
+        <element name="CDAudio" positionX="157.3817749023438" positionY="-107.6398010253906" width="128" height="164"/>
         <element name="CDPerson" positionX="-63" positionY="-18" width="128" height="89"/>
-        <element name="CDVideo" positionX="-1.2655029296875" positionY="189.0763854980469" width="128" height="193"/>
+        <element name="CDVideo" positionX="-1.2655029296875" positionY="189.0763854980469" width="128" height="179"/>
     </elements>
 </model>

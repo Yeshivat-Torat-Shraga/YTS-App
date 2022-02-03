@@ -201,7 +201,7 @@ protocol YTSContent: URLImageable, Hashable {
     
     var name: String { get }
     
-    var isFavorite: Bool { get set }
+    var favoritedAt: Date? { get set }
     
     func toggleFavorites() -> Error?
 }
@@ -230,7 +230,7 @@ class Video: YTSContent, URLImageable {
     var tags: [Tag]
     var thumbnail: Image?
     var thumbnailURL: URL?
-    var isFavorite: Bool
+    var favoritedAt: Date?
     
     var name: String {
         return title
@@ -259,7 +259,7 @@ class Video: YTSContent, URLImageable {
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
     ///   - thumbnail: The thumbnail associated with this content
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnail: Image, isFavorite: Bool = false) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnail: Image, favoritedAt: Date? = nil) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -270,7 +270,7 @@ class Video: YTSContent, URLImageable {
         self.duration = duration
         self.tags = tags
         self.thumbnail = thumbnail
-        self.isFavorite = isFavorite
+        self.favoritedAt = favoritedAt
     }
     
     /// Standard initializer for a `Video`
@@ -285,7 +285,7 @@ class Video: YTSContent, URLImageable {
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
     ///   - thumbnailURL: The `URL` associated with this content's thumbnail image
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnailURL: URL, isFavorite: Bool = false) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnailURL: URL, favoritedAt: Date? = nil) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -296,10 +296,10 @@ class Video: YTSContent, URLImageable {
         self.duration = duration
         self.tags = tags
         self.thumbnailURL = thumbnailURL
-        self.isFavorite = isFavorite
+        self.favoritedAt = favoritedAt
     }
     
-    init?(cdVideo: CDVideo, isFavorite: Bool = false) {
+    init?(cdVideo: CDVideo) {
         guard let firestoreID = cdVideo.firestoreID, let fileID = cdVideo.fileID, let title = cdVideo.title, let description = cdVideo.body, let uploadDate = cdVideo.uploadDate, let author = cdVideo.author, let thumbnailData = cdVideo.thumbnailData else {
             return nil
         }
@@ -309,6 +309,7 @@ class Video: YTSContent, URLImageable {
         }
         
         self.thumbnail = Image(uiImage: thumbnailUIImage)
+        self.favoritedAt = cdVideo.favoritedAt
         
         if let author = DetailedRabbi(cdPerson: author) {
             self.author = author
@@ -326,7 +327,6 @@ class Video: YTSContent, URLImageable {
         self.tags = []
         self.date = uploadDate
         self.duration = TimeInterval(cdVideo.duration)
-        self.isFavorite = isFavorite
     }
     
     func hash(into hasher: inout Hasher) {
@@ -339,8 +339,8 @@ class Video: YTSContent, URLImageable {
     
     func toggleFavorites() -> Error? {
         var error: Error? = nil
-        self.isFavorite.toggle()
-        if self.isFavorite {
+        if self.favoritedAt == nil {
+            self.favoritedAt = Date()
             Favorites.save(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
@@ -350,6 +350,7 @@ class Video: YTSContent, URLImageable {
                 }
             }
         } else {
+            self.favoritedAt = nil
             Favorites.delete(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
@@ -372,7 +373,7 @@ class Video: YTSContent, URLImageable {
                               duration: 100,
                               tags: [],
                               thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!,
-                              isFavorite: true)
+                              favoritedAt: nil)
 }
 
 class Audio: YTSContent, Hashable {
@@ -388,8 +389,7 @@ class Audio: YTSContent, Hashable {
     var date: Date
     var duration: TimeInterval?
     var tags: [Tag]
-    var isFavorite: Bool
-    
+    var favoritedAt: Date?
     var name: String {
         return title
     }
@@ -405,7 +405,7 @@ class Audio: YTSContent, Hashable {
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], isFavorite: Bool = false) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], favoritedAt: Date? = nil) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -415,10 +415,10 @@ class Audio: YTSContent, Hashable {
         self.date = date
         self.duration = duration
         self.tags = tags
-        self.isFavorite = isFavorite
+        self.favoritedAt = favoritedAt
     }
     
-    init?(cdAudio: CDAudio, isFavorite: Bool = false) {
+    init?(cdAudio: CDAudio) {
         guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
             return nil
         }
@@ -435,11 +435,11 @@ class Audio: YTSContent, Hashable {
         self.fileID = fileID
         self.title = title
         self.description = description
+        self.favoritedAt = cdAudio.favoritedAt
 //            MARK: TAGS HARD-PASSED IN
         self.tags = []
         self.date = uploadDate
         self.duration = TimeInterval(cdAudio.duration)
-        self.isFavorite = isFavorite
     }
     
     func hash(into hasher: inout Hasher) {
@@ -448,8 +448,8 @@ class Audio: YTSContent, Hashable {
     
     func toggleFavorites() -> Error? {
         var error: Error? = nil
-        self.isFavorite.toggle()
-        if self.isFavorite {
+        if self.favoritedAt == nil {
+            self.favoritedAt = Date()
             Favorites.save(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
@@ -459,6 +459,7 @@ class Audio: YTSContent, Hashable {
                 }
             }
         } else {
+            self.favoritedAt = nil
             Favorites.delete(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
@@ -536,10 +537,13 @@ typealias Content = (videos: [Video], audios: [Audio])
 
 class SortableYTSContent: Hashable {
     static func == (lhs: SortableYTSContent, rhs: SortableYTSContent) -> Bool {
-        lhs.hashValue == rhs.hashValue
+        let lhsID = lhs.video?.firestoreID ?? lhs.audio!.firestoreID
+        let rhsID = rhs.video?.firestoreID ?? rhs.audio!.firestoreID
+        return lhsID == rhsID
     }
     func hash(into hasher: inout Hasher) {
-        hasher.combine(hashValue)
+        let id = self.video?.firestoreID ?? self.audio!.firestoreID
+        hasher.combine(id)
     }
 
     

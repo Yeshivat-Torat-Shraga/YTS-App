@@ -187,9 +187,9 @@ struct HomeView: View {
                     dismissButton: Alert.Button.default(
                         Text("Retry"),
                         action: {
-                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                                self.model.retry?()
-                            }
+//                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+//                                self.model.retry?()
+//                            }
                         }))
             })
                 .onChange(of: model.showError) { errVal in
