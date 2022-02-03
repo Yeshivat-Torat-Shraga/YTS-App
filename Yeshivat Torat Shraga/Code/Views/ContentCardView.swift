@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+struct SortableContentCardView<Content: SortableYTSContent>: View {
+    let content: Content
+    var body: some View {
+        if let audio = content.audio {
+            ContentCardView(content: audio)
+        } else if let video = content.video {
+            ContentCardView(content: video)
+        }
+    }
+}
+
 struct ContentCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
     let content: Content
