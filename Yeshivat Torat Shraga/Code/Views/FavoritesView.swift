@@ -22,11 +22,11 @@ struct FavoritesView: View {
                         Spacer()
                     }
                     .padding(.horizontal)
-                    if let audios = model.audios {
+                    if let sortables = model.sortables {
                         ScrollView(showsIndicators: false) {
                             HStack {
-                                ForEach(audios, id: \.self) { audio in
-                                    AudioCardView(audio: audio)
+                                ForEach(sortables, id: \.self) { sortable in
+                                    SortableContentCardView(content: sortable)
                                         .padding(.vertical)
                                 }
                             }
@@ -34,32 +34,7 @@ struct FavoritesView: View {
                         }
                     } else {
                         VStack {
-                            Text("It seems like you don't have any saved audio shiurim right now.")
-                        }
-                        .padding()
-                    }
-                    
-                    // MARK: Video Favorites
-                    HStack {
-                        Text("Videos")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    if let videos = model.videos {
-                        ScrollView(showsIndicators: false) {
-                            HStack {
-                                ForEach(videos, id: \.self) { video in
-                                    VideoCardView(video: video)
-                                        .padding(.vertical)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    } else {
-                        VStack {
-                            Text("It seems like you don't have any saved video shiurim right now.")
+                            Text("It seems like you don't have any saved content right now.")
                         }
                         .padding()
                     }
@@ -90,6 +65,9 @@ struct FavoritesView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            model.load()
         }
         .navigationTitle("Favorites")
     }
