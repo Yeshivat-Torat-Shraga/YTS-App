@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
+    "debug": "tsc && firebase emulators:start --only functions --inspect-functions",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
@@ -21,8 +22,7 @@
     "firebase-functions": "^3.14.1",
     "fs": "0.0.1-security",
     "os": "^0.1.2",
-    "path": "^0.12.7",
-    "ts-interface-checker": "^1.0.2"
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@types/child-process-promise": "^2.2.2",
