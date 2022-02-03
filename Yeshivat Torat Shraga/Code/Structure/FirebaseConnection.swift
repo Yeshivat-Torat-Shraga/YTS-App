@@ -13,6 +13,9 @@ import SwiftUI
 final class FirebaseConnection {
     static var functions = Functions.functions()
     
+    typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startFromDocumentID: FirestoreID?)
+    typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startFromDocumentID: FirestoreID?)
+    
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool)
     
     static func loadNews(lastLoadedDocumentID: FirestoreID? = nil, limit: Int = 15, completion: @escaping (_ results: (articles: [NewsArticle], metadata: Metadata)?, _ error: Error?) -> Void) {
@@ -20,10 +23,10 @@ final class FirebaseConnection {
         let httpsCallable = functions.httpsCallable("loadNews")
         
         var data: [String: Any] = [
-            "count": limit
+            "limit": limit
         ]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+            data["lastLoadedDocID"] = lastLoadedDocumentID
         }
         
         httpsCallable.call(data) { callResult, callError in
@@ -39,7 +42,7 @@ final class FirebaseConnection {
                 return
             }
             let includesLastElement = response["includesLastElement"] as? Bool ?? true
-            let newLastLoadedDocumentID = response["lastLoadedDocumentID"] as? FirestoreID
+            let newLastLoadedDocumentID = response["lastLoadedDocID"] as? FirestoreID
             
             let group = DispatchGroup()
             for _ in urlDocuments {
@@ -80,16 +83,16 @@ final class FirebaseConnection {
         }
     }
     
-    
     static func loadSlideshowImages(lastLoadedDocumentID: FirestoreID? = nil, limit: Int, completion: @escaping (_ results: (images: [SlideshowImage], metadata: Metadata)?, _ error: Error?) -> Void) {
         var images: [SlideshowImage] = []
+        
         let httpsCallable = functions.httpsCallable("loadSlideshow")
         
         var data: [String: Any] = [
-            "count": limit
+            "limit": limit
         ]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+            data["lastLoadedDocID"] = lastLoadedDocumentID
         }
         
         httpsCallable.call(data) { callResult, callError in
@@ -100,34 +103,44 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let urlDocuments = response["content"] as? [[String: Any]],
-                  let metadata     = response["metadata"] as? [String: Any]
-            else {
+            guard let imageDocuments = response["results"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            let includesLastElement = metadata["includesLastElement"] as? Bool ?? true
-            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
             
-            for document in urlDocuments {
-                guard let url = document["url"] as? String,
-                      let uploadDict = document["uploaded"] as? [String: Int],
-                      let uploaded = Date(firebaseTimestampDictionary: uploadDict)
-                else {
-                    completion(nil, callError ?? YTSError.invalidDataReceived)
-                    return
-                }
-                let title = document["title"] as? String
-                let urlObject = URL(string: url)
-                let slideshowImage = SlideshowImage(url: urlObject!, name: title, uploaded: uploaded)
-                images.append(slideshowImage)
+            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
             }
-            completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+            
+            let newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
+            
+            let group = DispatchGroup()
+            
+            for _ in imageDocuments {
+                group.enter()
+            }
+            
+            for imageDoc in imageDocuments {
+                guard let urlString = imageDoc["url"] as? String, let url = URL(string: urlString), let uploadDict = imageDoc["uploaded"] as? [String: Int], let uploaded = Date(firebaseTimestampDictionary: uploadDict) else {
+                    print("Skipping this element, data invalid.")
+                    group.leave()
+                    continue
+                }
+                
+                let title = imageDoc["title"] as? String
+                
+                let slideshowImage = SlideshowImage(url: url, name: title, uploaded: uploaded)
+                images.append(slideshowImage)
+                group.leave()
+                continue
+            }
+            
+            group.notify(queue: .main) {
+                completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+            }
         }
     }
-    
-    typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startFromDocumentID: FirestoreID?)
-    typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startFromDocumentID: FirestoreID?)
     
     /// Searches Firestore using the `search` cloud function
     /// - Parameters:
@@ -180,7 +193,7 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let rabbiDocuments = results["rebbeim"] as? [[String: Any]], let contentDocuments = results["content"] as? [[String: Any]], let appliedSearchOptions = response["request"] as? [String: [String: Any]] else {
+            guard let rabbiDocuments = results["rebbeim"] as? [[String: Any]], let contentDocuments = results["content"] as? [[String: Any]] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -394,6 +407,121 @@ final class FirebaseConnection {
         }
     }
     
+    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
+        var content: Content = (videos: [], audios: [])
+        
+        return { callResult, callError in
+        guard let response = callResult?.data as? [String: Any] else {
+            completion(nil, callError ?? YTSError.noDataReceived)
+            return
+        }
+        
+        guard let contentDocuments = response["content"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any], let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            completion(nil, callError ?? YTSError.invalidDataReceived)
+            return
+        }
+        
+        let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
+        
+        let group = DispatchGroup()
+        
+        for _ in contentDocuments {
+            group.enter()
+        }
+        
+        for contentDocument in contentDocuments {
+            guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID, let title = contentDocument["title"] as? String, let description = contentDocument["description"] as? String, let dateDictionary = contentDocument["date"] as? [String: Int], let type = contentDocument["type"] as? String, let author = contentDocument["author"] as? [String: Any], let sourceURLString = contentDocument["source_url"] as? String else {
+                print("Document missing sufficient data. Continuing to next document.")
+                group.leave()
+                continue
+            }
+            
+            guard let sourceURL = URL(string: sourceURLString) else {
+                print("Source URL is invalid. Continuing to next document.")
+                group.leave()
+                continue
+            }
+            
+            let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
+            
+            guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
+                print("Invalid date value. Exiting scope.")
+                group.leave()
+                continue
+            }
+            
+            guard let authorID = author["id"] as? FirestoreID, let authorName = author["name"] as? String else {
+                print("Invalid author value. Exiting scope.")
+                group.leave()
+                continue
+            }
+            
+            switch type {
+            case "video":
+                let rabbi: Rabbi
+                
+                if options.includeDetailedAuthors {
+                    guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                        print("Author profile picture URL is invalid, continuing to next document.")
+                        group.leave()
+                        continue
+                    }
+                    rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                } else {
+                    rabbi = Rabbi(id: authorID, name: authorName)
+                }
+                
+                content.videos.append(Video(
+                    id: id,
+                    fileID: fileID,
+                    sourceURL: sourceURL,
+                    title: title,
+                    author: rabbi,
+                    description: description,
+                    date: date,
+                    duration: duration,
+                    tags: []))
+                group.leave()
+                continue
+            case "audio":
+                let rabbi: Rabbi
+                if options.includeDetailedAuthors {
+                    guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                        print("Author profile picture URL is invalid, continuing to next document.")
+                        group.leave()
+                        continue
+                    }
+                    
+                    rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                } else {
+                    rabbi = Rabbi(id: authorID, name: authorName)
+                }
+                
+                content.audios.append(Audio(
+                    id: id,
+                    fileID: fileID,
+                    sourceURL: sourceURL,
+                    title: title,
+                    author: rabbi,
+                    description: description,
+                    date: date,
+                    duration: duration,
+                    tags: []))
+                group.leave()
+                continue
+            default:
+                print("Type unrecognized.")
+                group.leave()
+                continue
+            }
+        }
+        
+        group.notify(queue: .main) {
+            completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+        }
+    }
+    }
+    
     /// Loads `YTSContent` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
@@ -401,152 +529,19 @@ final class FirebaseConnection {
     ///   - includeThumbnailURLs: Whether or not to include thumbnail URLs in the response.
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil,
-                            count requestedCount: Int = 10,
-                            includeThumbnailURLs: Bool,
-                            includeAllAuthorData: Bool = false,
-                            completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
-        var content: Content = (videos: [], audios: [])
-        
+    static func loadContent(options: ContentOptions, completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
-            "count": requestedCount,
-            "includeThumbnailURLs": includeThumbnailURLs,
-            "includeAllAuthorData": includeAllAuthorData
+            "limit": options.limit,
+            "includeThumbnailURLs": options.includeThumbnailURLs,
+            "includeAllAuthorData": options.includeDetailedAuthors
         ]
-        if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+        if let startFromDocumentID = options.startFromDocumentID {
+            data["lastLoadedDocID"] = startFromDocumentID
         }
         
-    
         let httpsCallable = functions.httpsCallable("loadContent")
         
-        httpsCallable.call(data) { callResult, callError in
-            guard let response = callResult?.data as? [String: Any] else {
-                completion(nil, callError ?? YTSError.noDataReceived)
-                return
-            }
-            
-            guard let contentDocuments = response["content"] as? [[String: Any]],
-                  let metadata = response["metadata"] as? [String: Any],
-                  let includesLastElement = metadata["includesLastElement"] as? Bool
-            else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
-            
-            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
-            
-            
-            let group = DispatchGroup()
-            
-            for _ in contentDocuments {
-                group.enter()
-            }
-            
-            for contentDocument in contentDocuments {
-                guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID,
-                      let title = contentDocument["title"] as? String,
-                      let description = contentDocument["description"] as? String,
-                      let dateDictionary = contentDocument["date"] as? [String: Int],
-                      let type = contentDocument["type"] as? String,
-                      let author = contentDocument["author"] as? [String: Any],
-                      let sourceURLString = contentDocument["source_url"] as? String else {
-                          print("Document missing sufficient data. Continuing to next document.")
-                          group.leave()
-                          continue
-                      }
-                
-                guard let sourceURL = URL(string: sourceURLString) else {
-                    print("Source URL is invalid. Continuing to next document.")
-                    group.leave()
-                    continue
-                }
-                
-                
-                let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
-                
-                guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
-                    print("Invalid date value. Exiting scope.")
-                    group.leave()
-                    continue
-                }
-                
-                guard let authorID = author["id"] as? FirestoreID,
-                      let authorName = author["name"] as? String
-                else {
-                    print("Invalid author value. Exiting scope.")
-                    group.leave()
-                    continue
-                }
-                
-                switch type {
-                case "video":
-                    let rabbi: Rabbi
-                    if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
-                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
-                        else {
-                            print("Author profile picture URL is invalid, continuing to next document.")
-                            group.leave()
-                            continue
-                        }
-                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
-                    } else {
-                        rabbi = Rabbi(id: authorID, name: authorName)
-                    }
-                    content.videos.append(Video(
-                        id: id,
-                        fileID: fileID,
-                        sourceURL: sourceURL,
-                        title: title,
-                        author: rabbi,
-                        description: description,
-                        date: date,
-                        duration: duration,
-                        tags: [],
-                        thumbnail: Image("test-thumbnail")))
-                    group.leave()
-                    continue
-                case "audio":
-                    let rabbi: Rabbi
-                    if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
-                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
-                        else {
-                            print("Author profile picture URL is invalid, continuing to next document.")
-                            group.leave()
-                            continue
-                        }
-                        rabbi = DetailedRabbi(
-                            id: authorID,
-                            name: authorName,
-                            profileImageURL: authorProfilePictureURL)
-                    } else {
-                        rabbi = Rabbi(id: authorID, name: authorName)
-                    }
-                    content.audios.append(Audio(
-                        id: id,
-                        fileID: fileID,
-                        sourceURL: sourceURL,
-                        title: title,
-                        author: rabbi,
-                        description: description,
-                        date: date,
-                        duration: duration,
-                        tags: []))
-                    group.leave()
-                    continue
-                default:
-                    print("Type unrecognized.")
-                    group.leave()
-                    continue
-                }
-            }
-            
-            group.notify(queue: .main) {
-                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
-            }
-        }
+        httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
     
     /// Loads `YTSContent` objects from Firestore.
@@ -557,155 +552,21 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil,
-                            count requestedCount: Int = 10,
-                            attributionRabbi: Rabbi,
-                            includeThumbnailURLs: Bool,
-                            includeAllAuthorData: Bool = false,
-                            completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
-        var content: Content = (videos: [], audios: [])
-        
+    static func loadContent(options: ContentOptions, matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
-            "count": requestedCount,
-            "includeThumbnailURLs": includeThumbnailURLs,
-            "includeAllAuthorData": includeAllAuthorData,
+            "limit": options.limit,
+            "includeThumbnailURLs": options.includeThumbnailURLs,
+            "includeAllAuthorData": options.includeDetailedAuthors,
             "search": ["field": "attributionID",
-                       "value": attributionRabbi.firestoreID]
+                       "value": rabbi.firestoreID]
         ]
-        if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+        if let startFromDocumentID = options.startFromDocumentID {
+            data["lastLoadedDocID"] = startFromDocumentID
         }
-        
     
         let httpsCallable = functions.httpsCallable("loadContent")
         
-        httpsCallable.call(data) { callResult, callError in
-            guard let response = callResult?.data as? [String: Any] else {
-                completion(nil, callError ?? YTSError.noDataReceived)
-                return
-            }
-            
-            guard let contentDocuments = response["content"] as? [[String: Any]],
-                  let metadata = response["metadata"] as? [String: Any],
-                  let includesLastElement = metadata["includesLastElement"] as? Bool
-            else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
-            
-            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
-            
-            
-            let group = DispatchGroup()
-            
-            for _ in contentDocuments {
-                group.enter()
-            }
-            
-            for contentDocument in contentDocuments {
-                guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID,
-                      let title = contentDocument["title"] as? String,
-                      let description = contentDocument["description"] as? String,
-                      let dateDictionary = contentDocument["date"] as? [String: Int],
-                      let type = contentDocument["type"] as? String,
-                      let author = contentDocument["author"] as? [String: Any],
-                      let sourceURLString = contentDocument["source_url"] as? String else {
-                          print("Document missing sufficient data. Continuing to next document.")
-                          group.leave()
-                          continue
-                      }
-                
-                guard let sourceURL = URL(string: sourceURLString) else {
-                    print("Source URL is invalid. Continuing to next document.")
-                    group.leave()
-                    continue
-                }
-                
-                
-                let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
-                
-                guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
-                    print("Invalid date value. Exiting scope.")
-                    group.leave()
-                    continue
-                }
-                
-                guard let authorID = author["id"] as? FirestoreID,
-                      let authorName = author["name"] as? String
-                else {
-                    print("Invalid author value. Exiting scope.")
-                    group.leave()
-                    continue
-                }
-                
-                switch type {
-                case "video":
-                    let rabbi: Rabbi
-                    if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
-                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
-                        else {
-                            print("Author profile picture URL is invalid, continuing to next document.")
-                            group.leave()
-                            continue
-                        }
-                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
-                    } else {
-                        rabbi = Rabbi(id: authorID, name: authorName)
-                    }
-                    content.videos.append(Video(
-                        id: id,
-                        fileID: fileID,
-                        sourceURL: sourceURL,
-                        title: title,
-                        author: rabbi,
-                        description: description,
-                        date: date,
-                        duration: duration,
-                        tags: [],
-                        thumbnail: Image("test-thumbnail")))
-                    group.leave()
-                    continue
-                case "audio":
-                    let rabbi: Rabbi
-                    if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
-                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
-                        else {
-                            print("Author profile picture URL is invalid, continuing to next document.")
-                            group.leave()
-                            continue
-                        }
-                        rabbi = DetailedRabbi(
-                            id: authorID,
-                            name: authorName,
-                            profileImageURL: authorProfilePictureURL)
-                    } else {
-                        rabbi = Rabbi(id: authorID, name: authorName)
-                    }
-                    content.audios.append(Audio(
-                        id: id,
-                        fileID: fileID,
-                        sourceURL: sourceURL,
-                        title: title,
-                        author: rabbi,
-                        description: description,
-                        date: date,
-                        duration: duration,
-                        tags: []))
-                    group.leave()
-                    continue
-                default:
-                    print("Type unrecognized.")
-                    group.leave()
-                    continue
-                }
-            }
-            
-            group.notify(queue: .main) {
-                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
-            }
-        }
+        httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
     
     
@@ -717,154 +578,20 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - matchingTag: The function only returns content that have a tag matching  the `Tag` object.
-    static func loadContent(lastLoadedDocumentID: FirestoreID? = nil,
-                            count requestedCount: Int = 10,
-                            matchingTag: Tag,
-                            includeThumbnailURLs: Bool,
-                            includeAllAuthorData: Bool = false,
-                            completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
-        var content: Content = (videos: [], audios: [])
-        
+    static func loadContent(options: ContentOptions, matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
-            "count": requestedCount,
-            "search": ["field": "tag", "value": matchingTag.name],
-            "includeThumbnailURLs": includeThumbnailURLs,
-            "includeAllAuthorData": includeAllAuthorData
+            "limit": options.limit,
+            "search": ["field": "tag", "value": tag.name],
+            "includeThumbnailURLs": options.includeThumbnailURLs,
+            "includeAllAuthorData": options.includeDetailedAuthors
         ]
-        if let lastLoadedDocumentID = lastLoadedDocumentID {
-            data["lastLoadedDocumentID"] = lastLoadedDocumentID
+        if let startFromDocumentID = options.startFromDocumentID {
+            data["lastLoadedDocID"] = startFromDocumentID
         }
-        
     
         let httpsCallable = functions.httpsCallable("loadContent")
         
-        httpsCallable.call(data) { callResult, callError in
-            guard let response = callResult?.data as? [String: Any] else {
-                completion(nil, callError ?? YTSError.noDataReceived)
-                return
-            }
-            
-            guard let contentDocuments = response["content"] as? [[String: Any]],
-                  let metadata = response["metadata"] as? [String: Any],
-                  let includesLastElement = metadata["includesLastElement"] as? Bool
-            else {
-                completion(nil, callError ?? YTSError.invalidDataReceived)
-                return
-            }
-            
-            let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
-            
-            
-            let group = DispatchGroup()
-            
-            for _ in contentDocuments {
-                group.enter()
-            }
-            
-            for contentDocument in contentDocuments {
-                guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID,
-                      let title = contentDocument["title"] as? String,
-                      let description = contentDocument["description"] as? String,
-                      let dateDictionary = contentDocument["date"] as? [String: Int],
-                      let type = contentDocument["type"] as? String,
-                      let author = contentDocument["author"] as? [String: Any],
-                      let sourceURLString = contentDocument["source_url"] as? String else {
-                          print("Document missing sufficient data. Continuing to next document.")
-                          group.leave()
-                          continue
-                      }
-                
-                guard let sourceURL = URL(string: sourceURLString) else {
-                    print("Source URL is invalid. Continuing to next document.")
-                    group.leave()
-                    continue
-                }
-                
-                
-                let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
-                
-                guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
-                    print("Invalid date value. Exiting scope.")
-                    group.leave()
-                    continue
-                }
-                
-                guard let authorID = author["id"] as? FirestoreID,
-                      let authorName = author["name"] as? String
-                else {
-                    print("Invalid author value. Exiting scope.")
-                    group.leave()
-                    continue
-                }
-                
-                switch type {
-                case "video":
-                    let rabbi: Rabbi
-                    if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
-                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
-                        else {
-                            print("Author profile picture URL is invalid, continuing to next document.")
-                            group.leave()
-                            continue
-                        }
-                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
-                    } else {
-                        rabbi = Rabbi(id: authorID, name: authorName)
-                    }
-                    content.videos.append(Video(
-                        id: id,
-                        fileID: fileID,
-                        sourceURL: sourceURL,
-                        title: title,
-                        author: rabbi,
-                        description: description,
-                        date: date,
-                        duration: duration,
-                        tags: [],
-                        thumbnail: Image("test-thumbnail")))
-                    group.leave()
-                    continue
-                case "audio":
-                    let rabbi: Rabbi
-                    if includeAllAuthorData {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
-                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
-                        else {
-                            print("Author profile picture URL is invalid, continuing to next document.")
-                            group.leave()
-                            continue
-                        }
-                        rabbi = DetailedRabbi(
-                            id: authorID,
-                            name: authorName,
-                            profileImageURL: authorProfilePictureURL)
-                    } else {
-                        rabbi = Rabbi(id: authorID, name: authorName)
-                    }
-                    content.audios.append(Audio(
-                        id: id,
-                        fileID: fileID,
-                        sourceURL: sourceURL,
-                        title: title,
-                        author: rabbi,
-                        description: description,
-                        date: date,
-                        duration: duration,
-                        tags: []))
-                    group.leave()
-                    continue
-                default:
-                    print("Type unrecognized.")
-                    group.leave()
-                    continue
-                }
-            }
-            
-            group.notify(queue: .main) {
-                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
-            }
-        }
+        httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
 }
 
