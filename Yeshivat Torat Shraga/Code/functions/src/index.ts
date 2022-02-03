@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
+import {createCheckers} from "ts-interface-checker";
 
 import os from 'os';
 import {
@@ -71,10 +72,10 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || '',
+				lastLoadedDocID: queryOptions.previousDocID || null,
 				includesLastElement: false,
 			},
-			content: null,
+			content: docs ? [] : null,
 		};
 	}
 
@@ -94,7 +95,13 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	const newsDocs = await Promise.all(
 		docs.map(async (doc) => {
 			// get the document data
-			const data = doc.data() as NewsFirebaseDocument;
+			try {
+				var data = new NewsFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
+
 			const imageURLs: string[] = [];
 			// load the images
 			if (queryOptions.includePictures) {
@@ -124,11 +131,9 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			// This may not work, because the query may return
-			// fewer documents than the limit if there are few documents left.
-			includesLastElement: false,
+			includesLastElement: queryOptions.limit > docs.length,
 		},
-		content: newsDocs,
+		content: newsDocs.filter((doc) => doc != null),
 	};
 });
 
@@ -172,10 +177,10 @@ exports.loadSlideshow = https.onCall(
 		if (!docs || docs.length == 0) {
 			return {
 				metadata: {
-					lastLoadedDocID: queryOptions.previousDocID || '',
+					lastLoadedDocID: queryOptions.previousDocID || null,
 					includesLastElement: false,
 				},
-				content: null,
+				content: docs ? [] : null,
 			};
 		}
 
@@ -195,7 +200,12 @@ exports.loadSlideshow = https.onCall(
 		const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
 			docs.map(async (doc) => {
 				// Get the document data
-				const data = doc.data() as SlideshowImageFirebaseDocument;
+				try {
+					var data = new SlideshowImageFirebaseDocument(doc.data());
+				} catch {
+					return null;
+				}
+
 				// Get the image path
 				const path = data.image_name;
 				// Get the image URL
@@ -218,7 +228,7 @@ exports.loadSlideshow = https.onCall(
 		return {
 			metadata: {
 				lastLoadedDocID: lastDocumentFromQueryID,
-				includesLastElement: false,
+				includesLastElement: queryOptions.limit > docs.length,
 			},
 			content: imageDocs.filter((doc) => {
 				return doc != null;
@@ -265,10 +275,10 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || '',
+				lastLoadedDocID: null,
 				includesLastElement: false,
 			},
-			content: null,
+			content: docs ? [] : null,
 		};
 	}
 
@@ -288,7 +298,12 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	const rebbeimDocs: (RebbeimDocument | null)[] = await Promise.all(
 		docs.map(async (doc) => {
 			// Get the document data
-			const data = doc.data() as RebbeimFirebaseDocument;
+			try {
+				var data = new RebbeimFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+
 			// Get the image path
 			const path = data.profile_picture_filename;
 			// Get the image URL
@@ -311,7 +326,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: false,
+			includesLastElement: queryOptions.limit > docs.length,
 		},
 		content: rebbeimDocs.filter((doc) => {
 			return doc != null;
@@ -387,7 +402,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || '',
+				lastLoadedDocID: null,
 				includesLastElement: false,
 			},
 			content: docs ? [] : null,
@@ -410,7 +425,12 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	const contentDocs: (ContentDocument | null)[] = await Promise.all(
 		docs.map(async (doc) => {
 			// Get the document data
-			const data = doc.data() as ContentFirebaseDocument;
+			try {
+				var data = new ContentFirebaseDocument(doc.data());
+			} catch {
+				return null;
+			}
+			
 			try {
 				const sourcePath = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(
@@ -439,7 +459,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: false,
+			includesLastElement: queryOptions.limit > docs.length,
 		},
 		content: contentDocs.filter((doc) => {
 			return doc != null;
@@ -617,7 +637,7 @@ exports.searchFirestore = https.onCall(
 		if (!searchQuery) {
 			return {
 				metadata: {
-					lastLoadedDocID: '',
+					lastLoadedDocID: null,
 					includesLastElement: false,
 				},
 				content: null,
