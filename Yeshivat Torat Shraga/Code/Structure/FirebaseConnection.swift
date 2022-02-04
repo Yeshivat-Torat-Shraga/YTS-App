@@ -592,7 +592,7 @@ final class FirebaseConnection {
     static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
-            "search": ["field": "tag", "value": matchingTag.name.lowercased()],
+            "search": ["field": "tag", "value": tag.name.lowercased()],
             "includeThumbnailURLs": options.includeThumbnailURLs,
             "includeAllAuthorData": options.includeDetailedAuthors
         ]
