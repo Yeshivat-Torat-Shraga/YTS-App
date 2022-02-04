@@ -44,6 +44,8 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
             
                 withAnimation {
                     self.content = results.content
+                    self.lastLoadedDocumentID = results.metadata.newLastLoadedDocumentID
+                    self.retreivedAllContent = results.metadata.includesLastElement
                     
                     var sortables: [SortableYTSContent] = []
                     for audio in self.content!.audios {
@@ -72,6 +74,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                     }
                 }
             }
+        
         group.notify(queue: .main) {
             withAnimation {
                 self.loadingContent = false
