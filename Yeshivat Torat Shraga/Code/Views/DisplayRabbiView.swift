@@ -34,7 +34,8 @@ struct DisplayRabbiView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                VStack {
+                 
+                LazyVStack {
                     if let sortables = model.sortables {
                         ForEach(sortables, id: \.self) { sortable in
                             if let video = sortable.video {
@@ -52,6 +53,7 @@ struct DisplayRabbiView: View {
                     }
                     
                     LoadMoreView(loadingContent: Binding(get: { model.loadingContent }, set: { model.loadingContent = $0 }), showingError: Binding(get: { model.showError }, set: { model.showError = $0 }), retreivedAllContent: Binding(get: { model.retreivedAllContent }, set: { model.retreivedAllContent = $0 }), loadMore: {
+//                        self.model.loadingContent = true
                         let count = 5
                         model.load(next: count)
                     })
