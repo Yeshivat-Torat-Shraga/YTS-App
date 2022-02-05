@@ -422,7 +422,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 		return {
 			metadata: {
 				lastLoadedDocID: null,
-				finalCall: false,
+				finalCall: docs ? true : false,
 			},
 			results: docs ? [] : null,
 		};
@@ -658,7 +658,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		return {
 			metadata: {
 				lastLoadedDocID: null,
-				finalCall: false,
+				finalCall: null,
 			},
 			content: null,
 		};
