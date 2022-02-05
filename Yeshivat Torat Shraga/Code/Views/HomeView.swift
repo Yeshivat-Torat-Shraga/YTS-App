@@ -190,6 +190,7 @@ struct HomeView: View {
         }
         .sheet(isPresented: $presentingSearchView) {
             SearchView()
+                .background(BackgroundClearView())
         }
     }
 }

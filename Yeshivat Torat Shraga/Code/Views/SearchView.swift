@@ -9,59 +9,36 @@ import SwiftUI
 
 struct SearchView: View {
     @ObservedObject var model = SearchModel()
-    @State var selectedResultTag = "Rebbeim"
-    @State var searchText = ""
+    @State var selectedResultTag: SearchOptions = .all
     @State var showAlert = false
     @State var alertBody = ""
     @State var alertTitle = ""
+    
     var body: some View {
-        NavigationView {
-            ScrollView {
-                ZStack {
-                    Rectangle()
-
-                        .foregroundColor(Color("ShragaBlue"))
-                        .opacity(0.1)
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                        TextField("", text: $searchText, onCommit: {
-                            model.search(searchText)
-                        })
-                            .placeholder(when: searchText.isEmpty) {
-                                Text("Search...")
-//                                    .foregroundColor(Color("ShragaGold"))
-                            }
-                        
-                    }
-                    .foregroundColor(Color("ShragaGold"))
-                    .padding(.leading, 13)
-                    
-                }
-                .frame(height: 40)
-                .cornerRadius(13)
-                .padding([.top, .horizontal])
-                
-                Picker("Result Type", selection: $selectedResultTag) {
-                    Text("Rebbeim")
-                        .tag("Rebbeim")
-                    Text("All")
-                        .tag("All")
-                    Text("Shiurim")
-                        .tag("Shiurim")
-                }
+        VStack {
+        Group {
+        SearchBar(search: model.search)
+        
+        Picker("Result Type", selection: $selectedResultTag) {
+            Text("All")
+                .tag(SearchOptions.all)
+            Text("Shiurim")
+                .tag(SearchOptions.shiurim)
+            Text("Rebbeim")
+                .tag(SearchOptions.rebbeim)
+        }
 //                .onChange(of: selectedResultTag) { value in
 //                    withAnimation {
 //
 //                    }
 //                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding([.horizontal, .bottom])
+        .pickerStyle(SegmentedPickerStyle())
+        .padding([.horizontal, .bottom])
+        }
+            ScrollView {
                 
                 
-                Text(selectedResultTag)
-                    .background(Color.black)
-                
-                if selectedResultTag == "Rebbeim" || selectedResultTag == "All" {
+                if selectedResultTag == .rebbeim || selectedResultTag == .all {
                     if let rebbeim = model.rebbeim {
                         ForEach(rebbeim, id: \.self) { rabbi in
                             if let detailedRabbi = rabbi as? DetailedRabbi {
@@ -83,7 +60,7 @@ struct SearchView: View {
                     }
                 }
                 
-                if selectedResultTag == "Shiurim" || selectedResultTag == "All" {
+                if selectedResultTag == .shiurim || selectedResultTag == .all {
                     if let sortables = model.sortables {
                         ForEach(sortables, id: \.self) { sortable in
                             if let video = sortable.video {
@@ -107,6 +84,48 @@ struct SearchView: View {
                 Alert(title: Text(alertTitle), message: Text(alertBody), dismissButton: Alert.Button.default(Text("OK")))
         })
             .navigationBarHidden(true)
+        }
+        .background(
+            Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
+        )
+    }
+    
+    enum SearchOptions: String {
+        case all = "All"
+        case shiurim = "Shiurim"
+        case rebbeim = "Rebbeim"
+    }
+    
+    struct SearchBar: View {
+        @State var searchText: String = ""
+        var search: (_ text: String) -> Void
+        
+        init(search: @escaping (_ text: String) -> Void) {
+            self.search = search
+        }
+        
+        var body: some View {
+            ZStack {
+                Rectangle()
+                    .foregroundColor(Color("ShragaBlue"))
+                    .opacity(0.1)
+                
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                    TextField("", text: $searchText, onCommit: {
+                        search(searchText)
+                    })
+                        .placeholder(when: searchText.isEmpty) {
+                            Text("Search")
+                        }
+                    
+                }
+                .padding(.leading, 13)
+                
+            }
+            .frame(height: 40)
+            .cornerRadius(13)
+            .padding([.top, .horizontal])
         }
     }
 }
