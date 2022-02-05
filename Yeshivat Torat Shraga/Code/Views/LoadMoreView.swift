@@ -32,8 +32,11 @@ struct LoadMoreView: View {
                     .onAppear {
                         if !loadingContent && !showingError {
                             loadMore()
+                            print("Calling 'loadMore' from LoadMoreView...")
                         }
                     }
+            } else {
+                Spacer()
             }
         }
     }
