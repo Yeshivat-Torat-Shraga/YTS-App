@@ -74,7 +74,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 		return {
 			metadata: {
 				lastLoadedDocID: queryOptions.previousDocID || null,
-				includesLastElement: false,
+				finalCall: docs ? true : false,
 			},
 			results: docs ? [] : null,
 		};
@@ -131,7 +131,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: queryOptions.limit > docs.length,
+			finalCall: queryOptions.limit > docs.length,
 		},
 		results: newsDocs.filter((doc) => doc != null),
 	};
@@ -178,7 +178,7 @@ exports.loadSlideshow = https.onCall(
 			return {
 				metadata: {
 					lastLoadedDocID: null,
-					includesLastElement: false,
+					finalCall: docs ? true : false,
 				},
 				results: docs ? [] : null,
 			};
@@ -241,7 +241,7 @@ exports.loadSlideshow = https.onCall(
 		return {
 			metadata: {
 				lastLoadedDocID: lastDocumentFromQueryID,
-				includesLastElement: queryOptions.limit > docs.length,
+				finalCall: queryOptions.limit > docs.length,
 			},
 			results: imageDocs.filter((doc) => {
 				return doc != null;
@@ -291,7 +291,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 		return {
 			metadata: {
 				lastLoadedDocID: null,
-				includesLastElement: false,
+				finalCall: docs ? true : false,
 			},
 			results: docs ? [] : null,
 		};
@@ -345,7 +345,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: queryOptions.limit > docs.length,
+			finalCall: queryOptions.limit > docs.length,
 		},
 		results: rebbeimDocs.filter((doc) => {
 			return doc != null;
@@ -422,7 +422,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 		return {
 			metadata: {
 				lastLoadedDocID: null,
-				includesLastElement: false,
+				finalCall: docs ? true : false,
 			},
 			results: docs ? [] : null,
 		};
@@ -478,7 +478,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			includesLastElement: queryOptions.limit > docs.length,
+			finalCall: queryOptions.limit > docs.length,
 		},
 		results: contentDocs.filter((doc) => {
 			return doc != null;
@@ -658,7 +658,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		return {
 			metadata: {
 				lastLoadedDocID: null,
-				includesLastElement: false,
+				finalCall: null,
 			},
 			content: null,
 		};
@@ -793,11 +793,11 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		metadata: {
 			content: {
 				lastLoadedDocID: rawContent[rawContent.length - 1].id,
-				includesLastElement: searchOptions.content.limit > rawContent.length,
+				finalCall: searchOptions.content.limit > rawContent.length,
 			},
 			rebbeim: {
 				lastLoadedDocID: rawRebbeim[rawRebbeim.length - 1].id,
-				includesLastElement: searchOptions.rebbeim.limit > rawRebbeim.length,
+				finalCall: searchOptions.rebbeim.limit > rawRebbeim.length,
 			},
 		},
 	};

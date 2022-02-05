@@ -171,7 +171,7 @@ struct HomeView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EllipseButton(action: {
                             self.presentingSearchView = true
-                        }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
+                        }, imageSystemName: "magnifyingglass", foregroundColor: Color("ShragaBlue"), backgroundColor: .clear)
                     }
                 }
             }.alert(isPresented: Binding(get: {

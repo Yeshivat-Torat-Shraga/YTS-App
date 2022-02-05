@@ -14,6 +14,7 @@ struct SearchView: View {
     @State var showAlert = false
     @State var alertBody = ""
     @State var alertTitle = ""
+    
     var body: some View {
         NavigationView {
             ScrollView {

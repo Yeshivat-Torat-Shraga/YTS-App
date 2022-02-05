@@ -15,7 +15,7 @@ struct RootView: View {
     
     var body: some View {
         Group {
-            if (model.showLoadingScreen) {
+            if model.showLoadingScreen {
                 LoadingPage()
             } else {
                 TabView(selection: $selectedView) {
