@@ -16,25 +16,25 @@ struct SearchView: View {
     
     var body: some View {
         VStack {
-        Group {
-        SearchBar(search: model.search)
-        
-        Picker("Result Type", selection: $selectedResultTag) {
-            Text("All")
-                .tag(SearchOptions.all)
-            Text("Shiurim")
-                .tag(SearchOptions.shiurim)
-            Text("Rebbeim")
-                .tag(SearchOptions.rebbeim)
-        }
-//                .onChange(of: selectedResultTag) { value in
-//                    withAnimation {
-//
-//                    }
-//                }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding([.horizontal, .bottom])
-        }
+            Group {
+                SearchBar(search: model.search)
+                
+                Picker("Result Type", selection: $selectedResultTag) {
+                    Text("All")
+                        .tag(SearchOptions.all)
+                    Text("Shiurim")
+                        .tag(SearchOptions.shiurim)
+                    Text("Rebbeim")
+                        .tag(SearchOptions.rebbeim)
+                }
+                //                .onChange(of: selectedResultTag) { value in
+                //                    withAnimation {
+                //
+                //                    }
+                //                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding([.horizontal, .bottom])
+            }
             ScrollView {
                 
                 
@@ -82,7 +82,7 @@ struct SearchView: View {
             }
             .alert(isPresented: $showAlert, content: {
                 Alert(title: Text(alertTitle), message: Text(alertBody), dismissButton: Alert.Button.default(Text("OK")))
-        })
+            })
             .navigationBarHidden(true)
         }
         .background(
