@@ -54,6 +54,9 @@ struct DisplayRabbiView: View {
                 .padding(.horizontal)
             }
         }
+        .onAppear {
+            model.initialLoad()
+        }
         
         .navigationTitle(model.rabbi.name)
         .toolbar(content: {

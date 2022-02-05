@@ -325,6 +325,14 @@ struct AudioPlayer: View {
             startPoint: .bottomLeading, endPoint: .topTrailing)
                         .ignoresSafeArea())
         
+        .onAppear {
+            if let audio = audio {
+                isFavorited = Favorites.getfavoriteIDs().contains(audio.firestoreID)
+            } else {
+                isFavorited = false
+            }
+        }
+        
         .alert(isPresented: Binding (get: {
             favoriteErr != nil
         }, set: {
