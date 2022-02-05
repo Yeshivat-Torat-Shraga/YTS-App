@@ -6,7 +6,7 @@ import { isString } from './helpers';
 export interface LoadData {
 	metadata: {
 		lastLoadedDocID: string | null;
-		includesLastElement: boolean;
+		finalCall: boolean;
 		error?: string;
 	};
 	results: any[] | null;
