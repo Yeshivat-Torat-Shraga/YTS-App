@@ -16,7 +16,7 @@ final class FirebaseConnection {
     typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startFromDocumentID: FirestoreID?)
     typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startFromDocumentID: FirestoreID?)
     
-    typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool)
+    typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
     static func loadNews(lastLoadedDocumentID: FirestoreID? = nil, limit: Int = 15, completion: @escaping (_ results: (articles: [NewsArticle], metadata: Metadata)?, _ error: Error?) -> Void) {
         var articles: [NewsArticle] = []
@@ -41,8 +41,13 @@ final class FirebaseConnection {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            let includesLastElement = response["includesLastElement"] as? Bool ?? true
-            let newLastLoadedDocumentID = response["lastLoadedDocID"] as? FirestoreID
+            let finalCall = response["finalCall"] as? Bool ?? true
+            var newLastLoadedDocumentID = response["lastLoadedDocID"] as? FirestoreID
+            
+            if newLastLoadedDocumentID == nil && lastLoadedDocumentID != nil {
+                print("This isn't supposed to happen, the sequential loader will run in circles...")
+                newLastLoadedDocumentID = lastLoadedDocumentID
+            }
             
             let group = DispatchGroup()
             for _ in urlDocuments {
@@ -78,7 +83,7 @@ final class FirebaseConnection {
                 group.leave()
             }
             group.notify(queue: .main) {
-                completion((articles: articles, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((articles: articles, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -109,12 +114,17 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let finalCall = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
             
-            let newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
+            var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
+            
+            if newLastLoadedDocumentID == nil && lastLoadedDocumentID != nil {
+                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'lastLoadedDocumentID'.")
+                newLastLoadedDocumentID = lastLoadedDocumentID
+            }
             
             let group = DispatchGroup()
             
@@ -142,7 +152,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -209,13 +219,13 @@ final class FirebaseConnection {
             }
             
             
-            guard let includesLastContent = contentMetadata["includesLastElement"] as? Bool, let includesLastRabbi = rebbeimMetadata["includesLastElement"] as? Bool else {
+            guard let finalCallContent = contentMetadata["finalCall"] as? Bool, let finalCallRabbi = rebbeimMetadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
             
-            let newLastLoadedContentID = contentMetadata["lastLoadedDocumentID"] as? FirestoreID
-            let newLastLoadedRabbiID = rebbeimMetadata["lastLoadedDocumentID"] as? FirestoreID
+            let newLastLoadedContentID = contentMetadata["lastLoadedDocID"] as? FirestoreID
+            let newLastLoadedRabbiID = rebbeimMetadata["lastLoadedDocID"] as? FirestoreID
             
             let group = DispatchGroup()
             
@@ -334,7 +344,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((content: content, rebbeim: rebbeim, metadata: (content: (newLastLoadedDocumentID: newLastLoadedContentID, includesLastElement: includesLastContent), rebbeim: (newLastLoadedDocumentID: newLastLoadedRabbiID, includesLastElement: includesLastRabbi))), callError)
+                completion((content: content, rebbeim: rebbeim, metadata: (content: (newLastLoadedDocumentID: newLastLoadedContentID, finalCall: finalCallContent), rebbeim: (newLastLoadedDocumentID: newLastLoadedRabbiID, finalCall: finalCallRabbi))), callError)
             }
         }
     }
@@ -369,9 +379,14 @@ final class FirebaseConnection {
                 return
             }
             
-            let newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
+            var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            if newLastLoadedDocumentID == nil && options.startFromDocumentID != nil {
+                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startFromDocumentID'.")
+                newLastLoadedDocumentID = options.startFromDocumentID
+            }
+            
+            guard let finalCall = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -407,7 +422,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((rebbeim: rebbeim, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((rebbeim: rebbeim, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -416,121 +431,124 @@ final class FirebaseConnection {
         var content: Content = (videos: [], audios: [])
         
         return { callResult, callError in
-        guard let response = callResult?.data as? [String: Any] else {
-            completion(nil, callError ?? YTSError.noDataReceived)
-            return
-        }
-        
-        guard let contentDocuments = response["results"] as? [[String: Any]],
-              let metadata = response["metadata"] as? [String: Any]
-            else {
-            completion(nil, callError ?? YTSError.invalidDataReceived)
-            return
-        }
-        
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            guard let contentDocuments = response["results"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-        let newLastLoadedDocumentID = metadata["lastLoadedDocumentID"] as? FirestoreID
-        
-        let group = DispatchGroup()
-        
-        for _ in contentDocuments {
-            group.enter()
-        }
-        
-        for contentDocument in contentDocuments {
-            guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID, let title = contentDocument["title"] as? String, let description = contentDocument["description"] as? String, let dateDictionary = contentDocument["date"] as? [String: Int], let type = contentDocument["type"] as? String, let author = contentDocument["author"] as? [String: Any], let sourceURLString = contentDocument["source_url"] as? String else {
-                print("Document missing sufficient data. Continuing to next document.")
-                group.leave()
-                continue
+            
+            guard let finalCall = metadata["finalCall"] as? Bool else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
+            
+            if newLastLoadedDocumentID == nil && options.startFromDocumentID != nil {
+                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startFromDocumentID'.")
+                newLastLoadedDocumentID = options.startFromDocumentID
             }
             
-            guard let sourceURL = URL(string: sourceURLString) else {
-                print("Source URL is invalid. Continuing to next document.")
-                group.leave()
-                continue
+            let group = DispatchGroup()
+            
+            for _ in contentDocuments {
+                group.enter()
             }
             
-            let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
-            
-            guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
-                print("Invalid date value. Exiting scope.")
-                group.leave()
-                continue
-            }
-            
-            guard let authorID = author["id"] as? FirestoreID, let authorName = author["name"] as? String else {
-                print("Invalid author value. Exiting scope.")
-                group.leave()
-                continue
-            }
-            
-            switch type {
-            case "video":
-                let rabbi: Rabbi
-                
-                if options.includeDetailedAuthors {
-                    guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
-                        print("Author profile picture URL is invalid, continuing to next document.")
-                        group.leave()
-                        continue
-                    }
-                    rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
-                } else {
-                    rabbi = Rabbi(id: authorID, name: authorName)
+            for contentDocument in contentDocuments {
+                guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID, let title = contentDocument["title"] as? String, let description = contentDocument["description"] as? String, let dateDictionary = contentDocument["date"] as? [String: Int], let type = contentDocument["type"] as? String, let author = contentDocument["author"] as? [String: Any], let sourceURLString = contentDocument["source_url"] as? String else {
+                    print("Document missing sufficient data. Continuing to next document.")
+                    group.leave()
+                    continue
                 }
                 
-                content.videos.append(Video(
-                    id: id,
-                    fileID: fileID,
-                    sourceURL: sourceURL,
-                    title: title,
-                    author: rabbi,
-                    description: description,
-                    date: date,
-                    duration: duration,
-                    tags: []))
-                group.leave()
-                continue
-            case "audio":
-                let rabbi: Rabbi
-                if options.includeDetailedAuthors {
-                    guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
-                        print("Author profile picture URL is invalid, continuing to next document.")
-                        group.leave()
-                        continue
+                guard let sourceURL = URL(string: sourceURLString) else {
+                    print("Source URL is invalid. Continuing to next document.")
+                    group.leave()
+                    continue
+                }
+                
+                let duration: TimeInterval? = (contentDocument["duration"] as? NSNumber)?.doubleValue
+                
+                guard let date = Date(firebaseTimestampDictionary: dateDictionary) else {
+                    print("Invalid date value. Exiting scope.")
+                    group.leave()
+                    continue
+                }
+                
+                guard let authorID = author["id"] as? FirestoreID, let authorName = author["name"] as? String else {
+                    print("Invalid author value. Exiting scope.")
+                    group.leave()
+                    continue
+                }
+                
+                switch type {
+                case "video":
+                    let rabbi: Rabbi
+                    
+                    if options.includeDetailedAuthors {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                            print("Author profile picture URL is invalid, continuing to next document.")
+                            group.leave()
+                            continue
+                        }
+                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                    } else {
+                        rabbi = Rabbi(id: authorID, name: authorName)
                     }
                     
-                    rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
-                } else {
-                    rabbi = Rabbi(id: authorID, name: authorName)
+                    content.videos.append(Video(
+                        id: id,
+                        fileID: fileID,
+                        sourceURL: sourceURL,
+                        title: title,
+                        author: rabbi,
+                        description: description,
+                        date: date,
+                        duration: duration,
+                        tags: []))
+                    group.leave()
+                    continue
+                case "audio":
+                    let rabbi: Rabbi
+                    if options.includeDetailedAuthors {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                            print("Author profile picture URL is invalid, continuing to next document.")
+                            group.leave()
+                            continue
+                        }
+                        
+                        rabbi = DetailedRabbi(id: authorID, name: authorName, profileImageURL: authorProfilePictureURL)
+                    } else {
+                        rabbi = Rabbi(id: authorID, name: authorName)
+                    }
+                    
+                    content.audios.append(Audio(
+                        id: id,
+                        fileID: fileID,
+                        sourceURL: sourceURL,
+                        title: title,
+                        author: rabbi,
+                        description: description,
+                        date: date,
+                        duration: duration,
+                        tags: []))
+                    group.leave()
+                    continue
+                default:
+                    print("Type unrecognized.")
+                    group.leave()
+                    continue
                 }
-                
-                content.audios.append(Audio(
-                    id: id,
-                    fileID: fileID,
-                    sourceURL: sourceURL,
-                    title: title,
-                    author: rabbi,
-                    description: description,
-                    date: date,
-                    duration: duration,
-                    tags: []))
-                group.leave()
-                continue
-            default:
-                print("Type unrecognized.")
-                group.leave()
-                continue
+            }
+            
+            group.notify(queue: .main) {
+                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
-        
-        group.notify(queue: .main) {
-            completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
-        }
-    }
     }
     
     /// Loads `YTSContent` objects from Firestore.
@@ -563,7 +581,8 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
+        print("Loading content...")
         var data: [String: Any] = [
             "limit": options.limit,
             "includeThumbnailURLs": options.includeThumbnailURLs,
@@ -589,7 +608,7 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - matchingTag: The function only returns content that have a tag matching  the `Tag` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
             "search": ["field": "tag", "value": tag.name.lowercased()],

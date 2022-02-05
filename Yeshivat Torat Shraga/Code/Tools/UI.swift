@@ -319,7 +319,9 @@ struct DownloadableImage<Object: URLImageable>: View {
                 ProgressView()
                     .progressViewStyle(YTSProgressViewStyle())
             }, completion: { image in
-                model.object.image = image
+                DispatchQueue.main.async {
+                    model.object.image = image
+                }
             })
         } else {
             Image(systemName: "questionmark")
