@@ -61,7 +61,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                     
                     
                     self.lastLoadedDocumentID = results.metadata.newLastLoadedDocumentID
-                    self.retreivedAllContent = results.metadata.includesLastElement
+                    self.retreivedAllContent = results.metadata.finalCall
                     
                     var sortables: [SortableYTSContent] = []
                     for audio in self.content!.audios {

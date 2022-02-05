@@ -16,7 +16,7 @@ final class FirebaseConnection {
     typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startFromDocumentID: FirestoreID?)
     typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startFromDocumentID: FirestoreID?)
     
-    typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool)
+    typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
     static func loadNews(lastLoadedDocumentID: FirestoreID? = nil, limit: Int = 15, completion: @escaping (_ results: (articles: [NewsArticle], metadata: Metadata)?, _ error: Error?) -> Void) {
         var articles: [NewsArticle] = []
@@ -41,7 +41,7 @@ final class FirebaseConnection {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            let includesLastElement = response["includesLastElement"] as? Bool ?? true
+            let finalCall = response["finalCall"] as? Bool ?? true
             var newLastLoadedDocumentID = response["lastLoadedDocID"] as? FirestoreID
             
             if newLastLoadedDocumentID == nil && lastLoadedDocumentID != nil {
@@ -83,7 +83,7 @@ final class FirebaseConnection {
                 group.leave()
             }
             group.notify(queue: .main) {
-                completion((articles: articles, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((articles: articles, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -114,7 +114,7 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let finalCall = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -152,7 +152,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((images: images, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -219,7 +219,7 @@ final class FirebaseConnection {
             }
             
             
-            guard let includesLastContent = contentMetadata["includesLastElement"] as? Bool, let includesLastRabbi = rebbeimMetadata["includesLastElement"] as? Bool else {
+            guard let finalCallContent = contentMetadata["finalCall"] as? Bool, let finalCallRabbi = rebbeimMetadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -344,7 +344,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((content: content, rebbeim: rebbeim, metadata: (content: (newLastLoadedDocumentID: newLastLoadedContentID, includesLastElement: includesLastContent), rebbeim: (newLastLoadedDocumentID: newLastLoadedRabbiID, includesLastElement: includesLastRabbi))), callError)
+                completion((content: content, rebbeim: rebbeim, metadata: (content: (newLastLoadedDocumentID: newLastLoadedContentID, finalCall: finalCallContent), rebbeim: (newLastLoadedDocumentID: newLastLoadedRabbiID, finalCall: finalCallRabbi))), callError)
             }
         }
     }
@@ -386,7 +386,7 @@ final class FirebaseConnection {
                 newLastLoadedDocumentID = options.startFromDocumentID
             }
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let finalCall = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -422,7 +422,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((rebbeim: rebbeim, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((rebbeim: rebbeim, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -441,7 +441,7 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let finalCall = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -546,7 +546,7 @@ final class FirebaseConnection {
             }
             
             group.notify(queue: .main) {
-                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, includesLastElement: includesLastElement)), callError)
+                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
             }
         }
     }
@@ -581,7 +581,7 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         print("Loading content...")
         var data: [String: Any] = [
             "limit": options.limit,
@@ -608,7 +608,7 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - matchingTag: The function only returns content that have a tag matching  the `Tag` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
             "search": ["field": "tag", "value": tag.name.lowercased()],
