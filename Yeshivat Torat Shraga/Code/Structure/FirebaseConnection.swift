@@ -41,7 +41,7 @@ final class FirebaseConnection {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            let includesLastElement = response["includesLastElement"] as? Bool ?? true
+            let includesLastElement = response["finalCall"] as? Bool ?? true
             let newLastLoadedDocumentID = response["lastLoadedDocID"] as? FirestoreID
             
             let group = DispatchGroup()
@@ -109,7 +109,7 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let includesLastElement = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -209,7 +209,7 @@ final class FirebaseConnection {
             }
             
             
-            guard let includesLastContent = contentMetadata["includesLastElement"] as? Bool, let includesLastRabbi = rebbeimMetadata["includesLastElement"] as? Bool else {
+            guard let includesLastContent = contentMetadata["finalCall"] as? Bool, let includesLastRabbi = rebbeimMetadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -371,7 +371,7 @@ final class FirebaseConnection {
             
             let newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let includesLastElement = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -428,7 +428,7 @@ final class FirebaseConnection {
             return
         }
         
-            guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
+            guard let includesLastElement = metadata["finalCall"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }

@@ -123,7 +123,7 @@ class DetailedRabbi: Rabbi, URLImageable {
         var error: Error? = nil
         self.isFavorite.toggle()
         if self.isFavorite {
-            Favorites.save(self) { favorites, err in
+            Favorites.shared.save(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -132,7 +132,7 @@ class DetailedRabbi: Rabbi, URLImageable {
                 }
             }
         } else {
-            Favorites.delete(self) { favorites, err in
+            Favorites.shared.delete(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -364,7 +364,7 @@ class Video: YTSContent, URLImageable {
         var error: Error? = nil
         if self.favoritedAt == nil {
             self.favoritedAt = Date()
-            Favorites.save(self) { favorites, err in
+            Favorites.shared.save(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -375,7 +375,7 @@ class Video: YTSContent, URLImageable {
             }
         } else {
             self.favoritedAt = nil
-            Favorites.delete(self) { favorites, err in
+            Favorites.shared.delete(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -474,7 +474,7 @@ class Audio: YTSContent, Hashable {
         var error: Error? = nil
         if self.favoritedAt == nil {
             self.favoritedAt = Date()
-            Favorites.save(self) { favorites, err in
+            Favorites.shared.save(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -485,7 +485,7 @@ class Audio: YTSContent, Hashable {
             }
         } else {
             self.favoritedAt = nil
-            Favorites.delete(self) { favorites, err in
+            Favorites.shared.delete(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err

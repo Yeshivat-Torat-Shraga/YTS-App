@@ -10,34 +10,29 @@ import SwiftUI
 class FavoritesModel: ObservableObject {
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
+    @Published var favorites = Favorites.shared.favorites
     init() {
-        // Loading happens onAppear
-//         load()
     }
     
     func load() {
         var sortables: [SortableYTSContent] = []
-        Favorites.getFavorites() { dataTuple, err in
-            guard let data = dataTuple else {
-                print("The dataTuple returned nil from the favorites loader")
-                return
-            }
-
-            if let videos = data.videos {
+        guard let favorites = Favorites.shared.favorites else {
+            print("An error occured whilst loading favorites")
+            return
+        }
+            if let videos = favorites.videos {
                 for video in videos {
                     sortables.append(video.sortable)
                 }
             }
-            if let audios = data.audios {
+            if let audios = favorites.audios {
                 for audio in audios {
                     sortables.append(audio.sortable)
                 }
             }
-            if let rebbeim = data.people {
+            if let rebbeim = favorites.people {
                 self.rebbeim = rebbeim
             }
-        }
-        
         self.sortables = sortables
     }
 }

@@ -18,6 +18,7 @@ struct AudioPlayer: View {
     @State private var isFavorited: Bool = false
     @State private var showFavoritesAlert = false
     @State private var favoriteErr: Error?
+    @State private var favorites = Favorites.shared.favoriteIDs
     
     init() {
         self.isFavorited = (audio?.favoritedAt != nil)
@@ -326,8 +327,9 @@ struct AudioPlayer: View {
                         .ignoresSafeArea())
         
         .onAppear {
+            favorites = Favorites.shared.favoriteIDs
             if let audio = audio {
-                isFavorited = Favorites.getfavoriteIDs().contains(audio.firestoreID)
+                isFavorited = favorites?.contains(audio.firestoreID) ?? false
             } else {
                 isFavorited = false
             }
