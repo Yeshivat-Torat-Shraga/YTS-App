@@ -36,61 +36,15 @@ struct TagView: View {
                 
                 Divider()
                 
-                ScrollView(.horizontal) {
-                    HStack {
-                        Spacer()
-                        ForEach(tags, id: \.name) { tag in
-                            if tag == self.model.tag {
-                                if #available(iOS 15.0, *) {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                    .buttonStyle(BorderedButtonStyle())
-                                    .disabled(true)
-                                    .overlay(Color.black.opacity(0.1))
-                                } else {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                    .disabled(true)
-                                    .overlay(Color.black.opacity(0.1))
-                                }
-                            } else {
-                                if #available(iOS 15.0, *) {
-                                    Button {
-                                        self.model.set(tag: tag)
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    } .buttonStyle(BorderedButtonStyle())
-                                } else {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                }
-                            }
-                        }
-                        Spacer()
-                    }
-                }
                 
                 ScrollView {
                     VStack {
-                        HStack {
-                            Text("Recently Uploaded")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }
+//                        HStack {
+//                            Text("Recently Uploaded")
+//                                .font(.title3)
+//                                .bold()
+//                            Spacer()
+//                        }
                         if let sortables = model.sortables {
                             ForEach(sortables, id: \.self) { sortable in
                                 if let video = sortable.video {
@@ -123,6 +77,16 @@ struct TagView: View {
             .onAppear {
                 self.model.load()
             }
+    }
+}
+
+struct iOS14BorderedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(Color(hex: 0x526B98))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 }
 

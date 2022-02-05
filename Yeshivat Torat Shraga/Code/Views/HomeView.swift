@@ -39,12 +39,12 @@ struct HomeView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack {
                                     ForEach(sortables, id: \.self) { sortable in
-                                        Group {
-                                            if let audio = sortable.audio {
-                                                AudioTile(audio: audio)
-                                            } else if let video = sortable.video {
-                                                VideoTile(video: video)
-                                            }
+                                        if let audio = sortable.audio {
+                                            ContentCardView(content: audio)
+                                                .padding(.vertical)
+                                        } else if let video = sortable.video {
+                                            ContentCardView(content: video)
+                                                .padding(.vertical)
                                         }
                                     }
                                 }
@@ -76,8 +76,14 @@ struct HomeView: View {
                                 HStack {
                                     ForEach(rebbeim, id: \.self) { rabbi in
                                         NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                            TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
-                                        }.padding(.vertical)
+                                            RabbiTileView(rabbi: rabbi, size: .medium)
+                                        }
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.Haptics.navLink)
+                                                })
+                                        .padding(.vertical)
                                     }
                                 }.padding(.horizontal)
                             }
@@ -135,6 +141,12 @@ struct HomeView: View {
                                 ForEach(tags, id: \.name) { tag in
                                     TagTileView(tag)
                                         .padding(.vertical)
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.Haptics.navLink)
+                                                })
+
                                 }
                             }.padding(.horizontal)
                         }
@@ -170,8 +182,8 @@ struct HomeView: View {
                             }
                         }))
             })
-                .onChange(of: model.showError) { v in
-                    if (v){
+                .onChange(of: model.showError) { errVal in
+                    if (errVal){
                         Haptics.shared.notify(.error)
                     }
                 }

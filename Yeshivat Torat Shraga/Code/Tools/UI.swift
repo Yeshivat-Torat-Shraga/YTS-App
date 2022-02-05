@@ -9,9 +9,14 @@ import SwiftUI
 import SwiftyGif
 
 struct UI {
-    static var shadowRadius: CGFloat = 2
-    static var cornerRadius: CGFloat = 8
-//    static var
+    static let shadowRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 8
+    class Haptics {
+        static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
+        static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light
+    }
+    //    static let openContentFeedback
+    //    static var
 }
 
 struct iOS14BorderedProminentButtonStyle: ButtonStyle {
@@ -314,7 +319,9 @@ struct DownloadableImage<Object: URLImageable>: View {
                 ProgressView()
                     .progressViewStyle(YTSProgressViewStyle())
             }, completion: { image in
-                model.object.image = image
+                DispatchQueue.main.async {
+                    model.object.image = image
+                }
             })
         } else {
             Image(systemName: "questionmark")

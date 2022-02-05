@@ -33,7 +33,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
         let group = DispatchGroup()
         
         group.enter()
-        FirebaseConnection.loadContent(attributionRabbi: rabbi, includeThumbnailURLs: true) { results, error in
+        FirebaseConnection.loadContent(options: (limit: increment, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedDocumentID), matching: rabbi) { results, error in
                 guard let results = results else {
                     self.showError(error: error ?? YTSError.unknownError, retry: {
                         self.load(next: increment)
@@ -43,7 +43,25 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                 }
             
                 withAnimation {
-                    self.content = results.content
+                    if self.content == nil {
+                        self.content = results.content
+                    } else {
+                        if self.content!.videos == nil {
+                            self.content!.videos = results.content.videos
+                        } else {
+                            self.content!.videos.append(contentsOf: results.content.videos)
+                        }
+                        
+                        if self.content!.audios == nil {
+                            self.content!.audios = results.content.audios
+                        } else {
+                            self.content!.audios.append(contentsOf: results.content.audios)
+                        }
+                    }
+                    
+                    
+                    self.lastLoadedDocumentID = results.metadata.newLastLoadedDocumentID
+                    self.retreivedAllContent = results.metadata.finalCall
                     
                     var sortables: [SortableYTSContent] = []
                     for audio in self.content!.audios {
@@ -72,6 +90,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                     }
                 }
             }
+        
         group.notify(queue: .main) {
             withAnimation {
                 self.loadingContent = false
