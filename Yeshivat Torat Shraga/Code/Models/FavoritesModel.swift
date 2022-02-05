@@ -12,7 +12,7 @@ class FavoritesModel: ObservableObject {
     @Published var rebbeim: [DetailedRabbi]?
     init() {
         // Loading happens onAppear
-        // load()
+//         load()
     }
     
     func load() {
@@ -37,5 +37,7 @@ class FavoritesModel: ObservableObject {
                 self.rebbeim = rebbeim
             }
         }
+        
+        self.sortables = sortables
     }
 }
