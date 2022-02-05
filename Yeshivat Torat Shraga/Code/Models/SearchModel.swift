@@ -16,9 +16,7 @@ class SearchModel: ObservableObject, ErrorShower {
     var retry: (() -> Void)?
 
     func search(_ query: String) {
-        print("Searching Firebase...")
         FirebaseConnection.search(query: query) { results, error in
-            
             guard let rebbeim = results?.rebbeim else {
                 self.showError(error: error ?? YTSError.unknownError, retry: {})
                 return

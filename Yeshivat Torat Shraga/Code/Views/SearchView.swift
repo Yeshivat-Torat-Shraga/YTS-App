@@ -131,7 +131,6 @@ struct SearchView: View {
 }
 
 struct SearchView_Previews: PreviewProvider {
-    
     struct binding: View {
         @State var presentingSearchView = true
         var body: some View {

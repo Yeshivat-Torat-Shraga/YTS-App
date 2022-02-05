@@ -163,7 +163,7 @@ final class FirebaseConnection {
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     /// - Returns:
     /// `((results: Content, [Rabbi], Metadata)?, Error?)`
-    static func search(query: String, contentOptions: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: (Content), rebbeim: [Rabbi], metadata: (content: Metadata, rebbeim: Metadata))?, _ error: Error?) -> Void) {
+    static func search(query: String, contentOptions: ContentOptions = (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: (Content), rebbeim: [Rabbi], metadata: (content: Metadata, rebbeim: Metadata))?, _ error: Error?) -> Void) {
         var content: Content = (videos: [], audios: [])
         var rebbeim: [Rabbi] = []
         
@@ -186,11 +186,30 @@ final class FirebaseConnection {
             rebbeimOptionsData["startFromDocumentID"] = rsID
         }
         
+        var contentData: [String: Any] = [
+            "limit": contentOptions.limit,
+            "includeThumbnailURLs": contentOptions.includeThumbnailURLs,
+            "includeDetailedAuthorInfo": contentOptions.includeDetailedAuthors
+        ]
+        
+        if let contentStartDocID = contentOptions.startFromDocumentID {
+            contentData["startFromDocumentID"] = contentStartDocID
+        }
+        
+        var rebbeimData: [String: Any] = [
+            "limit": contentOptions.limit,
+            "includePictureURLs": rebbeimOptions.includePictureURLs
+        ]
+        
+        if let rebbeimStartDocID = rebbeimOptions.startFromDocumentID {
+            rebbeimData["startFromDocumentID"] = rebbeimStartDocID
+        }
+        
         let data: [String: Any] = [
             "searchQuery": query,
             "searchOptions": [
-                "content": contentOptions,
-                "rebbeim": rebbeimOptions
+                "content": contentData,
+                "rebbeim": rebbeimData
             ],
         ]
         
