@@ -369,6 +369,7 @@ class Video: YTSContent, URLImageable {
                     Haptics.shared.notify(.error)
                     error = err
                 } else {
+                    print("Video saved to CoreData successfuly")
                     Haptics.shared.notify(.success)
                 }
             }
@@ -478,6 +479,7 @@ class Audio: YTSContent, Hashable {
                     Haptics.shared.notify(.error)
                     error = err
                 } else {
+                    print("Audio saved to CoreData Successfuly")
                     Haptics.shared.notify(.success)
                 }
             }

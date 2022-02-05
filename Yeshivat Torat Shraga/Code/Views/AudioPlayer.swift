@@ -27,14 +27,14 @@ struct AudioPlayer: View {
         self.audio = audio
         
         if let sourceURL = audio.sourceURL {
-        let playerItem = AVPlayerItem(url: sourceURL)
-        let player = AVPlayer(playerItem: playerItem)
-        //            self.avPlayer.prepareToPlay()
-        //            avPlayer.volume = 1.0
-        //        player.play()
-        //            self.model = AudioPlayerModel(player: player)
-        //            self.avPlayer = player
-        self.player.set(avPlayer: player)
+            let playerItem = AVPlayerItem(url: sourceURL)
+            let player = AVPlayer(playerItem: playerItem)
+            //            self.avPlayer.prepareToPlay()
+            //            avPlayer.volume = 1.0
+            //        player.play()
+            //            self.model = AudioPlayerModel(player: player)
+            //            self.avPlayer = player
+            self.player.set(avPlayer: player)
         } else {
             print("Audio sourceURL is nil, could not set audio.")
         }
@@ -287,18 +287,17 @@ struct AudioPlayer: View {
             
             HStack {
                 Spacer()
-
-                    Button(action: {
-                        if let audio = audio {
-                            favoriteErr = audio.toggleFavorites()
-                        }
-                    }, label: {
-                        Image(systemName: audio?.favoritedAt != nil
-                              ? "heart.fill"
-                              : "heart")
-                            .foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                
+                Button(action: {
+                    favoriteErr = audio?.toggleFavorites()
+                    isFavorited = (audio?.favoritedAt != nil)
+                }, label: {
+                    Image(systemName: isFavorited
+                          ? "heart.fill"
+                          : "heart")
+                        .foregroundColor(Color("ShragaGold"))
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 
                 Button(action: {
                     Haptics.shared.play(.rigid)
@@ -309,14 +308,14 @@ struct AudioPlayer: View {
                         .foregroundColor(.gray)
                         .frame(width: 45, height: 20)
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
-              
+                
                 Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.gray)
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                    
+                }, label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.gray)
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
             Spacer()

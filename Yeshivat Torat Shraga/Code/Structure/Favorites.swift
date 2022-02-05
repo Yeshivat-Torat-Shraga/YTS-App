@@ -17,18 +17,18 @@ class Favorites {
     private static var favorites: FavoritesTuple?// = loadFavorites()
     static func getfavoriteIDs() -> [FirestoreID] {
         var IDs: [FirestoreID] = []
-        if let favs = loadFavorites() {
-            if let videos = favs.videos {
+        if let favorites = self.favorites ?? loadFavorites() {
+            if let videos = favorites.videos {
                 for video in videos {
                     IDs.append(video.firestoreID)
                 }
             }
-            if let audios = favs.audios {
+            if let audios = favorites.audios {
                 for audio in audios {
                     IDs.append(audio.firestoreID)
                 }
             }
-            if let people = favs.people {
+            if let people = favorites.people {
                 for person in people {
                     IDs.append(person.firestoreID)
                 }
@@ -327,19 +327,19 @@ class Favorites {
         do {
             let result = try managedContext.fetch(fetchRequest)
             
-                if let match = result.first(where: { r in
-                    r.firestoreID == rabbiToDelete.firestoreID
-                }) {
-                    managedContext.delete(match)
-                    
-                    do {
-                        try managedContext.save()
-                        loadFavorites(completion: completion)
-                    } catch {
-                        print("Failed to delete: \(error)")
-                        loadFavorites(completion: completion)
-                    }
+            if let match = result.first(where: { r in
+                r.firestoreID == rabbiToDelete.firestoreID
+            }) {
+                managedContext.delete(match)
+                
+                do {
+                    try managedContext.save()
+                    loadFavorites(completion: completion)
+                } catch {
+                    print("Failed to delete: \(error)")
+                    loadFavorites(completion: completion)
                 }
+            }
         } catch {
             print("Failed to delete: \(error)")
         }
@@ -352,19 +352,19 @@ class Favorites {
         do {
             let result = try managedContext.fetch(fetchRequest)
             
-                if let match = result.first(where: { v in
-                    v.firestoreID == videoToDelete.firestoreID
-                }) {
-                    managedContext.delete(match)
-                    
-                    do {
-                        try managedContext.save()
-                        loadFavorites(completion: completion)
-                    } catch {
-                        print("Failed to delete: \(error)")
-                        loadFavorites(completion: completion)
-                    }
+            if let match = result.first(where: { v in
+                v.firestoreID == videoToDelete.firestoreID
+            }) {
+                managedContext.delete(match)
+                
+                do {
+                    try managedContext.save()
+                    loadFavorites(completion: completion)
+                } catch {
+                    print("Failed to delete: \(error)")
+                    loadFavorites(completion: completion)
                 }
+            }
         } catch {
             print("Failed to delete: \(error)")
         }
@@ -377,19 +377,19 @@ class Favorites {
         do {
             let result = try managedContext.fetch(fetchRequest)
             
-                if let match = result.first(where: { a in
-                    a.firestoreID == audioToDelete.firestoreID
-                }) {
-                    managedContext.delete(match)
-                    
-                    do {
-                        try managedContext.save()
-                        loadFavorites(completion: completion)
-                    } catch {
-                        print("Failed to delete: \(error)")
-                        loadFavorites(completion: completion)
-                    }
+            if let match = result.first(where: { a in
+                a.firestoreID == audioToDelete.firestoreID
+            }) {
+                managedContext.delete(match)
+                
+                do {
+                    try managedContext.save()
+                    loadFavorites(completion: completion)
+                } catch {
+                    print("Failed to delete: \(error)")
+                    loadFavorites(completion: completion)
                 }
+            }
         } catch {
             print("Failed to delete: \(error)")
         }

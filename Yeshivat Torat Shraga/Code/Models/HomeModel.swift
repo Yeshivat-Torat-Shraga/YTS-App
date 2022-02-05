@@ -29,14 +29,7 @@ class HomeModel: ObservableObject, ErrorShower {
     }
     
     func load() {
-//        self.rebbeim = DetailedRabbi.samples
-//        self.sortables = [SortableYTSContent(audio: .sample),
-//                          SortableYTSContent(video: .sample),
-//                          SortableYTSContent(audio: .sample),
-//                          SortableYTSContent(video: .sample),
-//                          SortableYTSContent(video: .sample),
-//                          SortableYTSContent(audio: .sample)]
-        
+
         let savedFavorites:[FirestoreID] = Favorites.getfavoriteIDs()
         
         let group = DispatchGroup()
