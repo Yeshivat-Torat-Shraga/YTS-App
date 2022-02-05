@@ -23,18 +23,22 @@ struct FavoritesView: View {
                     }
                     .padding(.horizontal)
                     if let sortables = model.sortables {
-                        ScrollView(showsIndicators: false) {
-                            HStack {
-                                ForEach(sortables, id: \.self) { sortable in
-                                    SortableContentCardView(content: sortable)
-                                        .padding(.vertical)
+                        if sortables.count > 0 {
+                            ScrollView(showsIndicators: false) {
+                                HStack {
+                                    ForEach(sortables, id: \.self) { sortable in
+                                        SortableContentCardView(content: sortable)
+                                            .padding(.vertical)
+                                    }
                                 }
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal)
+                        } else {
+                            Text("It seems like you don't have any saved content right now.")
                         }
                     } else {
                         VStack {
-                            Text("It seems like you don't have any saved content right now.")
+                            Text("We're loading your favorites, hang tight....")
                         }
                         .padding()
                     }
@@ -48,18 +52,22 @@ struct FavoritesView: View {
                     }
                     .padding(.horizontal)
                     if let rebbeim = model.rebbeim {
-                        ScrollView(showsIndicators: false) {
-                            HStack {
-                                ForEach(rebbeim, id: \.self) { rebbi in
-                                    RabbiTileView(rabbi: rebbi, size: .medium)
-                                        .padding(.vertical)
+                        if rebbeim.count > 0 {
+                            ScrollView(showsIndicators: false) {
+                                HStack {
+                                    ForEach(rebbeim, id: \.self) { rebbi in
+                                        RabbiTileView(rabbi: rebbi, size: .medium)
+                                            .padding(.vertical)
+                                    }
                                 }
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal)
+                        } else {
+                            Text("It seems like you don't have any saved rebbeim right now.")
                         }
                     } else {
                         VStack {
-                            Text("It seems like you don't have any favorite rebbeim right now.")
+                            Text("We're loading your favorites, hang tight...")
                         }
                         .padding()
                     }
