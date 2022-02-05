@@ -224,8 +224,8 @@ final class FirebaseConnection {
                 return
             }
             
-            let newLastLoadedContentID = contentMetadata["lastLoadedDocumentID"] as? FirestoreID
-            let newLastLoadedRabbiID = rebbeimMetadata["lastLoadedDocumentID"] as? FirestoreID
+            let newLastLoadedContentID = contentMetadata["lastLoadedDocID"] as? FirestoreID
+            let newLastLoadedRabbiID = rebbeimMetadata["lastLoadedDocID"] as? FirestoreID
             
             let group = DispatchGroup()
             
@@ -431,18 +431,16 @@ final class FirebaseConnection {
         var content: Content = (videos: [], audios: [])
         
         return { callResult, callError in
-        guard let response = callResult?.data as? [String: Any] else {
-            completion(nil, callError ?? YTSError.noDataReceived)
-            return
-        }
-        
-        guard let contentDocuments = response["results"] as? [[String: Any]],
-              let metadata = response["metadata"] as? [String: Any]
-            else {
-            completion(nil, callError ?? YTSError.invalidDataReceived)
-            return
-        }
-        
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            guard let contentDocuments = response["results"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            
             guard let includesLastElement = metadata["includesLastElement"] as? Bool else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
@@ -584,6 +582,7 @@ final class FirebaseConnection {
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
     static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, includesLastElement: Bool))?, _ error: Error?) -> Void) {
+        print("Loading content...")
         var data: [String: Any] = [
             "limit": options.limit,
             "includeThumbnailURLs": options.includeThumbnailURLs,
