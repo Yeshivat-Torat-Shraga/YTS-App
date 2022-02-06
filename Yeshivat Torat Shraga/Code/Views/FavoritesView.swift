@@ -75,7 +75,7 @@ struct FavoritesView: View {
                     }
                 }
             }
-            .background(Color(hex: 0xF2F2F7).ignoresSafeArea())
+            .background(Color("FavoritesBG").ignoresSafeArea())
             .navigationTitle("Favorites")
         }
         .onAppear {
