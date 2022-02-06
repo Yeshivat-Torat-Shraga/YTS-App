@@ -15,12 +15,16 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
-    @State private var isFavorited: Bool = false
+    // MARK: This needs to refresh every time from... somewhere?
+//    @State private var isFavorited: Bool = false
     @State private var showFavoritesAlert = false
     @State private var favoriteErr: Error?
+    @State private var favoriteIDs = Favorites.shared.favoriteIDs
+    var refreshFavorites: (() -> Void)?
     
-    init() {
-        self.isFavorited = (audio?.favoritedAt != nil)
+    init(refreshFavorites: (() -> Void)? = nil) {
+        self.refreshFavorites = refreshFavorites
+//        self.isFavorited = (audio?.favoritedAt != nil)
     }
     
     mutating func set(audio: Audio) {
@@ -288,16 +292,29 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 
+                if let audio = audio, let favoriteIDs = favoriteIDs {
                 Button(action: {
-                    favoriteErr = audio?.toggleFavorites()
-                    isFavorited = (audio?.favoritedAt != nil)
+//                    MARK: CLEAN UP
+                        if favoriteIDs.contains(audio.firestoreID) {
+                            Favorites.shared.delete(audio) { favorites, error in
+//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
+                                self.refreshFavorites?()
+                            }
+                        } else {
+                            Favorites.shared.save(audio) { favorites, error in
+//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
+                                self.refreshFavorites?()
+                            }
+                        }
+                    self.favoriteIDs = Favorites.shared.getfavoriteIDs()
                 }, label: {
-                    Image(systemName: isFavorited
+                    Image(systemName: favoriteIDs.contains(audio.firestoreID)
                           ? "heart.fill"
                           : "heart")
                         .foregroundColor(Color("ShragaGold"))
                         .frame(width: 20, height: 20)
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                }
                 
                 Button(action: {
                     Haptics.shared.play(.rigid)
@@ -326,11 +343,12 @@ struct AudioPlayer: View {
                         .ignoresSafeArea())
         
         .onAppear {
-            if let audio = audio {
-                isFavorited = Favorites.getfavoriteIDs().contains(audio.firestoreID)
-            } else {
-                isFavorited = false
-            }
+            favoriteIDs = Favorites.shared.favoriteIDs
+//            if let audio = audio {
+//                isFavorited = favoriteIDs?.contains(audio.firestoreID) ?? false
+//            } else {
+//                isFavorited = false
+//            }
         }
         
         .alert(isPresented: Binding (get: {

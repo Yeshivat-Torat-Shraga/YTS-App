@@ -30,7 +30,7 @@ class HomeModel: ObservableObject, ErrorShower {
     
     func load() {
 
-        let savedFavorites:[FirestoreID] = Favorites.getfavoriteIDs()
+        let savedFavorites:[FirestoreID] = Favorites.shared.getfavoriteIDs()
         
         let group = DispatchGroup()
 

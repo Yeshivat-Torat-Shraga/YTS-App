@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
+    @ObservedObject var f = Favorites.shared
     var body: some View {
         NavigationView {
             ScrollView {

@@ -123,7 +123,7 @@ class DetailedRabbi: Rabbi, URLImageable {
         var error: Error? = nil
         self.isFavorite.toggle()
         if self.isFavorite {
-            Favorites.save(self) { favorites, err in
+            Favorites.shared.save(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -132,7 +132,7 @@ class DetailedRabbi: Rabbi, URLImageable {
                 }
             }
         } else {
-            Favorites.delete(self) { favorites, err in
+            Favorites.shared.delete(self) { favorites, err in
                 if err != nil {
                     Haptics.shared.notify(.error)
                     error = err
@@ -201,9 +201,9 @@ protocol YTSContent: URLImageable, Hashable {
     
     var name: String { get }
     
-    var favoritedAt: Date? { get set }
+//    var favoritedAt: Date? { get set }
     
-    func toggleFavorites() -> Error?
+//    func toggleFavorites() -> Error?
 }
 
 extension YTSContent {
@@ -218,7 +218,6 @@ extension YTSContent {
 }
 
 class Video: YTSContent, URLImageable {
-    
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
     var sourceURL: URL?
@@ -230,7 +229,7 @@ class Video: YTSContent, URLImageable {
     var tags: [Tag]
     var thumbnail: Image?
     var thumbnailURL: URL?
-    var favoritedAt: Date?
+//    var favoritedAt: Date?
     
     var name: String {
         return title
@@ -270,7 +269,7 @@ class Video: YTSContent, URLImageable {
         self.duration = duration
         self.tags = tags
         self.thumbnail = thumbnail
-        self.favoritedAt = favoritedAt
+//        self.favoritedAt = favoritedAt
     }
     
     /// Standard initializer for a `Video`
@@ -296,7 +295,7 @@ class Video: YTSContent, URLImageable {
         self.duration = duration
         self.tags = tags
         self.thumbnailURL = thumbnailURL
-        self.favoritedAt = favoritedAt
+//        self.favoritedAt = favoritedAt
     }
     
     /// Standard initializer for a `Video`
@@ -332,7 +331,7 @@ class Video: YTSContent, URLImageable {
         }
         
         self.thumbnail = Image(uiImage: thumbnailUIImage)
-        self.favoritedAt = cdVideo.favoritedAt
+//        self.favoritedAt = cdVideo.favoritedAt
         
         if let author = DetailedRabbi(cdPerson: author) {
             self.author = author
@@ -360,32 +359,32 @@ class Video: YTSContent, URLImageable {
         lhs.firestoreID == rhs.firestoreID
     }
     
-    func toggleFavorites() -> Error? {
-        var error: Error? = nil
-        if self.favoritedAt == nil {
-            self.favoritedAt = Date()
-            Favorites.save(self) { favorites, err in
-                if err != nil {
-                    Haptics.shared.notify(.error)
-                    error = err
-                } else {
-                    print("Video saved to CoreData successfuly")
-                    Haptics.shared.notify(.success)
-                }
-            }
-        } else {
-            self.favoritedAt = nil
-            Favorites.delete(self) { favorites, err in
-                if err != nil {
-                    Haptics.shared.notify(.error)
-                    error = err
-                } else {
-                    Haptics.shared.notify(.warning)
-                }
-            }
-        }
-        return error
-    }
+//    func toggleFavorites() -> Error? {
+//        var error: Error? = nil
+//        if self.favoritedAt == nil {
+//            self.favoritedAt = Date()
+//            Favorites.shared.save(self) { favorites, err in
+//                if err != nil {
+//                    Haptics.shared.notify(.error)
+//                    error = err
+//                } else {
+//                    print("Video saved to CoreData successfuly")
+//                    Haptics.shared.notify(.success)
+//                }
+//            }
+//        } else {
+//            self.favoritedAt = nil
+//            Favorites.shared.delete(self) { favorites, err in
+//                if err != nil {
+//                    Haptics.shared.notify(.error)
+//                    error = err
+//                } else {
+//                    Haptics.shared.notify(.warning)
+//                }
+//            }
+//        }
+//        return error
+//    }
     
     static let sample = Video(id: "7g5JY4X1bYURqv8votbB",
                               fileID: "testvideo",
@@ -413,7 +412,7 @@ class Audio: YTSContent, Hashable {
     var date: Date
     var duration: TimeInterval?
     var tags: [Tag]
-    var favoritedAt: Date?
+//    var favoritedAt: Date?
     var name: String {
         return title
     }
@@ -439,7 +438,7 @@ class Audio: YTSContent, Hashable {
         self.date = date
         self.duration = duration
         self.tags = tags
-        self.favoritedAt = favoritedAt
+//        self.favoritedAt = favoritedAt
     }
     
     init?(cdAudio: CDAudio) {
@@ -459,7 +458,7 @@ class Audio: YTSContent, Hashable {
         self.fileID = fileID
         self.title = title
         self.description = description
-        self.favoritedAt = cdAudio.favoritedAt
+//        self.favoritedAt = cdAudio.favoritedAt
 //            MARK: TAGS HARD-PASSED IN
         self.tags = []
         self.date = uploadDate
@@ -470,32 +469,35 @@ class Audio: YTSContent, Hashable {
         hasher.combine(firestoreID)
     }
     
-    func toggleFavorites() -> Error? {
-        var error: Error? = nil
-        if self.favoritedAt == nil {
-            self.favoritedAt = Date()
-            Favorites.save(self) { favorites, err in
-                if err != nil {
-                    Haptics.shared.notify(.error)
-                    error = err
-                } else {
-                    print("Audio saved to CoreData Successfuly")
-                    Haptics.shared.notify(.success)
-                }
-            }
-        } else {
-            self.favoritedAt = nil
-            Favorites.delete(self) { favorites, err in
-                if err != nil {
-                    Haptics.shared.notify(.error)
-                    error = err
-                } else {
-                    Haptics.shared.notify(.warning)
-                }
-            }
-        }
-        return error
-    }
+//    func toggleFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void) -> Error? {
+//        var error: Error? = nil
+//        
+//        if self.favoritedAt == nil {
+//            self.favoritedAt = Date()
+//            Favorites.shared.save(self) { favorites, err in
+//                completion(favorites, err)
+//                if err != nil {
+//                    Haptics.shared.notify(.error)
+//                    error = err
+//                } else {
+//                    print("Audio saved to CoreData Successfuly")
+//                    Haptics.shared.notify(.success)
+//                }
+//            }
+//        } else {
+//            self.favoritedAt = nil
+//            Favorites.shared.delete(self) { favorites, err in
+//                if err != nil {
+//                    Haptics.shared.notify(.error)
+//                    error = err
+//                } else {
+//                    Haptics.shared.notify(.warning)
+//                }
+//            }
+//        }
+//        completion()
+//        return error
+//    }
     
     static func == (lhs: Audio, rhs: Audio) -> Bool {
         lhs.firestoreID == rhs.firestoreID
