@@ -306,6 +306,7 @@ struct AudioPlayer: View {
                                 self.refreshFavorites?()
                             }
                         }
+                    self.favoriteIDs = Favorites.shared.getfavoriteIDs()
                 }, label: {
                     Image(systemName: favoriteIDs.contains(audio.firestoreID)
                           ? "heart.fill"
