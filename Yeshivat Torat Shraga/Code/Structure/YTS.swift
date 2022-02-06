@@ -513,7 +513,7 @@ class Audio: YTSContent, Hashable {
             name: "Rabbi David", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Fadavid_lp-2.jpg?alt=media&token=0debf11a-d4ef-4aa8-b224-ba6420e1d246")!),
         description: "Test description",
         date: .distantPast,
-        duration: 100,
+        duration: 2609,
         tags: [])
 }
 
