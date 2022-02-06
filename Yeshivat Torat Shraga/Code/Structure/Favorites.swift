@@ -16,15 +16,15 @@ class Favorites: ObservableObject {
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
     
     init() {
-        favorites = loadFavorites()
         favoriteIDs = getfavoriteIDs()
     }
     
     @Published var favoriteIDs: [FirestoreID]?
     @Published var favorites: FavoritesTuple?
+    
      func getfavoriteIDs() -> [FirestoreID] {
         var IDs: [FirestoreID] = []
-        if let favorites = self.favorites ?? self.loadFavorites() {
+        if let favorites = self.favorites {
             if let videos = favorites.videos {
                 for video in videos {
                     IDs.append(video.firestoreID)
@@ -45,7 +45,7 @@ class Favorites: ObservableObject {
     }
     
     /// Retreives the most updated favorites tuple for the device.
-     func getFavorites(completion: @escaping ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)) {
+    func getFavorites(completion: @escaping ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)) {
         if let favorites = favorites {
             completion(favorites, nil)
         } else {
@@ -53,7 +53,7 @@ class Favorites: ObservableObject {
         }
     }
     
-     func clearFavorites() {
+    func clearFavorites() {
         let entities = [CDVideo.entity(), CDAudio.entity(), CDPerson.entity()]
         for entity in entities {
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity.name!)
@@ -66,7 +66,7 @@ class Favorites: ObservableObject {
         }
     }
     
-     func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+    func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             let group = DispatchGroup()
             
@@ -125,7 +125,7 @@ class Favorites: ObservableObject {
         }
     }
     
-     func save(_ videoToSave: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+    func save(_ videoToSave: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             let group = DispatchGroup()
             
@@ -208,7 +208,7 @@ class Favorites: ObservableObject {
             cdVideo.fileID = videoToSave.fileID
             cdVideo.title = videoToSave.title
             cdVideo.body = videoToSave.description
-            cdVideo.favoritedAt = videoToSave.favoritedAt
+//            cdVideo.favoritedAt = videoToSave.favoritedAt
             //            MARK: NOT SAVING TAGS
             //            cdAudio.tags = audioToSave.tags
             cdVideo.uploadDate = videoToSave.date
@@ -242,7 +242,7 @@ class Favorites: ObservableObject {
         }
     }
     
-     func save(_ audioToSave: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+    func save(_ audioToSave: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             let group = DispatchGroup()
             
@@ -294,7 +294,7 @@ class Favorites: ObservableObject {
             cdAudio.fileID = audioToSave.fileID
             cdAudio.title = audioToSave.title
             cdAudio.body = audioToSave.description
-            cdAudio.favoritedAt = audioToSave.favoritedAt
+//            cdAudio.favoritedAt = audioToSave.favoritedAt
             //            MARK: NOT SAVING TAGS
             //            cdAudio.tags = audioToSave.tags
             cdAudio.uploadDate = audioToSave.date
@@ -327,7 +327,7 @@ class Favorites: ObservableObject {
         }
     }
     
-     func delete(_ rabbiToDelete: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+    func delete(_ rabbiToDelete: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
         let fetchRequest = CDPerson.fetchRequest()
         
@@ -402,7 +402,7 @@ class Favorites: ObservableObject {
         }
     }
     
-     func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+    func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = self.delegate.persistentContainer.viewContext
         
         let group = DispatchGroup()
@@ -474,6 +474,7 @@ class Favorites: ObservableObject {
         group.notify(queue: .main) {
             let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
             self.favorites = favorites
+            self.favoriteIDs = self.getfavoriteIDs()
             completion?(favorites, nil)
         }
     }
@@ -532,6 +533,8 @@ class Favorites: ObservableObject {
         }
         
         let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
+        self.favorites = favorites
+        self.favoriteIDs = getfavoriteIDs()
         return favorites
     }
 }
