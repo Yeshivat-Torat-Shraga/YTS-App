@@ -17,22 +17,22 @@ struct FavoritesView: View {
                     
                     // MARK: Audio Favorites
                     HStack {
-                        Text("Audio")
+                        Text("Shiurim")
                             .font(.title3)
                             .bold()
                         Spacer()
                     }
                     .padding(.horizontal)
+                    .padding(.top)
                     if let sortables = model.sortables {
                         if sortables.count > 0 {
                             ScrollView(showsIndicators: false) {
-                                HStack {
                                     ForEach(sortables, id: \.self) { sortable in
-                                        SortableContentCardView(content: sortable)
-                                            .padding(.vertical)
+                                        SortableFavoritesCardView(content: sortable)
+                                            .shadow(radius: UI.shadowRadius)
                                     }
-                                }
-                                .padding(.horizontal)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, UI.shadowRadius)
                             }
                         } else {
                             Text("It seems like you don't have any saved content right now.")
@@ -58,6 +58,7 @@ struct FavoritesView: View {
                                 HStack {
                                     ForEach(rebbeim, id: \.self) { rebbi in
                                         RabbiTileView(rabbi: rebbi, size: .medium)
+                                            .shadow(radius: UI.shadowRadius)
                                             .padding(.vertical)
                                     }
                                 }
@@ -74,16 +75,18 @@ struct FavoritesView: View {
                     }
                 }
             }
+            .background(Color(hex: 0xF2F2F7).ignoresSafeArea())
+            .navigationTitle("Favorites")
         }
         .onAppear {
             model.load()
         }
-        .navigationTitle("Favorites")
     }
 }
 
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-        FavoritesView()
+            FavoritesView()
+                .foregroundColor(Color("ShragaBlue"))
     }
 }
