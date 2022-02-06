@@ -15,6 +15,7 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
+    // MARK: This needs to refresh every time from... somewhere?
 //    @State private var isFavorited: Bool = false
     @State private var showFavoritesAlert = false
     @State private var favoriteErr: Error?

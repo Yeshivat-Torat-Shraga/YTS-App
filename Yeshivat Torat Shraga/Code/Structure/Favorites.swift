@@ -24,7 +24,7 @@ class Favorites: ObservableObject {
     
      func getfavoriteIDs() -> [FirestoreID] {
         var IDs: [FirestoreID] = []
-        if let favorites = self.favorites {
+         if let favorites = self.loadFavorites() {
             if let videos = favorites.videos {
                 for video in videos {
                     IDs.append(video.firestoreID)
@@ -534,7 +534,6 @@ class Favorites: ObservableObject {
         
         let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
         self.favorites = favorites
-        self.favoriteIDs = getfavoriteIDs()
         return favorites
     }
 }

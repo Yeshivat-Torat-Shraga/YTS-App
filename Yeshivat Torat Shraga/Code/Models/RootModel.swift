@@ -36,7 +36,7 @@ class RootModel: ObservableObject {
         }
         
         RootModel.audioPlayer.refreshFavorites = {
-            self.favoritesView.model.objectWillChange.send()
+            self.favoritesView.model.load()
         }
     }
     

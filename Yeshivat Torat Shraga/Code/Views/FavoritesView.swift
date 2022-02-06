@@ -78,9 +78,6 @@ struct FavoritesView: View {
         .onAppear {
             model.load()
         }
-//        .onChange(of: model.favorites) {
-//            model.load()
-//        }
         .navigationTitle("Favorites")
     }
 }
