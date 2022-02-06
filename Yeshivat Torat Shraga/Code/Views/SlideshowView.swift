@@ -24,6 +24,9 @@ struct SlideshowView: View {
     }
     
     var body: some View {
+        if slideshowImages.count < 1 {
+            EmptyView()
+        } else {
         SingleAxisGeometryReader(axis: .horizontal) { width in
             TabView(selection: $imageTabIndex) {
                 ForEach(slideshowImages.indices) { index in
@@ -79,6 +82,7 @@ struct SlideshowView: View {
         .onAppear {
             timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
         }
+    }
     }
 }
 

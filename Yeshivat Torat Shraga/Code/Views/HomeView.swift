@@ -36,19 +36,19 @@ struct HomeView: View {
                         .padding(.horizontal)
                         
                         if let sortables = model.sortables {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack {
-                                    ForEach(sortables, id: \.self) { sortable in
-                                        if let audio = sortable.audio {
-                                            ContentCardView(content: audio)
-                                                .padding(.vertical)
-                                        } else if let video = sortable.video {
-                                            ContentCardView(content: video)
+                            if sortables.count < 1 {
+                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                    .padding()
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack {
+                                        ForEach(sortables, id: \.self) { sortable in
+                                            SortableContentCardView(content: sortable)
                                                 .padding(.vertical)
                                         }
                                     }
+                                    .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
                             }
                         } else {
                             HStack {
@@ -72,20 +72,25 @@ struct HomeView: View {
                             Spacer()
                         }.padding(.horizontal)
                         if let rebbeim = model.rebbeim {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack {
-                                    ForEach(rebbeim, id: \.self) { rabbi in
-                                        NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                            RabbiTileView(rabbi: rabbi, size: .medium)
+                            if rebbeim.count < 1 {
+                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                    .padding()
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack {
+                                        ForEach(rebbeim, id: \.self) { rabbi in
+                                            NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
+                                                RabbiTileView(rabbi: rabbi, size: .medium)
+                                            }
+                                            .simultaneousGesture(
+                                                TapGesture()
+                                                    .onEnded {
+                                                        Haptics.shared.play(UI.Haptics.navLink)
+                                                    })
+                                            .padding(.vertical)
                                         }
-                                        .simultaneousGesture(
-                                            TapGesture()
-                                                .onEnded {
-                                                    Haptics.shared.play(UI.Haptics.navLink)
-                                                })
-                                        .padding(.vertical)
-                                    }
-                                }.padding(.horizontal)
+                                    }.padding(.horizontal)
+                                }
                             }
                         } else {
                             HStack {
@@ -109,12 +114,17 @@ struct HomeView: View {
                         .padding(.horizontal)
                         
                         if let slideshowImages = model.slideshowImages {
-                            SlideshowView(slideshowImages)
-                                .frame(height: 250)
-                                .clipped()
-                                .cornerRadius(UI.cornerRadius)
-                                .shadow(radius: UI.shadowRadius)
-                                .padding()
+                            if slideshowImages.count < 1 {
+                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                    .padding()
+                            } else {
+                                SlideshowView(slideshowImages)
+                                    .frame(height: 250)
+                                    .clipped()
+                                    .cornerRadius(UI.cornerRadius)
+                                    .shadow(radius: UI.shadowRadius)
+                                    .padding()
+                            }
                         } else {
                             HStack {
                                 Spacer()
@@ -146,7 +156,7 @@ struct HomeView: View {
                                                 .onEnded {
                                                     Haptics.shared.play(UI.Haptics.navLink)
                                                 })
-
+                                    
                                 }
                             }.padding(.horizontal)
                         }
@@ -177,9 +187,9 @@ struct HomeView: View {
                     dismissButton: Alert.Button.default(
                         Text("Retry"),
                         action: {
-                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                                self.model.retry?()
-                            }
+//                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+//                                self.model.retry?()
+//                            }
                         }))
             })
                 .onChange(of: model.showError) { errVal in

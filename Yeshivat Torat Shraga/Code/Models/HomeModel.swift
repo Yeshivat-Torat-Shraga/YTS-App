@@ -29,9 +29,11 @@ class HomeModel: ObservableObject, ErrorShower {
     }
     
     func load() {
+
+        let savedFavorites:[FirestoreID] = Favorites.shared.getfavoriteIDs()
         
         let group = DispatchGroup()
-        
+
         for _ in ["Rebbeim", "Sortables", "Slideshow images"] {
             group.enter()
         }
@@ -41,10 +43,14 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
-            
+            for rebbi in rebbeim {
+                if savedFavorites.contains(rebbi.firestoreID) {
+                    rebbi.isFavorite = true
+                }
+            }
             self.rebbeim = rebbeim
             group.leave()
-            
+
         }
         
         FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startFromDocumentID: nil)) { results, error in
@@ -52,23 +58,23 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
-            
+
             self.recentlyUploadedContent = content
-            
+
             var sortables: [SortableYTSContent] = []
-            
+
             for video in content.videos {
                 sortables.append(video.sortable)
             }
-            
+
             for audio in content.audios {
                 sortables.append(audio.sortable)
             }
-            
+
             self.sortables = sortables.sorted(by: { lhs, rhs in
                 return lhs.date! > rhs.date!
             })
-            
+
             group.leave()
         }
         
@@ -76,7 +82,7 @@ class HomeModel: ObservableObject, ErrorShower {
             self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
                 lhs.uploaded > rhs.uploaded
             })
-            
+
             group.leave()
         }
         

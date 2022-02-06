@@ -15,22 +15,30 @@ struct AudioPlayer: View {
     let speeds: [Float] = [0.75, 1.00, 1.25,
                            1.50, 1.75, 2.00]
     @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
-    @State private var isFavorited = false
+    // MARK: This needs to refresh every time from... somewhere?
+//    @State private var isFavorited: Bool = false
+    @State private var showFavoritesAlert = false
+    @State private var favoriteErr: Error?
+    @State private var favoriteIDs = Favorites.shared.favoriteIDs
+    var refreshFavorites: (() -> Void)?
     
-    init() {}
+    init(refreshFavorites: (() -> Void)? = nil) {
+        self.refreshFavorites = refreshFavorites
+//        self.isFavorited = (audio?.favoritedAt != nil)
+    }
     
     mutating func set(audio: Audio) {
         self.audio = audio
         
         if let sourceURL = audio.sourceURL {
-        let playerItem = AVPlayerItem(url: sourceURL)
-        let player = AVPlayer(playerItem: playerItem)
-        //            self.avPlayer.prepareToPlay()
-        //            avPlayer.volume = 1.0
-        //        player.play()
-        //            self.model = AudioPlayerModel(player: player)
-        //            self.avPlayer = player
-        self.player.set(avPlayer: player)
+            let playerItem = AVPlayerItem(url: sourceURL)
+            let player = AVPlayer(playerItem: playerItem)
+            //            self.avPlayer.prepareToPlay()
+            //            avPlayer.volume = 1.0
+            //        player.play()
+            //            self.model = AudioPlayerModel(player: player)
+            //            self.avPlayer = player
+            self.player.set(avPlayer: player)
         } else {
             print("Audio sourceURL is nil, could not set audio.")
         }
@@ -283,26 +291,30 @@ struct AudioPlayer: View {
             
             HStack {
                 Spacer()
-
-                    Button(action: {
-                        if let audio = audio {
-                            Favorites.save(audio) { favorites, error in
-                                isFavorited.toggle()
-                                if isFavorited {
-                                    Haptics.shared.notify(.success)
-                                } else {
-                                    Haptics.shared.notify(.warning)
-                                }
-                                // .warning, if removing from favorites.
-                                
-                                print(favorites as Any, error as Any)
+                
+                if let audio = audio, let favoriteIDs = favoriteIDs {
+                Button(action: {
+//                    MARK: CLEAN UP
+                        if favoriteIDs.contains(audio.firestoreID) {
+                            Favorites.shared.delete(audio) { favorites, error in
+//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
+                                self.refreshFavorites?()
+                            }
+                        } else {
+                            Favorites.shared.save(audio) { favorites, error in
+//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
+                                self.refreshFavorites?()
                             }
                         }
-                    }, label: {
-                        Image(systemName: isFavorited ? "heart.fill" : "heart")
-                            .foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                    self.favoriteIDs = Favorites.shared.getfavoriteIDs()
+                }, label: {
+                    Image(systemName: favoriteIDs.contains(audio.firestoreID)
+                          ? "heart.fill"
+                          : "heart")
+                        .foregroundColor(Color("ShragaGold"))
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                }
                 
                 Button(action: {
                     Haptics.shared.play(.rigid)
@@ -313,14 +325,14 @@ struct AudioPlayer: View {
                         .foregroundColor(.gray)
                         .frame(width: 45, height: 20)
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
-              
+                
                 Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(.gray)
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                    
+                }, label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.gray)
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
             Spacer()
@@ -329,6 +341,31 @@ struct AudioPlayer: View {
             colors: [Color("ShragaBlue"), Color(white: 0.8)],
             startPoint: .bottomLeading, endPoint: .topTrailing)
                         .ignoresSafeArea())
+        
+        .onAppear {
+            favoriteIDs = Favorites.shared.favoriteIDs
+//            if let audio = audio {
+//                isFavorited = favoriteIDs?.contains(audio.firestoreID) ?? false
+//            } else {
+//                isFavorited = false
+//            }
+        }
+        
+        .alert(isPresented: Binding (get: {
+            favoriteErr != nil
+        }, set: {
+            favoriteErr = $0 ? favoriteErr : nil
+        })) {
+            Alert(
+                title: Text("Error"),
+                message: Text(
+                    favoriteErr?.getUIDescription() ??
+                    "An unknown error occured while saving your changes."),
+                dismissButton: Alert.Button.default(
+                    Text("OK")
+                )
+            )
+        }
     }
 }
 
