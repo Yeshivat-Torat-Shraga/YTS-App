@@ -14,6 +14,7 @@
 		084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C22794760D00CCEED6 /* NewsModel.swift */; };
 		084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */; };
 		085D438227B06C8C00F2F8FD /* FavoritesCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */; };
+		085D438427B283C800F2F8FD /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085D438327B283C800F2F8FD /* VideoPlayer.swift */; };
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
@@ -76,6 +77,7 @@
 		084E99C22794760D00CCEED6 /* NewsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsModel.swift; sourceTree = "<group>"; };
 		084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleCardView.swift; sourceTree = "<group>"; };
 		085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCardView.swift; sourceTree = "<group>"; };
+		085D438327B283C800F2F8FD /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				083AE1022799A770003A36ED /* NewsArticleView.swift */,
 				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
 				085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */,
+				085D438327B283C800F2F8FD /* VideoPlayer.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -425,6 +428,7 @@
 				087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */,
 				087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
+				085D438427B283C800F2F8FD /* VideoPlayer.swift in Sources */,
 				B1ACF927274456F900079F9A /* LogoView.swift in Sources */,
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
 				F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */,
