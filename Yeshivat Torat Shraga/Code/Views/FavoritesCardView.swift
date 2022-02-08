@@ -19,6 +19,7 @@ struct SortableFavoritesCardView<Content: SortableYTSContent>: View {
 }
 
 struct FavoritesCardView<Content: YTSContent>: View {
+    @State var isShowingPlayerSheet = false
     let content: Content
     let isAudio: Bool
     
@@ -27,32 +28,48 @@ struct FavoritesCardView<Content: YTSContent>: View {
         self.isAudio = (content.sortable.audio != nil)
     }
     var body: some View {
-//        3.5
         let cornerSize: CGFloat = 65
-        HStack(alignment: .center) {
-            if let author = content.author as? DetailedRabbi {
-                DownloadableImage(object: author)
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 85, height: 85)
-                    .clipped()
+        Button(action: {
+            if isAudio {
+                RootModel.audioPlayer.play(audio: content.sortable.audio!)
+                isShowingPlayerSheet = true
+            } else {
+                //                 Video Player goes here
             }
-            VStack(alignment: .leading) {
-                Text(content.title)
-                    .font(.title3)
-                    .bold()
-                    .foregroundColor(Color("ShragaBlue"))
-                Text(content.author.name)
-//                    .foregroundColor(.black)
-                HStack {
-                    Text(timeFormattedMini(totalSeconds: content.duration ?? 0))
-                    Image(systemName: "clock")
+        }) {
+            HStack(alignment: .center) {
+                if let author = content.author as? DetailedRabbi {
+                    DownloadableImage(object: author)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 85, height: 85)
+                        .clipped()
+                } else {
+                    Image("Logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 85, height: 85)
+                        .clipped()
                 }
-                .foregroundColor(Color("Gray"))
+                
+                VStack(alignment: .leading) {
+                    Text(content.title)
+                        .font(.title3)
+                        .bold()
+                        .foregroundColor(Color("ShragaBlue"))
+                    Text(content.author.name)
+                    //                    .foregroundColor(.black)
+                    HStack {
+                        Text(timeFormattedMini(totalSeconds: content.duration ?? 0))
+                        Image(systemName: "clock")
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(Color("Gray"))
+                }
+                //            .padding(.top, 7)
+                Spacer()
             }
-//            .padding(.top, 7)
-            Spacer()
         }
-//        .padding(.vertical)
+        //        .padding(.vertical)
         .background(Color("FavoritesFG"))
         .overlay(
             VStack {
@@ -65,21 +82,24 @@ struct FavoritesCardView<Content: YTSContent>: View {
                         .offset(x: cornerSize/2, y: cornerSize/2)
                         .frame(width: cornerSize, height: cornerSize)
                         .overlay(
-                        Image(systemName: isAudio
-                              ? "mic"
-                              : "play.rectangle")
-                            .foregroundColor(Color("ShragaGold"))
-                            .offset(
-                                x: cornerSize/3.25 + (isAudio
-                                                      ? 0 : -1),
-                                y: cornerSize/3.25 + (isAudio
-                                                      ? -2 : 0))
+                            Image(systemName: isAudio
+                                  ? "mic"
+                                  : "play.rectangle")
+                                .foregroundColor(Color("ShragaGold"))
+                                .offset(
+                                    x: cornerSize/3.25 + (isAudio
+                                                          ? 0 : -1),
+                                    y: cornerSize/3.25 + (isAudio
+                                                          ? -2 : 0))
                         )
                 }
             }
         )
         .cornerRadius(UI.cornerRadius)
         .clipped()
+        .sheet(isPresented: $isShowingPlayerSheet) {
+            RootModel.audioPlayer
+        }
     }
 }
 
@@ -92,7 +112,7 @@ struct FavoritesCardView_Previews: PreviewProvider {
                 SortableFavoritesCardView(content: SortableYTSContent(video: Video.sample))
             }
             .shadow(radius: UI.shadowRadius)
-                .padding(.horizontal)
+            .padding(.horizontal)
         }
     }
 }
