@@ -10,6 +10,7 @@ import SwiftUI
 
 class RootModel: ObservableObject {
     static var audioPlayer: AudioPlayer = AudioPlayer()
+    static var videoPlayer: VideoPlayer = VideoPlayer()
     static var audioPlayerBinding: Binding<AudioPlayer> = Binding {
         audioPlayer
     } set: { val in

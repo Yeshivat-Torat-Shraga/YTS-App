@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 import SwiftyGif
 
 struct UI {
@@ -18,6 +19,37 @@ struct UI {
     //    static let openContentFeedback
     //    static var
 }
+
+struct YTSPlayerController: UIViewControllerRepresentable {
+    typealias UIViewControllerType = AVPlayerViewController
+    
+    var player: AVPlayer
+    var cornerRadius: CGFloat?
+    
+    init(player: AVPlayer) {
+        self.player = player
+        
+    }
+    
+    init(player: AVPlayer, cornerRadius: CGFloat) {
+        self.player = player
+        self.cornerRadius = cornerRadius
+    }
+    
+    func makeUIViewController(context: Context) -> AVPlayerViewController {
+        let playerVC = AVPlayerViewController()
+        playerVC.showsPlaybackControls = false
+        playerVC.canStartPictureInPictureAutomaticallyFromInline = true
+        playerVC.player = player
+        playerVC.view.layer.masksToBounds = true
+        playerVC.view.layer.cornerRadius = cornerRadius ?? 8
+        return playerVC
+    }
+    
+    func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {
+    }
+}
+
 
 struct iOS14BorderedProminentButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

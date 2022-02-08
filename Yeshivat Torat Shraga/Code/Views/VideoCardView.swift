@@ -17,7 +17,7 @@ struct VideoCardView: View {
     
     var body: some View {
         Button {
-//            RootModel.videoPlayer.set(video: model.video)
+            RootModel.videoPlayer.set(video: model.video)
             isShowingPlayerSheet = true
         } label: {
             HStack {
@@ -78,6 +78,9 @@ struct VideoCardView: View {
         )
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
+        .sheet(isPresented: $isShowingPlayerSheet) {
+            RootModel.videoPlayer
+        }
     }
 }
 
