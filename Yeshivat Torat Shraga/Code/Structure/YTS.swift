@@ -564,16 +564,14 @@ typealias Content = (videos: [Video], audios: [Audio])
 
 class SortableYTSContent: Hashable {
     static func == (lhs: SortableYTSContent, rhs: SortableYTSContent) -> Bool {
-        let lhsID = lhs.video?.firestoreID ?? lhs.audio!.firestoreID
-        let rhsID = rhs.video?.firestoreID ?? rhs.audio!.firestoreID
-        return lhsID == rhsID
+        return lhs.id == rhs.id
     }
     func hash(into hasher: inout Hasher) {
         let id = self.video?.firestoreID ?? self.audio!.firestoreID
         hasher.combine(id)
     }
 
-    
+    let id = UUID()
     var video: Video?
     var audio: Audio?
     var date: Date? {
