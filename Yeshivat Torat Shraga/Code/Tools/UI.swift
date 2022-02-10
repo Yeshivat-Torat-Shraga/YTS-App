@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftyGif
 
 struct UI {
+    @Environment(\.colorScheme) static var colorScheme
     static let shadowRadius: CGFloat = 2
     static let cornerRadius: CGFloat = 8
     class Haptics {
@@ -389,6 +390,18 @@ struct URLImage<Content : View>: View {
                 )
             }
         }
+    }
+}
+
+
+extension Color {
+    var responsiveBG: Color {
+        UI.colorScheme == .dark
+        ? .white : .black
+    }
+    var responsiveFG: Color {
+        UI.colorScheme == .dark
+        ? .black : .white
     }
 }
 
