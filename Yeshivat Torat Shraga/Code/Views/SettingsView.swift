@@ -8,12 +8,28 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var toggle = false
+    @State private var enableNotifications = false
+    @State var showClearFavoritesConfirmation = false
+    @AppStorage("slideshowAutoScroll") private var enableTimer = true
+    
     var body: some View {
         NavigationView {
             List {
-                HStack {
-                    Toggle("Enable Notifications", isOn: $toggle)
+                Section {
+                    Toggle("Enable Notifications", isOn: $enableNotifications)
+                    Toggle("Slideshow Autoscroll", isOn: $enableTimer)
+                }
+                
+                Section {
+                    Button {
+                        showClearFavoritesConfirmation = true
+                    } label: {
+                        Text("Clear favorites")
+                    }.alert(isPresented: self.$showClearFavoritesConfirmation, content: {
+                        Alert(title: Text("Confirmation"), message: Text("Are you sure you want to clear all favorites? This action cannot be undone."), primaryButton: Alert.Button.cancel(), secondaryButton: Alert.Button.destructive(Text("Delete"), action: {
+                            Favorites.shared.clearFavorites()
+                        }))
+                    })
                 }
             }
             .navigationTitle("Settings")

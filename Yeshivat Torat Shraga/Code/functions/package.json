@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
+    "debug": "tsc && firebase emulators:start --only functions --inspect-functions",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",

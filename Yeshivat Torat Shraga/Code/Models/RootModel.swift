@@ -16,7 +16,8 @@ class RootModel: ObservableObject {
         audioPlayer = val
     }
     
-    var homeView = HomeView()
+    @Published var showLoadingScreen = true
+    @Published var homeView: HomeView?
     var favoritesView = FavoritesView()
     var newsView = NewsView()
     var settingsView = SettingsView()
@@ -26,9 +27,17 @@ class RootModel: ObservableObject {
         let appearance = UITabBar.appearance()
         appearance.standardAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
         if #available(iOS 15.0, *) {
-                let scrollEdgeAppearance = UITabBarAppearance()
-                scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
-                appearance.scrollEdgeAppearance = scrollEdgeAppearance
+            let scrollEdgeAppearance = UITabBarAppearance()
+            scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
+            appearance.scrollEdgeAppearance = scrollEdgeAppearance
+        }
+        homeView = HomeView() {
+            self.showLoadingScreen = false
+        }
+        
+        RootModel.audioPlayer.refreshFavorites = {
+            self.favoritesView.model.load()
         }
     }
+    
 }

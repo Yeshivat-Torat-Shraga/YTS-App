@@ -9,33 +9,24 @@ import SwiftUI
 import Combine
 
 struct SlideshowView: View {
-    private var timerDelay: Double = 7
+    private let slideDuration = 8.0 // Seconds
     private var slideshowImages: [SlideshowImage]
     private let swipeThreshhold: CGFloat = 50
+    @AppStorage("slideshowAutoScroll") private var enableTimer = true
+    private let enableAutoScroll = false // Maybe make this a toggle in settings?
+    @State private var timerSeconds = 0.0
     @State private var imageTabIndex = 0
     @State private var timer: Publishers.Autoconnect<Timer.TimerPublisher>
     
     init(_ slideshowImages: [SlideshowImage]) {
         self.slideshowImages = slideshowImages
-        self.timer = Timer.publish(every: timerDelay, on: .main, in: .common).autoconnect()
-    }
-    
-    func handleSwipe(translation: CGFloat) {
-        timer.upstream.connect().cancel()
-        timer = Timer.publish(every: timerDelay, on: .main, in: .common).autoconnect()
-        withAnimation {
-            if translation < -swipeThreshhold {
-                imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
-            } else if translation > swipeThreshhold {
-                imageTabIndex = (imageTabIndex - 1) % slideshowImages.count
-                if imageTabIndex < 0 {
-                    imageTabIndex = slideshowImages.count - 1
-                }
-            }
-        }
+        timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
     }
     
     var body: some View {
+        if slideshowImages.count < 1 {
+            EmptyView()
+        } else {
         SingleAxisGeometryReader(axis: .horizontal) { width in
             TabView(selection: $imageTabIndex) {
                 ForEach(slideshowImages.indices) { index in
@@ -62,41 +53,36 @@ struct SlideshowView: View {
                                 }
                             }
                         )
-                        .contextMenu {
-                            if let image = slideshowImages[index].image {
-                                Button(action: {
-                                    let activityController = UIActivityViewController(activityItems: [image], applicationActivities: [])
-                                    
-                                    UIApplication.shared.windows.first?.rootViewController!.present(activityController, animated: true, completion: nil)
-                                    
-                                }) {
-                                    HStack {
-                                        Text("Share")
-                                        Spacer()
-                                        Image(systemName: "square.and.arrow.up")
-                                    }
-                                }
-                            }
-                        }
                         .clipped()
                         .tag(index)
-                        .onTapGesture{}
-                        .gesture(
-                            DragGesture()
-                                .onEnded {
-                                    handleSwipe(translation: $0.translation.width)
-                                }
-                        )
                     
                 }
             }
             .tabViewStyle(PageTabViewStyle())
-            .onReceive(self.timer) { _ in
-                withAnimation {
-                    imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
+            .onReceive(timer) { _ in
+                if enableTimer {
+                    timerSeconds += 1
+                    if timerSeconds >= slideDuration {
+                        timerSeconds = 0
+                        withAnimation {
+                            imageTabIndex = (imageTabIndex + 1) % slideshowImages.count
+                        }
+                    }
                 }
             }
         }
+        .onChange(of: imageTabIndex) { _ in
+            // Reset the timer that auto-changes the slides,
+            // because we just manually changed the slide.
+            timerSeconds = 0
+        }
+        .onDisappear {
+            self.timer.upstream.connect().cancel()
+        }
+        .onAppear {
+            timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
+        }
+    }
     }
 }
 

@@ -13,15 +13,20 @@
 		0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0847BA282784A22A0097910A /* RabbiCardView.swift */; };
 		084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C22794760D00CCEED6 /* NewsModel.swift */; };
 		084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */; };
-		086E95BC279EEBD9000C7AD2 /* HapticTestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086E95BB279EEBD9000C7AD2 /* HapticTestingView.swift */; };
+		085D438227B06C8C00F2F8FD /* FavoritesCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */; };
 		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
+		087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087B985427ABD5CB00B09A90 /* ContentCardView.swift */; };
 		08A05B2327653D4E00FEE15F /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2227653D4E00FEE15F /* TagView.swift */; };
 		08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A05B2427653DAA00FEE15F /* TagModel.swift */; };
 		08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 08A05B2927655D8700FEE15F /* FirebaseStorage */; };
-		08A5439627A7F60700B97D0F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08A5439527A7F60700B97D0F /* GoogleService-Info.plist */; };
+		08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AF240D27A35315001331EA /* FavoritesModel.swift */; };
 		08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B7A8442790358000B0EBC3 /* SlideshowView.swift */; };
+		08EFBABB27A962A800900A90 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBABA27A962A800900A90 /* GoogleService-Info.plist */; };
+		08EFBACB27A9977B00900A90 /* SwiftyGif in Frameworks */ = {isa = PBXBuildFile; productRef = 08EFBACA27A9977B00900A90 /* SwiftyGif */; };
+		08EFBACD27A9996400900A90 /* logoDarkMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACC27A9996400900A90 /* logoDarkMode.gif */; };
+		08EFBACF27A9B67700900A90 /* logoLightMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACE27A9B67700900A90 /* logoLightMode.gif */; };
 		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
@@ -35,7 +40,7 @@
 		B1ACF927274456F900079F9A /* LogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1ACF926274456F900079F9A /* LogoView.swift */; };
 		B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503C273C868B00CF18D6 /* HomeView.swift */; };
 		B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */; };
-		B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5042273D2A2200CF18D6 /* TileCardView.swift */; };
+		B1BF5043273D2A2200CF18D6 /* RabbiTileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */; };
 		B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BF5045273D37BD00CF18D6 /* UI.swift */; };
 		B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */; };
 		B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */; };
@@ -47,7 +52,8 @@
 		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
-		F263DE802761195200486D58 /* AudioTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F263DE7F2761195200486D58 /* AudioTile.swift */; };
+		F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */; };
+		F2570DE327AAE05B00BF7E7A /* LoadMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */; };
 		F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F28E291E2756A78700D9F4AF /* FirebaseAnalytics */; };
 		F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29202756A78700D9F4AF /* FirebaseFirestore */; };
 		F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29222756A78700D9F4AF /* FirebaseFunctions */; };
@@ -56,7 +62,6 @@
 		F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2827529D3A005D6355 /* PlayBarModel.swift */; };
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
-		F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2CCE178276A63DA009ABAC1 /* VideoTile.swift */; };
 		F2D78B71278695EB003996A8 /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D78B70278695EB003996A8 /* Favorites.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
 		F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */; };
@@ -70,15 +75,20 @@
 		0847BA282784A22A0097910A /* RabbiCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiCardView.swift; sourceTree = "<group>"; };
 		084E99C22794760D00CCEED6 /* NewsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsModel.swift; sourceTree = "<group>"; };
 		084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleCardView.swift; sourceTree = "<group>"; };
-		086E95BB279EEBD9000C7AD2 /* HapticTestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticTestingView.swift; sourceTree = "<group>"; };
+		085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCardView.swift; sourceTree = "<group>"; };
 		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
+		087B985427ABD5CB00B09A90 /* ContentCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentCardView.swift; sourceTree = "<group>"; };
 		08A05B2227653D4E00FEE15F /* TagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
 		08A05B2427653DAA00FEE15F /* TagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagModel.swift; sourceTree = "<group>"; };
 		08A5439527A7F60700B97D0F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		08A5439727A80BD700B97D0F /* Yeshivat Torat Shraga.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yeshivat Torat Shraga.entitlements"; sourceTree = "<group>"; };
+		08AF240D27A35315001331EA /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
 		08B7A8442790358000B0EBC3 /* SlideshowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideshowView.swift; sourceTree = "<group>"; };
+		08EFBABA27A962A800900A90 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		08EFBACC27A9996400900A90 /* logoDarkMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoDarkMode.gif; sourceTree = "<group>"; };
+		08EFBACE27A9B67700900A90 /* logoLightMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoLightMode.gif; sourceTree = "<group>"; };
 		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -94,7 +104,7 @@
 		B1ACF926274456F900079F9A /* LogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoView.swift; sourceTree = "<group>"; };
 		B1BF503C273C868B00CF18D6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeModel.swift; sourceTree = "<group>"; };
-		B1BF5042273D2A2200CF18D6 /* TileCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileCardView.swift; sourceTree = "<group>"; };
+		B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiTileView.swift; sourceTree = "<group>"; };
 		B1BF5045273D37BD00CF18D6 /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardView.swift; sourceTree = "<group>"; };
 		B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCardModel.swift; sourceTree = "<group>"; };
@@ -106,13 +116,13 @@
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
 		F25038A3274EA1EC006FF802 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
-		F263DE7F2761195200486D58 /* AudioTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTile.swift; sourceTree = "<group>"; };
+		F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingPage.swift; sourceTree = "<group>"; };
+		F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreView.swift; sourceTree = "<group>"; };
 		F28E293A2758E2FB00D9F4AF /* TagTileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagTileView.swift; sourceTree = "<group>"; };
 		F29FFB2627529CD4005D6355 /* PlayBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBar.swift; sourceTree = "<group>"; };
 		F29FFB2827529D3A005D6355 /* PlayBarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarModel.swift; sourceTree = "<group>"; };
 		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		F2CCE178276A63DA009ABAC1 /* VideoTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTile.swift; sourceTree = "<group>"; };
 		F2D78B70278695EB003996A8 /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
 		F2F69C4E277C3A790069DCAE /* AppValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppValidation.swift; sourceTree = "<group>"; };
@@ -128,6 +138,7 @@
 				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
 				F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */,
 				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
+				08EFBACB27A9977B00900A90 /* SwiftyGif in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,6 +158,7 @@
 				B12AB82F273B103C00B17CC0 /* Yeshivat Torat Shraga */,
 				B12AB82E273B103C00B17CC0 /* Products */,
 				08A05B2827655D8700FEE15F /* Frameworks */,
+				F2570DDB27A90EC100BF7E7A /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -162,12 +174,13 @@
 			isa = PBXGroup;
 			children = (
 				08A5439727A80BD700B97D0F /* Yeshivat Torat Shraga.entitlements */,
-				08A5439527A7F60700B97D0F /* GoogleService-Info.plist */,
+				08EFBABA27A962A800900A90 /* GoogleService-Info.plist */,
 				F230C4DA274044DD00F7ACCC /* Code */,
 				B12AB839273B104300B17CC0 /* Assets.xcassets */,
 				B12AB83E273B104300B17CC0 /* LaunchScreen.storyboard */,
 				B12AB841273B104300B17CC0 /* Info.plist */,
 				B12AB836273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld */,
+				F2570DE127AAD89700BF7E7A /* GifAssets */,
 				B12AB83B273B104300B17CC0 /* Preview Content */,
 			);
 			path = "Yeshivat Torat Shraga";
@@ -195,17 +208,17 @@
 			isa = PBXGroup;
 			children = (
 				B12AB834273B103C00B17CC0 /* RootView.swift */,
+				F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */,
 				08756445275E6EC300D22856 /* SettingsView.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
+				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
 				F22C91392770A260007A9424 /* SearchView.swift */,
-				B1BF5042273D2A2200CF18D6 /* TileCardView.swift */,
+				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
 				B1ACF926274456F900079F9A /* LogoView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
-				F263DE7F2761195200486D58 /* AudioTile.swift */,
-				F2CCE178276A63DA009ABAC1 /* VideoTile.swift */,
 				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
 				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
@@ -215,7 +228,8 @@
 				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
 				084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */,
 				083AE1022799A770003A36ED /* NewsArticleView.swift */,
-				086E95BB279EEBD9000C7AD2 /* HapticTestingView.swift */,
+				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
+				085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -233,6 +247,7 @@
 				08A05B2427653DAA00FEE15F /* TagModel.swift */,
 				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
 				084E99C22794760D00CCEED6 /* NewsModel.swift */,
+				08AF240D27A35315001331EA /* FavoritesModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -271,6 +286,22 @@
 			path = Code;
 			sourceTree = "<group>";
 		};
+		F2570DDB27A90EC100BF7E7A /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		F2570DE127AAD89700BF7E7A /* GifAssets */ = {
+			isa = PBXGroup;
+			children = (
+				08EFBACC27A9996400900A90 /* logoDarkMode.gif */,
+				08EFBACE27A9B67700900A90 /* logoLightMode.gif */,
+			);
+			path = GifAssets;
+			sourceTree = "<group>";
+		};
 		F2F44C71274A6D0700F7D337 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
@@ -302,6 +333,7 @@
 				F28E29222756A78700D9F4AF /* FirebaseFunctions */,
 				08A05B2927655D8700FEE15F /* FirebaseStorage */,
 				F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */,
+				08EFBACA27A9977B00900A90 /* SwiftyGif */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -332,6 +364,7 @@
 			mainGroup = B12AB824273B103C00B17CC0;
 			packageReferences = (
 				F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				08EFBAC127A989D500900A90 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
 			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
@@ -348,9 +381,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B12AB840273B104300B17CC0 /* LaunchScreen.storyboard in Resources */,
-				08A5439627A7F60700B97D0F /* GoogleService-Info.plist in Resources */,
+				08EFBABB27A962A800900A90 /* GoogleService-Info.plist in Resources */,
+				08EFBACD27A9996400900A90 /* logoDarkMode.gif in Resources */,
 				B12AB83D273B104300B17CC0 /* Preview Assets.xcassets in Resources */,
 				B12AB83A273B104300B17CC0 /* Assets.xcassets in Resources */,
+				08EFBACF27A9B67700900A90 /* logoLightMode.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,13 +396,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F263DE802761195200486D58 /* AudioTile.swift in Sources */,
 				F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */,
 				F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */,
 				B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */,
 				08469DE72762D878007EF981 /* NewsView.swift in Sources */,
 				B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */,
 				F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */,
+				087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
@@ -380,12 +415,16 @@
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
-				B1BF5043273D2A2200CF18D6 /* TileCardView.swift in Sources */,
+				08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */,
+				B1BF5043273D2A2200CF18D6 /* RabbiTileView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
 				F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */,
+				F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */,
 				08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */,
 				F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */,
 				083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */,
+				085D438227B06C8C00F2F8FD /* FavoritesCardView.swift in Sources */,
+				F2570DE327AAE05B00BF7E7A /* LoadMoreView.swift in Sources */,
 				087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */,
 				087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
@@ -394,7 +433,6 @@
 				F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */,
 				F2235D4727661CA3005E6086 /* EllipseButton.swift in Sources */,
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
-				F2CCE179276A63DA009ABAC1 /* VideoTile.swift in Sources */,
 				F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */,
 				F22C913A2770A260007A9424 /* SearchView.swift in Sources */,
 				F230C4CA273B110900F7ACCC /* RootModel.swift in Sources */,
@@ -404,7 +442,6 @@
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
 				08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */,
-				086E95BC279EEBD9000C7AD2 /* HapticTestingView.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -491,6 +528,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
@@ -631,6 +669,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
@@ -655,6 +694,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
@@ -699,6 +739,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		08EFBAC127A989D500900A90 /* XCRemoteSwiftPackageReference "SwiftyGif" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kirualex/SwiftyGif.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -714,6 +762,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		08EFBACA27A9977B00900A90 /* SwiftyGif */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 08EFBAC127A989D500900A90 /* XCRemoteSwiftPackageReference "SwiftyGif" */;
+			productName = SwiftyGif;
 		};
 		F28E291E2756A78700D9F4AF /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
