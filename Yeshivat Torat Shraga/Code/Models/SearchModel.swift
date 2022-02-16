@@ -19,6 +19,7 @@ class SearchModel: ObservableObject, ErrorShower {
     internal var lastLoadedContentID: FirestoreID?
     internal var lastLoadedRabbiID: FirestoreID?
     internal var calledInitialLoad: Bool = false
+    var searchQuery: String = ""
     
     @Published var showError: Bool = false
     var errorToShow: Error?
@@ -31,7 +32,13 @@ class SearchModel: ObservableObject, ErrorShower {
         search(query)
     }
     
-    func search(_ query: String) {
+    func search() {
+        search(self.searchQuery)
+    }
+    
+    private func search(_ query: String) {
+        self.searchQuery = query
+        
         loadingContent = true
         loadingRebbeim = true
         FirebaseConnection.search(query: query, contentOptions: (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedContentID), rebbeimOptions: (limit: 5, includePictureURLs: true, startFromDocumentID: lastLoadedRabbiID)) { results, error in
