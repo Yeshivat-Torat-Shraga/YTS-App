@@ -33,17 +33,17 @@ struct SearchView: View {
                 //                    }
                 //                }
                 .pickerStyle(SegmentedPickerStyle())
-                .padding([.horizontal, .bottom])
+                .padding([.bottom])
             }
             ScrollView {
                 LazyVStack {
+                    Group {
                 if selectedResultTag == .rebbeim || selectedResultTag == .all {
                     if let rebbeim = model.rebbeim {
                         ForEach(rebbeim, id: \.self) { rabbi in
                             if let detailedRabbi = rabbi as? DetailedRabbi {
                                 NavigationLink(destination: DisplayRabbiView(rabbi: detailedRabbi)) {
                                     RabbiCardView(rabbi: rabbi)
-                                        .padding([.horizontal, .bottom])
                                 }
                             } else {
                                 Button(action: {
@@ -52,19 +52,52 @@ struct SearchView: View {
                                     showAlert = true
                                 }){
                                     RabbiCardView(rabbi: rabbi)
-                                        .padding([.horizontal, .bottom])
                                 }
                             }
                         }
                     }
+                }
                     
                     if model.loadingRebbeim && !model.loadingContent {
                         ProgressView()
                             .progressViewStyle(YTSProgressViewStyle())
+                    } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
+//                        VStack {
+//                        Divider()
+                        Button(action: {
+                            
+                        }) {
+                            VStack {
+                                Spacer()
+                                Spacer()
+                                HStack {
+                                    Spacer()
+                            Image(systemName: "ellipsis")
+                                    Spacer()
+                                }
+                                Spacer()
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(BackZStackButtonStyle())
+                            .cornerRadius(6)
+                            .shadow(radius: 2)
+//                            Divider()
+//                        }
+                            .padding(.bottom)
                     }
-                }
-                
-                if selectedResultTag == .shiurim || selectedResultTag == .all {
+                    
+//                    LoadMoreView(loadingContent: Binding(get: { model.loadingRebbeim && !model.loadingContent }, set: { model.loadingRebbeim = $0 }), showingError: Binding(get: { model.showError }, set: { model.showError = $0 }), retreivedAllContent: Binding(get: { model.retreivedAllRebbeim }, set: { model.retreivedAllRebbeim = $0 }), loadMore: {
+//                        //                        self.model.loadingContent = true
+//                        let count = 5
+//                        model.search()
+//                    })
+                    }
+                    .padding(.bottom)
+                    
+                    
+                    Group {
+                    if selectedResultTag == .shiurim || selectedResultTag == .all {
                     if let sortables = model.sortables {
                         ForEach(sortables, id: \.self) { sortable in
                             if let video = sortable.video {
@@ -72,21 +105,45 @@ struct SearchView: View {
                                     .contextMenu {
                                         Button("Play") {}
                                     }
-                                    .padding([.horizontal, .bottom])
                             } else if let audio = sortable.audio {
                                 AudioCardView(audio: audio)
                                     .contextMenu {
                                         Button("Play") {}
                                     }
-                                    .padding([.horizontal, .bottom])
                             }
                         }
                     }
+                }
+                    
                     if model.loadingContent && !model.loadingRebbeim {
                         ProgressView()
                             .progressViewStyle(YTSProgressViewStyle())
+                    } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
+//                        VStack {
+//                        Divider()
+                        Button(action: {
+                            
+                        }) {
+                            VStack {
+                                Spacer()
+                                Spacer()
+                                HStack {
+                                    Spacer()
+                            Image(systemName: "ellipsis")
+                                    Spacer()
+                                }
+                                Spacer()
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(BackZStackButtonStyle())
+                            .cornerRadius(6)
+                            .shadow(radius: 2)
+//                            Divider()
+//                        }
                     }
-                }
+                    }
+                    .padding(.bottom)
                 
                 if model.loadingContent && model.loadingRebbeim {
                         ProgressView()
@@ -106,6 +163,7 @@ struct SearchView: View {
             .navigationBarHidden(true)
             }
         }
+        .padding(.horizontal)
         .background(
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
         )
@@ -146,7 +204,7 @@ struct SearchView: View {
             }
             .frame(height: 40)
             .cornerRadius(13)
-            .padding([.top, .horizontal])
+            .padding(.top)
         }
     }
 }
