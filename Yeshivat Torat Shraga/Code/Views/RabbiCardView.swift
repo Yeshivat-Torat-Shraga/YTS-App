@@ -9,17 +9,18 @@ import SwiftUI
 
 struct RabbiCardView: View {
     var rabbi: Rabbi
+    
     var body: some View {
         VStack {
             HStack {
                 Text(rabbi.name)
-                    .fontWeight(.thin)
-                    .font(.title)
+                    .fontWeight(.bold)
+                    .font(.title2)
 //                    .bold()
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color("ShragaGold"))
+                    .foregroundColor(Color("ShragaBlue"))
                     .padding(.trailing)
                 Spacer()
                 if let detailedRabbi = rabbi as? DetailedRabbi {
@@ -66,26 +67,7 @@ struct RabbiCardView: View {
         .padding()
         .background(
             Rectangle()
-            
-            // START GRADIENT {
-            
-                .fill(LinearGradient(
-                    gradient: Gradient(
-                        stops: [
-                            Gradient.Stop(
-                                color: Color(
-                                    hue: 0.610,
-                                    saturation: 0.5,
-                                    brightness: 0.19),
-                                location: 0),
-                            Gradient.Stop(
-                                color: Color(
-                                    hue: 0.616,
-                                    saturation: 0.431,
-                                    brightness: 0.510),
-                                location: 1)]),
-                    startPoint: UnitPoint.bottomLeading,
-                    endPoint: UnitPoint.trailing))
+                .fill(Color.white)
         )
 //        .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
