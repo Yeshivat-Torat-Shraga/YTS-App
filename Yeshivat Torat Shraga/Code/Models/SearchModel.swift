@@ -23,7 +23,7 @@ class SearchModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     var errorToShow: Error?
     var retry: (() -> Void)?
-
+    
     func newSearch(_ query: String) {
         reset()
         calledInitialLoad = true
@@ -64,7 +64,7 @@ class SearchModel: ObservableObject, ErrorShower {
                 }
                 
                 if self.sortables == nil {
-//                  //MARK: Possible issue when the return is nil, not sure how this will be handled
+                    //                  //MARK: Possible issue when the return is nil, not sure how this will be handled
                     self.sortables = []
                     for video in content.videos {
                         self.sortables!.append(video.sortable)
@@ -94,7 +94,7 @@ class SearchModel: ObservableObject, ErrorShower {
                 if let newLastLoadedDocumentID = metadata.rebbeim.newLastLoadedDocumentID {
                     self.lastLoadedRabbiID = newLastLoadedDocumentID
                 }
-                    
+                
                 self.retreivedAllContent = metadata.content.finalCall
                 self.retreivedAllRebbeim = metadata.rebbeim.finalCall
             }
@@ -109,22 +109,24 @@ class SearchModel: ObservableObject, ErrorShower {
     private func reset() {
         self.lastLoadedContentID = nil
         self.lastLoadedRabbiID = nil
-        self.content = nil
-        self.rebbeim = nil
-        self.sortables = nil
+        withAnimation {
+            self.content = nil
+            self.rebbeim = nil
+            self.sortables = nil
+        }
     }
     
-//    func reload() {
-//        if !reloading {
-//            reloading = true
-//            self.lastLoadedContentID = nil
-//            self.lastLoadedRabbiID = nil
-//            self.content = nil
-//            self.rebbeim = nil
-////            self.favoriteContent = nil
-//            self.calledInitialLoad = false
-//            initialLoad()
-////            loadFavorites()
-//        }
-//    }
+    //    func reload() {
+    //        if !reloading {
+    //            reloading = true
+    //            self.lastLoadedContentID = nil
+    //            self.lastLoadedRabbiID = nil
+    //            self.content = nil
+    //            self.rebbeim = nil
+    ////            self.favoriteContent = nil
+    //            self.calledInitialLoad = false
+    //            initialLoad()
+    ////            loadFavorites()
+    //        }
+    //    }
 }
