@@ -8,44 +8,123 @@
 import SwiftUI
 
 class SearchModel: ObservableObject, ErrorShower {
-    @Published var showError: Bool = false
-    @Published var rebbeim: [Rabbi] = []
-    @Published var sortables: [SortableYTSContent] = []
     @Published var content: Content?
+    @Published var rebbeim: [Rabbi]?
+    @Published var sortables: [SortableYTSContent]?
+    
+    @Published internal var loadingContent: Bool = false
+    @Published internal var loadingRebbeim: Bool = false
+    @Published internal var retreivedAllContent: Bool = false
+    @Published internal var retreivedAllRebbeim: Bool = false
+    internal var lastLoadedContentID: FirestoreID?
+    internal var lastLoadedRabbiID: FirestoreID?
+    internal var calledInitialLoad: Bool = false
+    
+    @Published var showError: Bool = false
     var errorToShow: Error?
     var retry: (() -> Void)?
 
+    func newSearch(_ query: String) {
+        reset()
+        calledInitialLoad = true
+        
+        search(query)
+    }
+    
     func search(_ query: String) {
-        FirebaseConnection.search(query: query) { results, error in
-            guard let rebbeim = results?.rebbeim else {
+        loadingContent = true
+        loadingRebbeim = true
+        FirebaseConnection.search(query: query, contentOptions: (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedContentID), rebbeimOptions: (limit: 5, includePictureURLs: true, startFromDocumentID: lastLoadedRabbiID)) { results, error in
+            guard let content = results?.content else {
+                self.loadingContent = false
+                self.loadingRebbeim = false
                 self.showError(error: error ?? YTSError.unknownError, retry: {})
                 return
             }
             
-            guard let contents = results?.content else {
+            guard let rebbeim = results?.rebbeim else {
+                self.loadingContent = false
+                self.loadingRebbeim = false
                 self.showError(error: error ?? YTSError.unknownError, retry: {})
                 return
             }
             
             withAnimation {
-                self.sortables = []
-                self.rebbeim = []
-                self.content = contents
-                for audio in self.content!.audios {
-                    self.sortables.append(audio.sortable)
-                }
-                for video in self.content!.videos {
-                    self.sortables.append(video.sortable)
+                if self.content == nil {
+                    self.content = content
+                } else {
+                    self.content!.videos.append(contentsOf: content.videos)
+                    self.content!.audios.append(contentsOf: content.audios)
                 }
                 
-                self.sortables = self.sortables.sorted(by: { lhs, rhs in
+                if self.rebbeim == nil {
+                    self.rebbeim = rebbeim
+                } else {
+                    self.rebbeim!.append(contentsOf: rebbeim)
+                }
+                
+                if self.sortables == nil {
+//                  //MARK: Possible issue when the return is nil, not sure how this will be handled
+                    self.sortables = []
+                    for video in content.videos {
+                        self.sortables!.append(video.sortable)
+                    }
+                    for audio in content.audios {
+                        self.sortables!.append(audio.sortable)
+                    }
+                } else {
+                    for video in content.videos {
+                        self.sortables!.append(video.sortable)
+                    }
+                    for audio in content.audios {
+                        self.sortables!.append(audio.sortable)
+                    }
+                }
+                
+                self.sortables?.sort(by: { lhs, rhs in
                     return lhs.date! > rhs.date!
                 })
-
-                for rabbi in rebbeim {
-                    self.rebbeim.append(rabbi)
+            }
+            
+            if let metadata = results?.metadata {
+                if let newLastLoadedDocumentID = metadata.content.newLastLoadedDocumentID {
+                    self.lastLoadedContentID = newLastLoadedDocumentID
                 }
+                
+                if let newLastLoadedDocumentID = metadata.rebbeim.newLastLoadedDocumentID {
+                    self.lastLoadedRabbiID = newLastLoadedDocumentID
+                }
+                    
+                self.retreivedAllContent = metadata.content.finalCall
+                self.retreivedAllRebbeim = metadata.rebbeim.finalCall
+            }
+            
+            withAnimation {
+                self.loadingContent = false
+                self.loadingRebbeim = false
             }
         }
     }
+    
+    private func reset() {
+        self.lastLoadedContentID = nil
+        self.lastLoadedRabbiID = nil
+        self.content = nil
+        self.rebbeim = nil
+        self.sortables = nil
+    }
+    
+//    func reload() {
+//        if !reloading {
+//            reloading = true
+//            self.lastLoadedContentID = nil
+//            self.lastLoadedRabbiID = nil
+//            self.content = nil
+//            self.rebbeim = nil
+////            self.favoriteContent = nil
+//            self.calledInitialLoad = false
+//            initialLoad()
+////            loadFavorites()
+//        }
+//    }
 }
