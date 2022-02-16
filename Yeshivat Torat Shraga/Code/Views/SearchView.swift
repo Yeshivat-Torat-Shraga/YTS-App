@@ -39,129 +39,129 @@ struct SearchView: View {
             ScrollView(showsIndicators: false) {
                 LazyVStack {
                     Group {
-                if selectedResultTag == .rebbeim || selectedResultTag == .all {
-                    if let rebbeim = model.rebbeim {
-                        ForEach(rebbeim, id: \.self) { rabbi in
-                            if let detailedRabbi = rabbi as? DetailedRabbi {
-                                NavigationLink(destination: DisplayRabbiView(rabbi: detailedRabbi)) {
-                                    RabbiCardView(rabbi: rabbi)
-                                }
-                            } else {
-                                Button(action: {
-                                    alertTitle = "Oops!"
-                                    alertBody = "Sorry, but \(rabbi.name)'s entry is missing the necessary information to show you their page. Please try again later."
-                                    showAlert = true
-                                }){
-                                    RabbiCardView(rabbi: rabbi)
+                        if selectedResultTag == .rebbeim || selectedResultTag == .all {
+                            if let rebbeim = model.rebbeim {
+                                ForEach(rebbeim, id: \.self) { rabbi in
+                                    if let detailedRabbi = rabbi as? DetailedRabbi {
+                                        NavigationLink(destination: DisplayRabbiView(rabbi: detailedRabbi)) {
+                                            RabbiCardView(rabbi: rabbi)
+                                        }
+                                    } else {
+                                        Button(action: {
+                                            alertTitle = "Oops!"
+                                            alertBody = "Sorry, but \(rabbi.name)'s entry is missing the necessary information to show you their page. Please try again later."
+                                            showAlert = true
+                                        }){
+                                            RabbiCardView(rabbi: rabbi)
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-                    
-                    if model.loadingRebbeim && !model.loadingContent {
-                        ProgressView()
-                            .progressViewStyle(YTSProgressViewStyle())
-                    } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
-//                        VStack {
-//                        Divider()
-                        Button(action: {
-                            
-                        }) {
-                            VStack {
-                                Spacer()
-                                Spacer()
-                                HStack {
+                        
+                        if model.loadingRebbeim && !model.loadingContent {
+                            ProgressView()
+                                .progressViewStyle(YTSProgressViewStyle())
+                        } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
+                            //                        VStack {
+                            //                        Divider()
+                            Button(action: {
+                                
+                            }) {
+                                VStack {
                                     Spacer()
-                            Image(systemName: "ellipsis")
+                                    Spacer()
+                                    HStack {
+                                        Spacer()
+                                        Image(systemName: "ellipsis")
+                                        Spacer()
+                                    }
+                                    Spacer()
                                     Spacer()
                                 }
-                                Spacer()
-                                Spacer()
                             }
-                        }
-                        .buttonStyle(BackZStackButtonStyle())
+                            .buttonStyle(BackZStackButtonStyle())
                             .cornerRadius(6)
                             .shadow(radius: 2)
-//                            Divider()
-//                        }
+                            //                            Divider()
+                            //                        }
                             .padding(.bottom)
-                    }
-                    
-//                    LoadMoreView(loadingContent: Binding(get: { model.loadingRebbeim && !model.loadingContent }, set: { model.loadingRebbeim = $0 }), showingError: Binding(get: { model.showError }, set: { model.showError = $0 }), retreivedAllContent: Binding(get: { model.retreivedAllRebbeim }, set: { model.retreivedAllRebbeim = $0 }), loadMore: {
-//                        //                        self.model.loadingContent = true
-//                        let count = 5
-//                        model.search()
-//                    })
+                        }
+                        
+                        //                    LoadMoreView(loadingContent: Binding(get: { model.loadingRebbeim && !model.loadingContent }, set: { model.loadingRebbeim = $0 }), showingError: Binding(get: { model.showError }, set: { model.showError = $0 }), retreivedAllContent: Binding(get: { model.retreivedAllRebbeim }, set: { model.retreivedAllRebbeim = $0 }), loadMore: {
+                        //                        //                        self.model.loadingContent = true
+                        //                        let count = 5
+                        //                        model.search()
+                        //                    })
                     }
                     .padding(.bottom)
                     
                     
                     Group {
-                    if selectedResultTag == .shiurim || selectedResultTag == .all {
-                    if let sortables = model.sortables {
-                        ForEach(sortables, id: \.self) { sortable in
-                            if let video = sortable.video {
-                                VideoCardView(video: video)
-                                    .contextMenu {
-                                        Button("Play") {}
+                        if selectedResultTag == .shiurim || selectedResultTag == .all {
+                            if let sortables = model.sortables {
+                                ForEach(sortables, id: \.self) { sortable in
+                                    if let video = sortable.video {
+                                        VideoCardView(video: video)
+                                            .contextMenu {
+                                                Button("Play") {}
+                                            }
+                                    } else if let audio = sortable.audio {
+                                        AudioCardView(audio: audio)
+                                            .contextMenu {
+                                                Button("Play") {}
+                                            }
                                     }
-                            } else if let audio = sortable.audio {
-                                AudioCardView(audio: audio)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
+                                }
                             }
                         }
-                    }
-                }
-                    
-                    if model.loadingContent && !model.loadingRebbeim {
-                        ProgressView()
-                            .progressViewStyle(YTSProgressViewStyle())
-                    } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
-//                        VStack {
-//                        Divider()
-                        Button(action: {
-                            
-                        }) {
-                            VStack {
-                                Spacer()
-                                Spacer()
-                                HStack {
+                        
+                        if model.loadingContent && !model.loadingRebbeim {
+                            ProgressView()
+                                .progressViewStyle(YTSProgressViewStyle())
+                        } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
+                            //                        VStack {
+                            //                        Divider()
+                            Button(action: {
+                                
+                            }) {
+                                VStack {
                                     Spacer()
-                            Image(systemName: "ellipsis")
+                                    Spacer()
+                                    HStack {
+                                        Spacer()
+                                        Image(systemName: "ellipsis")
+                                        Spacer()
+                                    }
+                                    Spacer()
                                     Spacer()
                                 }
-                                Spacer()
-                                Spacer()
                             }
-                        }
-                        .buttonStyle(BackZStackButtonStyle())
+                            .buttonStyle(BackZStackButtonStyle())
                             .cornerRadius(6)
                             .shadow(radius: 2)
-//                            Divider()
-//                        }
-                    }
+                            //                            Divider()
+                            //                        }
+                        }
                     }
                     .padding(.bottom)
-                
-                if model.loadingContent && model.loadingRebbeim {
+                    
+                    if model.loadingContent && model.loadingRebbeim {
                         ProgressView()
                             .progressViewStyle(YTSProgressViewStyle())
-                } else if !model.loadingContent && !model.loadingRebbeim && model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false && model.rebbeim?.isEmpty ?? false {
-                    Text("Sorry, no results were found.")
-                        .font(.title2)
-                        .bold()
-                    Spacer()
-                    Text("Try searching with full words and names.")
-//                        .font()
+                    } else if !model.loadingContent && !model.loadingRebbeim && model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false && model.rebbeim?.isEmpty ?? false {
+                        Text("Sorry, no results were found.")
+                            .font(.title2)
+                            .bold()
+                        Spacer()
+                        Text("Try searching with full words and names.")
+                        //                        .font()
+                    }
                 }
-            }
-            .alert(isPresented: $showAlert, content: {
-                Alert(title: Text(alertTitle), message: Text(alertBody), dismissButton: Alert.Button.default(Text("OK")))
-            })
-            .navigationBarHidden(true)
+                .alert(isPresented: $showAlert, content: {
+                    Alert(title: Text(alertTitle), message: Text(alertBody), dismissButton: Alert.Button.default(Text("OK")))
+                })
+                .navigationBarHidden(true)
             }
         }
         .padding(.horizontal)
