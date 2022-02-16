@@ -17,7 +17,7 @@ struct SearchView: View {
     var body: some View {
         VStack {
             Group {
-                SearchBar(search: model.search)
+                SearchBar(search: model.newSearch)
                 
                 Picker("Result Type", selection: $selectedResultTag) {
                     Text("All")
@@ -36,8 +36,7 @@ struct SearchView: View {
                 .padding([.horizontal, .bottom])
             }
             ScrollView {
-                
-                
+                LazyVStack {
                 if selectedResultTag == .rebbeim || selectedResultTag == .all {
                     if let rebbeim = model.rebbeim {
                         ForEach(rebbeim, id: \.self) { rabbi in
@@ -57,6 +56,11 @@ struct SearchView: View {
                                 }
                             }
                         }
+                    }
+                    
+                    if model.loadingRebbeim && !model.loadingContent {
+                        ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
                     }
                 }
                 
@@ -78,12 +82,29 @@ struct SearchView: View {
                             }
                         }
                     }
+                    if model.loadingContent && !model.loadingRebbeim {
+                        ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
+                    }
+                }
+                
+                if model.loadingContent && model.loadingRebbeim {
+                        ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
+                } else if !model.loadingContent && !model.loadingRebbeim && model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false && model.rebbeim?.isEmpty ?? false {
+                    Text("Sorry, no results were found.")
+                        .font(.title2)
+                        .bold()
+                    Spacer()
+                    Text("Try searching with full words and names.")
+//                        .font()
                 }
             }
             .alert(isPresented: $showAlert, content: {
                 Alert(title: Text(alertTitle), message: Text(alertBody), dismissButton: Alert.Button.default(Text("OK")))
             })
             .navigationBarHidden(true)
+            }
         }
         .background(
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
