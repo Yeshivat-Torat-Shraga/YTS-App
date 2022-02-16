@@ -35,7 +35,8 @@ struct SearchView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding([.bottom])
             }
-            ScrollView {
+            
+            ScrollView(showsIndicators: false) {
                 LazyVStack {
                     Group {
                 if selectedResultTag == .rebbeim || selectedResultTag == .all {
