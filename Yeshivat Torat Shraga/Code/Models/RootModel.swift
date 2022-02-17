@@ -18,6 +18,7 @@ class RootModel: ObservableObject {
     
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
+    @Published var alert: Alert?
     var favoritesView = FavoritesView()
     var newsView = NewsView()
     var settingsView = SettingsView()
@@ -33,6 +34,8 @@ class RootModel: ObservableObject {
         }
         homeView = HomeView() {
             self.showLoadingScreen = false
+//        }, {
+//            self.alert = Alert(title: "title", message: "message", dismissButton: Alert.Button())
         }
         
         RootModel.audioPlayer.refreshFavorites = {

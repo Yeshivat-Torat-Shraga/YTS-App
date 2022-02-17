@@ -14,7 +14,8 @@ class HomeModel: ObservableObject, ErrorShower {
     var retry: (() -> Void)?
     var rootModel: RootModel?
     var hideLoadingScreen: (() -> Void)?
-    @Published var recentlyUploadedContent: Content?
+//    var showAlertOnRoot: (() -> Void)?
+    @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     @Published var slideshowImages: [SlideshowImage]?
@@ -23,8 +24,11 @@ class HomeModel: ObservableObject, ErrorShower {
         load()
     }
     
-    init(hideLoadingScreen: @escaping (() -> Void)) {
+    init(hideLoadingScreen: @escaping (() -> Void)
+//         showAlertOnRoot:   @escaping (() -> Void)
+    ) {
         self.hideLoadingScreen = hideLoadingScreen
+//        self.showAlertOnRoot = showAlertOnRoot
         load()
     }
     
