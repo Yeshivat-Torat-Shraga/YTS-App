@@ -33,6 +33,40 @@ admin.initializeApp({
 	// ),
 });
 
+exports.createNotification = https.onCall(
+	async (data, context): Promise<string> => {
+		const payload = {
+			title: data.title,
+			body: data.body,
+		};
+		// Make sure title and body are non-empty strings
+		if (
+			typeof payload.title !== 'string' ||
+			payload.title.length === 0 ||
+			typeof payload.body !== 'string' ||
+			payload.body.length === 0
+		) {
+			logger.error('Invalid notification payload');
+			return 'Invalid notification payload';
+		}
+
+		return await admin
+			.messaging()
+			.send({
+				notification: payload,
+				topic: 'all',
+			})
+			.then((response) => {
+				logger.info('Successfully sent message:', response);
+				return `Successfully sent message: ${response}`;
+			})
+			.catch((error) => {
+				logger.error('Error sending message:', error);
+				return `Error sending message: ${error}`;
+			});
+	}
+);
+
 exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
 	// if (context.app == undefined) {
@@ -352,6 +386,41 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 		}),
 	};
 });
+
+// exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
+// 	const db = admin.firestore();
+// 	const COLLECTION = 'alerts';
+
+// 	let query = db.collection(COLLECTION).orderBy('date', 'desc');
+
+// 	const alert = await query.orderBy('date', 'desc').limit(1).get();
+// 	if (alert.docs) {
+// 		const doc = alert.docs[0];
+// 		const data = new AlertFirebaseDocument(doc.data());
+// 		const document: AlertDocument = {
+// 			id: doc.id,
+// 			title: data.title,
+// 			message: data.message,
+// 			dateIssued: data.dateIssued,
+// 			dateExpired: data.dateExpired,
+// 		};
+// 		return {
+// 			metadata: {
+// 				lastLoadedDocID: null,
+// 				finalCall: true,
+// 			},
+// 			results: [document],
+// 		};
+// 	} else {
+// 		return {
+// 			metadata: {
+// 				lastLoadedDocID: null,
+// 				finalCall: true,
+// 			},
+// 			results: [],
+// 		};
+// 	}
+// });
 
 exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
