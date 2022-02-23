@@ -163,8 +163,8 @@ final class FirebaseConnection {
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     /// - Returns:
     /// `((results: Content, [Rabbi], Metadata)?, Error?)`
-    static func search(query: String, contentOptions: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: (Content), rebbeim: [Rabbi], metadata: (content: Metadata, rebbeim: Metadata))?, _ error: Error?) -> Void) {
-        var content: Content = (videos: [], audios: [])
+    static func search(query: String, contentOptions: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: (AVContent), rebbeim: [Rabbi], metadata: (content: Metadata, rebbeim: Metadata))?, _ error: Error?) -> Void) {
+        var content: AVContent = (videos: [], audios: [])
         var rebbeim: [Rabbi] = []
         
         var contentOptionsData: [String : Any] = [
@@ -427,8 +427,8 @@ final class FirebaseConnection {
         }
     }
     
-    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
-        var content: Content = (videos: [], audios: [])
+    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
+        var content: AVContent = (videos: [], audios: [])
         
         return { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {
@@ -558,7 +558,7 @@ final class FirebaseConnection {
     ///   - includeThumbnailURLs: Whether or not to include thumbnail URLs in the response.
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
             "includeThumbnailURLs": options.includeThumbnailURLs,
@@ -581,7 +581,7 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: AVContent, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         print("Loading content...")
         var data: [String: Any] = [
             "limit": options.limit,
@@ -608,7 +608,7 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - matchingTag: The function only returns content that have a tag matching  the `Tag` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: AVContent, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
             "search": ["field": "tag", "value": tag.name.lowercased()],

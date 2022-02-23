@@ -12,6 +12,18 @@ typealias FirestoreID = String
 typealias FileID = String
 
 
+class HomePageAlert {
+    // title should have 40 char limit
+    var title: String
+    var body: String
+    
+    init(title: String, body: String) {
+        self.title = title
+        self.body = body
+    }
+    
+}
+
 class NewsArticle: Identifiable {
     var images: [SlideshowImage]
     var title: String
@@ -560,7 +572,7 @@ class Category: Tag, URLImageable {
 
 let tags: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
 
-typealias Content = (videos: [Video], audios: [Audio])
+typealias AVContent = (videos: [Video], audios: [Audio])
 
 class SortableYTSContent: Hashable {
     static func == (lhs: SortableYTSContent, rhs: SortableYTSContent) -> Bool {

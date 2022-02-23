@@ -11,7 +11,7 @@ import SwiftUI
 class TagModel: ObservableObject {
     @Published var tag: Tag
     @Published var sortables: [SortableYTSContent]?
-    @Published var content: Content?
+    @Published var content: AVContent?
     
     init(tag: Tag) {
         self.tag = tag

@@ -45,6 +45,21 @@ struct RootView: View {
                 }
             }
         }
+        .alert(isPresented: Binding(get: {
+            model.showError
+        }, set: {
+            model.showError = $0
+        }), content: {
+            Alert(
+                title: Text("Oops! Something went wrong."),
+                message: Text(model.errorToShow?.getUIDescription() ?? "We're not even sure what it is, but something is definitely not working. Sorry."),
+                dismissButton: Alert.Button.default(
+                    Text("Retry"), action: {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            self.model.retry?()
+                        }
+                    }))
+        })
         .foregroundColor(Color("ShragaBlue"))
         .accentColor(Color("ShragaBlue"))
     }

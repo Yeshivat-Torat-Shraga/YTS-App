@@ -8,7 +8,13 @@
 import Foundation
 import SwiftUI
 
-class RootModel: ObservableObject {
+class RootModel: ObservableObject, ErrorShower {
+    var retry: (() -> Void)?
+    
+    @Published var showError: Bool = false
+    
+    var errorToShow: Error?
+        
     static var audioPlayer: AudioPlayer = AudioPlayer()
     static var audioPlayerBinding: Binding<AudioPlayer> = Binding {
         audioPlayer
@@ -18,6 +24,7 @@ class RootModel: ObservableObject {
     
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
+    @Published var alert: Alert?
     var favoritesView = FavoritesView()
     var newsView = NewsView()
     var settingsView = SettingsView()
@@ -31,10 +38,10 @@ class RootModel: ObservableObject {
             scrollEdgeAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
             appearance.scrollEdgeAppearance = scrollEdgeAppearance
         }
-        homeView = HomeView() {
-            self.showLoadingScreen = false
-        }
-        
+        homeView = HomeView(hideLoadingScreenClosure: {self.showLoadingScreen = false},
+                            showErrorOnRoot: { error, retry in
+            self.showError(error: error, retry: retry!)
+        })
         RootModel.audioPlayer.refreshFavorites = {
             self.favoritesView.model.load()
         }

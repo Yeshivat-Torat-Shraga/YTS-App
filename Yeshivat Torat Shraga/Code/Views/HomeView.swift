@@ -12,8 +12,10 @@ struct HomeView: View {
     
     @State var presentingSearchView = false
     
-    init(hideLoadingScreenClosure: @escaping (() -> Void)) {
-        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure)
+    init(hideLoadingScreenClosure: @escaping (() -> Void),
+         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure,
+                               showErrorOnRoot: showErrorOnRoot)
     }
     
     init() {
@@ -187,9 +189,9 @@ struct HomeView: View {
                     dismissButton: Alert.Button.default(
                         Text("Retry"),
                         action: {
-//                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-//                                self.model.retry?()
-//                            }
+                            //                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            //                                self.model.retry?()
+                            //                            }
                         }))
             })
                 .onChange(of: model.showError) { errVal in
@@ -198,6 +200,9 @@ struct HomeView: View {
                     }
                 }
         }
+//        .alert(isPresented: .constant(true)) {
+//            Alert(title: Text("Rabbi Olshin is visiting America"), message: Text("He will be on the East coast from August 11 - August 31"), dismissButton: Alert.Button.default(Text("OK")))
+//        }
         .sheet(isPresented: $presentingSearchView) {
             SearchView()
         }
