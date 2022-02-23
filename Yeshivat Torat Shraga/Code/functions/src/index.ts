@@ -5,6 +5,8 @@ import childProcessPromise from 'child-process-promise';
 
 import os from 'os';
 import {
+	AlertDocument,
+	AlertFirebaseDocument,
 	ContentDocument,
 	ContentFirebaseDocument,
 	LoadData,
@@ -31,6 +33,32 @@ admin.initializeApp({
 	// credential: admin.credential.cert(
 	// 	require('/Users/benjitusk/Downloads/firebase.json')
 	// ),
+});
+
+exports.createAlert = https.onCall(async (data, context) => {
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	//   throw new https.HttpsError(
+	//     'failed-precondition',
+	//     'The function must be called from an App Check verified app.'
+	//   )
+	// }
+
+	if (!data.title || typeof data.title !== 'string') return 'Title is required';
+	if (!data.body || typeof data.body !== 'string') return 'Body is required';
+	if (!data.dateIssued || typeof data.dateIssued !== 'string')
+		return 'Invalid dateIssued';
+	if (!data.dateExpired || typeof data.dateExpired !== 'string')
+		return 'Invalid dateExpired';
+	const db = admin.firestore();
+	const COLLECTION = 'alerts';
+	const doc = await db.collection(COLLECTION).add({
+		title: data.title,
+		body: data.body,
+		dateIssued: new Date(data.dateIssued),
+		dateExpired: new Date(data.dateExpired),
+	});
+	return 'Created an alert with ID: ' + doc.id;
 });
 
 exports.createNotification = https.onCall(
@@ -387,40 +415,49 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-// exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
-// 	const db = admin.firestore();
-// 	const COLLECTION = 'alerts';
+exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	//   throw new https.HttpsError(
+	//     'failed-precondition',
+	//     'The function must be called from an App Check verified app.'
+	//   )
+	// }
 
-// 	let query = db.collection(COLLECTION).orderBy('date', 'desc');
+	const db = admin.firestore();
+	const COLLECTION = 'alerts';
 
-// 	const alert = await query.orderBy('date', 'desc').limit(1).get();
-// 	if (alert.docs) {
-// 		const doc = alert.docs[0];
-// 		const data = new AlertFirebaseDocument(doc.data());
-// 		const document: AlertDocument = {
-// 			id: doc.id,
-// 			title: data.title,
-// 			message: data.message,
-// 			dateIssued: data.dateIssued,
-// 			dateExpired: data.dateExpired,
-// 		};
-// 		return {
-// 			metadata: {
-// 				lastLoadedDocID: null,
-// 				finalCall: true,
-// 			},
-// 			results: [document],
-// 		};
-// 	} else {
-// 		return {
-// 			metadata: {
-// 				lastLoadedDocID: null,
-// 				finalCall: true,
-// 			},
-// 			results: [],
-// 		};
-// 	}
-// });
+	let query = db.collection(COLLECTION).orderBy('dateIssued', 'desc');
+
+	const alert = await query.limit(1).get();
+	if (alert.docs) {
+		const doc = alert.docs[0];
+		const data = new AlertFirebaseDocument(doc.data());
+		const document: AlertDocument = {
+			id: doc.id,
+			title: data.title,
+			body: data.body,
+			dateIssued: data.dateIssued,
+			dateExpired: data.dateExpired,
+		};
+
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: data.dateExpired.toDate() < new Date() ? null : [document],
+		};
+	} else {
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: null,
+		};
+	}
+});
 
 exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
