@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var model: HomeModel
-    
+    @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
     init(hideLoadingScreenClosure: @escaping (() -> Void),
@@ -176,11 +176,7 @@ struct HomeView: View {
                         }, imageSystemName: "magnifyingglass", foregroundColor: Color("ShragaBlue"), backgroundColor: .clear)
                     }
                 }
-            }.alert(isPresented: Binding(get: {
-                model.showError
-            }, set: {
-                model.showError = $0
-            }), content: {
+            }.alert(isPresented: $model.showError, content: {
                 Alert(
                     title: Text("Error"),
                     message: Text(
@@ -189,9 +185,9 @@ struct HomeView: View {
                     dismissButton: Alert.Button.default(
                         Text("Retry"),
                         action: {
-                            //                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                            //                                self.model.retry?()
-                            //                            }
+                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                                self.model.retry?()
+                            }
                         }))
             })
                 .onChange(of: model.showError) { errVal in
@@ -200,9 +196,12 @@ struct HomeView: View {
                     }
                 }
         }
-//        .alert(isPresented: .constant(true)) {
-//            Alert(title: Text("Rabbi Olshin is visiting America"), message: Text("He will be on the East coast from August 11 - August 31"), dismissButton: Alert.Button.default(Text("OK")))
-//        }
+        .alert(isPresented: $model.showAlert) {
+            Alert(title: Text(model.homePageAlertToShow!.title), message: Text(model.homePageAlertToShow!.body),
+                  dismissButton: .cancel(Text("OK")) {
+                lastViewedAlertID = model.homePageAlertToShow!.id
+            })
+        }
         .sheet(isPresented: $presentingSearchView) {
             SearchView()
         }

@@ -5,6 +5,8 @@ import childProcessPromise from 'child-process-promise';
 
 import os from 'os';
 import {
+	AlertDocument,
+	AlertFirebaseDocument,
 	ContentDocument,
 	ContentFirebaseDocument,
 	LoadData,
@@ -32,6 +34,66 @@ admin.initializeApp({
 	// 	require('/Users/benjitusk/Downloads/firebase.json')
 	// ),
 });
+
+exports.createAlert = https.onCall(async (data, context) => {
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	//   throw new https.HttpsError(
+	//     'failed-precondition',
+	//     'The function must be called from an App Check verified app.'
+	//   )
+	// }
+
+	if (!data.title || typeof data.title !== 'string') return 'Title is required';
+	if (!data.body || typeof data.body !== 'string') return 'Body is required';
+	if (!data.dateIssued || typeof data.dateIssued !== 'string')
+		return 'Invalid dateIssued';
+	if (!data.dateExpired || typeof data.dateExpired !== 'string')
+		return 'Invalid dateExpired';
+	const db = admin.firestore();
+	const COLLECTION = 'alerts';
+	const doc = await db.collection(COLLECTION).add({
+		title: data.title,
+		body: data.body,
+		dateIssued: new Date(data.dateIssued),
+		dateExpired: new Date(data.dateExpired),
+	});
+	return 'Created an alert with ID: ' + doc.id;
+});
+
+exports.createNotification = https.onCall(
+	async (data, context): Promise<string> => {
+		const payload = {
+			title: data.title,
+			body: data.body,
+		};
+		// Make sure title and body are non-empty strings
+		if (
+			typeof payload.title !== 'string' ||
+			payload.title.length === 0 ||
+			typeof payload.body !== 'string' ||
+			payload.body.length === 0
+		) {
+			logger.error('Invalid notification payload');
+			return 'Invalid notification payload';
+		}
+
+		return await admin
+			.messaging()
+			.send({
+				notification: payload,
+				topic: 'all',
+			})
+			.then((response) => {
+				logger.info('Successfully sent message:', response);
+				return `Successfully sent message: ${response}`;
+			})
+			.catch((error) => {
+				logger.error('Error sending message:', error);
+				return `Error sending message: ${error}`;
+			});
+	}
+);
 
 exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
@@ -351,6 +413,50 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 			return doc != null;
 		}),
 	};
+});
+
+exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	// if (context.app == undefined) {
+	//   throw new https.HttpsError(
+	//     'failed-precondition',
+	//     'The function must be called from an App Check verified app.'
+	//   )
+	// }
+
+	const db = admin.firestore();
+	const COLLECTION = 'alerts';
+
+	let query = db.collection(COLLECTION).orderBy('dateIssued', 'desc');
+
+	const alert = await query.limit(1).get();
+	if (alert.docs) {
+		const doc = alert.docs[0];
+		const data = new AlertFirebaseDocument(doc.data());
+		const document: AlertDocument = {
+			id: doc.id,
+			title: data.title,
+			body: data.body,
+			dateIssued: data.dateIssued,
+			dateExpired: data.dateExpired,
+		};
+
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: data.dateExpired.toDate() < new Date() ? null : [document],
+		};
+	} else {
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: null,
+		};
+	}
 });
 
 exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {

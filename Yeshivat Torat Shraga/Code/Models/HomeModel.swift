@@ -9,12 +9,13 @@ import SwiftUI
 
 class HomeModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
+    @Published var showAlert: Bool = false
     var errorToShow: Error?
     var retry: (() -> Void)?
     var rootModel: RootModel?
     var hideLoadingScreen: (() -> Void)?
     var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
-    @Published var bannerAlert: HomePageAlert? = HomePageAlert(title: "Rabbi Olshin is flying to USA!", body: "He will be on the East coast from August 11 - August 31")
+    var homePageAlertToShow: HomePageAlert? = nil
     @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
@@ -38,7 +39,7 @@ class HomeModel: ObservableObject, ErrorShower {
         
         let group = DispatchGroup()
 
-        for _ in ["Rebbeim", "Sortables", "Slideshow images"] {
+        for _ in ["Rebbeim", "Sortables", "Slideshow images", "HomePageAlert"] {
             group.enter()
         }
         
@@ -87,6 +88,21 @@ class HomeModel: ObservableObject, ErrorShower {
                 lhs.uploaded > rhs.uploaded
             })
 
+            group.leave()
+        }
+        
+        FirebaseConnection.loadAlert() { result, error in
+            guard let homeAlert = result else {
+                group.leave()
+                return
+            }
+            @AppStorage("lastViewedAlertID") var previousAlertID = ""
+            print("previousAlertID: \(previousAlertID)")
+            print("upcomingAlertID: \(homeAlert.id)")
+            if previousAlertID != homeAlert.id {
+                self.showAlert = true
+                self.homePageAlertToShow = homeAlert
+            }
             group.leave()
         }
         
