@@ -5,7 +5,6 @@
 //  Created by Benji Tusk on 11/11/21.
 //
 
-import Foundation
 import SwiftUI
 
 class HomeModel: ObservableObject, ErrorShower {
@@ -14,7 +13,8 @@ class HomeModel: ObservableObject, ErrorShower {
     var retry: (() -> Void)?
     var rootModel: RootModel?
     var hideLoadingScreen: (() -> Void)?
-//    var showAlertOnRoot: (() -> Void)?
+    var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
+    @Published var bannerAlert: HomePageAlert? = HomePageAlert(title: "Rabbi Olshin is flying to USA!", body: "He will be on the East coast from August 11 - August 31")
     @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
@@ -24,11 +24,11 @@ class HomeModel: ObservableObject, ErrorShower {
         load()
     }
     
-    init(hideLoadingScreen: @escaping (() -> Void)
-//         showAlertOnRoot:   @escaping (() -> Void)
+    init(hideLoadingScreen: @escaping (() -> Void),
+         showErrorOnRoot:   @escaping ((Error, (() -> Void)?) -> Void)
     ) {
         self.hideLoadingScreen = hideLoadingScreen
-//        self.showAlertOnRoot = showAlertOnRoot
+        self.showErrorOnRoot = showErrorOnRoot
         load()
     }
     
@@ -44,7 +44,7 @@ class HomeModel: ObservableObject, ErrorShower {
         
         FirebaseConnection.loadRebbeim() { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
-                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
+                self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
             for rebbi in rebbeim {
@@ -59,7 +59,7 @@ class HomeModel: ObservableObject, ErrorShower {
         
         FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startFromDocumentID: nil)) { results, error in
             guard let content = results?.content else {
-                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
+                self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
 
@@ -92,6 +92,9 @@ class HomeModel: ObservableObject, ErrorShower {
         
         group.notify(queue: .main) {
             self.hideLoadingScreen?()
+//            if let errorToShow = self.errorToShow {
+//                self.showErrorOnRoot?(errorToShow, self.retry)
+//            }
         }
     }
 }
