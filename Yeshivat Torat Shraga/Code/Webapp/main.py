@@ -1,10 +1,10 @@
 from datetime import datetime
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
 import cv2
 
 # import settings
-from firebase_admin import credentials, initialize_app, storage, firestore
+from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
@@ -15,6 +15,36 @@ app = Flask(__name__)
 # app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
 # app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
 # app.config["BASIC_AUTH_FORCE"] = True
+
+
+@app.route("/")
+def index():
+    return "Hello, World!"
+
+
+@app.route("/notifications", methods=["GET", "POST"])
+def notifications():
+    if request.method == "POST":
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=request.form.get("push-title"),
+                body=request.form.get("push-body"),
+            ),
+            apns=messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        # badge=int(request.form.get("badge-count", 0))
+                    ),
+                ),
+            ),
+            topic="all",
+        )
+
+        messaging.send(message)
+        flash("Notification sent!")
+        return render_template("notifications.html")
+    else:
+        return render_template("notifications.html")
 
 
 @app.route("/shiurim/", methods=["GET"])
@@ -160,4 +190,5 @@ def shiurim_upload():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.secret_key = "super secret key"
+    app.run(debug=True, host="localhost", port=8080)
