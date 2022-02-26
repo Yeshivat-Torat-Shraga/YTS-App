@@ -6,12 +6,122 @@
 //
 
 import SwiftUI
+import SwiftyGif
 
 struct UI {
-    static var shadowRadius: CGFloat = 2
-    static var cornerRadius: CGFloat = 8
-//    static var
+    @Environment(\.colorScheme) static var colorScheme
+    static let shadowRadius: CGFloat = 2
+    static let cornerRadius: CGFloat = 8
+    class Haptics {
+        static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
+        static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light
+    }
+    //    static let openContentFeedback
+    //    static var
 }
+
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition { transform(self) }
+        else { self }
+    }
+}
+
+
+extension View {
+
+    /// Calls the completion handler whenever an animation on the given value completes.
+    /// - Parameters:
+    ///   - value: The value to observe for animations.
+    ///   - completion: The completion callback to call once the animation completes.
+    /// - Returns: A modified `View` instance with the observer attached.
+    func onAnimationCompleted<Value: VectorArithmetic>(for value: Value, completion: @escaping () -> Void) -> ModifiedContent<Self, AnimationCompletionObserverModifier<Value>> {
+        return modifier(AnimationCompletionObserverModifier(observedValue: value, completion: completion))
+    }
+}
+
+struct AnimationCompletionObserverModifier<Value>: AnimatableModifier where Value: VectorArithmetic {
+
+    /// While animating, SwiftUI changes the old input value to the new target value using this property. This value is set to the old value until the animation completes.
+    var animatableData: Value {
+        didSet {
+            notifyCompletionIfFinished()
+        }
+    }
+
+    /// The target value for which we're observing. This value is directly set once the animation starts. During animation, `animatableData` will hold the oldValue and is only updated to the target value once the animation completes.
+    private var targetValue: Value
+
+    /// The completion callback which is called once the animation completes.
+    private var completion: () -> Void
+
+    init(observedValue: Value, completion: @escaping () -> Void) {
+        self.completion = completion
+        self.animatableData = observedValue
+        targetValue = observedValue
+    }
+
+    /// Verifies whether the current animation is finished and calls the completion callback if true.
+    private func notifyCompletionIfFinished() {
+        guard animatableData == targetValue else { return }
+
+        /// Dispatching is needed to take the next runloop for the completion callback.
+        /// This prevents errors like "Modifying state during view update, this will cause undefined behavior."
+        DispatchQueue.main.async {
+            self.completion()
+        }
+    }
+
+    func body(content: Content) -> some View {
+        /// We're not really modifying the view so we can directly return the original input value.
+        return content
+    }
+}
+
+struct iOS14BorderedProminentButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(Color(hex: 0x526B98))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+}
+
+
+struct Gif: UIViewRepresentable {
+    var name: String
+    var playing: Binding<Bool>
+    
+    init(name: String, playing: Binding<Bool> = .constant(true)) {
+        self.name = name
+        self.playing = playing
+    }
+    
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        let gif = try! UIImage(gifName: name)
+        let imageView = UIImageView(gifImage: gif)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            imageView.widthAnchor.constraint(equalTo: view.widthAnchor)
+        ])
+        return view
+        
+    }
+
+    func updateUIView(_ gifImageView: UIView, context: Context) {
+        if let gifimage = gifImageView as? UIImageView {
+            if playing.wrappedValue == true {
+                gifimage.startAnimatingGif()
+            } else {
+                gifimage.stopAnimatingGif()
+            }
+        }
+    }}
 
 
 /// Source: https://stackoverflow.com/questions/56760335/round-specific-corners-swiftui
@@ -165,6 +275,35 @@ struct SingleAxisGeometryReader<Content: View>: View
     }
 }
 
+/// https://stackoverflow.com/a/68088712/13368672
+/// Haptics.shared.play(.heavy)
+/// Haptics.shared.play(.light)
+/// Haptics.shared.play(.medium)
+/// Haptics.shared.play(.rigid)
+/// Haptics.shared.play(.soft)
+/// 
+/// Haptics.shared.notify(.error)
+/// Haptics.shared.notify(.success)
+/// Haptics.shared.notify(.warning)
+class Haptics {
+    static let shared = Haptics()
+    
+    private init() { }
+
+    func play(_ feedbackStyle: UIImpactFeedbackGenerator.FeedbackStyle) {
+        UIImpactFeedbackGenerator(style: feedbackStyle).impactOccurred()
+    }
+    
+    func notify(_ feedbackType: UINotificationFeedbackGenerator.FeedbackType) {
+        UINotificationFeedbackGenerator().notificationOccurred(feedbackType)
+    }
+    
+    func impact() {
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
+}
+
+
 class SlideshowImage: Identifiable, URLImageable {
     var imageURL: URL?
     var id: UUID
@@ -238,8 +377,11 @@ struct DownloadableImage<Object: URLImageable>: View {
         } else if let imageURL = model.object.imageURL {
             URLImage(url: imageURL, placeholder: {
                 ProgressView()
+                    .progressViewStyle(YTSProgressViewStyle())
             }, completion: { image in
-                model.object.image = image
+                DispatchQueue.main.async {
+                    model.object.image = image
+                }
             })
         } else {
             Image(systemName: "questionmark")
@@ -307,6 +449,18 @@ struct URLImage<Content : View>: View {
                 )
             }
         }
+    }
+}
+
+
+extension Color {
+    var responsiveBG: Color {
+        UI.colorScheme == .dark
+        ? .white : .black
+    }
+    var responsiveFG: Color {
+        UI.colorScheme == .dark
+        ? .black : .white
     }
 }
 

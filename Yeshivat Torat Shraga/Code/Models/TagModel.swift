@@ -9,24 +9,29 @@ import Foundation
 import SwiftUI
 
 class TagModel: ObservableObject {
-    let tag: Tag
+    @Published var tag: Tag
     @Published var sortables: [SortableYTSContent]?
-    @Published var content: Content?
+    @Published var content: AVContent?
+    
     init(tag: Tag) {
         self.tag = tag
     }
     
+    func set(tag: Tag) {
+        withAnimation {
+        self.tag = tag
+        self.content = nil
+        self.load()
+        }
+    }
+    
     func load() {
-        FirebaseConnection.loadContent(
-            searchData: ["field": "tag",
-                         "value": self.tag.name.lowercased()],
-            includeThumbnailURLs: false
-        ) { results, error in
+        FirebaseConnection.loadContent(matching: tag) { results, error in
                 guard let results = results else {
 //                    self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                     fatalError(error!.localizedDescription)
                 }
-                print(results)
+//                print(results)
                 withAnimation {
                     self.content = results.content
                     

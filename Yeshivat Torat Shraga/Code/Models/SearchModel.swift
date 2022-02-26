@@ -11,38 +11,20 @@ class SearchModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     @Published var rebbeim: [Rabbi] = []
     @Published var sortables: [SortableYTSContent] = []
-    @Published var content: Content?
+    @Published var content: AVContent?
     var errorToShow: Error?
     var retry: (() -> Void)?
 
     func search(_ query: String) {
         print("Searching Firebase...")
-        let searchOptions: [String: Any] = [
-            "content":
-                [
-                    "limit": 10,
-                    "includeThumbnailURLs": false,
-                    "includeDetailedAuthorInfo": true,
-                    "startFromDocumentID": nil
-                    
-                ],
-            "rebbeim":
-                [
-                    "limit": 5,
-                    "includePictureURLs": true,
-                    "startFromDocumentID": nil
-                    
-                ]
-        ]
-        FirebaseConnection.searchFirestore(query: query, searchOptions: searchOptions) { results, error in
+        FirebaseConnection.search(query: query) { results, error in
             
-            guard let rebbeim = results?.contentAndRabbis.rebbeim else {
+            guard let rebbeim = results?.rebbeim else {
                 self.showError(error: error ?? YTSError.unknownError, retry: {})
                 return
             }
-
             
-            guard let contents = results?.contentAndRabbis.content else {
+            guard let contents = results?.content else {
                 self.showError(error: error ?? YTSError.unknownError, retry: {})
                 return
             }
@@ -62,7 +44,6 @@ class SearchModel: ObservableObject, ErrorShower {
                     return lhs.date! > rhs.date!
                 })
 
-                
                 for rabbi in rebbeim {
                     self.rebbeim.append(rabbi)
                 }

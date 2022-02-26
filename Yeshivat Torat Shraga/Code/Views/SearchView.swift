@@ -10,11 +10,11 @@ import SwiftUI
 struct SearchView: View {
     @ObservedObject var model = SearchModel()
     @State var selectedResultTag = "Rebbeim"
-    @State var selectedResultType = ""
     @State var searchText = ""
     @State var showAlert = false
     @State var alertBody = ""
     @State var alertTitle = ""
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -29,7 +29,8 @@ struct SearchView: View {
                             model.search(searchText)
                         })
                             .placeholder(when: searchText.isEmpty) {
-                                Text("Search...").foregroundColor(Color("ShragaGold"))
+                                Text("Search...")
+//                                    .foregroundColor(Color("ShragaGold"))
                             }
                         
                     }
@@ -49,34 +50,19 @@ struct SearchView: View {
                     Text("Shiurim")
                         .tag("Shiurim")
                 }
-                .onChange(of: selectedResultTag) { value in
-                    withAnimation {
-                        selectedResultType = value
-                    }
-                }
+//                .onChange(of: selectedResultTag) { value in
+//                    withAnimation {
+//
+//                    }
+//                }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding([.horizontal, .bottom])
                 
-                if selectedResultType == "Shiurim" || selectedResultType == "All" {
-                    if let sortables = model.sortables {
-                        ForEach(sortables, id: \.self) { sortable in
-                            if let video = sortable.video {
-                                VideoCardView(video: video)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
-                                    .padding([.horizontal, .bottom])
-                            } else if let audio = sortable.audio {
-                                AudioCardView(audio: audio)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
-                                    .padding([.horizontal, .bottom])
-                            }
-                        }
-                    }
-                }
-                if selectedResultType == "Rebbeim" || selectedResultType == "All" {
+                
+                Text(selectedResultTag)
+                    .background(Color.black)
+                
+                if selectedResultTag == "Rebbeim" || selectedResultTag == "All" {
                     if let rebbeim = model.rebbeim {
                         ForEach(rebbeim, id: \.self) { rabbi in
                             if let detailedRabbi = rabbi as? DetailedRabbi {
@@ -93,6 +79,26 @@ struct SearchView: View {
                                     RabbiCardView(rabbi: rabbi)
                                         .padding([.horizontal, .bottom])
                                 }
+                            }
+                        }
+                    }
+                }
+                
+                if selectedResultTag == "Shiurim" || selectedResultTag == "All" {
+                    if let sortables = model.sortables {
+                        ForEach(sortables, id: \.self) { sortable in
+                            if let video = sortable.video {
+                                VideoCardView(video: video)
+                                    .contextMenu {
+                                        Button("Play") {}
+                                    }
+                                    .padding([.horizontal, .bottom])
+                            } else if let audio = sortable.audio {
+                                AudioCardView(audio: audio)
+                                    .contextMenu {
+                                        Button("Play") {}
+                                    }
+                                    .padding([.horizontal, .bottom])
                             }
                         }
                     }

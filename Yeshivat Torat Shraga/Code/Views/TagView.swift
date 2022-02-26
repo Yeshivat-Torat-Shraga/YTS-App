@@ -9,23 +9,21 @@ import SwiftUI
 
 struct TagView: View {
     @ObservedObject var model: TagModel
-    var tag: Tag
     
     init(tag: Tag) {
-        self.tag = tag
         self.model = TagModel(tag: tag)
     }
     
     var body: some View {
             VStack {
                 HStack {
-                    Text(tag.name)
+                    Text(model.tag.name)
                         .fontWeight(.bold)
                         .font(.largeTitle)
                     
                     Spacer()
                     
-                    if let category = tag as? Category {
+                    if let category = model.tag as? Category {
                         DownloadableImage(object: category)
                             .frame(width: 100, height: 70)
                             .aspectRatio(contentMode: .fill)
@@ -38,72 +36,35 @@ struct TagView: View {
                 
                 Divider()
                 
-                ScrollView(.horizontal) {
-                    LazyHStack {
-                        ForEach(tags, id: \.name) { tag in
-                            if tag == self.tag {
-                                if #available(iOS 15.0, *) {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                    .buttonStyle(BorderedButtonStyle())
-                                    .disabled(true)
-                                    .overlay(Color.black.opacity(0.1))
-                                } else {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                }
-                            } else {
-                                if #available(iOS 15.0, *) {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                    .buttonStyle(BorderedButtonStyle())
-                                } else {
-                                    Button {
-                                        
-                                    } label: {
-                                        Text(tag.name)
-                                            .font(.caption2)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                 
                 ScrollView {
                     VStack {
-                        HStack {
-                            Text("Recently Uploaded")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }
+//                        HStack {
+//                            Text("Recently Uploaded")
+//                                .font(.title3)
+//                                .bold()
+//                            Spacer()
+//                        }
                         if let sortables = model.sortables {
                             ForEach(sortables, id: \.self) { sortable in
                                 if let video = sortable.video {
                                     VideoCardView(video: video)
                                         .contextMenu {
-                                            Button("Play") {}
+                                            Button(action: {}, label: {
+                                                Label("Play", systemImage: "play.fill")
+                                            })
                                         }
                                 } else if let audio = sortable.audio {
                                     AudioCardView(audio: audio)
                                         .contextMenu {
-                                            Button("Play") {}
+                                            Button(action: {}, label: {
+                                                Label("Play", systemImage: "play.fill")
+                                            })
                                         }
                                 }
                             }
+                        } else {
+                            Text("Waiting to implement sequential loading.")
                         }
                     }
                     .padding([.horizontal, .top])
@@ -116,6 +77,16 @@ struct TagView: View {
             .onAppear {
                 self.model.load()
             }
+    }
+}
+
+struct iOS14BorderedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(Color(hex: 0x526B98))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 }
 

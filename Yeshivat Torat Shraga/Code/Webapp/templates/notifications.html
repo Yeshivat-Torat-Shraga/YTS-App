@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<link rel="stylesheet" href="/static/bootstrap-datetimepicker.min.css">
+<script src="/static/bootstrap-datetimepicker.min.js"></script>
+<style>
+  td i.fa {
+    color: lightskyblue
+  }
+</style>
+<form action="/notifications " method="post" enctype="multipart/form-data">
+  <div class="form-group" style="display: flex; flex-direction: row;">
+    <!-- <label for="push">push notification<span>Trigger a push notification across all -->
+    <!-- devices.</span></label> -->
+    <div name="push">
+
+      <label for="push-title">Push Notifications</label>
+      <input type="text" name="push-title" id="push-title" class="form-control" placeholder="Title" required />
+    </div>
+    <div>
+
+      <label for="push-body">- <span>Trigger a push notification across all devices</span></label>
+      <input type="text" name="push-body" id="push-body" class="form-control" placeholder="Body" required />
+
+      <!-- <label for="badge-count">Badge count <span>Trigger a push notification across all devices</span></label>
+      <input type="text" name="badge-count" id="badge-count" class="form-control" placeholder="Body" required /> -->
+    </div>
+
+  </div>
+
+
+  <br />
+
+  <div class="form-group">
+    <button type="submit">Publish notification</button>
+  </div>
+</form>
+
+<script>
+  $(".flexdatalist").flexdatalist({
+    noResultsText:
+      "Press ENTER ↵ to add <strong>{keyword}</strong> as a new tag.",
+    placeholder: "Add a tag to the video",
+  });
+
+  $('#datePicker').datetimepicker({
+    format: 'YYYY-MM-DD HH:mm:ss',
+    defaultDate: new Date(),
+    sideBySide: true,
+    ignoreReadonly: true,
+  });
+</script>
+{% endblock content %}

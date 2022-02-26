@@ -12,20 +12,36 @@ import MediaPlayer
 struct AudioPlayer: View {
     @ObservedObject var player = Player()
     var audio: Audio?
+    let speeds: [Float] = [0.75, 1.00, 1.25,
+                           1.50, 1.75, 2.00]
+    @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
+    // MARK: This needs to refresh every time from... somewhere?
+//    @State private var isFavorited: Bool = false
+    @State private var showFavoritesAlert = false
+    @State private var favoriteErr: Error?
+    @State private var favoriteIDs = Favorites.shared.favoriteIDs
+    var refreshFavorites: (() -> Void)?
     
-    init() {}
+    init(refreshFavorites: (() -> Void)? = nil) {
+        self.refreshFavorites = refreshFavorites
+//        self.isFavorited = (audio?.favoritedAt != nil)
+    }
     
     mutating func set(audio: Audio) {
         self.audio = audio
         
-        let playerItem = AVPlayerItem(url: audio.sourceURL)
-        let player = AVPlayer(playerItem: playerItem)
-        //            self.avPlayer.prepareToPlay()
-        //            avPlayer.volume = 1.0
-        //        player.play()
-        //            self.model = AudioPlayerModel(player: player)
-        //            self.avPlayer = player
-        self.player.set(avPlayer: player)
+        if let sourceURL = audio.sourceURL {
+            let playerItem = AVPlayerItem(url: sourceURL)
+            let player = AVPlayer(playerItem: playerItem)
+            //            self.avPlayer.prepareToPlay()
+            //            avPlayer.volume = 1.0
+            //        player.play()
+            //            self.model = AudioPlayerModel(player: player)
+            //            self.avPlayer = player
+            self.player.set(avPlayer: player)
+        } else {
+            print("Audio sourceURL is nil, could not set audio.")
+        }
     }
     
     mutating func play(audio: Audio) {
@@ -151,6 +167,7 @@ struct AudioPlayer: View {
             Group {
                 if self.player.itemDuration >= 0 {
                     Slider(value: self.$player.displayTime, in: (0...self.player.itemDuration), onEditingChanged: { (scrubStarted) in
+                        Haptics.shared.impact()
                         if scrubStarted {
                             self.player.scrubState = .scrubStarted
                         } else {
@@ -194,6 +211,8 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: -30)
                     }, label: {
                         Image(systemName: "gobackward.30")
                             .resizable()
@@ -204,6 +223,7 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.soft)
                     }, label: {
                         Image(systemName: "backward.fill")
                             .resizable()
@@ -217,6 +237,7 @@ struct AudioPlayer: View {
                     
                     if RootModel.audioPlayer.player.timeControlStatus == .paused {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             self.play()
                         }, label: {
                             Image(systemName: "play.fill")
@@ -226,6 +247,7 @@ struct AudioPlayer: View {
                             .frame(width: 30)
                     } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             self.pause()
                         }, label: {
                             Image(systemName: "pause.fill")
@@ -234,6 +256,7 @@ struct AudioPlayer: View {
                         }).frame(width: 25)
                     } else {
                         ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
                     }
                     
                     Spacer()
@@ -241,6 +264,7 @@ struct AudioPlayer: View {
                 
                 Group {
                     Button(action: {
+                        Haptics.shared.play(.light)
                     }, label: {
                         Image(systemName: "forward.fill")
                             .resizable()
@@ -250,6 +274,8 @@ struct AudioPlayer: View {
                     Spacer()
                     
                     Button(action: {
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: 30)
                     }, label: {
                         Image(systemName: "goforward.30")
                             .resizable()
@@ -265,54 +291,48 @@ struct AudioPlayer: View {
             
             HStack {
                 Spacer()
-
-                if #available(iOS 15.0, *) {
-                    Button(action: {
-                        if let audio = audio {
-                            Favorites.save(audio) { favorites, error in
-                                print(favorites, error)
+                
+                if let audio = audio, let favoriteIDs = favoriteIDs {
+                Button(action: {
+//                    MARK: CLEAN UP
+                        if favoriteIDs.contains(audio.firestoreID) {
+                            Favorites.shared.delete(audio) { favorites, error in
+//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
+                                self.refreshFavorites?()
+                            }
+                        } else {
+                            Favorites.shared.save(audio) { favorites, error in
+//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
+                                self.refreshFavorites?()
                             }
                         }
-                    }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color("Gray"))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(Color(uiColor: .lightGray))
-                            .frame(width: 20, height: 20)
-                    }).buttonStyle(BorderedProminentButtonStyle())
-                } else {
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "heart").foregroundColor(Color("ShragaGold"))
-                            .frame(width: 20, height: 20)
-                    })
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "square.and.arrow.up").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    }).padding()
-                    
-                    Button(action: {
-                        
-                    }, label: {
-                        Image(systemName: "ellipsis").foregroundColor(Color(UIColor.lightGray))
-                            .frame(width: 20, height: 20)
-                    })
+                    self.favoriteIDs = Favorites.shared.getfavoriteIDs()
+                }, label: {
+                    Image(systemName: favoriteIDs.contains(audio.firestoreID)
+                          ? "heart.fill"
+                          : "heart")
+                        .foregroundColor(Color("ShragaGold"))
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 }
+                
+                Button(action: {
+                    Haptics.shared.play(.rigid)
+                    selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
+                    player.setRate(speeds[selectedSpeedIndex])
+                }, label: {
+                    Text("x\(speeds[selectedSpeedIndex].trim())")
+                        .foregroundColor(.gray)
+                        .frame(width: 45, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                
+                Button(action: {
+                    
+                }, label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.gray)
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
             Spacer()
@@ -321,6 +341,31 @@ struct AudioPlayer: View {
             colors: [Color("ShragaBlue"), Color(white: 0.8)],
             startPoint: .bottomLeading, endPoint: .topTrailing)
                         .ignoresSafeArea())
+        
+        .onAppear {
+            favoriteIDs = Favorites.shared.favoriteIDs
+//            if let audio = audio {
+//                isFavorited = favoriteIDs?.contains(audio.firestoreID) ?? false
+//            } else {
+//                isFavorited = false
+//            }
+        }
+        
+        .alert(isPresented: Binding (get: {
+            favoriteErr != nil
+        }, set: {
+            favoriteErr = $0 ? favoriteErr : nil
+        })) {
+            Alert(
+                title: Text("Error"),
+                message: Text(
+                    favoriteErr?.getUIDescription() ??
+                    "An unknown error occured while saving your changes."),
+                dismissButton: Alert.Button.default(
+                    Text("OK")
+                )
+            )
+        }
     }
 }
 

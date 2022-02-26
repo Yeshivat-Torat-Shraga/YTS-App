@@ -14,19 +14,38 @@ struct NewsView: View {
             ScrollView {
                 if let articles = model.articles {
                     ForEach(articles) { article in
-                        NavigationLink(destination: NewsArticleView(article)) {                        
+                        NavigationLink(destination: NewsArticleView(article)) {
                             NewsArticleCardView(article)
                                 .padding(.horizontal)
                         }
-//                        .background(Color.white.cornerRadius(10).shadow(radius: UI.shadowRadius))
+                        .simultaneousGesture(
+                            TapGesture()
+                                .onEnded {
+                                    Haptics.shared.play(UI.Haptics.navLink)
+                                })
                     }
                 }
             }
-                .navigationTitle("YTS News")
+            .navigationTitle("YTS News")
         }
-//        .onAppear {
-//            self.model.load()
-//        }
+        .alert(isPresented: Binding(get: {
+            model.showError
+        }, set: {
+            model.showError = $0
+        }), content: {
+            Alert(
+                title: Text("Error"),
+                message: Text(
+                    model.errorToShow?.getUIDescription() ??
+                    "An unknown error has occured."),
+                dismissButton: Alert.Button.default(
+                    Text("Retry"),
+                    action: {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            self.model.retry?()
+                        }
+                    }))
+        })
     }
 }
 

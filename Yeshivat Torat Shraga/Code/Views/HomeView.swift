@@ -9,8 +9,14 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var model: HomeModel
-    
+    @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
+    
+    init(hideLoadingScreenClosure: @escaping (() -> Void),
+         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure,
+                               showErrorOnRoot: showErrorOnRoot)
+    }
     
     init() {
         self.model = HomeModel()
@@ -18,7 +24,7 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack {
                     
                     // MARK: - Recently Uploaded
@@ -32,27 +38,32 @@ struct HomeView: View {
                         .padding(.horizontal)
                         
                         if let sortables = model.sortables {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack {
-                                    ForEach(sortables, id: \.self) { sortable in
-                                        Group {
-                                            if let audio = sortable.audio {
-                                                AudioTile(audio: audio)
-                                            } else if let video = sortable.video {
-                                                VideoTile(video: video)
-                                            }
+                            if sortables.count < 1 {
+                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                    .padding()
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack {
+                                        ForEach(sortables, id: \.self) { sortable in
+                                            SortableContentCardView(content: sortable)
+                                                .padding(.vertical)
                                         }
                                     }
+                                    .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
                             }
                         } else {
-                            ProgressView()
-                                .padding(.bottom)
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
                         }
                         
                         Divider().padding(.horizontal)
                     }
+                    
                     
                     // MARK: - Rebbeim
                     VStack(spacing: 0) {
@@ -63,14 +74,25 @@ struct HomeView: View {
                             Spacer()
                         }.padding(.horizontal)
                         if let rebbeim = model.rebbeim {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack {
-                                    ForEach(rebbeim, id: \.self) { rabbi in
-                                        NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
-                                            TileCardView<DetailedRabbi>(content: rabbi, size: .medium)
-                                        }.padding(.vertical)
-                                    }
-                                }.padding(.horizontal)
+                            if rebbeim.count < 1 {
+                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                    .padding()
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack {
+                                        ForEach(rebbeim, id: \.self) { rabbi in
+                                            NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
+                                                RabbiTileView(rabbi: rabbi, size: .medium)
+                                            }
+                                            .simultaneousGesture(
+                                                TapGesture()
+                                                    .onEnded {
+                                                        Haptics.shared.play(UI.Haptics.navLink)
+                                                    })
+                                            .padding(.vertical)
+                                        }
+                                    }.padding(.horizontal)
+                                }
                             }
                         } else {
                             HStack {
@@ -82,7 +104,40 @@ struct HomeView: View {
                         }
                         Divider().padding(.horizontal)
                     }
-
+                    
+                    // MARK: - SLIDESHOW
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Featured Photos")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        if let slideshowImages = model.slideshowImages {
+                            if slideshowImages.count < 1 {
+                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                    .padding()
+                            } else {
+                                SlideshowView(slideshowImages)
+                                    .frame(height: 250)
+                                    .clipped()
+                                    .cornerRadius(UI.cornerRadius)
+                                    .shadow(radius: UI.shadowRadius)
+                                    .padding()
+                            }
+                        } else {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
+                        }
+                        Divider().padding(.horizontal)
+                    }
+                    
                     // MARK: - CATEGORIES
                     VStack(spacing: 0) {
                         HStack {
@@ -92,35 +147,20 @@ struct HomeView: View {
                             Spacer()
                         }
                         .padding(.horizontal)
-
+                        
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(tags, id: \.name) { tag in
                                     TagTileView(tag)
                                         .padding(.vertical)
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.Haptics.navLink)
+                                                })
+                                    
                                 }
                             }.padding(.horizontal)
-                        }
-                        Divider().padding(.horizontal)
-                    }
-                    
-                    // MARK: - SLIDESHOW
-                    if let slideshowImages = model.slideshowImages {
-                        VStack(spacing: 0) {
-                            HStack {
-                                Text("Featured Photos")
-                                    .font(.title3)
-                                    .bold()
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            
-                            SlideshowView(slideshowImages)
-                            .frame(height: 250)
-                            .clipped()
-                            .cornerRadius(UI.cornerRadius)
-                            .shadow(radius: UI.shadowRadius)
-                            .padding()
                         }
                     }
                 }
@@ -133,14 +173,10 @@ struct HomeView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EllipseButton(action: {
                             self.presentingSearchView = true
-                        }, imageSystemName: "magnifyingglass", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
+                        }, imageSystemName: "magnifyingglass", foregroundColor: Color("ShragaBlue"), backgroundColor: .clear)
                     }
                 }
-            }.alert(isPresented: Binding(get: {
-                model.showError
-            }, set: {
-                model.showError = $0
-            }), content: {
+            }.alert(isPresented: $model.showError, content: {
                 Alert(
                     title: Text("Error"),
                     message: Text(
@@ -153,6 +189,17 @@ struct HomeView: View {
                                 self.model.retry?()
                             }
                         }))
+            })
+                .onChange(of: model.showError) { errVal in
+                    if (errVal){
+                        Haptics.shared.notify(.error)
+                    }
+                }
+        }
+        .alert(isPresented: $model.showAlert) {
+            Alert(title: Text(model.homePageAlertToShow!.title), message: Text(model.homePageAlertToShow!.body),
+                  dismissButton: .cancel(Text("OK")) {
+                lastViewedAlertID = model.homePageAlertToShow!.id
             })
         }
         .sheet(isPresented: $presentingSearchView) {
