@@ -16,6 +16,28 @@ app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
 app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
 app.config["BASIC_AUTH_FORCE"] = True
 
+@app.route("/rabbis", methods=["GET"])
+def rabbis():
+    db = firestore.client()
+    collection = [(rabbi.to_dict(), rabbi.id) for rabbi in db.collection("rebbeim").get()]
+    return render_template("rabbis.html", data=collection)
+
+@app.route("/rabbis/<ID>", methods=["GET", "POST"])
+def rabbisDetail(ID):
+    if request.method == "GET":
+        db = firestore.client()
+        collection = db.collection("rebbeim").document(ID).get().to_dict()
+        return render_template("rabbisdetail.html", collection=collection)
+    else:
+        db = firestore.client()
+        collection = db.collection("rebbeim").document(ID)
+        collection.delete()
+        return redirect(url_for("rabbis"))
+        
+
+
+
+
 @app.route("/shiurim/", methods=["GET"])
 def shiurim():
     db = firestore.client()
@@ -108,6 +130,8 @@ def shiurim_upload():
         # blob.content_type = file.content_type
         # blob.upload_from_file(file)
         return "Done"
+
+
 
 
 if __name__ == "__main__":
