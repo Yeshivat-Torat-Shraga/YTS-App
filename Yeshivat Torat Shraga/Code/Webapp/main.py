@@ -56,6 +56,28 @@ def notifications():
     return render_template("notifications.html")
 
 
+@app.route("/rabbis", methods=["GET"])
+def rabbis():
+    db = firestore.client()
+    collection = [(rabbi.to_dict(), rabbi.id) for rabbi in db.collection("rebbeim").get()]
+    return render_template("rabbis.html", data=collection)
+
+@app.route("/rabbis/<ID>", methods=["GET", "POST"])
+def rabbisDetail(ID):
+    if request.method == "GET":
+        db = firestore.client()
+        collection = db.collection("rebbeim").document(ID).get().to_dict()
+        return render_template("rabbisdetail.html", collection=collection)
+    else:
+        db = firestore.client()
+        collection = db.collection("rebbeim").document(ID)
+        collection.delete()
+        return redirect(url_for("rabbis"))
+        
+
+
+
+
 @app.route("/shiurim/", methods=["GET"])
 def shiurim():
     db = firestore.client()
@@ -196,6 +218,8 @@ def shiurim_upload():
     #         + "contact the site administrator.",
     #         500,
     #     )
+
+
 
 
 if __name__ == "__main__":
