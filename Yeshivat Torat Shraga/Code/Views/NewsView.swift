@@ -28,11 +28,7 @@ struct NewsView: View {
             }
             .navigationTitle("YTS News")
         }
-        .alert(isPresented: Binding(get: {
-            model.showError
-        }, set: {
-            model.showError = $0
-        }), content: {
+        .alert(isPresented: $model.showError, content: {
             Alert(
                 title: Text("Error"),
                 message: Text(
