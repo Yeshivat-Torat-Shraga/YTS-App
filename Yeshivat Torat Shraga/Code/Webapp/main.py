@@ -22,29 +22,38 @@ def index():
     return "Hello, World!"
 
 
-@app.route("/notifications", methods=["GET", "POST"])
-def notifications():
-    if request.method == "POST":
-        message = messaging.Message(
-            notification=messaging.Notification(
-                title=request.form.get("push-title"),
-                body=request.form.get("push-body"),
-            ),
-            apns=messaging.APNSConfig(
-                payload=messaging.APNSPayload(
-                    aps=messaging.Aps(
-                        # badge=int(request.form.get("badge-count", 0))
-                    ),
+@app.route("/notifications/alert", methods=["POST"])
+def alert_notification():
+
+    flash("Alert sent!")
+    return redirect(url_for("notifications"))
+
+
+@app.route("/notifications/push", methods=["POST"])
+def push_notification():
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=request.form.get("push-title"),
+            body=request.form.get("push-body"),
+        ),
+        apns=messaging.APNSConfig(
+            payload=messaging.APNSPayload(
+                aps=messaging.Aps(
+                    # badge=int(request.form.get("badge-count", 0))
                 ),
             ),
-            topic="all",
-        )
+        ),
+        topic="all",
+    )
 
-        messaging.send(message)
-        flash("Notification sent!")
-        return render_template("notifications.html")
-    else:
-        return render_template("notifications.html")
+    messaging.send(message)
+    flash("Notification sent!")
+    return redirect(url_for("notifications"))
+
+
+@app.route("/notifications", methods=["GET"])
+def notifications():
+    return render_template("notifications.html")
 
 
 @app.route("/shiurim/", methods=["GET"])
