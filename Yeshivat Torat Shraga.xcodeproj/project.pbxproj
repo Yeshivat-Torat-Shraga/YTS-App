@@ -24,6 +24,7 @@
 		08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AF240D27A35315001331EA /* FavoritesModel.swift */; };
 		08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B7A8442790358000B0EBC3 /* SlideshowView.swift */; };
 		08BBDDBE27B54FE30020AABB /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 08BBDDBD27B54FE30020AABB /* FirebaseMessaging */; };
+		08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D3493C27CD26A000538697 /* OnboardingView.swift */; };
 		08EFBABB27A962A800900A90 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBABA27A962A800900A90 /* GoogleService-Info.plist */; };
 		08EFBACB27A9977B00900A90 /* SwiftyGif in Frameworks */ = {isa = PBXBuildFile; productRef = 08EFBACA27A9977B00900A90 /* SwiftyGif */; };
 		08EFBACD27A9996400900A90 /* logoDarkMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACC27A9996400900A90 /* logoDarkMode.gif */; };
@@ -99,6 +100,7 @@
 		08A5439727A80BD700B97D0F /* Yeshivat Torat Shraga.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yeshivat Torat Shraga.entitlements"; sourceTree = "<group>"; };
 		08AF240D27A35315001331EA /* FavoritesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesModel.swift; sourceTree = "<group>"; };
 		08B7A8442790358000B0EBC3 /* SlideshowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideshowView.swift; sourceTree = "<group>"; };
+		08D3493C27CD26A000538697 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		08EFBABA27A962A800900A90 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		08EFBACC27A9996400900A90 /* logoDarkMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoDarkMode.gif; sourceTree = "<group>"; };
 		08EFBACE27A9B67700900A90 /* logoLightMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoLightMode.gif; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 				083AE1022799A770003A36ED /* NewsArticleView.swift */,
 				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
 				085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */,
+				08D3493C27CD26A000538697 /* OnboardingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -457,6 +460,7 @@
 				08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */,
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
+				08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */,
 				08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
