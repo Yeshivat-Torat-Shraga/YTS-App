@@ -9,6 +9,11 @@ import Foundation
 import SwiftUI
 
 class RootModel: ObservableObject, ErrorShower {
+    
+    @AppStorage("firstLaunch")
+    private var isFirstLaunch = true
+    @Published var showOnboarding = false
+        
     var retry: (() -> Void)?
     
     @Published var showError: Bool = false
@@ -31,6 +36,10 @@ class RootModel: ObservableObject, ErrorShower {
     
     
     init() {
+        if isFirstLaunch {
+            isFirstLaunch = false
+            showOnboarding = true
+        }
         let appearance = UITabBar.appearance()
         appearance.standardAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
         if #available(iOS 15.0, *) {

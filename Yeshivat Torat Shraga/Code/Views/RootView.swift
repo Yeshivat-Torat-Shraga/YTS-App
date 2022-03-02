@@ -60,6 +60,10 @@ struct RootView: View {
                         }
                     }))
         })
+        .fullScreenCover(isPresented: $model.showOnboarding) {
+            OnboardingView(dismiss: {model.showOnboarding = false})
+                .background(Color.white.ignoresSafeArea())
+        }
         .foregroundColor(Color("ShragaBlue"))
         .accentColor(Color("ShragaBlue"))
     }

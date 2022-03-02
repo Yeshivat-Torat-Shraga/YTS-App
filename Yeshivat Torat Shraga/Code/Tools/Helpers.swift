@@ -50,6 +50,22 @@ extension Color {
     }
 }
 
+extension Color {
+    static var shragaGold: Color {
+        return Color("ShragaGold")
+    }
+    static var shragaBlue: Color {
+        return Color("ShragaBlue")
+    }
+    static var adaptiveFG: Color {
+        return Color("AdaptiveFG")
+    }
+    static var adaptiveBG: Color {
+        return Color("AdaptiveBG")
+    }
+    
+}
+
 // https://stackoverflow.com/a/58913649
 extension String {
     func index(from: Int) -> Index {
