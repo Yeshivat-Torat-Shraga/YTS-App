@@ -65,7 +65,7 @@ platform :ios do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
  
     profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
-    match(type: "appstore")
+    match(type: "appstore", git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"])
     # cert(
     #   api_key: api_key,
     #   keychain_path: ENV["KEYCHAIN_PATH"] # the path to the keychain where your certificates are stored
@@ -101,7 +101,7 @@ platform :ios do
  
     # build the app
     gym(
-      scheme: "example-scheme", # replace with name of your project's scheme
+      scheme: "Yeshivat Torat Shraga", # replace with name of your project's scheme
       output_name: output_name,
       configuration: "Release",
       export_options: {
