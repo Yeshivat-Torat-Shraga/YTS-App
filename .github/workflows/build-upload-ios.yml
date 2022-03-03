@@ -1,6 +1,7 @@
 name: iOS binary build & upload
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
   
 jobs:
  deploy:
