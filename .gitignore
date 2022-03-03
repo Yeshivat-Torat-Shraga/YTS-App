@@ -15,3 +15,5 @@ Yeshivat Torat Shraga/Code/Webapp/cred.json
 __pycache__/
 .vscode/
 build/
+*.mobileprovision
+*.cer
