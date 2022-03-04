@@ -92,7 +92,7 @@ platform :ios do
     # turn off automatic signing during build so correct code signing identity is guaranteed to be used
     update_code_signing_settings(
       use_automatic_signing: false,
-      targets: ["main-target"], # specify which targets to update code signing settings for
+      targets: ["Yeshivat Torat Shraga"], # specify which targets to update code signing settings for
       code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
       bundle_identifier: app_identifier,
       profile_name: profile_name,
@@ -106,9 +106,9 @@ platform :ios do
       configuration: "Release",
       export_options: {
         method: export_method,
-        # provisioningProfiles: {
-        #   app_identifier => app_profile_name
-        # },
+        provisioningProfiles: {
+          app_identifier => profile_name
+        },
         compileBitcode: compile_bitcode
       }
     )
