@@ -35,6 +35,7 @@ jobs:
          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
          ASC_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+         MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
          KEYCHAIN_PATH: ~/Library/Keychains/signing_temp.keychain-db
  
      - name: Upload app-store ipa and dsyms to artifacts
