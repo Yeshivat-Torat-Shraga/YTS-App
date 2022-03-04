@@ -47,7 +47,7 @@ platform :ios do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     current_version = get_version_number(
-      target: "main-target" # replace with your main target, required if you have more than one non-test target
+      target: "Yeshivat Torat Shraga" # replace with your main target, required if you have more than one non-test target
     )
     latest_build_number = latest_testflight_build_number(
       api_key: api_key,
