@@ -101,7 +101,7 @@ platform :ios do
 
     settings_to_override = {
       :BUNDLE_IDENTIFIER => "com.reesedevelopment.YTS",
-      :PROVISIONING_PROFILE_SPECIFIER => profile_name,
+      :PROVISIONING_PROFILE_SPECIFIER => app_profile_name,
     }
 
  
