@@ -98,7 +98,7 @@ platform :ios do
   desc "Build the iOS app for release"
   lane :build_release do |options|
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    # app_profile_name = "match AppStore " + app_identifier
+    app_profile_name = "match AppStore " + app_identifier
     profile_name = "App Provisioning Profile" # the name of the profile to use for the build
     output_name = "YTS" # specify the name of the .ipa file to generate
     export_method = "app-store" # specify the export method
