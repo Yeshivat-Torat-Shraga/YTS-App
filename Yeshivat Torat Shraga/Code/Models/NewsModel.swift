@@ -21,7 +21,6 @@ class NewsModel: ObservableObject, ErrorShower {
     }
     
     func load() {
-        self.articles = []
         FirebaseConnection.loadNews(limit: 10) { results, error in
             guard let sortedArticles = results?.articles.sorted(by: { lhs, rhs in
                 return lhs.uploaded > rhs.uploaded
@@ -30,11 +29,7 @@ class NewsModel: ObservableObject, ErrorShower {
                 return
             }
             
-            for article in sortedArticles {
-                withAnimation {
-                    self.articles!.append(article)
-                }
-            }
+            self.articles = sortedArticles
         }
     }
 }

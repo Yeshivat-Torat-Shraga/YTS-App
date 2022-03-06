@@ -171,9 +171,9 @@ struct HomeView: View {
                         LogoView(size: .small)
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        EllipseButton(action: {
-                            self.presentingSearchView = true
-                        }, imageSystemName: "magnifyingglass", foregroundColor: Color("ShragaBlue"), backgroundColor: .clear)
+                        Button(action: {self.presentingSearchView = true}) {
+                            Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+                        }
                     }
                 }
             }.alert(isPresented: $model.showError, content: {

@@ -49,6 +49,7 @@ struct NewsArticleCardView: View {
                         .foregroundColor(Color("ShragaGold"))
                 )
                 .foregroundColor(Color("ShragaGold"))
+                .unredacted()
             
             
             // Rest of card goes here:
@@ -94,6 +95,7 @@ struct NewsArticleCardView: View {
             .padding([.vertical, .trailing])
             .padding(.leading, 5)
         }
+        .frame(maxHeight: 150)
         .cornerRadius(UI.cornerRadius)
         .clipped()
         .background(
@@ -107,6 +109,8 @@ struct NewsArticleCardView: View {
 struct NewsArticleCardView_Previews: PreviewProvider {
     static var previews: some View {
         NewsArticleCardView(.sample)
+            .padding()
+            .foregroundColor(.shragaBlue)
         //            .previewLayout(.sizeThatFits)
     }
 }

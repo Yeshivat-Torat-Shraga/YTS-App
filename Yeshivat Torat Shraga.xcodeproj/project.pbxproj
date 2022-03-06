@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0805ACE627D4F21E00CC18FB /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 0805ACE527D4F21E00CC18FB /* Shimmer */; };
 		083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083AE1022799A770003A36ED /* NewsArticleView.swift */; };
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
@@ -153,6 +154,7 @@
 				F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */,
 				08A05B2A27655D8700FEE15F /* FirebaseStorage in Frameworks */,
 				08BBDDBE27B54FE30020AABB /* FirebaseMessaging in Frameworks */,
+				0805ACE627D4F21E00CC18FB /* Shimmer in Frameworks */,
 				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
 				F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */,
 				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
@@ -228,28 +230,28 @@
 			isa = PBXGroup;
 			children = (
 				B12AB834273B103C00B17CC0 /* RootView.swift */,
+				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 				F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */,
-				08756445275E6EC300D22856 /* SettingsView.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
-				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
 				F22C91392770A260007A9424 /* SearchView.swift */,
+				0847BA282784A22A0097910A /* RabbiCardView.swift */,
 				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
-				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
+				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
+				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
+				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
+				085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */,
+				08469DE62762D878007EF981 /* NewsView.swift */,
+				083AE1022799A770003A36ED /* NewsArticleView.swift */,
+				084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */,
+				08756445275E6EC300D22856 /* SettingsView.swift */,
+				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				B1ACF926274456F900079F9A /* LogoView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
-				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
-				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
-				08469DE62762D878007EF981 /* NewsView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
-				0847BA282784A22A0097910A /* RabbiCardView.swift */,
-				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
-				084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */,
-				083AE1022799A770003A36ED /* NewsArticleView.swift */,
 				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
-				085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */,
 				08D3493C27CD26A000538697 /* OnboardingView.swift */,
 			);
 			path = Views;
@@ -357,6 +359,7 @@
 				F2F69C4C277C3A210069DCAE /* FirebaseAppCheck */,
 				08EFBACA27A9977B00900A90 /* SwiftyGif */,
 				08BBDDBD27B54FE30020AABB /* FirebaseMessaging */,
+				0805ACE527D4F21E00CC18FB /* Shimmer */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -388,6 +391,7 @@
 			packageReferences = (
 				F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				08EFBAC127A989D500900A90 /* XCRemoteSwiftPackageReference "SwiftyGif" */,
+				0805ACE427D4F21E00CC18FB /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
@@ -521,6 +525,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -611,6 +616,8 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				EXCLUDED_ARCHS = "";
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -672,6 +679,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXCLUDED_ARCHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -772,6 +780,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0805ACE427D4F21E00CC18FB /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		08EFBAC127A989D500900A90 /* XCRemoteSwiftPackageReference "SwiftyGif" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kirualex/SwiftyGif.git";
@@ -791,6 +807,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0805ACE527D4F21E00CC18FB /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0805ACE427D4F21E00CC18FB /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
+		};
 		08A05B2927655D8700FEE15F /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
