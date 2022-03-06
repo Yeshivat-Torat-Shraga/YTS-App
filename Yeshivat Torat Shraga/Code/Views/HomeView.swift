@@ -164,7 +164,7 @@ struct HomeView: View {
                         }
                     }
                 }
-                .padding(.bottom)
+                .padding(.bottom, UI.playerBarHeight)
                 .navigationTitle("Home")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
