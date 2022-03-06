@@ -22,7 +22,7 @@ jobs:
        with:
          ruby-version: 2.7.2
          bundler-cache: true
-      - name: Build & upload iOS binary
+     - name: Build & upload iOS binary
        run: bundle exec fastlane build_upload_testflight
        env:
          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
@@ -31,7 +31,6 @@ jobs:
          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
          KEYCHAIN_PATH: ~/Library/Keychains/signing_temp.keychain-db
- 
      - name: Upload app-store ipa and dsyms to artifacts
        uses: actions/upload-artifact@v2
        with:

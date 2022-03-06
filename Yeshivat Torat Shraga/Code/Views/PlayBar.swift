@@ -57,8 +57,9 @@ struct PlayBar: View {
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "play.fill")
-                                .resizable()
-                                .frame(width: 25, height: 25)
+                                .padding()
+                            //                                .resizable()
+                            //                                .frame(width: 25, height: 25)
                         })
                     } else {
                         ProgressView().progressViewStyle(YTSProgressViewStyle())
@@ -66,9 +67,10 @@ struct PlayBar: View {
                     }
                     Button(action: {}, label: {
                         Image(systemName: "forward.fill")
-                            .resizable()
-                            .frame(width: 45, height: 25)
-                    }).padding(.horizontal)
+                            .padding()
+                        //                            .resizable()
+                        //                            .frame(width: 45, height: 25)
+                    })
                 }
                 .foregroundColor(.black)
             }
