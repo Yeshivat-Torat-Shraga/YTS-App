@@ -39,7 +39,6 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                         self.load(next: increment)
                     })
                     group.leave()
-                    fatalError(error!.localizedDescription)
                 }
             
                 withAnimation {
