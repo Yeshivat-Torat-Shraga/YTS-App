@@ -16,13 +16,12 @@ jobs:
    runs-on: macos-latest
    steps:
      - uses: actions/checkout@v2
- 
      - name: Set up ruby env
        uses: ruby/setup-ruby@v1
        with:
          ruby-version: 2.7.2
          bundler-cache: true
-      - name: Build & upload iOS binary
+     - name: Build & upload iOS binary
        run: bundle exec fastlane build_upload_testflight
        env:
          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
