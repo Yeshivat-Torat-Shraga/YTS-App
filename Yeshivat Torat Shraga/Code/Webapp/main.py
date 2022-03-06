@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
 import cv2
@@ -24,7 +24,16 @@ def index():
 
 @app.route("/notifications/alert", methods=["POST"])
 def alert_notification():
-
+    db = firestore.client()
+    collection = db.collection("alerts")
+    collection.add(
+        {
+            "body": request.form.get("alert-body", ""),
+            "title": request.form.get("alert-title", "Notice"),
+            "dateIssued": datetime.now(),
+            "dateExpired": datetime.now() + timedelta(days=7),
+        }
+    )
     flash("Alert sent!")
     return redirect(url_for("notifications"))
 
@@ -59,8 +68,11 @@ def notifications():
 @app.route("/rabbis", methods=["GET"])
 def rabbis():
     db = firestore.client()
-    collection = [(rabbi.to_dict(), rabbi.id) for rabbi in db.collection("rebbeim").get()]
+    collection = [
+        (rabbi.to_dict(), rabbi.id) for rabbi in db.collection("rebbeim").get()
+    ]
     return render_template("rabbis.html", data=collection)
+
 
 @app.route("/rabbis/<ID>", methods=["GET", "POST"])
 def rabbisDetail(ID):
@@ -73,9 +85,6 @@ def rabbisDetail(ID):
         collection = db.collection("rebbeim").document(ID)
         collection.delete()
         return redirect(url_for("rabbis"))
-        
-
-
 
 
 @app.route("/shiurim/", methods=["GET"])
@@ -218,8 +227,6 @@ def shiurim_upload():
     #         + "contact the site administrator.",
     #         500,
     #     )
-
-
 
 
 if __name__ == "__main__":
