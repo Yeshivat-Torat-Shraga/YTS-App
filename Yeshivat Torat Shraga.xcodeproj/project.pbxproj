@@ -30,6 +30,7 @@
 		08EFBACD27A9996400900A90 /* logoDarkMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACC27A9996400900A90 /* logoDarkMode.gif */; };
 		08EFBACF27A9B67700900A90 /* logoLightMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACE27A9B67700900A90 /* logoLightMode.gif */; };
 		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
+		08FABDFF27CFC43100BB84BE /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FABDFE27CFC43100BB84BE /* ExternalAccessory.framework */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
 		B12AB835273B103C00B17CC0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB834273B103C00B17CC0 /* RootView.swift */; };
@@ -105,6 +106,7 @@
 		08EFBACC27A9996400900A90 /* logoDarkMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoDarkMode.gif; sourceTree = "<group>"; };
 		08EFBACE27A9B67700900A90 /* logoLightMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoLightMode.gif; sourceTree = "<group>"; };
 		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
+		08FABDFE27CFC43100BB84BE /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B12AB830273B103C00B17CC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B12AB832273B103C00B17CC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */,
 				F2F69C4D277C3A210069DCAE /* FirebaseAppCheck in Frameworks */,
 				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
+				08FABDFF27CFC43100BB84BE /* ExternalAccessory.framework in Frameworks */,
 				08EFBACB27A9977B00900A90 /* SwiftyGif in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -164,6 +167,7 @@
 		08A05B2827655D8700FEE15F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				08FABDFE27CFC43100BB84BE /* ExternalAccessory.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -552,7 +556,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0.3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
 				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
@@ -696,7 +700,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0.3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
 				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
@@ -724,7 +728,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0.3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
 				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
