@@ -42,6 +42,9 @@ struct NewsView: View {
                         }
                     }))
         })
+        .onDidAppear {
+            model.loadOnlyIfNeeded()
+        }
     }
 }
 

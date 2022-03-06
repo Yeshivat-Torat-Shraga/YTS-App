@@ -12,8 +12,12 @@ class NewsModel: ObservableObject, ErrorShower {
     var errorToShow: Error?
     var retry: (() -> Void)?
 
-    init() {
-        load()
+    init() {}
+    
+    func loadOnlyIfNeeded() {
+        if articles == nil {
+            load()
+        }
     }
     
     func load() {
