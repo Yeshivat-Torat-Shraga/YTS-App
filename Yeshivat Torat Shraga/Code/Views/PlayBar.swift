@@ -10,7 +10,10 @@ import SwiftUI
 struct PlayBar: View {
     @StateObject var model: PlayBarModel = PlayBarModel()
     var audioCurrentlyPlaying: Binding<Audio?>
+    let lightColor = Color(hex: 0xDEDEDE)
+    let darkColor = Color(hex: 0x121212)
     @State private var presenting = false
+    @Environment(\.colorScheme) var colorScheme
     
     init(audioCurrentlyPlaying: Binding<Audio?>) {
         self.audioCurrentlyPlaying = audioCurrentlyPlaying
@@ -24,10 +27,10 @@ struct PlayBar: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .background(Color(UIColor.systemGray5))
+                    .frame(width: 35, height: 35)
                     .cornerRadius(UI.cornerRadius)
                     .padding(.vertical, 10)
-                    .padding(.leading)
-                    .padding(.trailing, 5)
+                    .padding(.horizontal, 8)
                     .shadow(radius: UI.shadowRadius)
                 VStack {
                     HStack {
@@ -40,6 +43,7 @@ struct PlayBar: View {
                         Spacer()
                     }
                 }
+                .font(.system(size: 14))
                 Spacer()
                 HStack {
                     if RootModel.audioPlayer.player.timeControlStatus == .playing {
@@ -48,8 +52,8 @@ struct PlayBar: View {
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "pause.fill")
-                                .resizable()
-                                .frame(width: 20, height: 25)
+                            //                                .resizable()
+                            //                                .frame(width: 20, height: 25)
                         })
                     } else if RootModel.audioPlayer.player.timeControlStatus == .paused {
                         Button(action: {
@@ -63,7 +67,7 @@ struct PlayBar: View {
                         })
                     } else {
                         ProgressView().progressViewStyle(YTSProgressViewStyle())
-                            .frame(width: 25, height: 25)
+                        //                            .frame(width: 25, height: 25)
                     }
                     Button(action: {}, label: {
                         Image(systemName: "forward.fill")
@@ -72,20 +76,24 @@ struct PlayBar: View {
                         //                            .frame(width: 45, height: 25)
                     })
                 }
-                .foregroundColor(.black)
+                .foregroundColor(.playerBarFG)
             }
             .frame(height: UI.playerBarHeight)
-            .background(Button(action: {
-                presenting = true
-            }, label: {
-                Blur()
-            }).buttonStyle(BackZStackButtonStyle(percentage: 30)))
+            .background(
+                Button(action: {
+                    presenting = true
+                }) {
+                    Blur(style: .systemChromeMaterial)
+                }
+                    .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear, percentage: 30))
+            )
             .sheet(isPresented: $presenting) {
                 RootModel.audioPlayer
             }
             .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
             .clipped()
-            .background(Color.clear.shadow(radius: UI.shadowRadius))
+            //            .background(Color.clear.shadow(radius: UI.shadowRadius))
+//            .padding(.bottom)
         } else {
             EmptyView()
         }
@@ -94,7 +102,29 @@ struct PlayBar: View {
 
 struct PlayBar_Previews: PreviewProvider {
     static var previews: some View {
-        PlayBar(audioCurrentlyPlaying: .constant(.sample))
-            .previewLayout(.fixed(width: 390, height: 80))
+        TabView {
+            HomeView()
+                .overlay(VStack {
+                    Spacer()
+                    PlayBar(audioCurrentlyPlaying: .constant(.sample))
+                })
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }.tag(0)
+            SettingsView()
+                .tabItem {
+                    Label("Favorites", systemImage: "heart.fill")
+                }.tag(1)
+            SettingsView()
+                .tabItem {
+                    Label("News", systemImage: "newspaper.fill")
+                }.tag(2)
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }.tag(3)
+        }
+                .preferredColorScheme(.dark)
+        //            .previewLayout(.fixed(width: 390, height: 80))
     }
 }
