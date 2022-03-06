@@ -12,7 +12,7 @@ struct UI {
     @Environment(\.colorScheme) static var colorScheme
     static let shadowRadius: CGFloat = 2
     static let cornerRadius: CGFloat = 8
-    static let playerBarHeight: CGFloat = 80
+    static let playerBarHeight: CGFloat = 50
     class Haptics {
         static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
         static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light

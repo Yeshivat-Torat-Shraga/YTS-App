@@ -48,6 +48,9 @@ extension Color {
             opacity: alpha
         )
     }
+    static func hex(_ hex: UInt) -> Color {
+        return Color(hex: hex)
+    }
 }
 
 extension Color {
@@ -63,7 +66,13 @@ extension Color {
     static var adaptiveBG: Color {
         return Color("AdaptiveBG")
     }
-    
+    static var playerBarFG: Color {
+        return Color("PlayerBarFG")
+    }
+    static var playerBarBG: Color {
+        return Color("PlayerBarBG")
+    }
+
 }
 
 // https://stackoverflow.com/a/58913649

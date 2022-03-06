@@ -230,9 +230,9 @@
 			isa = PBXGroup;
 			children = (
 				B12AB834273B103C00B17CC0 /* RootView.swift */,
-				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 				F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
+				F29FFB2627529CD4005D6355 /* PlayBar.swift */,
 				F22C91392770A260007A9424 /* SearchView.swift */,
 				0847BA282784A22A0097910A /* RabbiCardView.swift */,
 				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
