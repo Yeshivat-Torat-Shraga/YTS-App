@@ -1,3 +1,5 @@
+[![Deploy](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/deploy.yml/badge.svg)](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/deploy.yml)
+
 # Yeshivat-Torat-Shraga
 Official repository for the Yeshivat Torat Shraga app.
 
