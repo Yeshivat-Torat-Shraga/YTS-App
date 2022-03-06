@@ -38,7 +38,9 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                     self.showError(error: error ?? YTSError.unknownError, retry: {
                         self.load(next: increment)
                     })
+                    print("Error getting content")
                     group.leave()
+                    return
                 }
             
                 withAnimation {
