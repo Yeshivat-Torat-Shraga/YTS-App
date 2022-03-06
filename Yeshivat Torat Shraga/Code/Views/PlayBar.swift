@@ -72,7 +72,7 @@ struct PlayBar: View {
                 }
                 .foregroundColor(.black)
             }
-            .frame(height: 80)
+            .frame(height: UI.playerBarHeight)
             .background(Button(action: {
                 presenting = true
             }, label: {
@@ -81,6 +81,9 @@ struct PlayBar: View {
             .sheet(isPresented: $presenting) {
                 RootModel.audioPlayer
             }
+            .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
+            .clipped()
+            .background(Color.clear.shadow(radius: UI.shadowRadius))
         } else {
             EmptyView()
         }
@@ -90,6 +93,6 @@ struct PlayBar: View {
 struct PlayBar_Previews: PreviewProvider {
     static var previews: some View {
         PlayBar(audioCurrentlyPlaying: .constant(.sample))
-            .previewLayout(.fixed(width: 350, height: 80))
+            .previewLayout(.fixed(width: 390, height: 80))
     }
 }
