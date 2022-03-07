@@ -149,8 +149,7 @@ platform :ios do
       groups: [
           "Internal Group",
           "External Group"
-      ],
-
+      ]
     )
   end
 
