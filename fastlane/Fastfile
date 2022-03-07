@@ -144,13 +144,12 @@ platform :ios do
       skip_metadata: true,
       skip_app_version_update: true,
       force: true, # skips verification of HTML preview file (since this will be run from a CI machine)
-      run_precheck_before_submit: false # not supported through ASC API yet,
+      run_precheck_before_submit: false, # not supported through ASC API yet,
       distribute_only: true,
       groups: [
           "Internal Group",
           "External Group"
-      ],
-
+      ]
     )
   end
 
