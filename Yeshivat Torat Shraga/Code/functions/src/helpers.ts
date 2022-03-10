@@ -1,6 +1,8 @@
-import { logger } from 'firebase-functions';
+import { https, logger } from 'firebase-functions';
 import admin from 'firebase-admin';
 import { Author } from './types';
+
+const ENABLEAPPCHECK = false;
 
 export function log(data: any, structured = false) {
 	logger.info(data, {
@@ -8,10 +10,18 @@ export function log(data: any, structured = false) {
 	});
 }
 
-export function getRabbiFor(
-	id: string,
-	includeAllAuthorData: boolean
-): Promise<Author> {
+export function verifyAppCheck(context: https.CallableContext): void {
+	if (context.app == undefined) {
+		if (ENABLEAPPCHECK)
+			throw new https.HttpsError(
+				'failed-precondition',
+				'The function must be called from an App Check verified app.'
+			);
+		else log('App Check verification failed, but App Check is not enforced.');
+	} else log('App Check verification passed.');
+}
+
+export function getRabbiFor(id: string, includeAllAuthorData: boolean): Promise<Author> {
 	return new Promise(async (resolve, reject) => {
 		const db = admin.firestore();
 		db.collection('rebbeim')
@@ -26,9 +36,7 @@ export function getRabbiFor(
 				}
 
 				if (includeAllAuthorData) {
-					const bucket = admin
-						.storage()
-						.bucket('yeshivat-torat-shraga.appspot.com');
+					const bucket = admin.storage().bucket('yeshivat-torat-shraga.appspot.com');
 					const filename = personData.profile_picture_filename; // appendToEndOfFilename(personData.profilepic, '_300x1000');
 					// bucket.file(`profile-pictures/resized/${filename}`).getSignedUrl({
 					bucket
@@ -107,10 +115,7 @@ export function supplyDefaultParameters(
 	// prov = provided parameters
 	if (!prov) return def;
 	for (const key in def) {
-		if (
-			!Object.prototype.hasOwnProperty.call(prov, key) ||
-			prov[key] === undefined
-		) {
+		if (!Object.prototype.hasOwnProperty.call(prov, key) || prov[key] === undefined) {
 			prov[key] = def[key];
 		} else if (prov[key] === Object(prov[key])) {
 			prov[key] = supplyDefaultParameters(def[key], prov[key]);
