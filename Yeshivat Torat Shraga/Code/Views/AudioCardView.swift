@@ -96,11 +96,11 @@ struct AudioCardView: View {
                 .padding(.leading, 5)
             }
         }
-        .buttonStyle(BackZStackButtonStyle())
+        .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear))
         .frame(height: 105)
         .background(
             Rectangle()
-                .fill(Color(UIColor.systemBackground))
+                .fill(Color.AVCardBG)
                 .cornerRadius(UI.cornerRadius)
         )
         .cornerRadius(UI.cornerRadius)
@@ -112,18 +112,18 @@ struct AudioCardView: View {
 }
 
 struct AudioCardView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        VStack {
-//            AudioCardView(audio: .sample)
-//            VideoCardView(video: .sample)
-//            AudioCardView(audio: .sample)
-//            VideoCardView(video: .sample)
-//        }
-//        .padding()
-//        .foregroundColor(Color("ShragaBlue"))
-//        .background(Color.black)
-//
-//    }
-    static var previews: some View = VideoCardView_Previews.previews
-//        .preferredColorScheme(.dark)
+    static var previews: some View {
+        ScrollView {
+            VStack {
+                AudioCardView(audio: .sample)
+                VideoCardView(video: .sample)
+                AudioCardView(audio: .sample)
+                VideoCardView(video: .sample)
+            }
+            .padding()
+            .foregroundColor(Color("ShragaBlue"))
+            //            .background(Color.black)
+        }
+        .preferredColorScheme(.dark)
+    }
 }
