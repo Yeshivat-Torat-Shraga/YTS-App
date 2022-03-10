@@ -17,3 +17,4 @@ __pycache__/
 build/
 *.mobileprovision
 *.cer
+fastlane/report.xml
