@@ -673,6 +673,8 @@ exports.generateThumbnail = storage
 	});
 
 exports.search = https.onCall(async (callData, context): Promise<any> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
 	const defaultSearchOptions = {
 		content: {
 			limit: 5,
