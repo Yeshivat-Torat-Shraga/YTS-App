@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Shimmer
 
 struct TagView: View {
     @ObservedObject var model: TagModel
@@ -15,68 +16,86 @@ struct TagView: View {
     }
     
     var body: some View {
-            VStack {
-                HStack {
-                    Text(model.tag.name)
-                        .fontWeight(.bold)
-                        .font(.largeTitle)
-                    
-                    Spacer()
-                    
-                    if let category = model.tag as? Category {
-                        DownloadableImage(object: category)
-                            .frame(width: 100, height: 70)
-                            .aspectRatio(contentMode: .fill)
-                            .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
-                            .clipped()
-                            .shadow(radius: UI.shadowRadius)
+        VStack {
+            HStack {
+                Text(model.tag.name)
+                    .fontWeight(.bold)
+                    .font(.largeTitle)
+                
+                Spacer()
+                
+                if let category = model.tag as? Category {
+                    DownloadableImage(object: category)
+                        .frame(width: 100, height: 70)
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
+                        .clipped()
+                        .shadow(radius: UI.shadowRadius)
+                }
+            }
+            .padding([.horizontal, .top])
+            
+            Divider()
+            
+            
+            ScrollView {
+                VStack {
+                    //                        HStack {
+                    //                            Text("Recently Uploaded")
+                    //                                .font(.title3)
+                    //                                .bold()
+                    //                            Spacer()
+                    //                        }
+                    if let sortables = model.sortables {
+                        ForEach(sortables, id: \.self) { sortable in
+                            if let video = sortable.video {
+                                VideoCardView(video: video)
+                                    .contextMenu {
+                                        Button(action: {}, label: {
+                                            Label("Play", systemImage: "play.fill")
+                                        })
+                                    }
+                            } else if let audio = sortable.audio {
+                                AudioCardView(audio: audio)
+                                    .contextMenu {
+                                        Button(action: {}, label: {
+                                            Label("Play", systemImage: "play.fill")
+                                        })
+                                    }
+                            }
+                        }
+                    } else {
+                        ForEach(0..<4, id: \.self) { _ in
+                            AudioCardView(audio: .sample)
+                                .redacted(reason: .placeholder)
+                            //                                    .shimmering()
+                        }
                     }
                 }
                 .padding([.horizontal, .top])
-                
-                Divider()
-                
-                
-                ScrollView {
-                    VStack {
-//                        HStack {
-//                            Text("Recently Uploaded")
-//                                .font(.title3)
-//                                .bold()
-//                            Spacer()
-//                        }
-                        if let sortables = model.sortables {
-                            ForEach(sortables, id: \.self) { sortable in
-                                if let video = sortable.video {
-                                    VideoCardView(video: video)
-                                        .contextMenu {
-                                            Button(action: {}, label: {
-                                                Label("Play", systemImage: "play.fill")
-                                            })
-                                        }
-                                } else if let audio = sortable.audio {
-                                    AudioCardView(audio: audio)
-                                        .contextMenu {
-                                            Button(action: {}, label: {
-                                                Label("Play", systemImage: "play.fill")
-                                            })
-                                        }
-                                }
-                            }
-                        } else {
-                            Text("Waiting to implement sequential loading.")
+            }
+            //                Spacer()
+        }
+        .background(
+            Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
+        )
+        .onAppear {
+            self.model.load()
+        }
+        .alert(isPresented: $model.showError, content: {
+            Alert(
+                title: Text("Error"),
+                message: Text(
+                    model.errorToShow?.getUIDescription() ??
+                    "An unknown error has occured."),
+                dismissButton: Alert.Button.default(
+                    Text("Retry"),
+                    action: {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            self.model.retry?()
                         }
-                    }
-                    .padding([.horizontal, .top])
-                }
-                Spacer()
-            }
-            .background(
-                Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
-            )
-            .onAppear {
-                self.model.load()
-            }
+                    }))
+        })
     }
 }
 

@@ -8,7 +8,13 @@
 import Foundation
 import SwiftUI
 
-class TagModel: ObservableObject {
+class TagModel: ObservableObject, ErrorShower {
+    var showError: Bool = false
+    
+    var errorToShow: Error?
+    
+    var retry: (() -> Void)?
+    
     @Published var tag: Tag
     @Published var sortables: [SortableYTSContent]?
     @Published var content: AVContent?
@@ -28,8 +34,8 @@ class TagModel: ObservableObject {
     func load() {
         FirebaseConnection.loadContent(matching: tag) { results, error in
                 guard let results = results else {
-//                    self.showError(error: error ?? YTSError.unknownError, retry: self.load)
-                    fatalError(error!.localizedDescription)
+                    self.showError(error: error ?? YTSError.unknownError, retry: self.load)
+                    return
                 }
 //                print(results)
                 withAnimation {

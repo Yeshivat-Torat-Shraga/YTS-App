@@ -50,6 +50,7 @@ struct AudioCardView: View {
                         Image(systemName: "mic")
                             .scaleEffect(1.35)
                             .foregroundColor(Color("ShragaGold"))
+                            .unredacted()
                     )
                     .foregroundColor(Color("ShragaGold"))
                 
