@@ -20,6 +20,8 @@ struct SortableFavoritesCardView<Content: SortableYTSContent>: View {
 
 struct FavoritesCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
+    @Environment(\.colorScheme) var colorScheme
+    
     let content: Content
     let isAudio: Bool
     
@@ -28,7 +30,6 @@ struct FavoritesCardView<Content: YTSContent>: View {
         self.isAudio = (content.sortable.audio != nil)
     }
     var body: some View {
-        let cornerSize: CGFloat = 65
         Button(action: {
             if isAudio {
                 RootModel.audioPlayer.play(audio: content.sortable.audio!)
@@ -38,18 +39,21 @@ struct FavoritesCardView<Content: YTSContent>: View {
             }
         }) {
             HStack(alignment: .center) {
-                if let author = content.author as? DetailedRabbi {
-                    DownloadableImage(object: author)
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 85, height: 85)
-                        .clipped()
-                } else {
-                    Image("Logo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 85, height: 85)
-                        .clipped()
+                Group {
+                    if let author = content.author as? DetailedRabbi {
+                        DownloadableImage(object: author)
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 85, height: 85)
+                            .clipped()
+                    } else {
+                        Image("Logo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 85, height: 85)
+                            .clipped()
+                    }
                 }
+                .background(UI.cardBlueGradient)
                 
                 VStack(alignment: .leading) {
                     Text(content.title)
@@ -59,47 +63,76 @@ struct FavoritesCardView<Content: YTSContent>: View {
                     Text(content.author.name)
                     //                    .foregroundColor(.black)
                     HStack {
-                        Text(timeFormattedMini(totalSeconds: content.duration ?? 0))
                         Image(systemName: "clock")
+                        Text(timeFormattedMini(totalSeconds: content.duration ?? 0))
                     }
                     .font(.subheadline)
                     .foregroundColor(Color("Gray"))
+                    .padding(.top, 1)
                 }
-                //            .padding(.top, 7)
                 Spacer()
             }
         }
         //        .padding(.vertical)
-        .background(Color("FavoritesFG"))
+        .background(Color.CardViewBG)
         .overlay(
             VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Rectangle()
-                        .fill(Color("ShragaBlue"))
-                        .rotationEffect(.degrees(45))
-                        .offset(x: cornerSize/2, y: cornerSize/2)
-                        .frame(width: cornerSize, height: cornerSize)
-                        .overlay(
-                            Image(systemName: isAudio
-                                  ? "mic"
-                                  : "play.rectangle")
-                                .foregroundColor(Color("ShragaGold"))
-                                .offset(
-                                    x: cornerSize/3.25 + (isAudio
-                                                          ? 0 : -1),
-                                    y: cornerSize/3.25 + (isAudio
-                                                          ? -2 : 0))
-                        )
+//                Spacer()
+                GeometryReader { proxy in
+                    HStack {
+//                        Spacer()
+                        Rectangle()
+                            .fill(Color.shragaBlue.darker(by: 10))
+                            .rotationEffect(.degrees(45))
+                            .overlay(
+                                Image(systemName: isAudio
+                                      ? getFillState("mic", invert: true)
+                                      : getFillState("play.square", invert: true))
+                                    .foregroundColor(Color("ShragaGold"))
+                                    .offset(
+                                        x: isAudio ? -2.5 : -3.5,
+                                        y: isAudio ? 1.25 : 3.25)
+                            )
+                            .frame(width: 25, height: 85 * 1.19)
+                            .offset(x: proxy.size.width - 25, y: 10)
+                            .shadow(radius: 5)
+                    }
                 }
             }
         )
+        .overlay(
+            VStack {
+                HStack {
+                    Spacer()
+                    Image(systemName: getFillState("bookmark"))
+                        .foregroundColor(.shragaGold)
+                        .padding(5)
+                        .offset(y: -10)
+                }
+                Spacer()
+            }
+        )
+
         .cornerRadius(UI.cornerRadius)
         .clipped()
         .sheet(isPresented: $isShowingPlayerSheet) {
             RootModel.audioPlayer
         }
+    }
+    
+    func getFillState(_ imageName: String, invert: Bool = false) -> String {
+        var shouldFill = false
+        var adaptedName = imageName
+        if colorScheme == .light {
+            shouldFill = true
+        }
+        if invert {
+            shouldFill.toggle()
+        }
+        if shouldFill{
+            adaptedName += ".fill"
+        }
+        return adaptedName
     }
 }
 
@@ -114,5 +147,6 @@ struct FavoritesCardView_Previews: PreviewProvider {
             .shadow(radius: UI.shadowRadius)
             .padding(.horizontal)
         }
+//        .preferredColorScheme(.dark)
     }
 }

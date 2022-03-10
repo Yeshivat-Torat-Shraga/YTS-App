@@ -25,23 +25,7 @@ struct AudioCardView: View {
                 
                 // START GRADIENT {
                 
-                    .fill(LinearGradient(
-                        gradient: Gradient(
-                            stops: [
-                                Gradient.Stop(
-                                    color: Color(
-                                        hue: 0.610,
-                                        saturation: 0.5,
-                                        brightness: 0.19),
-                                    location: 0),
-                                Gradient.Stop(
-                                    color: Color(
-                                        hue: 0.616,
-                                        saturation: 0.431,
-                                        brightness: 0.510),
-                                    location: 1)]),
-                        startPoint: UnitPoint.bottomLeading,
-                        endPoint: UnitPoint.trailing))
+                    .fill(UI.cardBlueGradient)
                 
                 // } END GRADIENT
                 
