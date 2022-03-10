@@ -59,7 +59,7 @@ struct NewsArticleCardView: View {
                         Text(article.title)
                             .font(.title3)
                             .bold()
-                            .foregroundColor(.primary)
+//                            .foregroundColor(.primary)
                     }
                     
                     Spacer()
@@ -100,7 +100,7 @@ struct NewsArticleCardView: View {
         .clipped()
         .background(
             RoundedRectangle(cornerRadius: UI.cornerRadius)
-                .fill(Color.white)
+                .fill(Color.CardViewBG)
                 .shadow(radius: UI.shadowRadius))
         //        .frame(maxHeight: 130)
     }
@@ -111,6 +111,6 @@ struct NewsArticleCardView_Previews: PreviewProvider {
         NewsArticleCardView(.sample)
             .padding()
             .foregroundColor(.shragaBlue)
-        //            .previewLayout(.sizeThatFits)
+            .previewLayout(.sizeThatFits)
     }
 }

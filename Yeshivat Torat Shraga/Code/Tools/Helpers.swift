@@ -72,7 +72,7 @@ extension Color {
     static var playerBarBG: Color {
         return Color("PlayerBarBG")
     }
-    static var AVCardBG: Color {
+    static var CardViewBG: Color {
         return Color("AVCardBG")
     }
 
