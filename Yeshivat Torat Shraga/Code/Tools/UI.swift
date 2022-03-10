@@ -13,6 +13,23 @@ struct UI {
     static let shadowRadius: CGFloat = 2
     static let cornerRadius: CGFloat = 8
     static let playerBarHeight: CGFloat = 50
+    static let cardBlueGradient = LinearGradient(
+        gradient: Gradient(
+            stops: [
+                Gradient.Stop(
+                    color: Color(
+                        hue:        0.610,
+                        saturation: 0.500,
+                        brightness: 0.190),
+                    location:       0.000),
+                Gradient.Stop(
+                    color: Color(
+                        hue:        0.616,
+                        saturation: 0.431,
+                        brightness: 0.510),
+                    location:       1.000)]),
+        startPoint: UnitPoint.bottomLeading,
+        endPoint: UnitPoint.trailing)
     class Haptics {
         static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
         static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light

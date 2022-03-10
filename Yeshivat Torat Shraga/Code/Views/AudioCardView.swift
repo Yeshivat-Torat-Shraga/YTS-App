@@ -25,23 +25,7 @@ struct AudioCardView: View {
                 
                 // START GRADIENT {
                 
-                    .fill(LinearGradient(
-                        gradient: Gradient(
-                            stops: [
-                                Gradient.Stop(
-                                    color: Color(
-                                        hue: 0.610,
-                                        saturation: 0.5,
-                                        brightness: 0.19),
-                                    location: 0),
-                                Gradient.Stop(
-                                    color: Color(
-                                        hue: 0.616,
-                                        saturation: 0.431,
-                                        brightness: 0.510),
-                                    location: 1)]),
-                        startPoint: UnitPoint.bottomLeading,
-                        endPoint: UnitPoint.trailing))
+                    .fill(UI.cardBlueGradient)
                 
                 // } END GRADIENT
                 
@@ -96,11 +80,11 @@ struct AudioCardView: View {
                 .padding(.leading, 5)
             }
         }
-        .buttonStyle(BackZStackButtonStyle())
+        .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear))
         .frame(height: 105)
         .background(
             Rectangle()
-                .fill(Color(UIColor.systemBackground))
+                .fill(Color.CardViewBG)
                 .cornerRadius(UI.cornerRadius)
         )
         .cornerRadius(UI.cornerRadius)
@@ -112,18 +96,18 @@ struct AudioCardView: View {
 }
 
 struct AudioCardView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        VStack {
-//            AudioCardView(audio: .sample)
-//            VideoCardView(video: .sample)
-//            AudioCardView(audio: .sample)
-//            VideoCardView(video: .sample)
-//        }
-//        .padding()
-//        .foregroundColor(Color("ShragaBlue"))
-//        .background(Color.black)
-//
-//    }
-    static var previews: some View = VideoCardView_Previews.previews
-//        .preferredColorScheme(.dark)
+    static var previews: some View {
+        ScrollView {
+            VStack {
+                AudioCardView(audio: .sample)
+                VideoCardView(video: .sample)
+                AudioCardView(audio: .sample)
+                VideoCardView(video: .sample)
+            }
+            .padding()
+            .foregroundColor(Color("ShragaBlue"))
+            //            .background(Color.black)
+        }
+        .preferredColorScheme(.dark)
+    }
 }

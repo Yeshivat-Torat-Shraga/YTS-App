@@ -15,31 +15,8 @@ struct NewsArticleCardView: View {
     var body: some View {
         HStack {
             Rectangle()
-            
-            // START GRADIENT {
-            
-//            LinearGradient(gradient: Gradient(stops: [Gradient.Stop(color: Color(hue: 0.0744011430855257, saturation: 1.0, brightness: 1.0, opacity: 1.0), location: 0.0), Gradient.Stop(color: Color(hue: 0.13440065498811654, saturation: 1.0, brightness: 1.0, opacity: 1.0), location: 0.663504849947416)]), startPoint: UnitPoint.top, endPoint: UnitPoint.trailing)
-            
-                .fill(LinearGradient(
-                    gradient: Gradient(
-                        stops: [
-                            Gradient.Stop(
-                                color: Color(
-                                    hue:        0.610,
-                                    saturation: 0.500,
-                                    brightness: 0.190),
-                                location:       0.000),
-                            Gradient.Stop(
-                                color: Color(
-                                    hue:        0.616,
-                                    saturation: 0.431,
-                                    brightness: 0.510),
-                                location:       1.000)]),
-                    startPoint: UnitPoint.bottomLeading,
-                    endPoint: UnitPoint.trailing))
-            
-            // } END GRADIENT
-            
+                .fill(UI.cardBlueGradient)
+                        
                 .frame(width: 70)
 //                .cornerRadius(3, corners: [.topRight, .bottomRight])
 //                .shadow(radius: 3)
@@ -59,7 +36,7 @@ struct NewsArticleCardView: View {
                         Text(article.title)
                             .font(.title3)
                             .bold()
-                            .foregroundColor(.primary)
+//                            .foregroundColor(.primary)
                     }
                     
                     Spacer()
@@ -100,7 +77,7 @@ struct NewsArticleCardView: View {
         .clipped()
         .background(
             RoundedRectangle(cornerRadius: UI.cornerRadius)
-                .fill(Color.white)
+                .fill(Color.CardViewBG)
                 .shadow(radius: UI.shadowRadius))
         //        .frame(maxHeight: 130)
     }
@@ -111,6 +88,6 @@ struct NewsArticleCardView_Previews: PreviewProvider {
         NewsArticleCardView(.sample)
             .padding()
             .foregroundColor(.shragaBlue)
-        //            .previewLayout(.sizeThatFits)
+            .previewLayout(.sizeThatFits)
     }
 }

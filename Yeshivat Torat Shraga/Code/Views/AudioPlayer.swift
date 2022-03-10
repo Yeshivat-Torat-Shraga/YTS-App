@@ -130,11 +130,11 @@ struct AudioPlayer: View {
             Image("Logo")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .background(Color.white)
+                .background(Color.adaptiveBG)
                 .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
                 .padding()
                 .shadow(radius: UI.shadowRadius)
-                .preferredColorScheme(.light)
+//                .preferredColorScheme(.light)
             
             HStack {
                 VStack {
