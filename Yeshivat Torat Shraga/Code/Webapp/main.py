@@ -75,15 +75,65 @@ def rabbis():
 
 
 @app.route("/rabbis/<ID>", methods=["GET", "POST"])
-def rabbisDetail(ID):
+def rabbiDetail(ID):
+    db = firestore.client()
     if request.method == "GET":
-        db = firestore.client()
-        collection = db.collection("rebbeim").document(ID).get().to_dict()
-        return render_template("rabbisdetail.html", collection=collection)
+        rabbi = db.collection("rebbeim").document(ID).get().to_dict()
+        rabbi["id"] = ID
+        return render_template("rabbisdetail.html", rabbi=rabbi, new=False)
     else:
+        file = request.files.get("file")
+        name = request.form.get("name")
+        updated_document = {
+            "name": name
+        }
+        if file:
+            bucket = storage.bucket()
+            blob = bucket.blob(f"profile-pictures/{file.filename}")
+            blob.upload_from_string(
+                request.files["file"].read(),
+                content_type=request.files["file"].content_type
+            )
+            updated_document["profile_picture_filename"] = file.filename
+        rabbi = db.collection("rebbeim").document(ID)
+        rabbi.update(updated_document)
+        flash("Rabbi updated!")
+        return redirect(url_for("rabbis"))
+
+
+@app.route("/rabbis/delete/<ID>", methods=["POST"])
+def rabbiDelete(ID):
+    db = firestore.client()
+    rabbi = db.collection("rebbeim").document(ID)
+    rabbi.delete()
+    return redirect(url_for("rabbis"))
+
+
+@app.route("/rabbis/create", methods=["GET", "POST"])
+def rabbiCreate():
+    if request.method == "GET":
+        return render_template("rabbisdetail.html", rabbi=None, new=True)
+    else:
+        # Upload the profile picture file from the form to Cloud Storage
+        profile_picture_file = request.files["file"]
+        if not profile_picture_file:
+            return 'No profile picture', 400
+        bucket = storage.bucket()
+        blob = bucket.blob(f"profile-pictures/{profile_picture_file.filename}")
+        blob.upload_from_string(
+            profile_picture_file.read(),
+            content_type=profile_picture_file.content_type
+        )
+
         db = firestore.client()
-        collection = db.collection("rebbeim").document(ID)
-        collection.delete()
+        collection = db.collection("rebbeim")
+        collection.add(
+            {
+                "name": request.form.get("name"),
+                "profile_picture_filename": profile_picture_file.filename,
+            }
+        )
+        flash("Rabbi added!")
         return redirect(url_for("rabbis"))
 
 
