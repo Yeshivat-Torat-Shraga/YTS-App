@@ -148,8 +148,8 @@ def shiurim():
 
 @app.route("/shiurim/<ID>", methods=["GET", "POST"])
 def shiurimDetail(ID):
+    db = firestore.client()
     if request.method == "GET":
-        db = firestore.client()
         collection = db.collection("content").document(ID).get().to_dict()
         rabbis = []
         rabbicollection = db.collection("rebbeim")
@@ -163,10 +163,26 @@ def shiurimDetail(ID):
             "shiurimdetail.html", shiur=collection, rabbis=rabbis, ID=ID
         )
     else:
-        db = firestore.client()
-        collection = db.collection("content").document(ID)
-        collection.delete()
+        # Update the shiur document
+
+        updated_document = {}
+        author = request.form.get("author").split('~')
+        author = author[1]
+        title = request.form.get("title")
+        updated_document["title"] = title
+        updated_document["author"] = author
+
+        document = db.collection("content").document(ID)
+        document.update(updated_document)
         return redirect(url_for("shiurim"))
+
+
+@app.route("/shiurim/delete/<ID>", methods=["POST"])
+def shiurim_delete(ID):
+    db = firestore.client()
+    shiur = db.collection("content").document(ID)
+    shiur.delete()
+    return redirect(url_for("shiurim"))
 
 
 @app.route("/shiurim/upload", methods=["GET", "POST"])

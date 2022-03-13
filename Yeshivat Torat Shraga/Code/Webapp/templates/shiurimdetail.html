@@ -3,34 +3,21 @@
 <form action="#" method="post">
 	<div class="form-group">
 		<label for="title">Title<span>Use title case to get a better result</span></label>
-		<input
-			type="text"
-			name="title"
-			id="title"
-			class="form-control"
-			value="{{ shiur.title }}"
-			required
-		/>
+		<input type="text" name="title" id="title" class="form-control" value="{{ shiur.title }}" required />
 	</div>
 	<div class="form-group">
 		<label for="title">Description<span>Small bite-size discription of the shiur</span></label>
-		<input
-			type="text"
-			name="description"
-			id="title"
-			class="form-control"
-			value="{{ shiur.description }}"
-		/>
+		<input type="text" name="description" id="title" class="form-control" value="{{ shiur.description }}" />
 	</div>
-    <div class="form-group">
+	<div class="form-group">
 		<label for="author">Author<span>Pick the Rebbi this shiur will be attributed to</span></label>
 		<select name="author" id="rabbi" class="form-control" value="value" required>
 			{% for rabbi in rabbis %}
-                {% if rabbi.name == shiur.author %}
-			        <option value="{{ rabbi.id }}~{{ rabbi.name }}" selected>{{ rabbi.name }} </option>
-                {% else %}
-                    <option value="{{ rabbi.id }}~{{ rabbi.name }}">{{ rabbi.name }}</option>
-                {% endif %}
+			{% if rabbi.name == shiur.author %}
+			<option value="{{ rabbi.id }}~{{ rabbi.name }}" selected>{{ rabbi.name }} </option>
+			{% else %}
+			<option value="{{ rabbi.id }}~{{ rabbi.name }}">{{ rabbi.name }}</option>
+			{% endif %}
 			{% endfor %}
 		</select>
 	</div>
@@ -43,9 +30,9 @@
 	</div>
 </form>
 
-<form action="{{ url_for("shiurimDetail", ID=ID) }}" method="post">
-    <div class="form-group">
-		<button style="color:white; background:" type="submit">Delete Shiur</button>
+<form action="{{ url_for('shiurim_delete', ID=ID) }}" method="post">
+	<div class="form-group">
+		<button style="color:red;" type="submit">Delete Shiur</button>
 	</div>
 </form>
 
