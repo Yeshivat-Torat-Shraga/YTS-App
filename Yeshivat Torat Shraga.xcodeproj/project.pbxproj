@@ -561,7 +561,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
 				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
@@ -709,7 +709,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
 				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
@@ -738,7 +738,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Yeshivat Torat Shraga/Yeshivat Torat Shraga.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8.0;
 				DEVELOPMENT_ASSET_PATHS = "\"Yeshivat Torat Shraga/Preview Content\"";
 				DEVELOPMENT_TEAM = YL279DNVQD;
 				ENABLE_PREVIEWS = YES;
