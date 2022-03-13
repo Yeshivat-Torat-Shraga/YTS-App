@@ -108,6 +108,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
                         .foregroundColor(.shragaGold)
                         .padding(5)
                         .offset(y: -10)
+                        .shadow(radius: UI.shadowRadius)
                 }
                 Spacer()
             }
