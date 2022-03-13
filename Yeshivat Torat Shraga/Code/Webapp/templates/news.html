@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for article in news %}
+<a href="{{ url_for('news_detail', ID=article[1]) }}"><b>ID: {{ article[1] }}<br></b></a>
+
+Author: {{ article[0].author }}<br>
+Date: {{ article[0].date }}<br>
+<br>
+Title: {{ article[0].title }}<br>
+Body: {{ article[0].body }}<br>
+<hr>
+{% endfor %}
+<br>
+<a href="{{ url_for('news_create') }}">New article</a>
+
+{% endblock content %}

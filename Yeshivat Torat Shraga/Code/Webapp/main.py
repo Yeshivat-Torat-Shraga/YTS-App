@@ -284,15 +284,68 @@ def shiurim_upload():
         # blob.content_type = file.content_type
         # blob.upload_from_file(file)
         return "Done"
-        # Make a success page with a link to upload another file
-    # except Exception:
-    #     return (
-    #         "Sorry, it seems like an error occurred. "
-    #         + "If this is the first time you are seeing this error, "
-    #         + "please try again. If this error persists, please "
-    #         + "contact the site administrator.",
-    #         500,
-    #     )
+
+
+@app.route("/news", methods=["GET"])
+def news():
+    db = firestore.client()
+    collection = [
+        (rabbi.to_dict(), rabbi.id) for rabbi in db.collection("news").get()
+    ]
+    return render_template("news.html", news=collection)
+
+
+@app.route("/news/<ID>", methods=["GET", "POST"])
+def news_detail(ID):
+    db = firestore.client()
+    if request.method == "GET":
+        article = db.collection("news").document(ID).get().to_dict()
+        article["id"] = ID
+        return render_template("newsdetail.html", article=article)
+    else:
+        # Update the shiur document
+
+        updated_document = {}
+        author = request.form.get("author")
+        title = request.form.get("title")
+        body = request.form.get("body")
+        updated_document["title"] = title
+        updated_document["author"] = author
+        updated_document["body"] = body
+        updated_document["date"] = datetime.now()
+
+        document = db.collection("news").document(ID)
+        document.update(updated_document)
+        return redirect(url_for("news"))
+
+
+@app.route('/news/delete/<ID>', methods=['POST'])
+def news_delete(ID):
+    db = firestore.client()
+    article = db.collection("news").document(ID)
+    article.delete()
+    return redirect(url_for('news'))
+
+
+@app.route('/news/create', methods=['GET', 'POST'])
+def news_create():
+    db = firestore.client()
+    if request.method == 'GET':
+        return render_template('newsdetail.html', article=None)
+    else:
+        author = request.form.get('author')
+        title = request.form.get('title')
+        body = request.form.get('body')
+        date = datetime.now()
+        new_document = {
+            'author': author,
+            'title': title,
+            'body': body,
+            'date': date,
+            'imageURLs': [""]
+        }
+        db.collection('news').add(new_document)
+        return redirect(url_for('news'))
 
 
 if __name__ == "__main__":
