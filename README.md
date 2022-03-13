@@ -27,10 +27,11 @@ Here is a non-exhaustive list of the frameworks we used while working on this pr
 - UIKit
 - Flask
 - Jinja
+- Fastlane (CI/CD)
+- GitHub Actions
 
 ## When will the iOS app be available?
-This is a tough question to answer, as we haven't perfected our fortune telling abilities, but as of Feb. 2022,
-it seems like we should be ready to launch within 2 months.
+This is a tough question to answer, as we haven't perfected our fortune telling abilities, but our ETA is just before Passover 2022.
 
 ## Are you going to make an Android version?
 Due to the nature of such a project, we currently cannot afford the time to do so. However, we are
