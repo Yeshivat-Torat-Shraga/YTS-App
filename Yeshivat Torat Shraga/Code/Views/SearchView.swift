@@ -63,7 +63,11 @@ struct SearchView: View {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
-                                LoadMoreBar()
+                                LoadMoreBar() {
+                                    withAnimation {
+                                        model.searchForMoreRebbeim()
+                                    }
+                                }
                             }
                             
                             if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
@@ -97,7 +101,11 @@ struct SearchView: View {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
-                                LoadMoreBar()
+                                LoadMoreBar() {
+                                    withAnimation {
+                                        model.searchForMoreContent()
+                                    }
+                                }
                             }
                             
                             if !model.loadingContent && !model.retreivedAllContent && !(model.contentIsEmpty) {
@@ -171,10 +179,11 @@ struct SearchView: View {
     }
     
     struct LoadMoreBar: View {
+        var action: () -> Void
         
         var body: some View {
             Button(action: {
-                
+                action()
             }) {
                 VStack {
                     Spacer()
