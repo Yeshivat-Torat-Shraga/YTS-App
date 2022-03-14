@@ -88,7 +88,7 @@ struct SearchView: View {
                             .padding(.bottom)
                         }
                         
-                        if !model.loadingRebbeim && model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
+                        if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
                             Divider()
                         }
                         
@@ -141,7 +141,7 @@ struct SearchView: View {
                             .shadow(radius: 2)
                         }
                         
-                        if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
+                        if !model.loadingContent && !model.retreivedAllContent && !(model.contentIsEmpty) {
                             Divider()
                         }
                     }
