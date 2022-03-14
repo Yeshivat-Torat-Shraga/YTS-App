@@ -636,12 +636,12 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			limit: 5,
 			includeThumbnailURLs: false,
 			includeDetailedAuthorInfo: false,
-			startFromDocumentID: null,
+			startAfterDocumentID: null,
 		},
 		rebbeim: {
 			limit: 10,
 			includePictureURLs: false,
-			startFromDocumentID: null,
+			startAfterDocumentID: null,
 		},
 	};
 
@@ -709,10 +709,14 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
-			if (searchOptions[collectionName].startFromDocumentID) {
-				query = query.startAt(
-					searchOptions[collectionName].startFromDocumentID
-				) as any;
+			if (searchOptions[collectionName].startAfterDocumentID) {
+				const snapshot = await db
+					.collection(collectionName)
+					.doc(searchOptions[collectionName].startAfterDocumentID)
+					.get();
+			// Overwrite the query to start after the specified document.
+				query = query.startAfter(snapshot) as any;
+				log(`Starting after document '${snapshot}'`);
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
