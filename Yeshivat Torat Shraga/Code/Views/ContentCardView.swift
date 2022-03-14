@@ -52,7 +52,7 @@ struct ContentCardView<Content: YTSContent>: View {
                         VStack {
                             HStack {
                                 Text(content.title)
-                                    .font(.title2)
+                                    .font(.title3)
                                     .bold()
                                     .lineLimit(2)
                                 Spacer()
@@ -60,6 +60,7 @@ struct ContentCardView<Content: YTSContent>: View {
                             
                             HStack {
                                 Text(content.author.name)
+                                    .font(.callout)
                                 Spacer()
                             }
                             
@@ -67,7 +68,7 @@ struct ContentCardView<Content: YTSContent>: View {
                         if let detailedRabbi = content.author as? DetailedRabbi {
                             DownloadableImage(object: detailedRabbi)
                                 .aspectRatio(contentMode: .fill)
-                                .frame(width: 50, height: 50)
+                                .frame(width: 40, height: 40)
                                 .background(Color("Gray"))
                                 .clipShape(Circle())
                                 .clipped()
@@ -96,7 +97,7 @@ struct ContentCardView<Content: YTSContent>: View {
 
             }
             .foregroundColor(.primary)
-            .frame(width: 250, height: 150)
+            .frame(width: 225, height: 125)
             .clipped()
             
             
