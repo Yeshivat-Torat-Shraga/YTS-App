@@ -124,6 +124,7 @@ struct SearchView: View {
                 .navigationBarHidden(true)
             }
         }
+        .animation(.default, value: selectedResultTag)
         .padding(.horizontal)
         .background(
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
