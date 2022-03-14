@@ -115,8 +115,6 @@ struct SearchView: View {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
-                                //                        VStack {
-                                //                        Divider()
                                 Button(action: {
                                     
                                 }) {
@@ -153,7 +151,6 @@ struct SearchView: View {
                             .bold()
                         Spacer()
                         Text("Try searching with full words and names.")
-                        //                        .font()
                     }
                 }
                 .alert(isPresented: $showAlert, content: {
@@ -225,10 +222,8 @@ struct SearchView_Previews: PreviewProvider {
                 .shadow(radius: 3)
                 Spacer()
             }
-            //            .background(Color.gray.ignoresSafeArea())
             .sheet(isPresented: $presentingSearchView) {
                 SearchView()
-                //                    .background(Color.yellow)
             }
         }
     }
