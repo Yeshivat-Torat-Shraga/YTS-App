@@ -38,8 +38,8 @@ struct SearchView: View {
             
             ScrollView(showsIndicators: false) {
                 LazyVStack {
+                    if selectedResultTag == .rebbeim || selectedResultTag == .all {
                     Group {
-                        if selectedResultTag == .rebbeim || selectedResultTag == .all {
                             if let rebbeim = model.rebbeim {
                                 ForEach(rebbeim, id: \.self) { rabbi in
                                     if let detailedRabbi = rabbi as? DetailedRabbi {
@@ -57,7 +57,7 @@ struct SearchView: View {
                                     }
                                 }
                             }
-                        }
+                        
                         
                         if model.loadingRebbeim && !model.loadingContent {
                             ProgressView()
@@ -88,17 +88,17 @@ struct SearchView: View {
                             .padding(.bottom)
                         }
                         
-                        //                    LoadMoreView(loadingContent: Binding(get: { model.loadingRebbeim && !model.loadingContent }, set: { model.loadingRebbeim = $0 }), showingError: Binding(get: { model.showError }, set: { model.showError = $0 }), retreivedAllContent: Binding(get: { model.retreivedAllRebbeim }, set: { model.retreivedAllRebbeim = $0 }), loadMore: {
-                        //                        //                        self.model.loadingContent = true
-                        //                        let count = 5
-                        //                        model.search()
-                        //                    })
+                        if !model.loadingRebbeim && model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
+                            Divider()
+                        }
+                        
                     }
                     .padding(.bottom)
+                    }
                     
                     
-                    Group {
                         if selectedResultTag == .shiurim || selectedResultTag == .all {
+                    Group {
                             if let sortables = model.sortables {
                                 ForEach(sortables, id: \.self) { sortable in
                                     if let video = sortable.video {
@@ -114,7 +114,6 @@ struct SearchView: View {
                                     }
                                 }
                             }
-                        }
                         
                         if model.loadingContent && !model.loadingRebbeim {
                             ProgressView()
@@ -140,11 +139,14 @@ struct SearchView: View {
                             .buttonStyle(BackZStackButtonStyle())
                             .cornerRadius(6)
                             .shadow(radius: 2)
-                            //                            Divider()
-                            //                        }
+                        }
+                        
+                        if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
+                            Divider()
                         }
                     }
                     .padding(.bottom)
+                        }
                     
                     if model.loadingContent && model.loadingRebbeim {
                         ProgressView()
