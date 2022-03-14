@@ -5,16 +5,18 @@
 //  Created by Benji Tusk on 11/11/21.
 //
 
-import Foundation
 import SwiftUI
 
 class HomeModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
+    @Published var showAlert: Bool = false
     var errorToShow: Error?
     var retry: (() -> Void)?
     var rootModel: RootModel?
     var hideLoadingScreen: (() -> Void)?
-    @Published var recentlyUploadedContent: Content?
+    var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
+    var homePageAlertToShow: HomePageAlert? = nil
+    @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     @Published var slideshowImages: [SlideshowImage]?
@@ -23,52 +25,61 @@ class HomeModel: ObservableObject, ErrorShower {
         load()
     }
     
-    init(hideLoadingScreen: @escaping (() -> Void)) {
+    init(hideLoadingScreen: @escaping (() -> Void),
+         showErrorOnRoot:   @escaping ((Error, (() -> Void)?) -> Void)
+    ) {
         self.hideLoadingScreen = hideLoadingScreen
+        self.showErrorOnRoot = showErrorOnRoot
         load()
     }
     
     func load() {
+
+        let savedFavorites:[FirestoreID] = Favorites.shared.getfavoriteIDs()
         
         let group = DispatchGroup()
-        
-        for _ in ["Rebbeim", "Sortables", "Slideshow images"] {
+
+        for _ in ["Rebbeim", "Sortables", "Slideshow images", "HomePageAlert"] {
             group.enter()
         }
         
         FirebaseConnection.loadRebbeim() { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
-                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
+                self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
-            
+            for rebbi in rebbeim {
+                if savedFavorites.contains(rebbi.firestoreID) {
+                    rebbi.isFavorite = true
+                }
+            }
             self.rebbeim = rebbeim
             group.leave()
-            
+
         }
         
         FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
             guard let content = results?.content else {
-                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
+                self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
-            
+
             self.recentlyUploadedContent = content
-            
+
             var sortables: [SortableYTSContent] = []
-            
+
             for video in content.videos {
                 sortables.append(video.sortable)
             }
-            
+
             for audio in content.audios {
                 sortables.append(audio.sortable)
             }
-            
+
             self.sortables = sortables.sorted(by: { lhs, rhs in
                 return lhs.date! > rhs.date!
             })
-            
+
             group.leave()
         }
         
@@ -76,12 +87,30 @@ class HomeModel: ObservableObject, ErrorShower {
             self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
                 lhs.uploaded > rhs.uploaded
             })
-            
+
+            group.leave()
+        }
+        
+        FirebaseConnection.loadAlert() { result, error in
+            guard let homeAlert = result else {
+                group.leave()
+                return
+            }
+            @AppStorage("lastViewedAlertID") var previousAlertID = ""
+            print("previousAlertID: \(previousAlertID)")
+            print("upcomingAlertID: \(homeAlert.id)")
+            if previousAlertID != homeAlert.id {
+                self.showAlert = true
+                self.homePageAlertToShow = homeAlert
+            }
             group.leave()
         }
         
         group.notify(queue: .main) {
             self.hideLoadingScreen?()
+//            if let errorToShow = self.errorToShow {
+//                self.showErrorOnRoot?(errorToShow, self.retry)
+//            }
         }
     }
 }

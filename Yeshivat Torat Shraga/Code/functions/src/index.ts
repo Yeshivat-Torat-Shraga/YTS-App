@@ -5,6 +5,8 @@ import childProcessPromise from 'child-process-promise';
 
 import os from 'os';
 import {
+	AlertDocument,
+	AlertFirebaseDocument,
 	ContentDocument,
 	ContentFirebaseDocument,
 	LoadData,
@@ -21,6 +23,7 @@ import {
 	getRabbiFor,
 	strippedFilename,
 	supplyDefaultParameters,
+	verifyAppCheck,
 } from './helpers';
 import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
@@ -33,14 +36,62 @@ admin.initializeApp({
 	// ),
 });
 
+exports.createAlert = https.onCall(async (data, context) => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
+
+	if (!data.title || typeof data.title !== 'string') return 'Title is required';
+	if (!data.body || typeof data.body !== 'string') return 'Body is required';
+	if (!data.dateIssued || typeof data.dateIssued !== 'string') return 'Invalid dateIssued';
+	if (!data.dateExpired || typeof data.dateExpired !== 'string') return 'Invalid dateExpired';
+	const db = admin.firestore();
+	const COLLECTION = 'alerts';
+	const doc = await db.collection(COLLECTION).add({
+		title: data.title,
+		body: data.body,
+		dateIssued: new Date(data.dateIssued),
+		dateExpired: new Date(data.dateExpired),
+	});
+	return 'Created an alert with ID: ' + doc.id;
+});
+
+exports.createNotification = https.onCall(async (data, context): Promise<string> => {
+	// App check is not needed, as this function requires authentication.
+
+	const payload = {
+		title: data.title,
+		body: data.body,
+	};
+	// Make sure title and body are non-empty strings
+	if (
+		typeof payload.title !== 'string' ||
+		payload.title.length === 0 ||
+		typeof payload.body !== 'string' ||
+		payload.body.length === 0
+	) {
+		logger.error('Invalid notification payload');
+		return 'Invalid notification payload';
+	}
+
+	return await admin
+		.messaging()
+		.send({
+			notification: payload,
+			topic: 'all',
+		})
+		.then((response) => {
+			logger.info('Successfully sent message:', response);
+			return `Successfully sent message: ${response}`;
+		})
+		.catch((error) => {
+			logger.error('Error sending message:', error);
+			return `Error sending message: ${error}`;
+		});
+});
+
 exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
-	// if (context.app == undefined) {
-	//   throw new https.HttpsError(
-	//     'failed-precondition',
-	//     'The function must be called from an App Check verified app.'
-	//   )
-	// }
+	verifyAppCheck(context);
 
 	// Get the query options
 	const queryOptions = {
@@ -55,10 +106,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	let query = db.collection(COLLECTION).orderBy('date', 'desc');
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db
-			.collection(COLLECTION)
-			.doc(queryOptions.previousDocID)
-			.get();
+		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
 		// Overwrite the query to start after the specified document.
 		query = query.startAfter(snapshot);
 		log(`Starting after document '${snapshot}'`);
@@ -137,127 +185,108 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-exports.loadSlideshow = https.onCall(
-	async (data, context): Promise<LoadData> => {
-		// === APP CHECK ===
-		// if (context.app == undefined) {
-		//   throw new https.HttpsError(
-		//     'failed-precondition',
-		//     'The function must be called from an App Check verified app.'
-		//   )
-		// }
+exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
 
-		// Get the query options
-		const queryOptions = {
-			limit: (data.limit as number) || 10,
-			previousDocID: data.lastLoadedDocID as string | undefined,
-		};
+	// Get the query options
+	const queryOptions = {
+		limit: (data.limit as number) || 10,
+		previousDocID: data.lastLoadedDocID as string | undefined,
+	};
 
-		const COLLECTION = 'slideshowImages';
-		const db = admin.firestore();
+	const COLLECTION = 'slideshowImages';
+	const db = admin.firestore();
 
-		let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
-		if (queryOptions.previousDocID) {
-			// Fetch the document with the specified ID from Firestore.
-			const snapshot = await db
-				.collection(COLLECTION)
-				.doc(queryOptions.previousDocID)
-				.get();
-			// Overwrite the query to start after the specified document.
-			query = query.startAfter(snapshot);
-			log(`Starting after document '${snapshot}'`);
-		}
+	let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
+	if (queryOptions.previousDocID) {
+		// Fetch the document with the specified ID from Firestore.
+		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+		// Overwrite the query to start after the specified document.
+		query = query.startAfter(snapshot);
+		log(`Starting after document '${snapshot}'`);
+	}
 
-		// Execute the query
-		const imageSnapshot = await query.limit(queryOptions.limit).get();
+	// Execute the query
+	const imageSnapshot = await query.limit(queryOptions.limit).get();
 
-		// Get the documents returned from the query
-		const docs = imageSnapshot.docs;
-		// if null, return with an error
-		if (!docs || docs.length == 0) {
-			return {
-				metadata: {
-					lastLoadedDocID: null,
-					finalCall: docs ? true : false,
-				},
-				results: docs ? [] : null,
-			};
-		}
-
-		log(`Loaded ${docs.length} image docs.`);
-
-		// Set a variable to hold the ID of the last document returned from the query.
-		// This is so the client can use this ID to load the next page of documents.
-		const lastDocumentFromQueryID = docs[docs.length - 1].id;
-
-		// Loop through the documents returned from the query.
-		// For each document, get the desired data and add it to the rebbeim array.
-		// Since we are using the await keyword, we need to make the
-		// function asynchronous. Because of this, the function returns a Promise and
-		// in turn, docs.map() returns an array of Promises.
-		// To deal with this, we are passing that array of Promises to Promise.all(), which
-		// returns a Promise that resolves when all the Promises in the array resolve.
-		// To finish it off, we use await to wait for the Promise returned by Promise.all()
-		// to resolve.
-
-		const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
-			docs.map(async (doc) => {
-				// Get the document data
-				try {
-					var data = new SlideshowImageFirebaseDocument(doc.data());
-					log(
-						`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`
-					);
-				} catch (err) {
-					log(
-						`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`
-					);
-					return null;
-				}
-
-				// log(`Loading image: '${JSON.stringify(data)}'`);
-
-				// Get the image path
-				const path = data.image_name;
-				// Get the image URL
-				try {
-					const url = await getURLFor(`slideshow/${path}`);
-					// return the document data
-					const document: SlideshowImageDocument = {
-						title: data.title || null,
-						id: doc.id,
-						url: url,
-						uploaded: data.uploaded,
-					};
-					log(`Returning data: '${JSON.stringify(document)}'`);
-
-					return document;
-				} catch (err) {
-					log(`Error getting image for '${path}': ${err}`, true);
-					return null;
-				}
-			})
-		);
+	// Get the documents returned from the query
+	const docs = imageSnapshot.docs;
+	// if null, return with an error
+	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: lastDocumentFromQueryID,
-				finalCall: queryOptions.limit > docs.length,
+				lastLoadedDocID: null,
+				finalCall: docs ? true : false,
 			},
-			results: imageDocs.filter((doc) => {
-				return doc != null;
-			}),
+			results: docs ? [] : null,
 		};
 	}
-);
+
+	log(`Loaded ${docs.length} image docs.`);
+
+	// Set a variable to hold the ID of the last document returned from the query.
+	// This is so the client can use this ID to load the next page of documents.
+	const lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+	// Loop through the documents returned from the query.
+	// For each document, get the desired data and add it to the rebbeim array.
+	// Since we are using the await keyword, we need to make the
+	// function asynchronous. Because of this, the function returns a Promise and
+	// in turn, docs.map() returns an array of Promises.
+	// To deal with this, we are passing that array of Promises to Promise.all(), which
+	// returns a Promise that resolves when all the Promises in the array resolve.
+	// To finish it off, we use await to wait for the Promise returned by Promise.all()
+	// to resolve.
+
+	const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
+		docs.map(async (doc) => {
+			// Get the document data
+			try {
+				var data = new SlideshowImageFirebaseDocument(doc.data());
+				log(`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`);
+			} catch (err) {
+				log(`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`);
+				return null;
+			}
+
+			// log(`Loading image: '${JSON.stringify(data)}'`);
+
+			// Get the image path
+			const path = data.image_name;
+			// Get the image URL
+			try {
+				const url = await getURLFor(`slideshow/${path}`);
+				// return the document data
+				const document: SlideshowImageDocument = {
+					title: data.title || null,
+					id: doc.id,
+					url: url,
+					uploaded: data.uploaded,
+				};
+				log(`Returning data: '${JSON.stringify(document)}'`);
+
+				return document;
+			} catch (err) {
+				log(`Error getting image for '${path}': ${err}`, true);
+				return null;
+			}
+		})
+	);
+	return {
+		metadata: {
+			lastLoadedDocID: lastDocumentFromQueryID,
+			finalCall: queryOptions.limit > docs.length,
+		},
+		results: imageDocs.filter((doc) => {
+			return doc != null;
+		}),
+	};
+});
 
 exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
-	// if (context.app == undefined) {
-	//   throw new https.HttpsError(
-	//     'failed-precondition',
-	//     'The function must be called from an App Check verified app.'
-	//   )
-	// }
+	verifyAppCheck(context);
 
 	// Get the query options
 	const queryOptions = {
@@ -272,10 +301,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	let query = db.collection(COLLECTION).orderBy('name', 'asc');
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db
-			.collection(COLLECTION)
-			.doc(queryOptions.previousDocID)
-			.get();
+		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
 		// Overwrite the query to start after the specified document.
 		query = query.startAfter(snapshot);
 		log(`Starting after document '${snapshot}'`);
@@ -353,13 +379,48 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
+exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
+
+	const db = admin.firestore();
+	const COLLECTION = 'alerts';
+
+	let query = db.collection(COLLECTION).orderBy('dateIssued', 'desc');
+
+	const alert = await query.limit(1).get();
+	if (alert.docs) {
+		const doc = alert.docs[0];
+		const data = new AlertFirebaseDocument(doc.data());
+		const document: AlertDocument = {
+			id: doc.id,
+			title: data.title,
+			body: data.body,
+			dateIssued: data.dateIssued,
+			dateExpired: data.dateExpired,
+		};
+
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: data.dateExpired.toDate() < new Date() ? null : [document],
+		};
+	} else {
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: null,
+		};
+	}
+});
+
 exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
-	// if (context.app == undefined) {
-	//  throw new https.HttpsError(
-	//    'failed-precondition',
-	//    'The function must be called from an App Check verified app.')
-	// }
+	verifyAppCheck(context);
 
 	// Get the query options
 	const queryOptions = {
@@ -380,20 +441,10 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	let query = db.collection(COLLECTION);
 	if (queryOptions.search) {
 		if (queryOptions.search.field == 'tag') {
-			query = query.where(
-				'tags',
-				'array-contains',
-				queryOptions.search.value
-			) as any;
-			log(
-				`Only getting content where [tags] contains ${queryOptions.search.value}`
-			);
+			query = query.where('tags', 'array-contains', queryOptions.search.value) as any;
+			log(`Only getting content where [tags] contains ${queryOptions.search.value}`);
 		} else {
-			query = query.where(
-				queryOptions.search.field,
-				'==',
-				queryOptions.search.value
-			) as any;
+			query = query.where(queryOptions.search.field, '==', queryOptions.search.value) as any;
 			log(
 				`Only getting content where ${queryOptions.search.field} == ${queryOptions.search.value}`
 			);
@@ -404,10 +455,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db
-			.collection(COLLECTION)
-			.doc(queryOptions.previousDocID)
-			.get();
+		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
 		// Overwrite the query to start after the specified document.
 		query = query.startAfter(snapshot) as any;
 		log(`Starting after document '${snapshot}'`);
@@ -452,10 +500,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 
 			try {
 				const sourcePath = await getURLFor(`${data.source_path}`);
-				const author = await getRabbiFor(
-					data.attributionID,
-					queryOptions.includeAllAuthorData
-				);
+				const author = await getRabbiFor(data.attributionID, queryOptions.includeAllAuthorData);
 				return {
 					id: doc.id,
 					fileID: strippedFilename(data.source_path),
@@ -492,9 +537,7 @@ exports.generateHLSStream = storage
 	.onFinalize(async (object) => {
 		// Exit if this is triggered on a file that is not uplaoded to the content folder.
 		if (!object.name!.startsWith('content/')) {
-			return log(
-				`File ${object.name} is not in the content folder. Exiting...`
-			);
+			return log(`File ${object.name} is not in the content folder. Exiting...`);
 		}
 		const storageObj = new Storage();
 		const bucket = storageObj.bucket(object.bucket);
@@ -553,8 +596,12 @@ exports.generateHLSStream = storage
 				const fp = path.join(outputDir, filename);
 				log(`Uploading ${fp}...`);
 				return bucket.upload(fp, {
+<<<<<<< HEAD
 					destination: `HLSStreams/${object.contentType!.split('/')[0]
 						}/${filename}/${filename}`,
+=======
+					destination: `HLSStreams/${object.contentType!.split('/')[0]}/${filename}/${filename}`,
+>>>>>>> main
 					metadata: {
 						'Cache-Control': 'public,max-age=3600',
 					},
@@ -631,6 +678,8 @@ exports.generateThumbnail = storage
 	});
 
 exports.search = https.onCall(async (callData, context): Promise<any> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
 	const defaultSearchOptions = {
 		content: {
 			limit: 5,
@@ -645,10 +694,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		},
 	};
 
-	const searchOptions = supplyDefaultParameters(
-		defaultSearchOptions,
-		callData.searchOptions
-	);
+	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
 
 	const errors: string[] = [];
 	const db = admin.firestore();
@@ -688,17 +734,11 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 			if (searchOptions[collectionName].limit > 30) {
 				searchOptions[collectionName].limit = 30;
-				errors.push(
-					`Limit for ${collectionName} is greater than 30. Setting limit to 30.`
-				);
+				errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
 			}
 			// Get the collection
 			let query = db.collection(collectionName);
-			query = query.where(
-				'search_index',
-				'array-contains-any',
-				searchArray
-			) as any;
+			query = query.where('search_index', 'array-contains-any', searchArray) as any;
 			switch (collectionName) {
 				case 'content':
 					query = query.orderBy('date', 'desc') as any;
@@ -709,6 +749,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
+<<<<<<< HEAD
 			if (searchOptions[collectionName].startAfterDocumentID) {
 				const snapshot = await db
 					.collection(collectionName)
@@ -717,6 +758,10 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			// Overwrite the query to start after the specified document.
 				query = query.startAfter(snapshot) as any;
 				log(`Starting after document '${snapshot}'`);
+=======
+			if (searchOptions[collectionName].startFromDocumentID) {
+				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
+>>>>>>> main
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;

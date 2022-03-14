@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import Shimmer
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
     var body: some View {
         NavigationView {
             ScrollView {
-                if let articles = model.articles {
+                if let articles = model.articles, articles.count > 0 {
                     ForEach(articles) { article in
                         NavigationLink(destination: NewsArticleView(article)) {
                             NewsArticleCardView(article)
@@ -24,15 +25,19 @@ struct NewsView: View {
                                     Haptics.shared.play(UI.Haptics.navLink)
                                 })
                     }
+                } else {
+                    ForEach(0..<4, id: \.self) { _ in
+                        NewsArticleCardView(.sample)
+                    }
+                    .shadow(radius: UI.shadowRadius)
+                    .redacted(reason: .placeholder)
+                    .shimmering()
+                    .padding(.horizontal)
                 }
             }
-            .navigationTitle("YTS News")
+            .navigationTitle(Text("News"))
         }
-        .alert(isPresented: Binding(get: {
-            model.showError
-        }, set: {
-            model.showError = $0
-        }), content: {
+        .alert(isPresented: $model.showError, content: {
             Alert(
                 title: Text("Error"),
                 message: Text(
@@ -46,6 +51,9 @@ struct NewsView: View {
                         }
                     }))
         })
+        .onDidAppear {
+            model.loadOnlyIfNeeded()
+        }
     }
 }
 

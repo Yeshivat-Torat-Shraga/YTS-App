@@ -1,10 +1,10 @@
-from datetime import datetime
-from flask import Flask, redirect, render_template, request, url_for
+from datetime import datetime, timedelta
+from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
 import cv2
 
 # import settings
-from firebase_admin import credentials, initialize_app, storage, firestore
+from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
@@ -15,6 +15,126 @@ app = Flask(__name__)
 # app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
 # app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
 # app.config["BASIC_AUTH_FORCE"] = True
+
+
+@app.route("/")
+def index():
+    return "Hello, World!"
+
+
+@app.route("/notifications/alert", methods=["POST"])
+def alert_notification():
+    db = firestore.client()
+    collection = db.collection("alerts")
+    collection.add(
+        {
+            "body": request.form.get("alert-body", ""),
+            "title": request.form.get("alert-title", "Notice"),
+            "dateIssued": datetime.now(),
+            "dateExpired": datetime.now() + timedelta(days=7),
+        }
+    )
+    flash("Alert sent!")
+    return redirect(url_for("notifications"))
+
+
+@app.route("/notifications/push", methods=["POST"])
+def push_notification():
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=request.form.get("push-title"),
+            body=request.form.get("push-body"),
+        ),
+        apns=messaging.APNSConfig(
+            payload=messaging.APNSPayload(
+                aps=messaging.Aps(
+                    # badge=int(request.form.get("badge-count", 0))
+                ),
+            ),
+        ),
+        topic="all",
+    )
+
+    messaging.send(message)
+    flash("Notification sent!")
+    return redirect(url_for("notifications"))
+
+
+@app.route("/notifications", methods=["GET"])
+def notifications():
+    return render_template("notifications.html")
+
+
+@app.route("/rabbis", methods=["GET"])
+def rabbis():
+    db = firestore.client()
+    collection = [
+        (rabbi.to_dict(), rabbi.id) for rabbi in db.collection("rebbeim").get()
+    ]
+    return render_template("rabbis.html", data=collection)
+
+
+@app.route("/rabbis/<ID>", methods=["GET", "POST"])
+def rabbiDetail(ID):
+    db = firestore.client()
+    if request.method == "GET":
+        rabbi = db.collection("rebbeim").document(ID).get().to_dict()
+        rabbi["id"] = ID
+        return render_template("rabbisdetail.html", rabbi=rabbi, new=False)
+    else:
+        file = request.files.get("file")
+        name = request.form.get("name")
+        updated_document = {
+            "name": name
+        }
+        if file:
+            bucket = storage.bucket()
+            blob = bucket.blob(f"profile-pictures/{file.filename}")
+            blob.upload_from_string(
+                request.files["file"].read(),
+                content_type=request.files["file"].content_type
+            )
+            updated_document["profile_picture_filename"] = file.filename
+        rabbi = db.collection("rebbeim").document(ID)
+        rabbi.update(updated_document)
+        flash("Rabbi updated!")
+        return redirect(url_for("rabbis"))
+
+
+@app.route("/rabbis/delete/<ID>", methods=["POST"])
+def rabbiDelete(ID):
+    db = firestore.client()
+    rabbi = db.collection("rebbeim").document(ID)
+    rabbi.delete()
+    return redirect(url_for("rabbis"))
+
+
+@app.route("/rabbis/create", methods=["GET", "POST"])
+def rabbiCreate():
+    if request.method == "GET":
+        return render_template("rabbisdetail.html", rabbi=None, new=True)
+    else:
+        # Upload the profile picture file from the form to Cloud Storage
+        profile_picture_file = request.files["file"]
+        if not profile_picture_file:
+            return 'No profile picture', 400
+        bucket = storage.bucket()
+        blob = bucket.blob(f"profile-pictures/{profile_picture_file.filename}")
+        blob.upload_from_string(
+            profile_picture_file.read(),
+            content_type=profile_picture_file.content_type
+        )
+
+        db = firestore.client()
+        collection = db.collection("rebbeim")
+        collection.add(
+            {
+                "name": request.form.get("name"),
+                "profile_picture_filename": profile_picture_file.filename,
+            }
+        )
+        flash("Rabbi added!")
+        return redirect(url_for("rabbis"))
 
 
 @app.route("/shiurim/", methods=["GET"])
@@ -28,8 +148,8 @@ def shiurim():
 
 @app.route("/shiurim/<ID>", methods=["GET", "POST"])
 def shiurimDetail(ID):
+    db = firestore.client()
     if request.method == "GET":
-        db = firestore.client()
         collection = db.collection("content").document(ID).get().to_dict()
         rabbis = []
         rabbicollection = db.collection("rebbeim")
@@ -43,10 +163,26 @@ def shiurimDetail(ID):
             "shiurimdetail.html", shiur=collection, rabbis=rabbis, ID=ID
         )
     else:
-        db = firestore.client()
-        collection = db.collection("content").document(ID)
-        collection.delete()
+        # Update the shiur document
+
+        updated_document = {}
+        author = request.form.get("author").split('~')
+        author = author[1]
+        title = request.form.get("title")
+        updated_document["title"] = title
+        updated_document["author"] = author
+
+        document = db.collection("content").document(ID)
+        document.update(updated_document)
         return redirect(url_for("shiurim"))
+
+
+@app.route("/shiurim/delete/<ID>", methods=["POST"])
+def shiurim_delete(ID):
+    db = firestore.client()
+    shiur = db.collection("content").document(ID)
+    shiur.delete()
+    return redirect(url_for("shiurim"))
 
 
 @app.route("/shiurim/upload", methods=["GET", "POST"])
@@ -148,16 +284,70 @@ def shiurim_upload():
         # blob.content_type = file.content_type
         # blob.upload_from_file(file)
         return "Done"
-        # Make a success page with a link to upload another file
-    # except Exception:
-    #     return (
-    #         "Sorry, it seems like an error occurred. "
-    #         + "If this is the first time you are seeing this error, "
-    #         + "please try again. If this error persists, please "
-    #         + "contact the site administrator.",
-    #         500,
-    #     )
+
+
+@app.route("/news", methods=["GET"])
+def news():
+    db = firestore.client()
+    collection = [
+        (rabbi.to_dict(), rabbi.id) for rabbi in db.collection("news").get()
+    ]
+    return render_template("news.html", news=collection)
+
+
+@app.route("/news/<ID>", methods=["GET", "POST"])
+def news_detail(ID):
+    db = firestore.client()
+    if request.method == "GET":
+        article = db.collection("news").document(ID).get().to_dict()
+        article["id"] = ID
+        return render_template("newsdetail.html", article=article)
+    else:
+        # Update the shiur document
+
+        updated_document = {}
+        author = request.form.get("author")
+        title = request.form.get("title")
+        body = request.form.get("body")
+        updated_document["title"] = title
+        updated_document["author"] = author
+        updated_document["body"] = body
+        updated_document["date"] = datetime.now()
+
+        document = db.collection("news").document(ID)
+        document.update(updated_document)
+        return redirect(url_for("news"))
+
+
+@app.route('/news/delete/<ID>', methods=['POST'])
+def news_delete(ID):
+    db = firestore.client()
+    article = db.collection("news").document(ID)
+    article.delete()
+    return redirect(url_for('news'))
+
+
+@app.route('/news/create', methods=['GET', 'POST'])
+def news_create():
+    db = firestore.client()
+    if request.method == 'GET':
+        return render_template('newsdetail.html', article=None)
+    else:
+        author = request.form.get('author')
+        title = request.form.get('title')
+        body = request.form.get('body')
+        date = datetime.now()
+        new_document = {
+            'author': author,
+            'title': title,
+            'body': body,
+            'date': date,
+            'imageURLs': [""]
+        }
+        db.collection('news').add(new_document)
+        return redirect(url_for('news'))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.secret_key = "super secret key"
+    app.run(debug=True, host="localhost", port=8080)

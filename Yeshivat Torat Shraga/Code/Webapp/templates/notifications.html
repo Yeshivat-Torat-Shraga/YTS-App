@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="/static/bootstrap-datetimepicker.min.css">
+<script src="/static/bootstrap-datetimepicker.min.js"></script>
+<style>
+  td i.fa {
+    color: lightskyblue
+  }
+</style>
+<form action="/notifications/push" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <!-- <label for="push">push notification<span>Trigger a push notification across all -->
+    <!-- devices.</span></label> -->
+    <div name="push">
+
+      <label for="push-title">Push Notifications<span>Trigger a push notification across all devices</span></label>
+      <input type="text" name="push-title" id="push-title" class="form-control disabled" placeholder="Title" required />
+    </div>
+    <div>
+
+      <!-- <label for="push-body">- <span>Trigger a push notification across all devices</span></label> -->
+      <input type="text" name="push-body" id="push-body" class="form-control" placeholder="Body" required />
+
+    </div>
+
+  </div>
+
+
+  <br />
+
+  <div class="form-group">
+    <button type="submit">Publish notification</button>
+  </div>
+</form>
+
+<br>
+<br>
+
+<form action="/notifications/alert" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <div name="alert">
+
+      <label for="alert-title">In App Alerts<span>Trigger a popup alert on app launch. Alert expires in 7
+          days.</span></label>
+      <input type="text" name="alert-title" id="alert-title" class="form-control" placeholder="Title" required />
+    </div>
+    <div>
+
+      <!-- <label for="alert-body">- <span>Trigger an in-app alert across all devices</span></label> -->
+      <input type="text" name="alert-body" id="alert-body" class="form-control" placeholder="Body" required />
+
+    </div>
+
+  </div>
+
+
+  <br />
+
+  <div class="form-group">
+    <button type="submit">Publish in app alert</button>
+  </div>
+</form>
+
+{% endblock content %}

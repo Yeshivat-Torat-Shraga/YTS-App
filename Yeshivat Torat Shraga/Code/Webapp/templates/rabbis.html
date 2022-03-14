@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Rabbis Page</h1>
+
+{% for rabbi in data %}
+<a href="{{url_for('rabbiDetail', ID=rabbi[1])}}">{{ rabbi[0].name }}</a>
+<br>
+<hr>
+{% endfor %}
+<br>
+<a href="{{url_for('rabbiCreate')}}">New Rebbi</a>
+
+
+
+{% endblock content %}

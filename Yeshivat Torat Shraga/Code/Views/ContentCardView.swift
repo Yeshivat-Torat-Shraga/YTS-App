@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+struct SortableContentCardView<Content: SortableYTSContent>: View {
+    let content: Content
+    var body: some View {
+        if let audio = content.audio {
+            ContentCardView(content: audio)
+        } else if let video = content.video {
+            ContentCardView(content: video)
+        }
+    }
+}
+
 struct ContentCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
     let content: Content
@@ -29,25 +40,7 @@ struct ContentCardView<Content: YTSContent>: View {
             ZStack {
                 if isAudio {
                     // If the card is for Audios
-                    LinearGradient(
-                        gradient: Gradient(
-                            stops: [
-                                Gradient.Stop(
-                                    color: Color(
-                                        hue: 0.616,
-                                        saturation: 0.431,
-                                        brightness: 0.510),
-                                    location: 0),
-                                Gradient.Stop(
-                                    color: Color(
-                                        hue: 0.610,
-                                        saturation: 0.5,
-                                        brightness: 0.19),
-                                    location: 1),
-                            ]
-                        ),
-                        startPoint: UnitPoint.bottomLeading,
-                        endPoint: UnitPoint.trailing)
+                    UI.cardBlueGradient
                         Blur(style: .systemUltraThinMaterial)
                 } else {
                     // If the card is for Videos

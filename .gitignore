@@ -14,3 +14,7 @@ Yeshivat Torat Shraga/Code/Webapp/settings.py
 Yeshivat Torat Shraga/Code/Webapp/cred.json
 __pycache__/
 .vscode/
+build/
+*.mobileprovision
+*.cer
+fastlane/report.xml

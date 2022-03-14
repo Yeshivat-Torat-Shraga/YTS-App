@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action={% if rabbi is none %} "{{ url_for('rabbiCreate') }}"
+	{% else %} "{{ url_for('rabbiDetail', ID=rabbi.id) }}" {% endif %} method="post" enctype="multipart/form-data">
+	<div class="form-group">
+		<label for="title">Name</label>
+		<input type="text" name="name" id="name" class="form-control"
+			value="{% if rabbi is not none %}{{rabbi.name}}{% endif %}" required />
+	</div>
+
+	<br>
+
+	<div class="form-group file-area">
+		<label for="file">
+			New Profile Picture<span>This photo will be used in the app.</span>
+		</label>
+		<input type="file" id="file" name="file" accept="image/*" {% if rabbi is none %}required{% endif %} />
+		<div class="file-dummy">
+			<div class="success">
+				{% if rabbi is not none %}
+				Optionally select one photo
+				{% else %}
+				Photo uploaded
+				{% endif %}
+			</div>
+			<div class="default">Upload one photo</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<button type="submit">Submit changes to Firebase</button>
+	</div>
+</form>
+
+{% if rabbi is not none %}
+<form action="{{ url_for('rabbiDelete', ID=rabbi.id) }}" method="post">
+	<div class="form-group">
+		<button style="color:red;" type="submit">Delete Rabbi</button>
+	</div>
+</form>
+{% endif %}
+
+
+{% endblock content %}

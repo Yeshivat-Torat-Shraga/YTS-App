@@ -10,7 +10,7 @@ import SwiftUI
 
 class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     @Published var rabbi: DetailedRabbi
-    @Published var content: Content?
+    @Published var content: AVContent?
     @Published var sortables: [SortableYTSContent]?
     
     @Published internal var loadingContent: Bool = false
@@ -38,8 +38,9 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                     self.showError(error: error ?? YTSError.unknownError, retry: {
                         self.load(next: increment)
                     })
+                    print("Error getting content")
                     group.leave()
-                    fatalError(error!.localizedDescription)
+                    return
                 }
             
                 withAnimation {

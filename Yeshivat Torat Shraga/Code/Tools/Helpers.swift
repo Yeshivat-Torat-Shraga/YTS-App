@@ -48,6 +48,34 @@ extension Color {
             opacity: alpha
         )
     }
+    static func hex(_ hex: UInt) -> Color {
+        return Color(hex: hex)
+    }
+}
+
+extension Color {
+    static var shragaGold: Color {
+        return Color("ShragaGold")
+    }
+    static var shragaBlue: Color {
+        return Color("ShragaBlue")
+    }
+    static var adaptiveFG: Color {
+        return Color("AdaptiveFG")
+    }
+    static var adaptiveBG: Color {
+        return Color("AdaptiveBG")
+    }
+    static var playerBarFG: Color {
+        return Color("PlayerBarFG")
+    }
+    static var playerBarBG: Color {
+        return Color("PlayerBarBG")
+    }
+    static var CardViewBG: Color {
+        return Color("AVCardBG")
+    }
+
 }
 
 // https://stackoverflow.com/a/58913649
@@ -128,6 +156,8 @@ extension Error {
         switch code {
         case NSURLErrorNotConnectedToInternet:
             return "Sorry, it seems you don't have an internet connection."
+        case -1020:
+            return "This app does not have Internet access. Please check your cellular settings."
         default:
             return "An unknown error has occured. (\(code))"
         }

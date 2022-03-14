@@ -69,11 +69,11 @@ struct VideoCardView: View {
                 .padding(.leading, 5)
             }
         }
-        .buttonStyle(BackZStackButtonStyle())
+        .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear))
         .frame(height: 105)
         .background(
             Rectangle()
-                .fill(Color(UIColor.systemBackground))
+                .fill(Color.CardViewBG)
                 .cornerRadius(UI.cornerRadius)
         )
         .cornerRadius(UI.cornerRadius)

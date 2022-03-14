@@ -21,6 +21,14 @@ export interface NewsDocument {
 	imageURLs: string[] | null;
 }
 
+export interface AlertDocument {
+	id: string;
+	title: string;
+	body: string;
+	dateIssued: FirebaseFirestore.Timestamp;
+	dateExpired: FirebaseFirestore.Timestamp;
+}
+
 export interface SlideshowImageDocument {
 	url: string;
 	id: string;
@@ -67,6 +75,30 @@ export class NewsFirebaseDocument {
 			this.date = data.date;
 			this.imageURLs = data.imageURLs;
 			this.title = data.title;
+		} else {
+			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
+			throw new Error('Invalid data');
+		}
+	}
+}
+
+export class AlertFirebaseDocument {
+	title: string;
+	body: string;
+	dateIssued: FirebaseFirestore.Timestamp;
+	dateExpired: FirebaseFirestore.Timestamp;
+
+	constructor(data: FirebaseFirestore.DocumentData) {
+		if (
+			isString(data.title) &&
+			isString(data.body) &&
+			data.dateIssued instanceof FirebaseFirestore.Timestamp &&
+			data.dateExpired instanceof FirebaseFirestore.Timestamp
+		) {
+			this.title = data.title;
+			this.body = data.body;
+			this.dateIssued = data.dateIssued;
+			this.dateExpired = data.dateExpired;
 		} else {
 			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
 			throw new Error('Invalid data');

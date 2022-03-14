@@ -18,6 +18,37 @@ final class FirebaseConnection {
     
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
+    static func loadAlert(completion: @escaping (_ result: HomePageAlert?, _ error: Error?) -> Void) {
+        functions.httpsCallable("loadAlert").call() { callResult, callError in
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            // Check if response contains valid data
+            guard let alerts = response["results"] as? [[String: Any]] else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            
+            guard alerts.count == 1 else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            let alert = alerts[0]
+            
+            guard let title = alert["title"] as? String,
+                  let body = alert["body"] as? String,
+                  let id = alert["id"] as? String
+            else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            completion(HomePageAlert(id: id, title: title, body: body), nil)
+        }
+    }
+    
     static func loadNews(lastLoadedDocumentID: FirestoreID? = nil, limit: Int = 15, completion: @escaping (_ results: (articles: [NewsArticle], metadata: Metadata)?, _ error: Error?) -> Void) {
         var articles: [NewsArticle] = []
         let httpsCallable = functions.httpsCallable("loadNews")
@@ -446,8 +477,8 @@ final class FirebaseConnection {
         }
     }
     
-    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
-        var content: Content = (videos: [], audios: [])
+    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
+        var content: AVContent = (videos: [], audios: [])
         
         return { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {

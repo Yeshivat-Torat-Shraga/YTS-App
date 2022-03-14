@@ -27,7 +27,7 @@ struct SettingsView: View {
                         Text("Clear favorites")
                     }.alert(isPresented: self.$showClearFavoritesConfirmation, content: {
                         Alert(title: Text("Confirmation"), message: Text("Are you sure you want to clear all favorites? This action cannot be undone."), primaryButton: Alert.Button.cancel(), secondaryButton: Alert.Button.destructive(Text("Delete"), action: {
-                            Favorites.clearFavorites()
+                            Favorites.shared.clearFavorites()
                         }))
                     })
                 }

@@ -9,14 +9,92 @@ import SwiftUI
 import SwiftyGif
 
 struct UI {
+    @Environment(\.colorScheme) static var colorScheme
     static let shadowRadius: CGFloat = 2
     static let cornerRadius: CGFloat = 8
+    static let playerBarHeight: CGFloat = 50
+    static let cardBlueGradient = LinearGradient(
+        gradient: Gradient(
+            stops: [
+                Gradient.Stop(
+                    color: Color(
+                        hue:        0.610,
+                        saturation: 0.500,
+                        brightness: 0.190),
+                    location:       0.000),
+                Gradient.Stop(
+                    color: Color(
+                        hue:        0.616,
+                        saturation: 0.431,
+                        brightness: 0.510),
+                    location:       1.000)]),
+        startPoint: UnitPoint.bottomLeading,
+        endPoint: UnitPoint.trailing)
     class Haptics {
         static let navLink: UIImpactFeedbackGenerator.FeedbackStyle = .light
         static let openContent: UIImpactFeedbackGenerator.FeedbackStyle = .light
     }
     //    static let openContentFeedback
     //    static var
+}
+
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition { transform(self) }
+        else { self }
+    }
+}
+
+
+extension View {
+
+    /// Calls the completion handler whenever an animation on the given value completes.
+    /// - Parameters:
+    ///   - value: The value to observe for animations.
+    ///   - completion: The completion callback to call once the animation completes.
+    /// - Returns: A modified `View` instance with the observer attached.
+    func onAnimationCompleted<Value: VectorArithmetic>(for value: Value, completion: @escaping () -> Void) -> ModifiedContent<Self, AnimationCompletionObserverModifier<Value>> {
+        return modifier(AnimationCompletionObserverModifier(observedValue: value, completion: completion))
+    }
+}
+
+struct AnimationCompletionObserverModifier<Value>: AnimatableModifier where Value: VectorArithmetic {
+
+    /// While animating, SwiftUI changes the old input value to the new target value using this property. This value is set to the old value until the animation completes.
+    var animatableData: Value {
+        didSet {
+            notifyCompletionIfFinished()
+        }
+    }
+
+    /// The target value for which we're observing. This value is directly set once the animation starts. During animation, `animatableData` will hold the oldValue and is only updated to the target value once the animation completes.
+    private var targetValue: Value
+
+    /// The completion callback which is called once the animation completes.
+    private var completion: () -> Void
+
+    init(observedValue: Value, completion: @escaping () -> Void) {
+        self.completion = completion
+        self.animatableData = observedValue
+        targetValue = observedValue
+    }
+
+    /// Verifies whether the current animation is finished and calls the completion callback if true.
+    private func notifyCompletionIfFinished() {
+        guard animatableData == targetValue else { return }
+
+        /// Dispatching is needed to take the next runloop for the completion callback.
+        /// This prevents errors like "Modifying state during view update, this will cause undefined behavior."
+        DispatchQueue.main.async {
+            self.completion()
+        }
+    }
+
+    func body(content: Content) -> some View {
+        /// We're not really modifying the view so we can directly return the original input value.
+        return content
+    }
 }
 
 struct iOS14BorderedProminentButtonStyle: ButtonStyle {
@@ -114,6 +192,47 @@ struct BackgroundClearView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIView, context: Context) {}
 }
+
+/// https://gist.github.com/alongotv/7f450e8c47ed3f057e1f6d35443af269
+struct ViewControllerLifecycleHandler: UIViewControllerRepresentable {
+    func makeCoordinator() -> ViewControllerLifecycleHandler.Coordinator {
+        Coordinator(onDidAppear: onDidAppear)
+    }
+    let onDidAppear: () -> Void
+    func makeUIViewController(context: UIViewControllerRepresentableContext<ViewControllerLifecycleHandler>) -> UIViewController {
+        context.coordinator
+    }
+    func updateUIViewController(_ uiViewController: UIViewController, context: UIViewControllerRepresentableContext<ViewControllerLifecycleHandler>) {
+    }
+    typealias UIViewControllerType = UIViewController
+    class Coordinator: UIViewController {
+        let onDidAppear: (() -> Void)?
+        init(onDidAppear: (() -> Void)?) {
+            self.onDidAppear = onDidAppear
+            super.init(nibName: nil, bundle: nil)
+        }
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+           (onDidAppear ?? {})()
+        }
+    }
+}
+struct DidAppearModifier: ViewModifier {
+    let onDidAppearCallback: (() -> Void)?
+    func body(content: Content) -> some View {
+        content
+            .background(ViewControllerLifecycleHandler(onDidAppear: onDidAppearCallback ?? {}))
+    }
+}
+extension View {
+    func onDidAppear(_ perform: @escaping () -> Void) -> some View {
+        self.modifier(DidAppearModifier(onDidAppearCallback: perform))
+    }
+}
+
 
 class AsyncImageLoader: ObservableObject {
     @Published var downloadedImage: UIImage?
@@ -389,6 +508,18 @@ struct URLImage<Content : View>: View {
                 )
             }
         }
+    }
+}
+
+
+extension Color {
+    var responsiveBG: Color {
+        UI.colorScheme == .dark
+        ? .white : .black
+    }
+    var responsiveFG: Color {
+        UI.colorScheme == .dark
+        ? .black : .white
     }
 }
 
