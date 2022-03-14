@@ -3,13 +3,33 @@
 
 <h1>Rabbis Page</h1>
 
-{% for rabbi in data %}
-<a href="{{url_for('rabbiDetail', ID=rabbi[1])}}">{{ rabbi[0].name }}</a>
-<br>
-<hr>
-{% endfor %}
-<br>
-<a href="{{url_for('rabbiCreate')}}">New Rebbi</a>
+<table class="table table-dark table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Image</th>
+      <th scope="col">Name</th>
+      <th scope="col">Edit Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" colspan="3">
+        <a href="{{ url_for('rabbiCreate') }}"><b>New Rebbi<br></b></a>
+      </th>
+    </tr>
+    {% for rabbi in data %}
+    <tr>
+      <td scope="row" style="width:120px">
+        <img src="{{ rabbi.imgURL }}" alt="{{ rabbi.name }}" width="100" height="100"
+          style="clip-path:inset(0 0 0 0 round 5%);">
+      </td>
+      <td>{{ rabbi.name }}</td>
+      <td><a href="{{ url_for('rabbiDetail', ID=rabbi.id) }}"><b>Edit<br></b></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 
 
 

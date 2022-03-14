@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<a href="{{ url_for('slideshow_upload')}}">Upload new image</a>
+<br>
+{% for slide in images %}
+<a href=""><b>ID: {{ slide[1] }}<br></b></a>
+
+<img src="{{slide[0].url}}" alt=""><br>
+<form action="{{ url_for('slideshow_delete', ID=slide[1]) }}" method="post">
+  <div class="form-group">
+    <button style="color:red;" type="submit">Delete Image</button>
+  </div>
+</form>
+<hr>
+{% endfor %}
+<br>
+
+{% endblock content %}

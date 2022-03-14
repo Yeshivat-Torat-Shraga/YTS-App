@@ -2,7 +2,7 @@
 {% block content %}
 
 <form action="{% if article is none %} {{ url_for('news_create') }}
-  {% else %} {{ url_for('news_detail', ID=article.id) }} {% endif %}" method="post">
+  {% else %} {{ url_for('news_detail', ID=article.id) }} {% endif %}" id="news" method="post">
   <div class="form-group">
     <label for="title">Title</label>
     <input type="text" name="title" id="title" class="form-control"
@@ -12,7 +12,7 @@
   <br>
 
   <div class="form-group">
-    <label for="title">Author</label>
+    <label for="author">Author</label>
     <input type="text" name="author" id="author" class="form-control"
       value="{% if article is not none %}{{article.author}}{% endif %}" required />
   </div>
@@ -21,8 +21,9 @@
 
   <div class="form-group">
     <label for="body">Content</label>
-    <input type="text" name="body" id="body" class="form-control"
-      value="{% if article is not none %}{{article.body}}{% endif %}" required />
+    <textarea form="news" type="text" name="body" id="body" class="form-control" style="min-height: 200px;" required>
+      {% if article is not none %}{{article.body}}{% endif %}
+    </textarea>
   </div>
 
   <br>
