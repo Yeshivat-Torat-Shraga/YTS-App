@@ -16,7 +16,7 @@ class HomeModel: ObservableObject, ErrorShower {
     var hideLoadingScreen: (() -> Void)?
     var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
     var homePageAlertToShow: HomePageAlert? = nil
-    @Published var recentlyUploadedContent: AVContent?
+    @Published var recentlyUploadedContent: Content?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     @Published var slideshowImages: [SlideshowImage]?

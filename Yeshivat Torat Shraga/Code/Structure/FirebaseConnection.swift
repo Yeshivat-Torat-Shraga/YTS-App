@@ -477,8 +477,8 @@ final class FirebaseConnection {
         }
     }
     
-    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
-        var content: AVContent = (videos: [], audios: [])
+    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
+        var content: Content = (videos: [], audios: [])
         
         return { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {

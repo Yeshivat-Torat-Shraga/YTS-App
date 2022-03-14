@@ -10,7 +10,7 @@ import SwiftUI
 
 class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     @Published var rabbi: DetailedRabbi
-    @Published var content: AVContent?
+    @Published var content: Content?
     @Published var sortables: [SortableYTSContent]?
     
     @Published internal var loadingContent: Bool = false

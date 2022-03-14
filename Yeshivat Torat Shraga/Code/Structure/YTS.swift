@@ -574,7 +574,7 @@ class Category: Tag, URLImageable {
 
 let tags: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(name: "Chanuka", icon: Image("chanuka")), Tag("Mussar"), Tag("Purim")]
 
-typealias AVContent = (videos: [Video], audios: [Audio])
+typealias Content = (videos: [Video], audios: [Audio])
 
 class SortableYTSContent: Hashable {
     static func == (lhs: SortableYTSContent, rhs: SortableYTSContent) -> Bool {

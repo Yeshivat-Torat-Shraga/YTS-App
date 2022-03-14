@@ -26,9 +26,6 @@ class SearchModel: ObservableObject, ErrorShower {
     var searchQuery: String = ""
     
     @Published var showError: Bool = false
-    @Published var rebbeim: [Rabbi] = []
-    @Published var sortables: [SortableYTSContent] = []
-    @Published var content: AVContent?
     var errorToShow: Error?
     var retry: (() -> Void)?
     

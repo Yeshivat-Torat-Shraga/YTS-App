@@ -91,7 +91,7 @@ struct AnimationCompletionObserverModifier<Value>: AnimatableModifier where Valu
         }
     }
 
-    func body(content: Content) -> some View {
+    func body(content: Self.Content) -> some View {
         /// We're not really modifying the view so we can directly return the original input value.
         return content
     }
@@ -220,9 +220,10 @@ struct ViewControllerLifecycleHandler: UIViewControllerRepresentable {
         }
     }
 }
+
 struct DidAppearModifier: ViewModifier {
     let onDidAppearCallback: (() -> Void)?
-    func body(content: Content) -> some View {
+    func body(content: Self.Content) -> some View {
         content
             .background(ViewControllerLifecycleHandler(onDidAppear: onDidAppearCallback ?? {}))
     }
