@@ -92,6 +92,7 @@ struct SearchView: View {
                                             }
                                     }
                                 }
+                                .padding(.horizontal)
                             }
                             
                             if model.loadingContent && !model.loadingRebbeim {
@@ -222,7 +223,9 @@ struct SearchView_Previews: PreviewProvider {
                 Spacer()
             }
             .sheet(isPresented: $presentingSearchView) {
-                SearchView()
+                NavigationView {
+                    SearchView()
+                }
             }
         }
     }
