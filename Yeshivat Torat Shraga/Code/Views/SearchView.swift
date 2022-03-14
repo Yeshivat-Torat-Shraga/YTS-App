@@ -39,7 +39,7 @@ struct SearchView: View {
             ScrollView(showsIndicators: false) {
                 LazyVStack {
                     if selectedResultTag == .rebbeim || selectedResultTag == .all {
-                    Group {
+                        Group {
                             if let rebbeim = model.rebbeim {
                                 ForEach(rebbeim, id: \.self) { rabbi in
                                     if let detailedRabbi = rabbi as? DetailedRabbi {
@@ -57,44 +57,44 @@ struct SearchView: View {
                                     }
                                 }
                             }
-                        
-                        
-                        if model.loadingRebbeim && !model.loadingContent {
-                            ProgressView()
-                                .progressViewStyle(YTSProgressViewStyle())
-                        } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
-                            Button(action: {
-                                
-                            }) {
-                                VStack {
-                                    Spacer()
-                                    Spacer()
-                                    HStack {
+                            
+                            
+                            if model.loadingRebbeim && !model.loadingContent {
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                            } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
+                                Button(action: {
+                                    
+                                }) {
+                                    VStack {
                                         Spacer()
-                                        Image(systemName: "ellipsis")
+                                        Spacer()
+                                        HStack {
+                                            Spacer()
+                                            Image(systemName: "ellipsis")
+                                            Spacer()
+                                        }
+                                        Spacer()
                                         Spacer()
                                     }
-                                    Spacer()
-                                    Spacer()
                                 }
+                                .buttonStyle(BackZStackButtonStyle())
+                                .cornerRadius(6)
+                                .shadow(radius: 2)
+                                .padding(.bottom)
                             }
-                            .buttonStyle(BackZStackButtonStyle())
-                            .cornerRadius(6)
-                            .shadow(radius: 2)
-                            .padding(.bottom)
+                            
+                            if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
+                                Divider()
+                            }
+                            
                         }
-                        
-                        if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
-                            Divider()
-                        }
-                        
-                    }
-                    .padding(.bottom)
+                        .padding(.bottom)
                     }
                     
                     
-                        if selectedResultTag == .shiurim || selectedResultTag == .all {
-                    Group {
+                    if selectedResultTag == .shiurim || selectedResultTag == .all {
+                        Group {
                             if let sortables = model.sortables {
                                 ForEach(sortables, id: \.self) { sortable in
                                     if let video = sortable.video {
@@ -110,39 +110,39 @@ struct SearchView: View {
                                     }
                                 }
                             }
-                        
-                        if model.loadingContent && !model.loadingRebbeim {
-                            ProgressView()
-                                .progressViewStyle(YTSProgressViewStyle())
-                        } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
-                            //                        VStack {
-                            //                        Divider()
-                            Button(action: {
-                                
-                            }) {
-                                VStack {
-                                    Spacer()
-                                    Spacer()
-                                    HStack {
+                            
+                            if model.loadingContent && !model.loadingRebbeim {
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                            } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
+                                //                        VStack {
+                                //                        Divider()
+                                Button(action: {
+                                    
+                                }) {
+                                    VStack {
                                         Spacer()
-                                        Image(systemName: "ellipsis")
+                                        Spacer()
+                                        HStack {
+                                            Spacer()
+                                            Image(systemName: "ellipsis")
+                                            Spacer()
+                                        }
+                                        Spacer()
                                         Spacer()
                                     }
-                                    Spacer()
-                                    Spacer()
                                 }
+                                .buttonStyle(BackZStackButtonStyle())
+                                .cornerRadius(6)
+                                .shadow(radius: 2)
                             }
-                            .buttonStyle(BackZStackButtonStyle())
-                            .cornerRadius(6)
-                            .shadow(radius: 2)
+                            
+                            if !model.loadingContent && !model.retreivedAllContent && !(model.contentIsEmpty) {
+                                Divider()
+                            }
                         }
-                        
-                        if !model.loadingContent && !model.retreivedAllContent && !(model.contentIsEmpty) {
-                            Divider()
-                        }
+                        .padding(.bottom)
                     }
-                    .padding(.bottom)
-                        }
                     
                     if model.loadingContent && model.loadingRebbeim {
                         ProgressView()
