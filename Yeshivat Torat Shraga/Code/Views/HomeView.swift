@@ -205,8 +205,10 @@ struct HomeView: View {
             })
         }
         .sheet(isPresented: $presentingSearchView) {
-            SearchView()
-                .background(BackgroundClearView())
+            NavigationView {
+                SearchView()
+                    .background(BackgroundClearView())
+            }
         }
     }
 }
