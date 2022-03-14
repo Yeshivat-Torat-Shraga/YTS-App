@@ -36,11 +36,11 @@ class SearchModel: ObservableObject, ErrorShower {
         search(query)
     }
     
-    func contentSearch() {
+    func searchForMoreContent() {
         search(self.searchQuery, rebbeimLimit: 0)
     }
     
-    func rebbeimSearch() {
+    func searchForMoreRebbeim() {
         search(self.searchQuery, contentLimit: 0)
     }
     
