@@ -49,7 +49,7 @@ class SearchModel: ObservableObject, ErrorShower {
         
         loadingContent = true
         loadingRebbeim = true
-        FirebaseConnection.search(query: query, contentOptions: (limit: contentLimit, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedContentID), rebbeimOptions: (limit: rebbeimLimit, includePictureURLs: true, startFromDocumentID: lastLoadedRabbiID)) { results, error in
+        FirebaseConnection.search(query: query, contentOptions: (limit: contentLimit, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: lastLoadedContentID), rebbeimOptions: (limit: rebbeimLimit, includePictureURLs: true, startAfterDocumentID: lastLoadedRabbiID)) { results, error in
             guard let content = results?.content else {
                 self.loadingContent = false
                 self.loadingRebbeim = false

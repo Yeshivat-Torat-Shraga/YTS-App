@@ -33,7 +33,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
         let group = DispatchGroup()
         
         group.enter()
-        FirebaseConnection.loadContent(options: (limit: increment, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedDocumentID), matching: rabbi) { results, error in
+        FirebaseConnection.loadContent(options: (limit: increment, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: lastLoadedDocumentID), matching: rabbi) { results, error in
                 guard let results = results else {
                     self.showError(error: error ?? YTSError.unknownError, retry: {
                         self.load(next: increment)
