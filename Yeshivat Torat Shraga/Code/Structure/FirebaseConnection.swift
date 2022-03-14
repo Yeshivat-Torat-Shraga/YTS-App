@@ -13,8 +13,8 @@ import SwiftUI
 final class FirebaseConnection {
     static var functions = Functions.functions()
     
-    typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startFromDocumentID: FirestoreID?)
-    typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startFromDocumentID: FirestoreID?)
+    typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startAfterDocumentID: FirestoreID?)
+    typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startAfterDocumentID: FirestoreID?)
     
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
@@ -194,8 +194,8 @@ final class FirebaseConnection {
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     /// - Returns:
     /// `((results: Content, [Rabbi], Metadata)?, Error?)`
-    static func search(query: String, contentOptions: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: (AVContent), rebbeim: [Rabbi], metadata: (content: Metadata, rebbeim: Metadata))?, _ error: Error?) -> Void) {
-        var content: AVContent = (videos: [], audios: [])
+    static func search(query: String, contentOptions: ContentOptions = (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startAfterDocumentID: nil), completion: @escaping (_ results: (content: (Content), rebbeim: [Rabbi], metadata: (content: Metadata, rebbeim: Metadata))?, _ error: Error?) -> Void) {
+        var content: Content = (videos: [], audios: [])
         var rebbeim: [Rabbi] = []
         
         var contentOptionsData: [String : Any] = [
@@ -204,8 +204,8 @@ final class FirebaseConnection {
             "includeDetailedAuthorInfo": contentOptions.includeDetailedAuthors
         ]
         
-        if let csID = contentOptions.startFromDocumentID {
-            contentOptionsData["startFromDocumentID"] = csID
+        if let csID = contentOptions.startAfterDocumentID {
+            contentOptionsData["startAfterDocumentID"] = csID
         }
         
         var rebbeimOptionsData: [String : Any] = [
@@ -213,15 +213,34 @@ final class FirebaseConnection {
             "includePictureURLs": rebbeimOptions.includePictureURLs
         ]
         
-        if let rsID = rebbeimOptions.startFromDocumentID {
-            rebbeimOptionsData["startFromDocumentID"] = rsID
+        if let rsID = rebbeimOptions.startAfterDocumentID {
+            rebbeimOptionsData["startAfterDocumentID"] = rsID
+        }
+        
+        var contentData: [String: Any] = [
+            "limit": contentOptions.limit,
+            "includeThumbnailURLs": contentOptions.includeThumbnailURLs,
+            "includeDetailedAuthorInfo": contentOptions.includeDetailedAuthors
+        ]
+        
+        if let contentStartDocID = contentOptions.startAfterDocumentID {
+            contentData["startAfterDocumentID"] = contentStartDocID
+        }
+        
+        var rebbeimData: [String: Any] = [
+            "limit": contentOptions.limit,
+            "includePictureURLs": rebbeimOptions.includePictureURLs
+        ]
+        
+        if let rebbeimStartDocID = rebbeimOptions.startAfterDocumentID {
+            rebbeimData["startAfterDocumentID"] = rebbeimStartDocID
         }
         
         let data: [String: Any] = [
             "searchQuery": query,
             "searchOptions": [
-                "content": contentOptions,
-                "rebbeim": rebbeimOptions
+                "content": contentData,
+                "rebbeim": rebbeimData
             ],
         ]
         
@@ -386,15 +405,15 @@ final class FirebaseConnection {
     ///   - count: The amount of `Rabbi` objects to return. Default is `10`.
     ///   - includeProfilePictureURLs: Whether or not to include profile picture URLs in the response. Default is `true`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadRebbeim(options: RebbeimOptions = (limit: 10, includePictureURLs: true, startFromDocumentID: nil), completion: @escaping (_ results: (rebbeim: [Rabbi], metadata: Metadata)?, _ error: Error?) -> Void) {
+    static func loadRebbeim(options: RebbeimOptions = (limit: 10, includePictureURLs: true, startAfterDocumentID: nil), completion: @escaping (_ results: (rebbeim: [Rabbi], metadata: Metadata)?, _ error: Error?) -> Void) {
         var rebbeim: [Rabbi] = []
         
         var data: [String: Any] = [
             "limit": options.limit,
             "includePictureURLs": options.includePictureURLs
         ]
-        if let startFromDocumentID = options.startFromDocumentID {
-            data["lastLoadedDocID"] = startFromDocumentID
+        if let startAfterDocumentID = options.startAfterDocumentID {
+            data["lastLoadedDocID"] = startAfterDocumentID
         }
         
         let httpsCallable = functions.httpsCallable("loadRebbeim")
@@ -412,9 +431,9 @@ final class FirebaseConnection {
             
             var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
-            if newLastLoadedDocumentID == nil && options.startFromDocumentID != nil {
-                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startFromDocumentID'.")
-                newLastLoadedDocumentID = options.startFromDocumentID
+            if newLastLoadedDocumentID == nil && options.startAfterDocumentID != nil {
+                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startAfterDocumentID'.")
+                newLastLoadedDocumentID = options.startAfterDocumentID
             }
             
             guard let finalCall = metadata["finalCall"] as? Bool else {
@@ -458,8 +477,8 @@ final class FirebaseConnection {
         }
     }
     
-    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
-        var content: AVContent = (videos: [], audios: [])
+    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
+        var content: Content = (videos: [], audios: [])
         
         return { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {
@@ -478,9 +497,9 @@ final class FirebaseConnection {
             }
             var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
-            if newLastLoadedDocumentID == nil && options.startFromDocumentID != nil {
-                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startFromDocumentID'.")
-                newLastLoadedDocumentID = options.startFromDocumentID
+            if newLastLoadedDocumentID == nil && options.startAfterDocumentID != nil {
+                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startAfterDocumentID'.")
+                newLastLoadedDocumentID = options.startAfterDocumentID
             }
             
             let group = DispatchGroup()
@@ -589,14 +608,14 @@ final class FirebaseConnection {
     ///   - includeThumbnailURLs: Whether or not to include thumbnail URLs in the response.
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), completion: @escaping (_ results: (content: Content, metadata: Metadata)?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
             "includeThumbnailURLs": options.includeThumbnailURLs,
             "includeAllAuthorData": options.includeDetailedAuthors
         ]
-        if let startFromDocumentID = options.startFromDocumentID {
-            data["lastLoadedDocID"] = startFromDocumentID
+        if let startAfterDocumentID = options.startAfterDocumentID {
+            data["lastLoadedDocID"] = startAfterDocumentID
         }
         
         let httpsCallable = functions.httpsCallable("loadContent")
@@ -612,7 +631,7 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: AVContent, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         print("Loading content...")
         var data: [String: Any] = [
             "limit": options.limit,
@@ -621,8 +640,8 @@ final class FirebaseConnection {
             "search": ["field": "attributionID",
                        "value": rabbi.firestoreID]
         ]
-        if let startFromDocumentID = options.startFromDocumentID {
-            data["lastLoadedDocID"] = startFromDocumentID
+        if let startAfterDocumentID = options.startAfterDocumentID {
+            data["lastLoadedDocID"] = startAfterDocumentID
         }
     
         let httpsCallable = functions.httpsCallable("loadContent")
@@ -639,15 +658,15 @@ final class FirebaseConnection {
     ///   - includeAllAuthorData: Whether or not to include extra author data, such as  profile picture URLs, in the response. Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - matchingTag: The function only returns content that have a tag matching  the `Tag` object.
-    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: AVContent, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
+    static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: Content, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
             "search": ["field": "tag", "value": tag.name.lowercased()],
             "includeThumbnailURLs": options.includeThumbnailURLs,
             "includeAllAuthorData": options.includeDetailedAuthors
         ]
-        if let startFromDocumentID = options.startFromDocumentID {
-            data["lastLoadedDocID"] = startFromDocumentID
+        if let startAfterDocumentID = options.startAfterDocumentID {
+            data["lastLoadedDocID"] = startAfterDocumentID
         }
     
         let httpsCallable = functions.httpsCallable("loadContent")
