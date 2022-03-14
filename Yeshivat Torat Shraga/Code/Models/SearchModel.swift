@@ -12,6 +12,10 @@ class SearchModel: ObservableObject, ErrorShower {
     @Published var rebbeim: [Rabbi]?
     @Published var sortables: [SortableYTSContent]?
     
+    var contentIsEmpty: Bool {
+        return content?.videos.isEmpty ?? true && content?.audios.isEmpty ?? true
+    }
+    
     @Published internal var loadingContent: Bool = false
     @Published internal var loadingRebbeim: Bool = false
     @Published internal var retreivedAllContent: Bool = false
