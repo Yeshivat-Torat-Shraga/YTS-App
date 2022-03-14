@@ -63,8 +63,6 @@ struct SearchView: View {
                             ProgressView()
                                 .progressViewStyle(YTSProgressViewStyle())
                         } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
-                            //                        VStack {
-                            //                        Divider()
                             Button(action: {
                                 
                             }) {
@@ -83,8 +81,6 @@ struct SearchView: View {
                             .buttonStyle(BackZStackButtonStyle())
                             .cornerRadius(6)
                             .shadow(radius: 2)
-                            //                            Divider()
-                            //                        }
                             .padding(.bottom)
                         }
                         
