@@ -36,16 +36,20 @@ class SearchModel: ObservableObject, ErrorShower {
         search(query)
     }
     
-    func search() {
-        search(self.searchQuery)
+    func contentSearch() {
+        search(self.searchQuery, rebbeimLimit: 0)
     }
     
-    private func search(_ query: String) {
+    func rebbeimSearch() {
+        search(self.searchQuery, contentLimit: 0)
+    }
+    
+    private func search(_ query: String, contentLimit: Int = 5, rebbeimLimit: Int = 5) {
         self.searchQuery = query
         
         loadingContent = true
         loadingRebbeim = true
-        FirebaseConnection.search(query: query, contentOptions: (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedContentID), rebbeimOptions: (limit: 5, includePictureURLs: true, startFromDocumentID: lastLoadedRabbiID)) { results, error in
+        FirebaseConnection.search(query: query, contentOptions: (limit: contentLimit, includeThumbnailURLs: true, includeDetailedAuthors: false, startFromDocumentID: lastLoadedContentID), rebbeimOptions: (limit: rebbeimLimit, includePictureURLs: true, startFromDocumentID: lastLoadedRabbiID)) { results, error in
             guard let content = results?.content else {
                 self.loadingContent = false
                 self.loadingRebbeim = false
