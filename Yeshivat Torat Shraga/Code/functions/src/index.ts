@@ -430,9 +430,9 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 		includeAllAuthorData: (data.includeAllAuthorData as boolean) || false,
 		search: data.search as
 			| {
-					field: string;
-					value: string;
-			  }
+				field: string;
+				value: string;
+			}
 			| undefined,
 	};
 
@@ -596,7 +596,12 @@ exports.generateHLSStream = storage
 				const fp = path.join(outputDir, filename);
 				log(`Uploading ${fp}...`);
 				return bucket.upload(fp, {
+<<<<<<< HEAD
+					destination: `HLSStreams/${object.contentType!.split('/')[0]
+						}/${filename}/${filename}`,
+=======
 					destination: `HLSStreams/${object.contentType!.split('/')[0]}/${filename}/${filename}`,
+>>>>>>> main
 					metadata: {
 						'Cache-Control': 'public,max-age=3600',
 					},
@@ -680,12 +685,12 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			limit: 5,
 			includeThumbnailURLs: false,
 			includeDetailedAuthorInfo: false,
-			startFromDocumentID: null,
+			startAfterDocumentID: null,
 		},
 		rebbeim: {
 			limit: 10,
 			includePictureURLs: false,
-			startFromDocumentID: null,
+			startAfterDocumentID: null,
 		},
 	};
 
@@ -693,28 +698,38 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 	const errors: string[] = [];
 	const db = admin.firestore();
-	const searchQuery = callData.searchQuery.toLowerCase();
-	if (!searchQuery) {
+	if (!callData.searchQuery) {
 		return {
-			metadata: {
-				lastLoadedDocID: null,
-				finalCall: null,
-			},
-			content: null,
+			results: null,
+			errors: ["This function requires a search query."],
+			request: searchOptions,
+			metadata: null
 		};
 	}
+	const searchQuery = callData.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
 	const documentsThatMeetSearchCriteria = [];
 	// For each collection, run the following async function:
+
+	let databases = [];
+	if (searchOptions['content'].limit > 0) {
+		databases.push('content');
+	} else {
+		databases.push('skip');
+	}
+	if (searchOptions['rebbeim'].limit > 0) {
+		databases.push('rebbeim');
+	} else {
+		databases.push('skip');
+	}
+
 	const docs = await Promise.all(
-		['content', 'rebbeim'].map(async (collectionName) => {
+		databases.map(async (collectionName) => {
+			if (collectionName == 'skip') {
+				return null;
+			}
 			if (!Number.isInteger(searchOptions[collectionName].limit)) {
 				errors.push(`Limit for ${collectionName} is not an integer.`);
-				return [];
-			}
-			if (searchOptions[collectionName].limit == 0) return [];
-			if (searchOptions[collectionName].limit < 0) {
-				errors.push(`Limit for ${collectionName} is less than 0.`);
 				return [];
 			}
 			if (searchOptions[collectionName].limit > 30) {
@@ -734,8 +749,19 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
+<<<<<<< HEAD
+			if (searchOptions[collectionName].startAfterDocumentID) {
+				const snapshot = await db
+					.collection(collectionName)
+					.doc(searchOptions[collectionName].startAfterDocumentID)
+					.get();
+			// Overwrite the query to start after the specified document.
+				query = query.startAfter(snapshot) as any;
+				log(`Starting after document '${snapshot}'`);
+=======
 			if (searchOptions[collectionName].startFromDocumentID) {
 				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
+>>>>>>> main
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
@@ -752,84 +778,98 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	const rawContent = docs[0];
 	const rawRebbeim = docs[1];
 
-	const content: (ContentDocument | null)[] = await Promise.all(
-		rawContent.map(async (doc) => {
-			// Get the document data
-			try {
-				var data = new ContentFirebaseDocument(doc.data());
-			} catch {
-				return null;
-			}
+	let content: ((ContentDocument | null)[] | null);
 
-			try {
-				const sourcePath = await getURLFor(`${data.source_path}`);
-				const author = await getRabbiFor(
-					data.attributionID,
-					searchOptions.content.includeDetailedAuthorInfo
-				);
+	if (rawContent != null) {
+		content = await Promise.all(
+			rawContent.map(async (doc) => {
+				// Get the document data
+				try {
+					var data = new ContentFirebaseDocument(doc.data());
+				} catch {
+					return null;
+				}
 
-				return {
-					id: doc.id,
-					fileID: strippedFilename(data.source_path),
-					attributionID: data.attributionID,
-					title: data.title,
-					description: data.description,
-					duration: data.duration,
-					date: data.date,
-					type: data.type,
-					source_url: sourcePath,
-					author: author,
-				};
-			} catch (err) {
-				errors.push(err as string);
-				return null;
-			}
-		})
-	);
+				try {
+					const sourcePath = await getURLFor(`${data.source_path}`);
+					const author = await getRabbiFor(
+						data.attributionID,
+						searchOptions.content.includeDetailedAuthorInfo
+					);
 
-	const rebbeim: (RebbeimDocument | null)[] = await Promise.all(
-		rawRebbeim.map(async (doc) => {
-			// Get the document data
-			try {
-				var data = new RebbeimFirebaseDocument(doc.data());
-			} catch {
-				return null;
-			}
+					return {
+						id: doc.id,
+						fileID: strippedFilename(data.source_path),
+						attributionID: data.attributionID,
+						title: data.title,
+						description: data.description,
+						duration: data.duration,
+						date: data.date,
+						type: data.type,
+						source_url: sourcePath,
+						author: author,
+					};
+				} catch (err) {
+					errors.push(err as string);
+					return null;
+				}
+			})
+		);
+	} else {
+		content = null;
+	}
 
-			// Get the image path
-			const path = data.profile_picture_filename;
-			// Get the image URL
-			try {
-				const pfpURL = await getURLFor(`profile-pictures/${path}`);
-				// return the document data
-				const document: RebbeimDocument = {
-					id: doc.id,
-					name: data.name,
-					profile_picture_url: pfpURL,
-				};
-				return document;
-			} catch (err) {
-				errors.push(err as string);
-				return null;
-			}
-		})
-	);
+	let rebbeim: ((RebbeimDocument | null)[] | null);
+	// check if rawRebbeim is null
+	if (rawRebbeim != null) {
+		rebbeim = await Promise.all(
+			rawRebbeim.map(async (doc) => {
+				// Get the document data
+				try {
+					var data = new RebbeimFirebaseDocument(doc.data());
+				} catch {
+					return null;
+				}
+
+				// Get the image path
+				const path = data.profile_picture_filename;
+				// Get the image URL
+				try {
+					const pfpURL = await getURLFor(`profile-pictures/${path}`);
+					// return the document data
+					const document: RebbeimDocument = {
+						id: doc.id,
+						name: data.name,
+						profile_picture_url: pfpURL,
+					};
+					return document;
+				} catch (err) {
+					errors.push(err as string);
+					return null;
+				}
+			})
+		);
+	} else {
+		rebbeim = null;
+	}
+
+
 
 	return {
 		results: {
-			content: content,
-			rebbeim: rebbeim,
+			content: rawContent ? content : null,
+			rebbeim: rawRebbeim ? rebbeim : null,
 		},
 		errors: errors,
 		request: searchOptions,
 		metadata: {
 			content: {
-				lastLoadedDocID: rawContent[rawContent.length - 1].id,
-				finalCall: searchOptions.content.limit > rawContent.length,
+				lastLoadedDocID: rawContent ? (rawContent.length > 0 ? rawContent[rawContent.length - 1].id : null) : null,
+				finalCall: rawContent ? searchOptions.content.limit > rawContent.length : null,
 			},
 			rebbeim: {
-				lastLoadedDocID: rawRebbeim[rawRebbeim.length - 1].id,
-				finalCall: searchOptions.rebbeim.limit > rawRebbeim.length,
+				lastLoadedDocID: rawRebbeim ? (rawRebbeim.length > 0 ? rawRebbeim[rawRebbeim.length - 1].id : null) : null,
+				finalCall: rawRebbeim ? searchOptions.rebbeim.limit > rawRebbeim.length : null,
 			},
 		},
 	};

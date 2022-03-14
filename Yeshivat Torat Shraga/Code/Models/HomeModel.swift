@@ -16,7 +16,7 @@ class HomeModel: ObservableObject, ErrorShower {
     var hideLoadingScreen: (() -> Void)?
     var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
     var homePageAlertToShow: HomePageAlert? = nil
-    @Published var recentlyUploadedContent: AVContent?
+    @Published var recentlyUploadedContent: Content?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     @Published var slideshowImages: [SlideshowImage]?
@@ -58,7 +58,7 @@ class HomeModel: ObservableObject, ErrorShower {
 
         }
         
-        FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startFromDocumentID: nil)) { results, error in
+        FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
             guard let content = results?.content else {
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return

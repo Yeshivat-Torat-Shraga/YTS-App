@@ -17,7 +17,7 @@ class TagModel: ObservableObject, ErrorShower {
     
     @Published var tag: Tag
     @Published var sortables: [SortableYTSContent]?
-    @Published var content: AVContent?
+    @Published var content: Content?
     
     init(tag: Tag) {
         self.tag = tag
