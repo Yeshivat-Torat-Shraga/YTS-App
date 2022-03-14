@@ -63,25 +63,7 @@ struct SearchView: View {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
-                                Button(action: {
-                                    
-                                }) {
-                                    VStack {
-                                        Spacer()
-                                        Spacer()
-                                        HStack {
-                                            Spacer()
-                                            Image(systemName: "ellipsis")
-                                            Spacer()
-                                        }
-                                        Spacer()
-                                        Spacer()
-                                    }
-                                }
-                                .buttonStyle(BackZStackButtonStyle())
-                                .cornerRadius(6)
-                                .shadow(radius: 2)
-                                .padding(.bottom)
+                                LoadMoreBar()
                             }
                             
                             if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
@@ -115,24 +97,7 @@ struct SearchView: View {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
-                                Button(action: {
-                                    
-                                }) {
-                                    VStack {
-                                        Spacer()
-                                        Spacer()
-                                        HStack {
-                                            Spacer()
-                                            Image(systemName: "ellipsis")
-                                            Spacer()
-                                        }
-                                        Spacer()
-                                        Spacer()
-                                    }
-                                }
-                                .buttonStyle(BackZStackButtonStyle())
-                                .cornerRadius(6)
-                                .shadow(radius: 2)
+                                LoadMoreBar()
                             }
                             
                             if !model.loadingContent && !model.retreivedAllContent && !(model.contentIsEmpty) {
@@ -201,6 +166,30 @@ struct SearchView: View {
             .frame(height: 40)
             .cornerRadius(13)
             .padding(.top)
+        }
+    }
+    
+    struct LoadMoreBar: View {
+        
+        var body: some View {
+            Button(action: {
+                
+            }) {
+                VStack {
+                    Spacer()
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Image(systemName: "ellipsis")
+                        Spacer()
+                    }
+                    Spacer()
+                    Spacer()
+                }
+            }
+            .buttonStyle(BackZStackButtonStyle())
+            .cornerRadius(6)
+            .shadow(radius: 2)
         }
     }
 }
