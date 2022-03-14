@@ -108,7 +108,7 @@ struct SearchView: View {
                                 }
                             }
                             
-                            if !model.loadingContent && !model.retreivedAllContent && !(model.contentIsEmpty) {
+                            if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
                                 Divider()
                             }
                         }
