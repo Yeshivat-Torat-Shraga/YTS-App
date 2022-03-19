@@ -77,6 +77,7 @@ struct PlayBar: View {
                         })
                     } else {
                         ProgressView().progressViewStyle(YTSProgressViewStyle())
+                            .padding()
                         //                            .frame(width: 25, height: 25)
                     }
                 }
