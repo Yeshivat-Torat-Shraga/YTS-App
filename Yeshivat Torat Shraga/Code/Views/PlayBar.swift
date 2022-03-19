@@ -46,12 +46,13 @@ struct PlayBar: View {
                 .font(.system(size: 14))
                 Spacer()
                 HStack {
-                    if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                    if RootModel.audioPlayer.player.timeControlStatus != .playing {
                         Button(action: {
                             RootModel.audioPlayer.pause()
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "pause.fill")
+                                .padding()
                             //                                .resizable()
                             //                                .frame(width: 20, height: 25)
                         })
