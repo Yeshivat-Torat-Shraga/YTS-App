@@ -9,67 +9,33 @@ import SwiftUI
 
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
-    @ObservedObject var f = Favorites.shared
+    @ObservedObject var favorites = Favorites.shared
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack {
-                    
-                    // MARK: Audio Favorites
-                    HStack {
-                        Text("Shiurim")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .padding(.top)
-                    if let sortables = model.sortables {
-                        if sortables.count > 0 {
-                            ScrollView(showsIndicators: false) {
-                                    ForEach(sortables, id: \.self) { sortable in
-                                        SortableFavoritesCardView(content: sortable)
-                                            .shadow(radius: UI.shadowRadius)
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.vertical, UI.shadowRadius)
+                    if let favorites = model.sortables {
+                        ForEach(Array(favorites.keys.sorted { lhs, rhs in
+                            lhs.name < rhs.name
+                        }), id: \.self) { rabbi in
+                            HStack {
+                                Text(rabbi.name)
+                                    .bold()
+                                    .font(.title3)
+                                Spacer()
                             }
-                        } else {
-                            Text("It seems like you don't have any saved content right now.")
+                            if let contentArray = favorites[rabbi] {
+                                ForEach(contentArray, id: \.self) { sortable in
+                                    SortableFavoritesCardView(content: sortable)
+                                        .shadow(radius: UI.shadowRadius)
+                                }
+                                .padding(.horizontal)
+                                .padding(.vertical, UI.shadowRadius)
+                            }
                         }
                     } else {
                         VStack {
                             Text("We're loading your favorites, hang tight....")
-                        }
-                        .padding()
-                    }
-                    
-                    // MARK: Rebbeim Favorites
-                    HStack {
-                        Text("Rebbeim")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    if let rebbeim = model.rebbeim {
-                        if rebbeim.count > 0 {
-                            ScrollView(showsIndicators: false) {
-                                HStack {
-                                    ForEach(rebbeim, id: \.self) { rebbi in
-                                        RabbiTileView(rabbi: rebbi, size: .medium)
-                                            .shadow(radius: UI.shadowRadius)
-                                            .padding(.vertical)
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-                        } else {
-                            Text("It seems like you don't have any saved rebbeim right now.")
-                        }
-                    } else {
-                        VStack {
-                            Text("We're loading your favorites, hang tight...")
                         }
                         .padding()
                     }
@@ -86,7 +52,7 @@ struct FavoritesView: View {
 
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-            FavoritesView()
-                .foregroundColor(Color("ShragaBlue"))
+        FavoritesView()
+            .foregroundColor(.shragaBlue)
     }
 }
