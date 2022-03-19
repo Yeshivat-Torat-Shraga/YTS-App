@@ -122,7 +122,7 @@ struct OnboardingView: View {
                         .lineLimit(1)
                         .padding()
                     
-                    Text("Enable push notifications to stay up to date.")
+                    Text("Enable push notifications to stay up to date. This can be changed later in settings.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
