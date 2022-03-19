@@ -107,6 +107,16 @@ struct iOS14BorderedProminentButtonStyle: ButtonStyle {
     }
 }
 
+struct iOS14BorderedProminentMenuStyle: MenuStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Menu(configuration)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(Color(hex: 0x526B98))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+}
+
 
 struct Gif: UIViewRepresentable {
     var name: String

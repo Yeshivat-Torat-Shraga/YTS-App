@@ -65,7 +65,9 @@ struct AudioCardView: View {
                                 }
                             }
                         }
+                        
                         Spacer()
+                        
                         HStack {
                             Text(timeFormattedMini(totalSeconds: model.audio.duration ?? 0))
                                 .foregroundColor(Color("Gray"))

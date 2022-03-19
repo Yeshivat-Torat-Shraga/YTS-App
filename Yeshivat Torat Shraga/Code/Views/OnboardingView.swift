@@ -25,14 +25,14 @@ struct OnboardingView: View {
                         .preferredColorScheme(.dark)
                         .padding()
                     
-                    Text("Welcome to the YTS App")
+                    Text("Welcome to the YTS App.")
                         .font(.title)
+                        .bold()
+                        .multilineTextAlignment(.center)
+                        .lineLimit(1)
                         .foregroundColor(.shragaGold)
                         .padding()
-                    
-                    Text(" ")
-                        .foregroundColor(subtitleColor)
-                        .padding()
+                        .padding(.horizontal)
                 }
                 // MARK: Favorites
                 VStack {
@@ -45,12 +45,20 @@ struct OnboardingView: View {
                     
                     Text("Favorite Shiurim")
                         .font(.title)
+                        .bold()
+                        .multilineTextAlignment(.center)
+                        .lineLimit(1)
                         .padding()
                     
                     Text("Mark your favorite shiurim for quick access later on.")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
                         .foregroundColor(subtitleColor)
                         .padding()
+                        .padding(.horizontal)
                 }
+                
                 // MARK: Images
                 VStack {
                     Image(systemName: "photo")
@@ -62,11 +70,18 @@ struct OnboardingView: View {
                     
                     Text("Featured Photos")
                         .font(.title)
+                        .bold()
+                        .multilineTextAlignment(.center)
+                        .lineLimit(1)
                         .padding()
                     
                     Text("Check out the top photo picks from recent Shraga events and Tiyulim.")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
                         .foregroundColor(subtitleColor)
                         .padding()
+                        .padding(.horizontal)
                 }
                 // MARK: News
                 VStack {
@@ -79,14 +94,21 @@ struct OnboardingView: View {
                     
                     Text("News Updates")
                         .font(.title)
+                        .bold()
+                        .lineLimit(1)
                         .padding()
                     
                     Text("Stay up to date on the latest news at Yeshivat Torat Shraga.")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
                         .foregroundColor(subtitleColor)
                         .padding()
+                        .padding(.horizontal)
                 }
                 // MARK: Push Notifications
-                VStack {
+                ZStack {
+                    VStack {
                     Image(systemName: "bell")
                         .resizable()
                         .foregroundColor(.shragaGold)
@@ -96,12 +118,23 @@ struct OnboardingView: View {
                     
                     Text("Push Notifications")
                         .font(.title)
+                        .bold()
+                        .lineLimit(1)
                         .padding()
                     
-                    Text("Enable push notifications to stay up to date.")
+                    Text("Enable push notifications to stay up to date. This can be changed later in settings.")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
                         .foregroundColor(subtitleColor)
                         .padding()
+                        .padding(.horizontal)
+                    }
                     
+                    VStack {
+                        Spacer()
+                        Spacer()
+                        Spacer()
                     Button(action: {
                         // Show Notification prompt here
                         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -124,6 +157,8 @@ struct OnboardingView: View {
                             .cornerRadius(UI.cornerRadius)
                             .shadow(radius: UI.shadowRadius)
                     )
+                        Spacer()
+                    }
                 }
                 
                 // MARK: Dismiss
@@ -135,10 +170,6 @@ struct OnboardingView: View {
                         .frame(width: 150, height: 150)
                         .padding()
                     
-                    Text("")
-                        .font(.title)
-                        .padding()
-                    
 //                    Text("Enable push notifications to stay up to date.")
 //                        .foregroundColor(subtitleColor)
 //                        .padding()
@@ -147,7 +178,7 @@ struct OnboardingView: View {
                     Button(action: {
                         dismiss?()
                     }) {
-                        Text("Let's get started")
+                        Text("Let's get started.")
                             .font(.title3)
                             .foregroundColor(.white)
                             .padding(.horizontal, 40)

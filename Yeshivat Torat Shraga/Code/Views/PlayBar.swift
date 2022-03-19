@@ -46,7 +46,15 @@ struct PlayBar: View {
                 .font(.system(size: 14))
                 Spacer()
                 HStack {
-                    if RootModel.audioPlayer.player.timeControlStatus != .playing {
+                    Button(action: {
+                        RootModel.audioPlayer.player.scrub(seconds: -10)
+                    }, label: {
+                        Image(systemName: "gobackward.10")
+                            .padding()
+                        //                            .resizable()
+                        //                            .frame(width: 45, height: 25)
+                    })
+                    if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
                             RootModel.audioPlayer.pause()
                             self.model.objectWillChange.send()
@@ -70,12 +78,6 @@ struct PlayBar: View {
                         ProgressView().progressViewStyle(YTSProgressViewStyle())
                         //                            .frame(width: 25, height: 25)
                     }
-                    Button(action: {}, label: {
-                        Image(systemName: "forward.fill")
-                            .padding()
-                        //                            .resizable()
-                        //                            .frame(width: 45, height: 25)
-                    })
                 }
                 .foregroundColor(.playerBarFG)
             }

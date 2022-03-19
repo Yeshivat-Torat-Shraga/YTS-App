@@ -12,9 +12,7 @@ import MediaPlayer
 struct AudioPlayer: View {
     @ObservedObject var player = Player()
     var audio: Audio?
-    let speeds: [Float] = [0.75, 1.00, 1.25,
-                           1.50, 1.75, 2.00]
-    @State private var selectedSpeedIndex = 1 // 2nd out of 7 (1.00)
+    
     // MARK: This needs to refresh every time from... somewhere?
 //    @State private var isFavorited: Bool = false
     @State private var showFavoritesAlert = false
@@ -208,6 +206,17 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 Group {
+//                    Spacer()
+                    
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: -10)
+                    }, label: {
+                        Image(systemName: "gobackward.10")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 20)
+                    
                     Spacer()
                     
                     Button(action: {
@@ -218,18 +227,18 @@ struct AudioPlayer: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     })
-                        .frame(width: 20)
+                        .frame(width: 25)
                     
-                    Spacer()
+//                    Spacer()
                     
-                    Button(action: {
-                        Haptics.shared.play(.soft)
-                    }, label: {
-                        Image(systemName: "backward.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    })
-                        .frame(width: 40)
+//                    Button(action: {
+//                        Haptics.shared.play(.soft)
+//                    }, label: {
+//                        Image(systemName: "backward.fill")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                    })
+//                        .frame(width: 40)
                 }
                 
                 Group {
@@ -263,15 +272,16 @@ struct AudioPlayer: View {
                 }
                 
                 Group {
-                    Button(action: {
-                        Haptics.shared.play(.light)
-                    }, label: {
-                        Image(systemName: "forward.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }).frame(width: 40)
+//                    Button(action: {
+//                        Haptics.shared.play(.light)
+//                    }, label: {
+//                        Image(systemName: "forward.fill")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                    })
+//                        .frame(width: 40)
                     
-                    Spacer()
+//                    Spacer()
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
@@ -280,9 +290,20 @@ struct AudioPlayer: View {
                         Image(systemName: "goforward.30")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                    }).frame(width: 20)
+                    }).frame(width: 25)
                     
                     Spacer()
+                    
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: 10)
+                    }, label: {
+                        Image(systemName: "goforward.10")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 20)
+                    
+//                    Spacer()
                 }
                 Spacer()
             }.frame(height: 50)
@@ -316,15 +337,44 @@ struct AudioPlayer: View {
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 }
                 
-                Button(action: {
-                    Haptics.shared.play(.rigid)
-                    selectedSpeedIndex = (selectedSpeedIndex + 1) % speeds.count
-                    player.setRate(speeds[selectedSpeedIndex])
-                }, label: {
-                    Text("x\(speeds[selectedSpeedIndex].trim())")
+                Menu {
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        self.player.setRate(0.5)
+                    }) {
+                        Label("0.5x", systemImage: (self.player.avPlayer?.rate == 0.5) ? "checkmark" : "tortoise")
+                    }
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        self.player.setRate(0.75)
+                    }) {
+                        Label("0.75x", systemImage: (self.player.avPlayer?.rate == 0.75) ? "checkmark" : "")
+                    }
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        self.player.setRate(1)
+                    }) {
+                        Label("1x", systemImage: (self.player.avPlayer?.rate == 1) ? "checkmark" : "figure.walk")
+                    }
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        self.player.setRate(1.5)
+                    }) {
+                        Label("1.5x", systemImage: (self.player.avPlayer?.rate == 1.5) ? "checkmark" : "")
+                    }
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        self.player.setRate(2)
+                    }) {
+                        Label("2x", systemImage: (self.player.avPlayer?.rate == 2) ? "checkmark" : "hare")
+                    }
+                } label: {
+                    Image(systemName: "speedometer")
+                        .resizable()
                         .foregroundColor(.gray)
-                        .frame(width: 45, height: 20)
-                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                        .frame(width: 20, height: 20)
+                }
+                .menuStyle(iOS14BorderedProminentMenuStyle())
                 
                 Button(action: {
                     
