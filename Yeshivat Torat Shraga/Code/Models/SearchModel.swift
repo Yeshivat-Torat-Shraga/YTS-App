@@ -45,6 +45,10 @@ class SearchModel: ObservableObject, ErrorShower {
     }
     
     private func search(_ query: String, contentLimit: Int = 5, rebbeimLimit: Int = 5) {
+        if (query == "") {
+            print("Query is empty, not searching.")
+            return
+        }
         self.searchQuery = query
         
         loadingContent = true
