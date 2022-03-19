@@ -375,8 +375,6 @@ struct AudioPlayer: View {
                         .frame(width: 20, height: 20)
                 }
                 .menuStyle(iOS14BorderedProminentMenuStyle())
-//                .frame(width: 45, height: 45)
-//                .offset(y: 1)
                 
                 Button(action: {
                     
