@@ -218,18 +218,18 @@ struct AudioPlayer: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     })
-                        .frame(width: 20)
+                        .frame(width: 30)
                     
                     Spacer()
                     
-                    Button(action: {
-                        Haptics.shared.play(.soft)
-                    }, label: {
-                        Image(systemName: "backward.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    })
-                        .frame(width: 40)
+//                    Button(action: {
+//                        Haptics.shared.play(.soft)
+//                    }, label: {
+//                        Image(systemName: "backward.fill")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                    })
+//                        .frame(width: 40)
                 }
                 
                 Group {
@@ -263,13 +263,14 @@ struct AudioPlayer: View {
                 }
                 
                 Group {
-                    Button(action: {
-                        Haptics.shared.play(.light)
-                    }, label: {
-                        Image(systemName: "forward.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }).frame(width: 40)
+//                    Button(action: {
+//                        Haptics.shared.play(.light)
+//                    }, label: {
+//                        Image(systemName: "forward.fill")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fit)
+//                    })
+//                        .frame(width: 40)
                     
                     Spacer()
                     
@@ -280,7 +281,7 @@ struct AudioPlayer: View {
                         Image(systemName: "goforward.30")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                    }).frame(width: 20)
+                    }).frame(width: 30)
                     
                     Spacer()
                 }
