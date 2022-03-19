@@ -45,6 +45,10 @@ class SearchModel: ObservableObject, ErrorShower {
     }
     
     private func search(_ query: String, contentLimit: Int = 5, rebbeimLimit: Int = 5) {
+        if (query == "") {
+            print("Query is empty, not searching.")
+            return
+        }
         self.searchQuery = query
         
         loadingContent = true
@@ -102,16 +106,16 @@ class SearchModel: ObservableObject, ErrorShower {
             }
             
             if let metadata = results?.metadata {
-                if let newLastLoadedDocumentID = metadata.content.newLastLoadedDocumentID {
+                if let newLastLoadedDocumentID = metadata.content?.newLastLoadedDocumentID {
                     self.lastLoadedContentID = newLastLoadedDocumentID
                 }
                 
-                if let newLastLoadedDocumentID = metadata.rebbeim.newLastLoadedDocumentID {
+                if let newLastLoadedDocumentID = metadata.rebbeim?.newLastLoadedDocumentID {
                     self.lastLoadedRabbiID = newLastLoadedDocumentID
                 }
                 
-                self.retreivedAllContent = metadata.content.finalCall
-                self.retreivedAllRebbeim = metadata.rebbeim.finalCall
+                self.retreivedAllContent = metadata.content?.finalCall ?? self.retreivedAllContent
+                self.retreivedAllRebbeim = metadata.rebbeim?.finalCall ?? self.retreivedAllRebbeim
             }
             
             withAnimation {

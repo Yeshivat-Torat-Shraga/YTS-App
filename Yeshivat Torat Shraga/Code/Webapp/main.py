@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 from fileinput import filename
 from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
-import cv2
+import ffmpeg
+import os
 
 # import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
@@ -13,9 +14,9 @@ initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 app = Flask(__name__)
 # basic_auth = BasicAuth(app)
 
-# app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
-# app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
-# app.config["BASIC_AUTH_FORCE"] = True
+app.config["BASIC_AUTH_USERNAME"] = ""  # settings.username
+app.config["BASIC_AUTH_PASSWORD"] = "password"  # settings.password
+app.config["BASIC_AUTH_FORCE"] = True
 
 
 @app.route("/")
@@ -238,16 +239,21 @@ def shiurim_upload():
             + "."
             + file.filename.split(".")[-1]
         )
-        file.save(file.filename)
 
         attributionID = rabbi[0]
         author = rabbi[1]
         description = request.form.get("description", "")
 
-        # load FileStorage video in cv2
-        cap = cv2.VideoCapture(file.filename)
-        # Get video length
-        length = cap.get(cv2.CAP_PROP_POS_MSEC)
+        # create tmp folder if it doesn't exist
+        if not os.path.exists("tmp"):
+            os.makedirs("tmp")
+        file.save('tmp/' + file.filename)
+        duration = ffmpeg.probe('tmp/' + file.filename)['format']['duration']
+        duration = int(float(duration))
+        # delete everything in tmp folder
+        for tmpfile in os.listdir("tmp"):
+            os.remove("tmp/" + tmpfile)
+        os.rmdir("tmp")
 
         # Title:
         title = request.form.get("title", "")
@@ -285,7 +291,7 @@ def shiurim_upload():
             "author": author,
             "date": date,
             "description": description,
-            # "duration": 0,
+            "duration": duration,
             "search_index": search_index,
             "source_path": source_path,
             "tags": selected_tags,
@@ -296,9 +302,15 @@ def shiurim_upload():
         content_collection.add(new_content_document)
         bucket = storage.bucket()
         blob = bucket.blob(f"content/{file.filename}")
-        # blob.content_type = file.content_type
-        # blob.upload_from_file(file)
-        return "Done"
+        blob.upload_from_string(
+            file.read(),
+            content_type=file.content_type
+        )
+        flash("Shiur added!")
+        collection = [
+            (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
+        ]
+        return render_template("shiurim.html", data=collection)
 
 
 @app.route("/news", methods=["GET"])

@@ -18,3 +18,4 @@ build/
 *.mobileprovision
 *.cer
 fastlane/report.xml
+Yeshivat Torat Shraga/Code/functions/.gcloudignore
