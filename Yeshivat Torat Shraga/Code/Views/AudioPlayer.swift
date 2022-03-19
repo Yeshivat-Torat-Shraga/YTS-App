@@ -218,7 +218,7 @@ struct AudioPlayer: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                     })
-                        .frame(width: 30)
+                        .frame(width: 25)
                     
                     Spacer()
                     
@@ -281,7 +281,7 @@ struct AudioPlayer: View {
                         Image(systemName: "goforward.30")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                    }).frame(width: 30)
+                    }).frame(width: 25)
                     
                     Spacer()
                 }
