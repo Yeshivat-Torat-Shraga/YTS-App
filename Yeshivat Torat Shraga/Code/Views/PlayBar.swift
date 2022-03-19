@@ -50,7 +50,8 @@ struct PlayBar: View {
                         RootModel.audioPlayer.player.scrub(seconds: -10)
                     }, label: {
                         Image(systemName: "gobackward.10")
-                            .padding()
+                            .padding(.vertical)
+                            .padding(.horizontal, 7)
                         //                            .resizable()
                         //                            .frame(width: 45, height: 25)
                     })
@@ -79,6 +80,7 @@ struct PlayBar: View {
                         //                            .frame(width: 25, height: 25)
                     }
                 }
+                .padding(.trailing)
                 .foregroundColor(.playerBarFG)
             }
             .frame(height: UI.playerBarHeight)
@@ -127,7 +129,5 @@ struct PlayBar_Previews: PreviewProvider {
                     Label("Settings", systemImage: "gearshape")
                 }.tag(3)
         }
-                .preferredColorScheme(.dark)
-        //            .previewLayout(.fixed(width: 390, height: 80))
     }
 }
