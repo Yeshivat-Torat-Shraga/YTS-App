@@ -1,30 +1,34 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% for shuir in data %}
-<a href="{{ url_for('shiurimDetail', ID=shuir[1]) }}"><b>ID: {{ shuir[1] }}<br></b></a>
-
-Attribution ID: {{ shuir[0].attributionID }}<br>
-Author: {{ shuir[0].author }}<br>
-Date: {{ shuir[0].date }}<br>
-Description: {{ shuir[0].description }}<br>
-Search Indices:
-<ul>
-    {% for index in shuir[0].search_index %}
-    <li>{{ index }}</li>
-    {% endfor %}
-</ul>
-<br>
-Tags:
-<ul>
-    {% for tag in shuir[0].tags %}
-    <li>{{ tag }}</li>
-    {% endfor %}
-</ul>
-<br>
-Title: {{ shuir[0].title }}<br>
-<hr>
-{% endfor %}
+<table class="table table-dark table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Edit link</th>
+            <th scope="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Date</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for shuir in data %}
+        <tr>
+            <th scope="row"><a href="{{ url_for('shiurimDetail', ID=shuir[1]) }}"><b>Edit<br></b></a></td>
+            <td>{{ shuir[0].title }}</td>
+            <td>{{ shuir[0].author }}</td>
+            <td>{{ shuir[0].date }}</td>
+            <td>{{ shuir[0].description }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th scope="row">
+                <a href="{{ url_for('shiurim_upload') }}"><b>New<br></b></a>
+            </th>
+            <td colspan="4"></td>
+        </tr>
+    </tbody>
+</table>
 
 
 

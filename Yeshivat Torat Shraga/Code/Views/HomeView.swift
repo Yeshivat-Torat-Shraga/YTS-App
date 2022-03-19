@@ -12,9 +12,9 @@ struct HomeView: View {
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
-    init(hideLoadingScreenClosure: @escaping (() -> Void),
+    init(hideLoadingScreen: @escaping (() -> Void),
          showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
-        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure,
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreen,
                                showErrorOnRoot: showErrorOnRoot)
     }
     
@@ -105,6 +105,34 @@ struct HomeView: View {
                         Divider().padding(.horizontal)
                     }
                     
+                    // MARK: - CATEGORIES
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Categories")
+                                .font(.title3)
+                                .bold()
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            LazyHStack {
+                                ForEach(tags, id: \.name) { tag in
+                                    TagTileView(tag)
+                                        .padding(.vertical)
+                                        .simultaneousGesture(
+                                            TapGesture()
+                                                .onEnded {
+                                                    Haptics.shared.play(UI.Haptics.navLink)
+                                                })
+                                    
+                                }
+                            }.padding(.horizontal)
+                        }
+                        Divider().padding(.horizontal)
+                    }
+
+                    
                     // MARK: - SLIDESHOW
                     VStack(spacing: 0) {
                         HStack {
@@ -135,34 +163,8 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider().padding(.horizontal)
                     }
                     
-                    // MARK: - CATEGORIES
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("Categories")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack {
-                                ForEach(tags, id: \.name) { tag in
-                                    TagTileView(tag)
-                                        .padding(.vertical)
-                                        .simultaneousGesture(
-                                            TapGesture()
-                                                .onEnded {
-                                                    Haptics.shared.play(UI.Haptics.navLink)
-                                                })
-                                    
-                                }
-                            }.padding(.horizontal)
-                        }
-                    }
                 }
                 .padding(.bottom, UI.playerBarHeight)
                 .navigationTitle("Home")
@@ -203,8 +205,10 @@ struct HomeView: View {
             })
         }
         .sheet(isPresented: $presentingSearchView) {
-            SearchView()
-                .background(BackgroundClearView())
+            NavigationView {
+                SearchView()
+                    .background(BackgroundClearView())
+            }
         }
     }
 }

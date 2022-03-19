@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+from fileinput import filename
 from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
-import cv2
+import ffmpeg
+import os
 
 # import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
@@ -12,14 +14,14 @@ initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 app = Flask(__name__)
 # basic_auth = BasicAuth(app)
 
-# app.config["BASIC_AUTH_USERNAME"] = "username"  # settings.username
-# app.config["BASIC_AUTH_PASSWORD"] = ""  # settings.password
-# app.config["BASIC_AUTH_FORCE"] = True
+app.config["BASIC_AUTH_USERNAME"] = ""  # settings.username
+app.config["BASIC_AUTH_PASSWORD"] = "password"  # settings.password
+app.config["BASIC_AUTH_FORCE"] = True
 
 
 @app.route("/")
 def index():
-    return "Hello, World!"
+    return render_template("home.html")
 
 
 @app.route("/notifications/alert", methods=["POST"])
@@ -68,18 +70,33 @@ def notifications():
 @app.route("/rabbis", methods=["GET"])
 def rabbis():
     db = firestore.client()
-    collection = [
-        (rabbi.to_dict(), rabbi.id) for rabbi in db.collection("rebbeim").get()
-    ]
+    bucket = storage.bucket()
+    collection = []
+    for rabbi in db.collection("rebbeim").get():
+        id = rabbi.id
+        rabbi = rabbi.to_dict()
+        rabbi["id"] = id
+        blob = bucket.get_blob(
+            f"profile-pictures/{rabbi['profile_picture_filename']}")
+        url = blob.generate_signed_url(timedelta(seconds=300))
+        rabbi["imgURL"] = url
+        collection.append(rabbi)
+
     return render_template("rabbis.html", data=collection)
 
 
 @app.route("/rabbis/<ID>", methods=["GET", "POST"])
 def rabbiDetail(ID):
     db = firestore.client()
+    bucket = storage.bucket()
     if request.method == "GET":
         rabbi = db.collection("rebbeim").document(ID).get().to_dict()
         rabbi["id"] = ID
+        blob = bucket.get_blob(
+            f"profile-pictures/{rabbi['profile_picture_filename']}")
+        url = blob.generate_signed_url(timedelta(seconds=300))
+        rabbi["imgURL"] = url
+
         return render_template("rabbisdetail.html", rabbi=rabbi, new=False)
     else:
         file = request.files.get("file")
@@ -88,7 +105,6 @@ def rabbiDetail(ID):
             "name": name
         }
         if file:
-            bucket = storage.bucket()
             blob = bucket.blob(f"profile-pictures/{file.filename}")
             blob.upload_from_string(
                 request.files["file"].read(),
@@ -223,16 +239,21 @@ def shiurim_upload():
             + "."
             + file.filename.split(".")[-1]
         )
-        file.save(file.filename)
 
         attributionID = rabbi[0]
         author = rabbi[1]
         description = request.form.get("description", "")
 
-        # load FileStorage video in cv2
-        cap = cv2.VideoCapture(file.filename)
-        # Get video length
-        length = cap.get(cv2.CAP_PROP_POS_MSEC)
+        # create tmp folder if it doesn't exist
+        if not os.path.exists("tmp"):
+            os.makedirs("tmp")
+        file.save('tmp/' + file.filename)
+        duration = ffmpeg.probe('tmp/' + file.filename)['format']['duration']
+        duration = int(float(duration))
+        # delete everything in tmp folder
+        for tmpfile in os.listdir("tmp"):
+            os.remove("tmp/" + tmpfile)
+        os.rmdir("tmp")
 
         # Title:
         title = request.form.get("title", "")
@@ -270,7 +291,7 @@ def shiurim_upload():
             "author": author,
             "date": date,
             "description": description,
-            # "duration": 0,
+            "duration": duration,
             "search_index": search_index,
             "source_path": source_path,
             "tags": selected_tags,
@@ -281,9 +302,15 @@ def shiurim_upload():
         content_collection.add(new_content_document)
         bucket = storage.bucket()
         blob = bucket.blob(f"content/{file.filename}")
-        # blob.content_type = file.content_type
-        # blob.upload_from_file(file)
-        return "Done"
+        blob.upload_from_string(
+            file.read(),
+            content_type=file.content_type
+        )
+        flash("Shiur added!")
+        collection = [
+            (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
+        ]
+        return render_template("shiurim.html", data=collection)
 
 
 @app.route("/news", methods=["GET"])
@@ -346,6 +373,59 @@ def news_create():
         }
         db.collection('news').add(new_document)
         return redirect(url_for('news'))
+
+
+@app.route('/slideshow', methods=['GET'])
+def slideshow():
+    bucket = storage.bucket()
+    db = firestore.client()
+    if request.method == 'GET':
+        collection = [
+            (slide.to_dict(), slide.id) for slide in db.collection("slideshowImages").get()
+        ]
+        for slide in collection:
+            blob = bucket.get_blob(f"slideshow/{slide[0]['image_name']}")
+            url = blob.generate_signed_url(timedelta(seconds=300))
+            slide[0]["url"] = url
+        return render_template("slideshow.html", images=collection)
+
+
+@app.route('/slideshow/delete/<ID>', methods=['POST'])
+def slideshow_delete(ID):
+    db = firestore.client()
+    slide = db.collection("slideshowImages").document(ID)
+    slide.delete()
+    return redirect(url_for('slideshow'))
+
+
+@app.route('/slideshow/create', methods=['GET', 'POST'])
+def slideshow_upload():
+    if request.method == 'GET':
+        return render_template('slideshowdetail.html')
+    else:
+        db = firestore.client()
+        bucket = storage.bucket()
+        files = request.files.getlist("file")
+
+        for file in files:
+            if file.filename == files[0].filename:
+                title = request.form.get("title")
+            else:
+                title = None
+            image_url = file.filename
+            new_document = {
+                'title': title,
+                'image_name': image_url,
+                'uploaded': datetime.now()
+            }
+            db.collection('slideshowImages').add(new_document)
+            blob = bucket.blob(f"slideshow/{file.filename}")
+            blob.upload_from_string(
+                file.read(),
+                content_type=file.content_type
+            )
+
+        return redirect(url_for('slideshow'))
 
 
 if __name__ == "__main__":

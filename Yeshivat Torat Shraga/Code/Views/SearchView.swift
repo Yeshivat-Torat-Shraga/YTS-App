@@ -18,6 +18,7 @@ struct SearchView: View {
         VStack {
             Group {
                 SearchBar(search: model.newSearch)
+                    .disableAutocorrection(true)
                 
                 Picker("Result Type", selection: $selectedResultTag) {
                     Text("All")
@@ -35,6 +36,7 @@ struct SearchView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding([.bottom])
             }
+            .padding(.horizontal)
             
             ScrollView(showsIndicators: false) {
                 LazyVStack {
@@ -45,14 +47,8 @@ struct SearchView: View {
                                     if let detailedRabbi = rabbi as? DetailedRabbi {
                                         NavigationLink(destination: DisplayRabbiView(rabbi: detailedRabbi)) {
                                             RabbiCardView(rabbi: rabbi)
-                                        }
-                                    } else {
-                                        Button(action: {
-                                            alertTitle = "Oops!"
-                                            alertBody = "Sorry, but \(rabbi.name)'s entry is missing the necessary information to show you their page. Please try again later."
-                                            showAlert = true
-                                        }){
-                                            RabbiCardView(rabbi: rabbi)
+                                                .padding(.horizontal)
+                                                .padding(.top, UI.shadowRadius)
                                         }
                                     }
                                 }
@@ -63,11 +59,12 @@ struct SearchView: View {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingRebbeim && !model.loadingContent && model.calledInitialLoad && !model.retreivedAllRebbeim {
-                                LoadMoreBar() {
+                                LoadMoreBar(action: {
                                     withAnimation {
                                         model.searchForMoreRebbeim()
                                     }
-                                }
+                                })
+                                    .padding(.horizontal)
                             }
                             
                             if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
@@ -95,17 +92,18 @@ struct SearchView: View {
                                             }
                                     }
                                 }
+                                .padding(.horizontal)
                             }
                             
                             if model.loadingContent && !model.loadingRebbeim {
                                 ProgressView()
                                     .progressViewStyle(YTSProgressViewStyle())
                             } else if !model.loadingContent && !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllContent {
-                                LoadMoreBar() {
+                                LoadMoreBar(action: {
                                     withAnimation {
                                         model.searchForMoreContent()
                                     }
-                                }
+                                }).padding(.horizontal)
                             }
                             
                             if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
@@ -133,7 +131,6 @@ struct SearchView: View {
             }
         }
         .animation(.default, value: selectedResultTag)
-        .padding(.horizontal)
         .background(
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
         )
@@ -179,6 +176,7 @@ struct SearchView: View {
     }
     
     struct LoadMoreBar: View {
+        @Environment(\.colorScheme) var colorScheme: ColorScheme
         var action: () -> Void
         
         var body: some View {
@@ -191,13 +189,16 @@ struct SearchView: View {
                     HStack {
                         Spacer()
                         Image(systemName: "ellipsis")
+                            .foregroundColor(colorScheme == .light
+                                             ? .shragaBlue
+                                             : .shragaGold)
                         Spacer()
                     }
                     Spacer()
                     Spacer()
                 }
             }
-            .buttonStyle(BackZStackButtonStyle())
+            .buttonStyle(BackZStackButtonStyle(backgroundColor: .CardViewBG))
             .cornerRadius(6)
             .shadow(radius: 2)
         }
@@ -222,7 +223,9 @@ struct SearchView_Previews: PreviewProvider {
                 Spacer()
             }
             .sheet(isPresented: $presentingSearchView) {
-                SearchView()
+                NavigationView {
+                    SearchView()
+                }
             }
         }
     }

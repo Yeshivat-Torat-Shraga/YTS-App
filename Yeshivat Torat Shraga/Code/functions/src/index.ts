@@ -430,9 +430,9 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 		includeAllAuthorData: (data.includeAllAuthorData as boolean) || false,
 		search: data.search as
 			| {
-				field: string;
-				value: string;
-			}
+					field: string;
+					value: string;
+			  }
 			| undefined,
 	};
 
@@ -592,16 +592,11 @@ exports.generateHLSStream = storage
 
 		// Upload the HLS stream to the bucket asynchronously
 		await Promise.all(
-			filenames.map((filename) => {
-				const fp = path.join(outputDir, filename);
+			filenames.map((filePart) => {
+				const fp = path.join(outputDir, filePart);
 				log(`Uploading ${fp}...`);
 				return bucket.upload(fp, {
-<<<<<<< HEAD
-					destination: `HLSStreams/${object.contentType!.split('/')[0]
-						}/${filename}/${filename}`,
-=======
-					destination: `HLSStreams/${object.contentType!.split('/')[0]}/${filename}/${filename}`,
->>>>>>> main
+					destination: `HLSStreams/${object.contentType!.split('/')[0]}/${filename}/${filePart}`,
 					metadata: {
 						'Cache-Control': 'public,max-age=3600',
 					},
@@ -618,6 +613,11 @@ exports.generateThumbnail = storage
 	.bucket()
 	.object()
 	.onFinalize(async (object) => {
+		// if it's a .ts file exit
+		if (object.name!.endsWith('.ts')) {
+			log(`File ${object.name} is part of a HLSS stream.`);
+			return;
+		}
 		// Step 1: Preliminary filetype check
 		// Exit if this is triggered on a file that is not a video.
 		if (!object.contentType!.startsWith('video/')) {
@@ -701,9 +701,9 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	if (!callData.searchQuery) {
 		return {
 			results: null,
-			errors: ["This function requires a search query."],
+			errors: ['This function requires a search query.'],
 			request: searchOptions,
-			metadata: null
+			metadata: null,
 		};
 	}
 	const searchQuery = callData.searchQuery.toLowerCase();
@@ -749,19 +749,8 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
-<<<<<<< HEAD
-			if (searchOptions[collectionName].startAfterDocumentID) {
-				const snapshot = await db
-					.collection(collectionName)
-					.doc(searchOptions[collectionName].startAfterDocumentID)
-					.get();
-			// Overwrite the query to start after the specified document.
-				query = query.startAfter(snapshot) as any;
-				log(`Starting after document '${snapshot}'`);
-=======
 			if (searchOptions[collectionName].startFromDocumentID) {
 				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
->>>>>>> main
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
@@ -778,7 +767,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	const rawContent = docs[0];
 	const rawRebbeim = docs[1];
 
-	let content: ((ContentDocument | null)[] | null);
+	let content: (ContentDocument | null)[] | null;
 
 	if (rawContent != null) {
 		content = await Promise.all(
@@ -819,7 +808,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		content = null;
 	}
 
-	let rebbeim: ((RebbeimDocument | null)[] | null);
+	let rebbeim: (RebbeimDocument | null)[] | null;
 	// check if rawRebbeim is null
 	if (rawRebbeim != null) {
 		rebbeim = await Promise.all(
@@ -853,8 +842,6 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		rebbeim = null;
 	}
 
-
-
 	return {
 		results: {
 			content: rawContent ? content : null,
@@ -864,11 +851,19 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		request: searchOptions,
 		metadata: {
 			content: {
-				lastLoadedDocID: rawContent ? (rawContent.length > 0 ? rawContent[rawContent.length - 1].id : null) : null,
+				lastLoadedDocID: rawContent
+					? rawContent.length > 0
+						? rawContent[rawContent.length - 1].id
+						: null
+					: null,
 				finalCall: rawContent ? searchOptions.content.limit > rawContent.length : null,
 			},
 			rebbeim: {
-				lastLoadedDocID: rawRebbeim ? (rawRebbeim.length > 0 ? rawRebbeim[rawRebbeim.length - 1].id : null) : null,
+				lastLoadedDocID: rawRebbeim
+					? rawRebbeim.length > 0
+						? rawRebbeim[rawRebbeim.length - 1].id
+						: null
+					: null,
 				finalCall: rawRebbeim ? searchOptions.rebbeim.limit > rawRebbeim.length : null,
 			},
 		},

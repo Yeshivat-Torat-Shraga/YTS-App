@@ -24,6 +24,25 @@ struct DisplayRabbiView: View {
                     Spacer()
                 }
                 .padding()
+                
+                VStack {
+                    if let favorites = model.favorites, favorites.count > 0 {
+                        ForEach(favorites, id: \.self) { favorite in
+                            if let video = favorite.video {
+                                VideoCardView(video: video)
+                                    .contextMenu {
+                                        Button("Play") {}
+                                    }
+                            } else if let audio = favorite.audio {
+                                AudioCardView(audio: audio)
+                                    .contextMenu {
+                                        Button("Play") {}
+                                    }
+                            }
+                        }
+                    }
+                }
+                
                 Divider()
             }
             Group {

@@ -31,43 +31,11 @@ struct RabbiCardView: View {
                         .clipped()
                 }
             }
-            
-//            HStack {
-//                Text(rabbi.name)
-//                Spacer()
-//            }
-            
-//            Spacer()
-            
-//            HStack {
-//                if #available(iOS 15.0, *) {
-//                    HStack {
-//                        Text(audio.date.formatted(date: .long, time: .omitted))
-//                            .foregroundColor(Color("Gray"))
-//                    }
-//                } else {
-//
-//                    if let month = Date.monthNameFor(audio.date.get(.month)) {
-//                        HStack {
-//                            let yearAsString = String(audio.date.get(.year))
-//                            Text("\(month) \(audio.date.get(.day)), \(yearAsString)")
-//                                .foregroundColor(Color("Gray"))
-//                        }
-//                    }
-//                }
-//
-//                Spacer()
-//
-//                if let duration = audio.duration {
-//                    Text(timeFormattedMini(totalSeconds: duration))
-//                }
-//            }.foregroundColor(Color("Gray"))
-//                .font(.caption)
         }
         .padding()
         .background(
             Rectangle()
-                .fill(Color.white)
+                .fill(Color.CardViewBG)
         )
 //        .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
@@ -84,5 +52,6 @@ struct RabbiCardView_Previews: PreviewProvider {
         RabbiCardView(rabbi: DetailedRabbi.samples[0])
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
+            .preferredColorScheme(.light)
     }
 }

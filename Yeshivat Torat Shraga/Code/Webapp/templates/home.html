@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+  <a class="btn btn-primary btn-lg btn-block" role="button" href="{{url_for('shiurim')}}">Shiurim</a>
+  <a class="btn btn-primary btn-lg btn-block" role="button" href="{{url_for('rabbis')}}">Rebbeim</a>
+  <a class="btn btn-primary btn-lg btn-block" role="button" href="{{url_for('news')}}">News</a>
+  <a class="btn btn-primary btn-lg btn-block" role="button" href="{{url_for('slideshow')}}">Slideshow</a>
+  <a class="btn btn-primary btn-lg btn-block" role="button" href="{{url_for('notifications')}}">Notifications and
+    Alerts</a>
+
+</div>
+
+
+{% endblock content %}

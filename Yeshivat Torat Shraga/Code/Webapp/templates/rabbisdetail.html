@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<form action={% if rabbi is none %} "{{ url_for('rabbiCreate') }}"
-	{% else %} "{{ url_for('rabbiDetail', ID=rabbi.id) }}" {% endif %} method="post" enctype="multipart/form-data">
+<form action="{% if rabbi is none %} {{ url_for('rabbiCreate') }}
+	{% else %} {{ url_for('rabbiDetail', ID=rabbi.id) }} {% endif %}" method="post" enctype="multipart/form-data">
+
 	<div class="form-group">
+		{% if rabbi is not none %}
+		<img src="{{rabbi.imgURL}}" width="100" height="100"
+			style="clip-path:inset(0 0 0 0 round 5%);margin-left:50%;margin-right:50%">
+		{% endif %}
+		<br>
 		<label for="title">Name</label>
 		<input type="text" name="name" id="name" class="form-control"
 			value="{% if rabbi is not none %}{{rabbi.name}}{% endif %}" required />

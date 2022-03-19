@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action="{{ url_for('slideshow_upload') }}" method="post" enctype="multipart/form-data">
+
+  <div class="form-group">
+    <label for="title">Image title<span>This title will only be applied on the <strong>first</strong> image
+        selected.</span></label>
+    <input type="text" name="title" id="title" class="form-control" />
+  </div>
+
+
+  <div class="form-group file-area">
+    <label for="file">
+      Slideshow Images<span>These photos will be displayed in the <em>Featured Photos</em> section of the app.</span>
+    </label>
+    <input type="file" id="file" name="file" accept="image/*" required multiple />
+    <div class="file-dummy">
+      <div class="success">Photos successfully uploaded</div>
+      <div class="default">Upload at least one photo</div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <button type="submit">Submit photos to Firebase</button>
+  </div>
+</form>
+
+
+{% endblock content %}
