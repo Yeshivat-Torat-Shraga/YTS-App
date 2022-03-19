@@ -12,6 +12,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     @Published var rabbi: DetailedRabbi
     @Published var content: Content?
     @Published var sortables: [SortableYTSContent]?
+    @Published var favorites: [SortableYTSContent]?
     
     @Published internal var loadingContent: Bool = false
     internal var reloadingContent: Bool = false
