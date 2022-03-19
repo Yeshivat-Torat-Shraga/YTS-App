@@ -66,6 +66,7 @@ struct ContentCardView<Content: YTSContent>: View {
                             
                         }
                         if let detailedRabbi = content.author as? DetailedRabbi {
+                        VStack {
                             DownloadableImage(object: detailedRabbi)
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 40, height: 40)
@@ -73,6 +74,8 @@ struct ContentCardView<Content: YTSContent>: View {
                                 .clipShape(Circle())
                                 .clipped()
                                 .shadow(radius: 2)
+                            Spacer()
+                        }
                         }
                     }
                     Spacer()
