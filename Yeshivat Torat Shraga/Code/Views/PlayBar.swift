@@ -54,7 +54,7 @@ struct PlayBar: View {
                         //                            .resizable()
                         //                            .frame(width: 45, height: 25)
                     })
-                    if RootModel.audioPlayer.player.timeControlStatus != .playing {
+                    if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
                             RootModel.audioPlayer.pause()
                             self.model.objectWillChange.send()
