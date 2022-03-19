@@ -107,7 +107,8 @@ struct OnboardingView: View {
                         .padding(.horizontal)
                 }
                 // MARK: Push Notifications
-                VStack {
+                ZStack {
+                    VStack {
                     Image(systemName: "bell")
                         .resizable()
                         .foregroundColor(.shragaGold)
@@ -128,7 +129,12 @@ struct OnboardingView: View {
                         .foregroundColor(subtitleColor)
                         .padding()
                         .padding(.horizontal)
+                    }
                     
+                    VStack {
+                        Spacer()
+                        Spacer()
+                        Spacer()
                     Button(action: {
                         // Show Notification prompt here
                         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -151,6 +157,8 @@ struct OnboardingView: View {
                             .cornerRadius(UI.cornerRadius)
                             .shadow(radius: UI.shadowRadius)
                     )
+                        Spacer()
+                    }
                 }
                 
                 // MARK: Dismiss
@@ -160,10 +168,6 @@ struct OnboardingView: View {
                         .foregroundColor(.shragaGold)
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 150, height: 150)
-                        .padding()
-                    
-                    Text("")
-                        .font(.title)
                         .padding()
                     
 //                    Text("Enable push notifications to stay up to date.")
