@@ -12,9 +12,9 @@ struct HomeView: View {
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
-    init(hideLoadingScreenClosure: @escaping (() -> Void),
+    init(hideLoadingScreen: @escaping (() -> Void),
          showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
-        self.model = HomeModel(hideLoadingScreen: hideLoadingScreenClosure,
+        self.model = HomeModel(hideLoadingScreen: hideLoadingScreen,
                                showErrorOnRoot: showErrorOnRoot)
     }
     
