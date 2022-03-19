@@ -208,6 +208,17 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 Group {
+//                    Spacer()
+                    
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: -10)
+                    }, label: {
+                        Image(systemName: "gobackward.10")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 20)
+                    
                     Spacer()
                     
                     Button(action: {
@@ -220,7 +231,7 @@ struct AudioPlayer: View {
                     })
                         .frame(width: 25)
                     
-                    Spacer()
+//                    Spacer()
                     
 //                    Button(action: {
 //                        Haptics.shared.play(.soft)
@@ -272,7 +283,7 @@ struct AudioPlayer: View {
 //                    })
 //                        .frame(width: 40)
                     
-                    Spacer()
+//                    Spacer()
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
@@ -284,6 +295,17 @@ struct AudioPlayer: View {
                     }).frame(width: 25)
                     
                     Spacer()
+                    
+                    Button(action: {
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: 10)
+                    }, label: {
+                        Image(systemName: "goforward.10")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }).frame(width: 20)
+                    
+//                    Spacer()
                 }
                 Spacer()
             }.frame(height: 50)
