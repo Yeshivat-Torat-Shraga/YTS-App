@@ -29,6 +29,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     }
     
     func load(next increment: Int = 10) {
+        
         self.loadingContent = true
         
         let group = DispatchGroup()
@@ -102,6 +103,10 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     }
     
     func initialLoad() {
+        
+        // MARK: loop over 
+        
+        
         if !calledInitialLoad {
             self.calledInitialLoad = true
             load()

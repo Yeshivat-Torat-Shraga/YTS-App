@@ -34,8 +34,6 @@ class HomeModel: ObservableObject, ErrorShower {
     }
     
     func load() {
-
-        let savedFavorites:[FirestoreID] = Favorites.shared.getfavoriteIDs()
         
         let group = DispatchGroup()
 
@@ -47,11 +45,6 @@ class HomeModel: ObservableObject, ErrorShower {
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
-            }
-            for rebbi in rebbeim {
-                if savedFavorites.contains(rebbi.firestoreID) {
-                    rebbi.isFavorite = true
-                }
             }
             self.rebbeim = rebbeim
             group.leave()
