@@ -56,18 +56,31 @@ struct DisplayRabbiView: View {
                  
                 LazyVStack {
                     if let sortables = model.sortables {
-                        ForEach(sortables, id: \.self) { sortable in
-                            if let video = sortable.video {
-                                VideoCardView(video: video)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
-                            } else if let audio = sortable.audio {
-                                AudioCardView(audio: audio)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
+                        if sortables.count > 0 {
+                            ForEach(sortables, id: \.self) { sortable in
+                                if let video = sortable.video {
+                                    VideoCardView(video: video)
+                                        .contextMenu {
+                                            Button("Play") {}
+                                        }
+                                } else if let audio = sortable.audio {
+                                    AudioCardView(audio: audio)
+                                        .contextMenu {
+                                            Button("Play") {}
+                                        }
+                                }
                             }
+                            .padding(.horizontal)
+                        } else {
+                            VStack {
+                                Text("Sorry, no Shiurim were found.")
+                                    .bold()
+                                    .font(.title2)
+                                    .padding(.vertical)
+                                Text("\(model.rabbi.name) didn't upload any Shiurim yet.")
+                                Text("Check again in a little bit.")
+                            }
+                            .padding(.vertical)
                         }
                     }
                     
@@ -76,8 +89,8 @@ struct DisplayRabbiView: View {
                         let count = 5
                         model.load(next: count)
                     })
+                        .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
         }
         .onAppear {
@@ -104,6 +117,7 @@ struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             DisplayRabbiView(rabbi: DetailedRabbi.samples[2])
+                .foregroundColor(.shragaBlue)
         }
     }
 }

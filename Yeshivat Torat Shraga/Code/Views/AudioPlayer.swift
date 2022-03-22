@@ -13,16 +13,14 @@ struct AudioPlayer: View {
     @ObservedObject var player = Player()
     var audio: Audio?
     
-    // MARK: This needs to refresh every time from... somewhere?
-//    @State private var isFavorited: Bool = false
     @State private var showFavoritesAlert = false
     @State private var favoriteErr: Error?
     @State private var favoriteIDs = Favorites.shared.favoriteIDs
+    @State private var isFavoritesBusy = false
     var refreshFavorites: (() -> Void)?
     
     init(refreshFavorites: (() -> Void)? = nil) {
         self.refreshFavorites = refreshFavorites
-//        self.isFavorited = (audio?.favoritedAt != nil)
     }
     
     mutating func set(audio: Audio) {
@@ -315,24 +313,28 @@ struct AudioPlayer: View {
                 
                 if let audio = audio, let favoriteIDs = favoriteIDs {
                 Button(action: {
-//                    MARK: CLEAN UP
+                    if !isFavoritesBusy {
+                        isFavoritesBusy = true
                         if favoriteIDs.contains(audio.firestoreID) {
                             Favorites.shared.delete(audio) { favorites, error in
-//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
                                 self.refreshFavorites?()
+                                self.favoriteIDs = Favorites.shared.favoriteIDs
+                                isFavoritesBusy = false
                             }
                         } else {
                             Favorites.shared.save(audio) { favorites, error in
-//                                MARK: USE THESE FAVORITES THAT ARE RETURNED IN THE UPDATE, AS OPPOSED TO CALLING THE FUNCTION AGAIN
                                 self.refreshFavorites?()
+                                self.favoriteIDs = Favorites.shared.favoriteIDs
+                                isFavoritesBusy = false
                             }
                         }
-                    self.favoriteIDs = Favorites.shared.getfavoriteIDs()
+                        Favorites.shared.loadFavorites()
+                    }
                 }, label: {
                     Image(systemName: favoriteIDs.contains(audio.firestoreID)
                           ? "heart.fill"
                           : "heart")
-                        .foregroundColor(Color("ShragaGold"))
+                        .foregroundColor(isFavoritesBusy ? .red : .shragaGold)
                         .frame(width: 20, height: 20)
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 }

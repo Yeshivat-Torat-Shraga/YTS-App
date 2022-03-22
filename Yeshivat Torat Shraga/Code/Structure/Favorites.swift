@@ -15,34 +15,35 @@ class Favorites: ObservableObject {
     let delegate = (UIApplication.shared.delegate as! AppDelegate)
     typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
     
-    init() {
-        favoriteIDs = getfavoriteIDs()
+    private init() {
+        loadFavorites()
     }
     
-    @Published var favoriteIDs: [FirestoreID]?
+    
+    @Published var favoriteIDs: Set<FirestoreID>?
     @Published var favorites: FavoritesTuple?
     
-     func getfavoriteIDs() -> [FirestoreID] {
-        var IDs: [FirestoreID] = []
-         if let favorites = self.loadFavorites() {
-            if let videos = favorites.videos {
-                for video in videos {
-                    IDs.append(video.firestoreID)
-                }
-            }
-            if let audios = favorites.audios {
-                for audio in audios {
-                    IDs.append(audio.firestoreID)
-                }
-            }
-            if let people = favorites.people {
-                for person in people {
-                    IDs.append(person.firestoreID)
-                }
-            }
-        }
-        return IDs
-    }
+//     func loadFavorites() -> Void {
+//        var IDs: [FirestoreID] = []
+//         if let favorites = self.loadFavorites() {
+//            if let videos = favorites.videos {
+//                for video in videos {
+//                    IDs.append(video.firestoreID)
+//                }
+//            }
+//            if let audios = favorites.audios {
+//                for audio in audios {
+//                    IDs.append(audio.firestoreID)
+//                }
+//            }
+//            if let people = favorites.people {
+//                for person in people {
+//                    IDs.append(person.firestoreID)
+//                }
+//            }
+//        }
+//        favoriteIDs = IDs
+//    }
     
     /// Retreives the most updated favorites tuple for the device.
     func getFavorites(completion: @escaping ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)) {
@@ -380,7 +381,6 @@ class Favorites: ObservableObject {
     func delete(_ audioToDelete: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
         let fetchRequest = CDAudio.fetchRequest()
-        
         do {
             let result = try managedContext.fetch(fetchRequest)
             
@@ -393,9 +393,11 @@ class Favorites: ObservableObject {
                     try managedContext.save()
                     loadFavorites(completion: completion)
                 } catch {
-                    print("Failed to delete: \(error)")
                     loadFavorites(completion: completion)
                 }
+            } else {
+                print("Could not locate a match in CoreData, This likely happened because an erroneous delete request was made.")
+                loadFavorites(completion: completion)
             }
         } catch {
             print("Failed to delete: \(error)")
@@ -403,6 +405,7 @@ class Favorites: ObservableObject {
     }
     
     func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
+        var favoriteIDs: Set<FirestoreID> = []
         let managedContext = self.delegate.persistentContainer.viewContext
         
         let group = DispatchGroup()
@@ -423,7 +426,10 @@ class Favorites: ObservableObject {
                             continue
                         }
                         
-                        favoritePeople?.append(person)
+                        if !favoriteIDs.contains(person.firestoreID) {
+                            favoritePeople?.append(person)
+                            favoriteIDs.insert(person.firestoreID)
+                        }
                     }
                 }
             }
@@ -444,7 +450,10 @@ class Favorites: ObservableObject {
                         continue
                     }
                     
-                    favoriteVideos?.append(video)
+                    if !favoriteIDs.contains(video.firestoreID) {
+                        favoriteVideos?.append(video)
+                        favoriteIDs.insert(video.firestoreID)
+                    }
                 }
             }
             group.leave()
@@ -465,7 +474,10 @@ class Favorites: ObservableObject {
                         continue
                     }
                     
-                    favoriteAudios?.append(audio)
+                    if !favoriteIDs.contains(audio.firestoreID) {
+                        favoriteAudios?.append(audio)
+                        favoriteIDs.insert(audio.firestoreID)
+                    }
                 }
             }
             group.leave()
@@ -474,66 +486,66 @@ class Favorites: ObservableObject {
         group.notify(queue: .main) {
             let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
             self.favorites = favorites
-            self.favoriteIDs = self.getfavoriteIDs()
+            self.favoriteIDs = favoriteIDs
+
             completion?(favorites, nil)
         }
     }
     
-    func loadFavorites() -> FavoritesTuple? {
-        let managedContext = self.delegate.persistentContainer.viewContext
-        
-        var favoritePeople: [DetailedRabbi]? = nil
-        let peopleFetchRequest = CDPerson.fetchRequest()
-        
-        if let personEntities = try? managedContext.fetch(peopleFetchRequest) {
-            if favoritePeople == nil {
-                favoritePeople = []
-            }
-            for personEntity in personEntities {
-                if personEntity.owned == false {
-                    guard let person = DetailedRabbi(cdPerson: personEntity) else {
-                        continue
-                    }
-                    
-                    favoritePeople?.append(person)
-                }
-            }
-        }
-        
-        var favoriteVideos: [Video]? = nil
-        let videoFetchRequest = CDVideo.fetchRequest()
-        
-        if let videoEntities = try? managedContext.fetch(videoFetchRequest) {
-            if favoriteVideos == nil {
-                favoriteVideos = []
-            }
-            for videoEntity in videoEntities {
-                guard let video = Video(cdVideo: videoEntity) else {
-                    continue
-                }
-                
-                favoriteVideos?.append(video)
-            }
-        }
-        
-        var favoriteAudios: [Audio]? = nil
-        let audioFetchRequest = CDAudio.fetchRequest()
-        
-        if let audioEntities = try? managedContext.fetch(audioFetchRequest) {
-            if favoriteAudios == nil {
-                favoriteAudios = []
-            }
-            for audioEntity in audioEntities {
-                guard let audio = Audio(cdAudio: audioEntity) else {
-                    continue
-                }
-                
-                favoriteAudios?.append(audio)
-            }
-        }
-        
-        let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
-        self.favorites = favorites
-        return favorites
-    }
+//    func loadFavorites() -> Void {
+//        let managedContext = self.delegate.persistentContainer.viewContext
+//        
+//        var favoritePeople: [DetailedRabbi]? = nil
+//        let peopleFetchRequest = CDPerson.fetchRequest()
+//        
+//        if let personEntities = try? managedContext.fetch(peopleFetchRequest) {
+//            if favoritePeople == nil {
+//                favoritePeople = []
+//            }
+//            for personEntity in personEntities {
+//                if personEntity.owned == false {
+//                    guard let person = DetailedRabbi(cdPerson: personEntity) else {
+//                        continue
+//                    }
+//                    
+//                    favoritePeople?.append(person)
+//                }
+//            }
+//        }
+//        
+//        var favoriteVideos: [Video]? = nil
+//        let videoFetchRequest = CDVideo.fetchRequest()
+//        
+//        if let videoEntities = try? managedContext.fetch(videoFetchRequest) {
+//            if favoriteVideos == nil {
+//                favoriteVideos = []
+//            }
+//            for videoEntity in videoEntities {
+//                guard let video = Video(cdVideo: videoEntity) else {
+//                    continue
+//                }
+//                
+//                favoriteVideos?.append(video)
+//            }
+//        }
+//        
+//        var favoriteAudios: [Audio]? = nil
+//        let audioFetchRequest = CDAudio.fetchRequest()
+//        
+//        if let audioEntities = try? managedContext.fetch(audioFetchRequest) {
+//            if favoriteAudios == nil {
+//                favoriteAudios = []
+//            }
+//            for audioEntity in audioEntities {
+//                guard let audio = Audio(cdAudio: audioEntity) else {
+//                    continue
+//                }
+//                
+//                favoriteAudios?.append(audio)
+//            }
+//        }
+//        
+//        let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
+//        self.favorites = favorites
+//    }
 }
