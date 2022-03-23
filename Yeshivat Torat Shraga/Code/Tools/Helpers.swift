@@ -158,6 +158,8 @@ extension Error {
             return "Sorry, it seems you don't have an internet connection."
         case -1020:
             return "This app does not have Internet access. Please check your cellular settings."
+        case 9:
+            return "This app is not verified with AppCheck."
         default:
             return "An unknown error has occured. (\(code))"
         }
