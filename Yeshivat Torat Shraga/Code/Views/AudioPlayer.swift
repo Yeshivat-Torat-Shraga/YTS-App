@@ -17,6 +17,7 @@ struct AudioPlayer: View {
     @State private var favoriteErr: Error?
     @State private var favoriteIDs = Favorites.shared.favoriteIDs
     @State private var isFavoritesBusy = false
+    @State private var sharing = false
     var refreshFavorites: (() -> Void)?
     
     init(refreshFavorites: (() -> Void)? = nil) {
@@ -334,7 +335,7 @@ struct AudioPlayer: View {
                     Image(systemName: favoriteIDs.contains(audio.firestoreID)
                           ? "heart.fill"
                           : "heart")
-                        .foregroundColor(isFavoritesBusy ? .red : .shragaGold)
+                        .foregroundColor(.shragaGold)
                         .frame(width: 20, height: 20)
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 }
@@ -379,7 +380,7 @@ struct AudioPlayer: View {
                 .menuStyle(iOS14BorderedProminentMenuStyle())
                 
                 Button(action: {
-                    
+                    sharing = true
                 }, label: {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundColor(.gray)
@@ -418,6 +419,14 @@ struct AudioPlayer: View {
                 )
             )
         }
+        .sheet(isPresented: $sharing) {
+            if let audio = audio, let shareURL = "yts://\(audio.firestoreID)" {
+                if let title = audio.title, let authorName = audio.author.name {
+                    ShareSheet(activityItems: [title, authorName, shareURL])
+                }
+            }
+        }
+
     }
 }
 
