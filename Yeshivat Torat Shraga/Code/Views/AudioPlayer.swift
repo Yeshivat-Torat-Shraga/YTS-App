@@ -379,13 +379,13 @@ struct AudioPlayer: View {
                 }
                 .menuStyle(iOS14BorderedProminentMenuStyle())
                 
-                Button(action: {
-                    sharing = true
-                }, label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .foregroundColor(.gray)
-                        .frame(width: 20, height: 20)
-                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+//                Button(action: {
+//                    sharing = true
+//                }, label: {
+//                    Image(systemName: "square.and.arrow.up")
+//                        .foregroundColor(.gray)
+//                        .frame(width: 20, height: 20)
+//                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
             Spacer()
