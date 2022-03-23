@@ -35,9 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if let fbApp = FirebaseApp.app () {
             providerFactory.createProvider(with: fbApp)?.getToken { token, error in
-                if let token = token {
-                    print ("AppCheck token: \(token.token), expiration date: \(token.expirationDate)")
-                } else if let error = error {
+//                if let token = token {
+//                    print ("AppCheck token: \(token.token), expiration date: \(token.expirationDate)")
+//                } else
+                if let error = error {
                     print ("AppCheck error: \(error as NSError).userInfo)")
                 }
             }
@@ -82,12 +83,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print message ID.
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
-        }
+//        if let messageID = userInfo[gcmMessageIDKey] {
+//            print("Message ID: \(messageID)")
+//        }
         
         // Print full message.
-        print(userInfo)
+//        print(userInfo)
     }
     
     func application(_ application: UIApplication,
@@ -98,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let stringToken = deviceToken.reduce("", {$0 + String(format: "%02X", $1)}).uppercased()
-        print("APNs token retrieved: \(stringToken)")
+//        print("APNs token retrieved: \(stringToken)")
         Messaging.messaging().subscribe(toTopic: "all") { error in
             if let error = error {
                 print("\n\n\nError subscribing to notifications: \(error)\n\n\n")
@@ -217,12 +218,12 @@ extension AppDelegate {
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // [START_EXCLUDE]
         // Print message ID.
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
-        }
+//        if let messageID = userInfo[gcmMessageIDKey] {
+//            print("Message ID: \(messageID)")
+//        }
         // [END_EXCLUDE]
         // Print full message.
-        print(userInfo)
+//        print(userInfo)
         
         // Change this to your preferred presentation option
         completionHandler([[.banner, .list, .sound]])
@@ -235,14 +236,14 @@ extension AppDelegate {
         
         // [START_EXCLUDE]
         // Print message ID.
-        if let messageID = userInfo[gcmMessageIDKey] {
-            print("Message ID: \(messageID)")
-        }
+//        if let messageID = userInfo[gcmMessageIDKey] {
+//            print("Message ID: \(messageID)")
+//        }
         // [END_EXCLUDE]
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
         // Print full message.
-        print(userInfo)
+//        print(userInfo)
         
         completionHandler()
     }
@@ -251,11 +252,11 @@ extension AppDelegate {
 extension AppDelegate: MessagingDelegate {
     // [START refresh_token]
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        if let fcmToken = fcmToken {
-            print("Firebase registration token: \(String(describing: fcmToken))")
-        } else {
-            print("Firebase registration token: NIL")
-        }
+//        if let fcmToken = fcmToken {
+//            print("Firebase registration token: \(String(describing: fcmToken))")
+//        } else {
+//            print("Firebase registration token: NIL")
+//        }
         
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
         NotificationCenter.default.post(

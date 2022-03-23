@@ -90,8 +90,6 @@ class HomeModel: ObservableObject, ErrorShower {
                 return
             }
             @AppStorage("lastViewedAlertID") var previousAlertID = ""
-            print("previousAlertID: \(previousAlertID)")
-            print("upcomingAlertID: \(homeAlert.id)")
             if previousAlertID != homeAlert.id {
                 self.showAlert = true
                 self.homePageAlertToShow = homeAlert
