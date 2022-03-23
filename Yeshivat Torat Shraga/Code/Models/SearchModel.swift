@@ -8,7 +8,7 @@
 import SwiftUI
 
 class SearchModel: ObservableObject, ErrorShower {
-    @Published var content: Content?
+    @Published var content: AVContent?
     @Published var rebbeim: [Rabbi]?
     @Published var sortables: [SortableYTSContent]?
     
