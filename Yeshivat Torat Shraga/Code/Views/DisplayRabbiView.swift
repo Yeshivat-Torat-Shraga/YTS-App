@@ -40,6 +40,7 @@ struct DisplayRabbiView: View {
                                     }
                             }
                         }
+                        .padding(.horizontal)
                     }
                 }
                 
