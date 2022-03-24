@@ -30,6 +30,7 @@ struct OnboardingView: View {
                         .bold()
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                         .foregroundColor(.shragaGold)
                         .padding()
                         .padding(.horizontal)
@@ -48,12 +49,14 @@ struct OnboardingView: View {
                         .bold()
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                         .padding()
                     
                     Text("Mark your favorite shiurim for quick access later on.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.5)
                         .foregroundColor(subtitleColor)
                         .padding()
                         .padding(.horizontal)
@@ -73,12 +76,14 @@ struct OnboardingView: View {
                         .bold()
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                         .padding()
                     
                     Text("Check out the top photo picks from recent Shraga events and Tiyulim.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.5)
                         .foregroundColor(subtitleColor)
                         .padding()
                         .padding(.horizontal)
@@ -96,19 +101,22 @@ struct OnboardingView: View {
                         .font(.title)
                         .bold()
                         .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                         .padding()
                     
                     Text("Stay up to date on the latest news at Yeshivat Torat Shraga.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.5)
                         .foregroundColor(subtitleColor)
                         .padding()
                         .padding(.horizontal)
                 }
                 // MARK: Push Notifications
-                ZStack {
-                    VStack {
+                VStack {
+                    Spacer()
+                    
                     Image(systemName: "bell")
                         .resizable()
                         .foregroundColor(.shragaGold)
@@ -120,21 +128,21 @@ struct OnboardingView: View {
                         .font(.title)
                         .bold()
                         .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                         .padding()
                     
                     Text("Enable push notifications to stay up to date. This can be changed later in settings.")
                         .font(.headline)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.5)
                         .foregroundColor(subtitleColor)
                         .padding()
                         .padding(.horizontal)
-                    }
+                        .padding(.bottom)
                     
-                    VStack {
-                        Spacer()
-                        Spacer()
-                        Spacer()
+//                    Spacer()
+                    
                     Button(action: {
                         // Show Notification prompt here
                         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -157,8 +165,7 @@ struct OnboardingView: View {
                             .cornerRadius(UI.cornerRadius)
                             .shadow(radius: UI.shadowRadius)
                     )
-                        Spacer()
-                    }
+                    Spacer()
                 }
                 
                 // MARK: Dismiss
