@@ -102,8 +102,10 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     }
     
     func initialLoad() {
-        self.calledInitialLoad = true
-        load()
+        if !calledInitialLoad {
+            self.calledInitialLoad = true
+            load()
+        }
     }
     
     func reload() {
