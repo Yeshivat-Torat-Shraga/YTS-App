@@ -107,8 +107,9 @@ struct OnboardingView: View {
                         .padding(.horizontal)
                 }
                 // MARK: Push Notifications
-                ZStack {
-                    VStack {
+                VStack {
+                    Spacer()
+                    
                     Image(systemName: "bell")
                         .resizable()
                         .foregroundColor(.shragaGold)
@@ -129,12 +130,10 @@ struct OnboardingView: View {
                         .foregroundColor(subtitleColor)
                         .padding()
                         .padding(.horizontal)
-                    }
+                        .padding(.bottom)
                     
-                    VStack {
-                        Spacer()
-                        Spacer()
-                        Spacer()
+//                    Spacer()
+                    
                     Button(action: {
                         // Show Notification prompt here
                         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -157,8 +156,7 @@ struct OnboardingView: View {
                             .cornerRadius(UI.cornerRadius)
                             .shadow(radius: UI.shadowRadius)
                     )
-                        Spacer()
-                    }
+                    Spacer()
                 }
                 
                 // MARK: Dismiss
