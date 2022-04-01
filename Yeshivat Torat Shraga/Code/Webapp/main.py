@@ -17,10 +17,6 @@ cred = settings.cred
 with open("cred.json", "w") as f:
     f.write(cred)
 
-# Print the contents of cred.json
-with open("cred.json", "r") as f:
-    print(f.read())
-
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 
