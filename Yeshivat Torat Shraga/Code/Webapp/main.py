@@ -17,6 +17,10 @@ cred = settings.cred
 with open("cred.json", "w") as f:
     f.write(cred)
 
+# Print the contents of cred.json
+with open("cred.json", "r") as f:
+    print(f.read())
+
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 
@@ -91,7 +95,8 @@ def rabbis():
         id = rabbi.id
         rabbi = rabbi.to_dict()
         rabbi["id"] = id
-        blob = bucket.get_blob(f"profile-pictures/{rabbi['profile_picture_filename']}")
+        blob = bucket.get_blob(
+            f"profile-pictures/{rabbi['profile_picture_filename']}")
         url = blob.generate_signed_url(timedelta(seconds=300))
         rabbi["imgURL"] = url
         collection.append(rabbi)
@@ -106,7 +111,8 @@ def rabbiDetail(ID):
     if request.method == "GET":
         rabbi = db.collection("rebbeim").document(ID).get().to_dict()
         rabbi["id"] = ID
-        blob = bucket.get_blob(f"profile-pictures/{rabbi['profile_picture_filename']}")
+        blob = bucket.get_blob(
+            f"profile-pictures/{rabbi['profile_picture_filename']}")
         url = blob.generate_signed_url(timedelta(seconds=300))
         rabbi["imgURL"] = url
 
@@ -336,7 +342,8 @@ def shiurim_upload():
 @app.route("/news", methods=["GET"])
 def news():
     db = firestore.client()
-    collection = [(rabbi.to_dict(), rabbi.id) for rabbi in db.collection("news").get()]
+    collection = [(rabbi.to_dict(), rabbi.id)
+                  for rabbi in db.collection("news").get()]
     return render_template("news.html", news=collection)
 
 
@@ -439,7 +446,8 @@ def slideshow_upload():
             }
             db.collection("slideshowImages").add(new_document)
             blob = bucket.blob(f"slideshow/{file.filename}")
-            blob.upload_from_string(file.read(), content_type=file.content_type)
+            blob.upload_from_string(
+                file.read(), content_type=file.content_type)
 
         return redirect(url_for("slideshow"))
 
