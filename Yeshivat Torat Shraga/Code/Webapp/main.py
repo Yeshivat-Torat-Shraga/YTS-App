@@ -446,4 +446,9 @@ def slideshow_upload():
 
 if __name__ == "__main__":
     app.secret_key = "super secret key"
-    app.run(debug=True, host="localhost", port=8080)
+    if os.getenv("PRODUCTION"):
+        print("Running in production mode")
+        app.run(debug=False, host="0.0.0.0", port=80)
+    else:
+        print("Running in development mode")
+        app.run(debug=True, host="localhost", port=8080)
