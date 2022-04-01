@@ -19,3 +19,4 @@ build/
 *.cer
 fastlane/report.xml
 Yeshivat Torat Shraga/Code/functions/.gcloudignore
+Yeshivat Torat Shraga/Code/Webapp/requirements.txt
