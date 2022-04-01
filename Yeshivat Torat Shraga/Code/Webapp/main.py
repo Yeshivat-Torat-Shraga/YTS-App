@@ -5,6 +5,7 @@ from flask_basicauth import BasicAuth
 import ffmpeg
 import os
 import settings
+import json
 
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 
@@ -16,6 +17,12 @@ cred = settings.cred
 # Dump the credentials to the file variable
 with open("cred.json", "w") as f:
     f.write(cred)
+    # Read it back as a JSON string
+    try:
+        cred = json.load(f)
+    except ValueError:
+        print("Invalid JSON. Dumping cred.json:\n\n=== [CRED.JSON] ===\n")
+        print(f.read())
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
