@@ -25,8 +25,6 @@ jobs:
       # Add secrets to config file
       - name: Inject Secrets
         run: |
-          pwd
-          ls
           cd Yeshivat\ Torat\ Shraga/Code/Webapp
           echo cred = '${{ secrets.FIREBASE_CREDENTIALS }}' >> settings.py
           echo username = '${{ secrets.WEB_USERNAME }} >> settings.py
@@ -41,7 +39,7 @@ jobs:
       - name: Build Docker Image
         run: |
           cd Yeshivat\ Torat\ Shraga/Code/Webapp
-          docker build -t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} Yeshivat\ Torat\ Shraga/Code/Webapp
+          docker build -t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} .
         
       - name: Login to DockerHub
         run: |
