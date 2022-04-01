@@ -13,17 +13,30 @@ struct NewsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                if let articles = model.articles, articles.count > 0 {
-                    ForEach(articles) { article in
-                        NavigationLink(destination: NewsArticleView(article)) {
-                            NewsArticleCardView(article)
-                                .padding(.horizontal)
+                if let articles = model.articles {
+                    if articles.count > 0 {
+                        ForEach(articles) { article in
+                            NavigationLink(destination: NewsArticleView(article)) {
+                                NewsArticleCardView(article)
+                                    .padding(.horizontal)
+                            }
+                            .simultaneousGesture(
+                                TapGesture()
+                                    .onEnded {
+                                        Haptics.shared.play(UI.Haptics.navLink)
+                                    })
                         }
-                        .simultaneousGesture(
-                            TapGesture()
-                                .onEnded {
-                                    Haptics.shared.play(UI.Haptics.navLink)
-                                })
+                    } else {
+                        VStack {
+                            Text("No news articles have been posted yet.")
+                                .bold()
+                                .multilineTextAlignment(.center)
+                                .font(.title2)
+                                .padding(.vertical)
+                            Text("Check again in a little bit.")
+                        }
+                        .padding(.vertical)
+
                     }
                 } else {
                     ForEach(0..<4, id: \.self) { _ in
