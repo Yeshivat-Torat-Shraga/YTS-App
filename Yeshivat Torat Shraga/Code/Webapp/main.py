@@ -270,10 +270,6 @@ def shiurim_upload():
         file.save('tmp/' + file.filename)
         duration = ffmpeg.probe('tmp/' + file.filename)['format']['duration']
         duration = int(float(duration))
-        # delete everything in tmp folder
-        for tmpfile in os.listdir("tmp"):
-            os.remove("tmp/" + tmpfile)
-        os.rmdir("tmp")
 
         # Title:
         title = request.form.get("title", "")
@@ -327,6 +323,10 @@ def shiurim_upload():
         collection = [
             (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
         ]
+        # delete everything in tmp folder
+        for tmpfile in os.listdir("tmp"):
+            os.remove("tmp/" + tmpfile)
+        os.rmdir("tmp")
         return render_template("shiurim.html", data=collection)
 
 
