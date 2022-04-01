@@ -91,8 +91,7 @@ def rabbis():
         id = rabbi.id
         rabbi = rabbi.to_dict()
         rabbi["id"] = id
-        blob = bucket.get_blob(
-            f"profile-pictures/{rabbi['profile_picture_filename']}")
+        blob = bucket.get_blob(f"profile-pictures/{rabbi['profile_picture_filename']}")
         url = blob.generate_signed_url(timedelta(seconds=300))
         rabbi["imgURL"] = url
         collection.append(rabbi)
@@ -107,8 +106,7 @@ def rabbiDetail(ID):
     if request.method == "GET":
         rabbi = db.collection("rebbeim").document(ID).get().to_dict()
         rabbi["id"] = ID
-        blob = bucket.get_blob(
-            f"profile-pictures/{rabbi['profile_picture_filename']}")
+        blob = bucket.get_blob(f"profile-pictures/{rabbi['profile_picture_filename']}")
         url = blob.generate_signed_url(timedelta(seconds=300))
         rabbi["imgURL"] = url
 
@@ -116,14 +114,12 @@ def rabbiDetail(ID):
     else:
         file = request.files.get("file")
         name = request.form.get("name")
-        updated_document = {
-            "name": name
-        }
+        updated_document = {"name": name}
         if file:
             blob = bucket.blob(f"profile-pictures/{file.filename}")
             blob.upload_from_string(
                 request.files["file"].read(),
-                content_type=request.files["file"].content_type
+                content_type=request.files["file"].content_type,
             )
             updated_document["profile_picture_filename"] = file.filename
         rabbi = db.collection("rebbeim").document(ID)
@@ -148,12 +144,11 @@ def rabbiCreate():
         # Upload the profile picture file from the form to Cloud Storage
         profile_picture_file = request.files["file"]
         if not profile_picture_file:
-            return 'No profile picture', 400
+            return "No profile picture", 400
         bucket = storage.bucket()
         blob = bucket.blob(f"profile-pictures/{profile_picture_file.filename}")
         blob.upload_from_string(
-            profile_picture_file.read(),
-            content_type=profile_picture_file.content_type
+            profile_picture_file.read(), content_type=profile_picture_file.content_type
         )
 
         db = firestore.client()
@@ -202,7 +197,7 @@ def shiurimDetail(ID):
         # Update the shiur document
 
         updated_document = {}
-        author = request.form.get("author").split('~')
+        author = request.form.get("author").split("~")
         author = author[1]
         title = request.form.get("title")
         updated_document["title"] = title
@@ -267,8 +262,8 @@ def shiurim_upload():
         # create tmp folder if it doesn't exist
         if not os.path.exists("tmp"):
             os.makedirs("tmp")
-        file.save('tmp/' + file.filename)
-        duration = ffmpeg.probe('tmp/' + file.filename)['format']['duration']
+        file.save("tmp/" + file.filename)
+        duration = ffmpeg.probe("tmp/" + file.filename)["format"]["duration"]
         duration = int(float(duration))
 
         # Title:
@@ -341,9 +336,7 @@ def shiurim_upload():
 @app.route("/news", methods=["GET"])
 def news():
     db = firestore.client()
-    collection = [
-        (rabbi.to_dict(), rabbi.id) for rabbi in db.collection("news").get()
-    ]
+    collection = [(rabbi.to_dict(), rabbi.id) for rabbi in db.collection("news").get()]
     return render_template("news.html", news=collection)
 
 
@@ -371,42 +364,43 @@ def news_detail(ID):
         return redirect(url_for("news"))
 
 
-@app.route('/news/delete/<ID>', methods=['POST'])
+@app.route("/news/delete/<ID>", methods=["POST"])
 def news_delete(ID):
     db = firestore.client()
     article = db.collection("news").document(ID)
     article.delete()
-    return redirect(url_for('news'))
+    return redirect(url_for("news"))
 
 
-@app.route('/news/create', methods=['GET', 'POST'])
+@app.route("/news/create", methods=["GET", "POST"])
 def news_create():
     db = firestore.client()
-    if request.method == 'GET':
-        return render_template('newsdetail.html', article=None)
+    if request.method == "GET":
+        return render_template("newsdetail.html", article=None)
     else:
-        author = request.form.get('author')
-        title = request.form.get('title')
-        body = request.form.get('body')
+        author = request.form.get("author")
+        title = request.form.get("title")
+        body = request.form.get("body")
         date = datetime.now()
         new_document = {
-            'author': author,
-            'title': title,
-            'body': body,
-            'date': date,
-            'imageURLs': [""]
+            "author": author,
+            "title": title,
+            "body": body,
+            "date": date,
+            "imageURLs": [""],
         }
-        db.collection('news').add(new_document)
-        return redirect(url_for('news'))
+        db.collection("news").add(new_document)
+        return redirect(url_for("news"))
 
 
-@app.route('/slideshow', methods=['GET'])
+@app.route("/slideshow", methods=["GET"])
 def slideshow():
     bucket = storage.bucket()
     db = firestore.client()
-    if request.method == 'GET':
+    if request.method == "GET":
         collection = [
-            (slide.to_dict(), slide.id) for slide in db.collection("slideshowImages").get()
+            (slide.to_dict(), slide.id)
+            for slide in db.collection("slideshowImages").get()
         ]
         for slide in collection:
             blob = bucket.get_blob(f"slideshow/{slide[0]['image_name']}")
@@ -415,18 +409,18 @@ def slideshow():
         return render_template("slideshow.html", images=collection)
 
 
-@app.route('/slideshow/delete/<ID>', methods=['POST'])
+@app.route("/slideshow/delete/<ID>", methods=["POST"])
 def slideshow_delete(ID):
     db = firestore.client()
     slide = db.collection("slideshowImages").document(ID)
     slide.delete()
-    return redirect(url_for('slideshow'))
+    return redirect(url_for("slideshow"))
 
 
-@app.route('/slideshow/create', methods=['GET', 'POST'])
+@app.route("/slideshow/create", methods=["GET", "POST"])
 def slideshow_upload():
-    if request.method == 'GET':
-        return render_template('slideshowdetail.html')
+    if request.method == "GET":
+        return render_template("slideshowdetail.html")
     else:
         db = firestore.client()
         bucket = storage.bucket()
@@ -439,18 +433,15 @@ def slideshow_upload():
                 title = None
             image_url = file.filename
             new_document = {
-                'title': title,
-                'image_name': image_url,
-                'uploaded': datetime.now()
+                "title": title,
+                "image_name": image_url,
+                "uploaded": datetime.now(),
             }
-            db.collection('slideshowImages').add(new_document)
+            db.collection("slideshowImages").add(new_document)
             blob = bucket.blob(f"slideshow/{file.filename}")
-            blob.upload_from_string(
-                file.read(),
-                content_type=file.content_type
-            )
+            blob.upload_from_string(file.read(), content_type=file.content_type)
 
-        return redirect(url_for('slideshow'))
+        return redirect(url_for("slideshow"))
 
 
 if __name__ == "__main__":
