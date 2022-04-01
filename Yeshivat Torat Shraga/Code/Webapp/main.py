@@ -171,9 +171,14 @@ def rabbiCreate():
 @app.route("/shiurim/", methods=["GET"])
 def shiurim():
     db = firestore.client()
-    collection = [
-        (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
-    ]
+    collection = []
+    for shiur in db.collection("content").get():
+        id = shiur.id
+        shiur = shiur.to_dict()
+        shiur["id"] = id
+        collection.append(shiur)
+    # Sort collection by date
+    collection.sort(key=lambda x: x["date"], reverse=True)
     return render_template("shiurim.html", data=collection)
 
 
