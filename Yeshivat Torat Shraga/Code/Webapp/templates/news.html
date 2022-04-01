@@ -1,17 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% for article in news %}
-<a href="{{ url_for('news_detail', ID=article[1]) }}"><b>ID: {{ article[1] }}<br></b></a>
-
-Author: {{ article[0].author }}<br>
-Date: {{ article[0].date }}<br>
-<br>
-Title: {{ article[0].title }}<br>
-Body: {{ article[0].body }}<br>
-<hr>
-{% endfor %}
-<br>
-<a href="{{ url_for('news_create') }}">New article</a>
+<table class="table table-dark table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th scope="col">-</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">Date</th>
+      <th scope="col">Article</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">
+        <a class="success" href="{{ url_for('news_create') }}"><b>New<br></b></a>
+      </th>
+      <td colspan="4"></td>
+    </tr>
+    {% for article in news %}
+    <tr>
+      <th scope="row">
+        <button>
+          <a href="{{ url_for('news_detail', ID=article.id) }}">
+            <b>Edit</b>
+          </a>
+        </button>
+        <br>
+        <form method="post" action="{{ url_for('news_delete', ID=article.id) }}" class="inline">
+          <input type="hidden" name="extra_submit_param" value="extra_submit_value">
+          <button type="submit" name="submit_param" value="submit_value" class="link-button"
+            style="color:red;"><b>Delete</b>
+          </button>
+        </form>
+        </td>
+      <td>{{ article.title }}</td>
+      <td>{{ article.author }}</td>
+      <td>
+        <script>
+          document.write(new Date("{{ article.date }}".replace(" ", "T")).toLocaleDateString());
+        </script>
+      </td>
+      <td>
+        {{ article.body }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock content %}

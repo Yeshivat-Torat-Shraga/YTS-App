@@ -334,8 +334,14 @@ def shiurim_upload():
 @app.route("/news", methods=["GET"])
 def news():
     db = firestore.client()
-    collection = [(rabbi.to_dict(), rabbi.id)
-                  for rabbi in db.collection("news").get()]
+    collection = []
+    for article in db.collection("news").get():
+        id = article.id
+        article = article.to_dict()
+        article["id"] = id
+        collection.append(article)
+    # Sort collection by date
+    collection.sort(key=lambda x: x["date"], reverse=True)
     return render_template("news.html", news=collection)
 
 
