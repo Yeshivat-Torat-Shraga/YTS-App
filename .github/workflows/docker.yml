@@ -27,7 +27,7 @@ jobs:
       - name: Inject Secrets
         run: |
           cd Yeshivat\ Torat\ Shraga/Code/Webapp
-          echo cred = \'${{ secrets.FIREBASE_CREDENTIALS }}\' >> settings.py
+          echo cred = ${{ secrets.FIREBASE_CREDENTIALS }} >> settings.py
           echo username = \'${{ secrets.WEB_USERNAME }}\' >> settings.py
           echo password = \'${{ secrets.WEB_PASSWORD }}\' >> settings.py
 
