@@ -9,6 +9,7 @@ on:
 
 env:
   SERVICE_NAME: "webapp"
+  DOCKER_USERNAME: "benjitusk"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -33,8 +34,8 @@ jobs:
       - name: Build Vars
         id: vars
         run: |
-          echo "::set-output name=image::${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:$GITHUB_SHA"
-          echo "::set-output name=latest::${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:latest"
+          echo "::set-output name=image::${{ env.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:$GITHUB_SHA"
+          echo "::set-output name=latest::${{ env.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:latest"
 
       - name: Build Docker Image
         run: |
@@ -44,7 +45,7 @@ jobs:
       - name: Login to DockerHub
         run: |
           echo "Authenticating docker.io"
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login --username=${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login --username=${{ env.DOCKER_USERNAME }} --password-stdin
           
       - name: Push to DockerHub
         run: |
@@ -86,7 +87,8 @@ jobs:
           echo "Releasing to Amazon Lightsail"
 
           docker info
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login --username=${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login --username=${{ env.DOCKER_USERNAME }} --password-stdin
+          echo pulling image ${{ steps.build-service.outputs.image }}
           docker pull ${{ needs.build-service.outputs.image }}
 
           # upload the docker image for this pipeline
