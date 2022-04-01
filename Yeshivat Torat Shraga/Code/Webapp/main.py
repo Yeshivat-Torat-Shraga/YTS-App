@@ -22,7 +22,7 @@ with open("cred.json", "w") as f:
         cred = json.load(f)
     except ValueError:
         print("Invalid JSON. Dumping cred.json:\n\n=== [CRED.JSON] ===\n")
-        print(f.read())
+        print(cred)
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
