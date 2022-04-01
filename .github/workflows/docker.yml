@@ -86,7 +86,7 @@ jobs:
           echo "Releasing to Amazon Lightsail"
 
           docker info
-          echo ${{ secrets.DOCKER_AUTH_TOKEN }} | docker login --username=${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login --username=${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker pull ${{ needs.build-service.outputs.image }}
 
           # upload the docker image for this pipeline
