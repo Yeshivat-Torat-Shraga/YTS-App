@@ -281,7 +281,15 @@ def shiurim_upload():
         #   Based on the file type, decide on the source path.
         #   Part of this process will be to give the file a
         #   unique name based on the rabbi's name and the date.
-        source_path = f"HLSStreams/{content_type}/{file.filename}/{file.filename}.m3u8"
+        #   We first need to strip the file extension.
+        # get second to last element of file name
+        filename_components = file.filename.split(".")
+        stripped_name = ""
+        if len(filename_components) > 1:
+            stripped_name = filename_components[-2]
+        else:
+            stripped_name = filename_components[0]
+        source_path = f"HLSStreams/{content_type}/{stripped_name}/{stripped_name}.m3u8"
 
         # Tags:
         selected_tags = request.form.get("tags", "").split(",")
