@@ -12,17 +12,6 @@ from firebase_admin import credentials, initialize_app, storage, firestore, mess
 # Check if the following environment variables are set:
 username = settings.username
 password = settings.password
-cred = settings.cred
-
-# Dump the credentials to the file variable
-with open("cred.json", "w") as f:
-    f.write(cred)
-    # Read it back as a JSON string
-    try:
-        cred = json.load(f)
-    except ValueError:
-        print("Invalid JSON. Dumping cred.json:\n\n=== [CRED.JSON] ===\n")
-        print(cred)
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
