@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fileinput import filename
-from flask import Flask, redirect, render_template, request, url_for, flash
+from flask import Flask, Response, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
 import ffmpeg
 import os
@@ -31,6 +31,12 @@ app.config["BASIC_AUTH_FORCE"] = True
 @app.route("/")
 def index():
     return render_template("home.html")
+
+
+# healtcheck return 200
+@app.route("/healthcheck")
+def healthcheck():
+    return Response(status=200)
 
 
 @app.route("/notifications/alert", methods=["POST"])
