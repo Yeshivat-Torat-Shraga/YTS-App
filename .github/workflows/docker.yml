@@ -25,6 +25,8 @@ jobs:
       # Add secrets to config file
       - name: Inject Secrets
         run: |
+          pwd
+          ls
           cd Yeshivat\ Torat\ Shraga/Code/Webapp
           echo cred = '${{ secrets.FIREBASE_CREDENTIALS }}' >> settings.py
           echo username = '${{ secrets.WEB_USERNAME }} >> settings.py
