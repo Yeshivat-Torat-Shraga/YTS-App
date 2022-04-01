@@ -21,7 +21,7 @@ Here is a non-exhaustive list of the frameworks we used while working on this pr
 - Google Cloud Functions
 - Firebase Suite (backend-as-a-service)
 - Javascript Backend (Node.js)
-- JavaScript Frontend (jQuery)
+- JavaScript Frontend (jQuery, vanilla)
 - TypeScript
 - SwiftUI
 - UIKit
@@ -29,6 +29,8 @@ Here is a non-exhaustive list of the frameworks we used while working on this pr
 - Jinja
 - Fastlane (CI/CD)
 - GitHub Actions
+- Docker
+- AWS Lightsail
 
 ## When will the iOS app be available?
 This is a tough question to answer, as we haven't perfected our fortune telling abilities, but our ETA is just before Passover 2022.
