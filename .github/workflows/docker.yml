@@ -23,9 +23,9 @@ jobs:
       - name: Inject Secrets
         run: |
           cd Yeshivat\ Torat\ Shraga/Code/Webapp
-          echo cred = '{{ secrets.FIREBASE_CREDENTIALS }}' >> settings.py
-          echo username = '{{ secrets.WEB_USERNAME }} >> settings.py
-          echo password = '{{ secrets.WEB_PASSWORD }} >> settings.py
+          echo cred = '${{ secrets.FIREBASE_CREDENTIALS }}' >> settings.py
+          echo username = '${{ secrets.WEB_USERNAME }} >> settings.py
+          echo password = '${{ secrets.WEB_PASSWORD }} >> settings.py
 
       - name: Build Vars
         id: vars
@@ -34,7 +34,7 @@ jobs:
           echo "::set-output name=latest::${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:latest"
 
       - name: Build Docker Image
-        run: docker build -t {{ secrets.DOCKER_USERNAME }}/webapp -t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/webapp -t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} .
         
       - name: Login to DockerHub
         run: |
