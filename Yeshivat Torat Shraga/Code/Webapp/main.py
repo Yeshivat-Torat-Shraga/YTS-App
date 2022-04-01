@@ -322,10 +322,7 @@ def shiurim_upload():
         content_collection.add(new_content_document)
         bucket = storage.bucket()
         blob = bucket.blob(f"content/{file.filename}")
-        blob.upload_from_string(
-            file.read(),
-            content_type=file.content_type
-        )
+        blob.upload_from_filename("tmp/" + file.filename)
         flash("Shiur added!")
         collection = [
             (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
