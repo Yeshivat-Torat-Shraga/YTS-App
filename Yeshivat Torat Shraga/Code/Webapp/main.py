@@ -4,18 +4,27 @@ from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_basicauth import BasicAuth
 import ffmpeg
 import os
+import settings
 
-# import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
+
+# Check if the following environment variables are set:
+username = settings.username
+password = settings.password
+cred = settings.cred
+
+# Dump the credentials to the file variable
+with open("cred.json", "w") as f:
+    f.write(cred)
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 
 app = Flask(__name__)
-# basic_auth = BasicAuth(app)
+basic_auth = BasicAuth(app)
 
-app.config["BASIC_AUTH_USERNAME"] = ""  # settings.username
-app.config["BASIC_AUTH_PASSWORD"] = "password"  # settings.password
+app.config["BASIC_AUTH_USERNAME"] = settings.username
+app.config["BASIC_AUTH_PASSWORD"] = settings.password
 app.config["BASIC_AUTH_FORCE"] = True
 
 
