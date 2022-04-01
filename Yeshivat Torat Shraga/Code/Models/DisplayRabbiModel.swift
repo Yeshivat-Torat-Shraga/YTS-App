@@ -66,14 +66,14 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                 self.lastLoadedDocumentID = results.metadata.newLastLoadedDocumentID
                 self.retreivedAllContent = results.metadata.finalCall
                 
-                var sortables: [SortableYTSContent] = []
+                var sortables: Set<SortableYTSContent> = []
                 for audio in self.content!.audios {
-                    sortables.append(audio.sortable)
+                    sortables.insert(audio.sortable)
                 }
                 for video in self.content!.videos {
-                    sortables.append(video.sortable)
+                    sortables.insert(video.sortable)
                 }
-                
+                                
                 self.sortables = sortables.sorted(by: { lhs, rhs in
                     return lhs.date! > rhs.date!
                 })
