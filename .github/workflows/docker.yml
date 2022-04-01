@@ -37,7 +37,7 @@ jobs:
           echo "::set-output name=latest::${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:latest"
 
       - name: Build Docker Image
-        run: docker build-t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} .
+        run: docker build -t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} .
         
       - name: Login to DockerHub
         run: |
