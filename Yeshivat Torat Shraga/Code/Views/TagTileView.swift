@@ -32,20 +32,11 @@ struct TagTileView: View {
                         .padding()
                 }
                 .frame(height: 110)
-                .frame(minWidth: 150, maxWidth: 250)
+                .frame(minWidth: 150)
                 .aspectRatio(contentMode: .fill)
                 .clipped()
                 .cornerRadius(UI.cornerRadius)
                 .shadow(radius: UI.shadowRadius)
-                
-                //                .background(category.icon
-                //                                .resizable()
-                //                                .aspectRatio(contentMode: .fill)
-                //                                .clipped()
-                //                                .overlay(Rectangle().opacity(0.2))
-                //                                .cornerRadius(UI.cornerRadius)
-                //                .shadow(radius: UI.shadowRadius)
-                //                )
             } else {
                 Group {
                     Text(tag.name)
@@ -56,7 +47,7 @@ struct TagTileView: View {
                         .padding()
                 }
                 .frame(height: 110)
-                .frame(minWidth: 150, maxWidth: 200)
+                .frame(minWidth: 150)
                 .background(LinearGradient(
                     colors: randomColorMix(),
                     startPoint: .bottomLeading,
