@@ -18,6 +18,7 @@ final class FirebaseConnection {
     
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
+    // MARK: - LoadAlert()
     static func loadAlert(completion: @escaping (_ result: HomePageAlert?, _ error: Error?) -> Void) {
         functions.httpsCallable("loadAlert").call() { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {
@@ -49,6 +50,7 @@ final class FirebaseConnection {
         }
     }
     
+    // MARK: - LoadNews()
     static func loadNews(lastLoadedDocumentID: FirestoreID? = nil, limit: Int = 15, completion: @escaping (_ results: (articles: [NewsArticle], metadata: Metadata)?, _ error: Error?) -> Void) {
         var articles: [NewsArticle] = []
         let httpsCallable = functions.httpsCallable("loadNews")
@@ -119,6 +121,7 @@ final class FirebaseConnection {
         }
     }
     
+    // MARK: - LoadSlideshowImages()
     static func loadSlideshowImages(lastLoadedDocumentID: FirestoreID? = nil, limit: Int, completion: @escaping (_ results: (images: [SlideshowImage], metadata: Metadata)?, _ error: Error?) -> Void) {
         var images: [SlideshowImage] = []
         
@@ -187,6 +190,8 @@ final class FirebaseConnection {
             }
         }
     }
+    
+    // MARK: - Search()
     
     /// Searches Firestore using the `search` cloud function
     /// - Parameters:
@@ -436,6 +441,8 @@ final class FirebaseConnection {
         }
     }
     
+    // MARK: - LoadRebbeim()
+    
     /// Loads `Rabbi` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
@@ -514,6 +521,7 @@ final class FirebaseConnection {
         }
     }
     
+    // MARK: ContentClosure()
     private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
         var content: AVContent = (videos: [], audios: [])
         
@@ -638,6 +646,8 @@ final class FirebaseConnection {
         }
     }
     
+    // MARK: - loadContent()
+    
     /// Loads `YTSContent` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
@@ -660,6 +670,8 @@ final class FirebaseConnection {
         httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
     
+    
+    // MARK: LoadContent by Rabbi
     /// Loads `YTSContent` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
@@ -669,7 +681,6 @@ final class FirebaseConnection {
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     ///   - attributionRabbi: The function only returns content attributed to the `Rabbi` object.
     static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), matching rabbi: Rabbi, completion: @escaping (_ results: (content: AVContent, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
-        print("Loading content...")
         var data: [String: Any] = [
             "limit": options.limit,
             "includeThumbnailURLs": options.includeThumbnailURLs,
@@ -686,7 +697,7 @@ final class FirebaseConnection {
         httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
     
-    
+    // MARK: LoadContent by Tag
     /// Loads `YTSContent` objects from Firestore.
     /// - Parameters:
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
@@ -711,6 +722,7 @@ final class FirebaseConnection {
         httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
 }
+
 
 extension Date {
     init?(firebaseTimestampDictionary: [String: Int]) {

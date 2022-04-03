@@ -11,7 +11,7 @@ import SwiftUI
 typealias FirestoreID = String
 typealias FileID = String
 
-
+// MARK: - HomePageAlert
 class HomePageAlert {
     // title should have 40 char limit
     var title: String
@@ -26,6 +26,7 @@ class HomePageAlert {
     
 }
 
+// MARK: - NewsArticle
 class NewsArticle: Identifiable {
     var images: [SlideshowImage]
     var title: String
@@ -48,7 +49,7 @@ class NewsArticle: Identifiable {
 }
 
 
-
+// MARK: - Rabbi
 class Rabbi: Hashable {
     /// The `FirestoreID` associated with this object in Firestore
     private(set) var firestoreID: FirestoreID
@@ -80,6 +81,7 @@ class Rabbi: Hashable {
     }
 }
 
+// MARK: - DetailedRabbi
 class DetailedRabbi: Rabbi, URLImageable {
     /// The profile image associated with this object
     var profileImage: Image?
@@ -183,6 +185,7 @@ class DetailedRabbi: Rabbi, URLImageable {
 }
 
 
+// MARK: - YTSContent
 /// A content object modeled like a Firestore content document
 protocol YTSContent: URLImageable, Hashable {
     /// The `FirestoreID` associated with this object in Firestore
@@ -231,6 +234,7 @@ extension YTSContent {
     }
 }
 
+// MARK: - Video
 class Video: YTSContent, URLImageable {
     internal var firestoreID: FirestoreID
     internal var fileID: FileID?
@@ -413,6 +417,7 @@ class Video: YTSContent, URLImageable {
                               favoritedAt: nil)
 }
 
+// MARK: - Audio
 class Audio: YTSContent, Hashable {
     var image: Image? = Image("AudioPlaceholder")
     var imageURL: URL?
@@ -531,6 +536,7 @@ class Audio: YTSContent, Hashable {
         tags: [])
 }
 
+// MARK: - Tag
 class Tag: Hashable {
     var name: String
     
@@ -549,6 +555,7 @@ class Tag: Hashable {
     static var sample = Tag("Parsha")
 }
 
+// MARK: - Category
 /// An enhanced wrapper on a ``Tag`` which includes an icon
 class Category: Tag, URLImageable {
     
@@ -576,6 +583,7 @@ let tags: [Tag] = [Category(name: "Parsha", icon: Image("parsha")), Category(nam
 
 typealias AVContent = (videos: [Video], audios: [Audio])
 
+// MARK: - SortableYTSContent
 class SortableYTSContent: Hashable {
     static func == (lhs: SortableYTSContent, rhs: SortableYTSContent) -> Bool {
         return lhs.id == rhs.id
