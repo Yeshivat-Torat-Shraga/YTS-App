@@ -16,6 +16,7 @@ import {
 	RebbeimFirebaseDocument,
 	SlideshowImageDocument,
 	SlideshowImageFirebaseDocument,
+	TagFirebaseDocument,
 } from './types';
 import {
 	log,
@@ -676,6 +677,63 @@ exports.generateThumbnail = storage
 		// Step 6: Delete the temporary file
 		unlinkSync(tempFilePath);
 	});
+
+exports.loadCategories = https.onCall(async (callData, context): Promise<LoadData> => {
+	/*
+
+	[{
+		name: "cat1",
+		displayName: "Category 1",
+		subCategories: [{
+			name: "subcat1",
+			displayName: "Subcategory 1"
+		}, {
+			name: "subcat2",
+			displayName: "Subcategory 2"
+		}]
+	}, {
+		name: "cat2",
+		displayName: "Category 2",
+		subCategories: []
+	}, {
+		name: "cat3",
+		displayName: "Category 3",
+		subCategories: []
+	}]
+	 */
+
+	// === APP CHECK ===
+	verifyAppCheck(context);
+	// Right now, there are no options to configure.
+	// This function will load all tags documents from the database and return them in JSON format.
+	const COLLECTION = 'tags';
+	const db = admin.firestore();
+	let query = db.collection(COLLECTION);
+	let querySnapshot = await query.get();
+	if (querySnapshot.empty) {
+		return {
+			metadata: {
+				lastLoadedDocID: null,
+				finalCall: true,
+			},
+			results: [],
+		};
+	}
+	let categories: any[] = [];
+	querySnapshot.forEach((doc) => {
+		const id = doc.id;
+		const data = doc.data() as TagFirebaseDocument;
+		data.id = id;
+		categories.push(data);
+	});
+	return {
+		metadata: {
+			lastLoadedDocID: querySnapshot.docs[querySnapshot.docs.length - 1].id,
+			finalCall: true,
+		},
+		results: categories,
+	};
+});
 
 exports.search = https.onCall(async (callData, context): Promise<any> => {
 	// === APP CHECK ===

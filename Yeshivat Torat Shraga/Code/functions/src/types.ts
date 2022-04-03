@@ -55,6 +55,13 @@ export interface ContentDocument {
 	author: Author;
 }
 
+export interface TagFirebaseDocument {
+	id: string;
+	name: string;
+	displayName: string;
+	subCategories?: TagFirebaseDocument[];
+}
+
 export class NewsFirebaseDocument {
 	author: string;
 	body: string;
@@ -113,10 +120,7 @@ export class SlideshowImageFirebaseDocument {
 	uploaded: FirebaseFirestore.Timestamp;
 
 	constructor(data: FirebaseFirestore.DocumentData) {
-		if (
-			isString(data.image_name) &&
-			data.uploaded instanceof FirebaseFirestore.Timestamp
-		) {
+		if (isString(data.image_name) && data.uploaded instanceof FirebaseFirestore.Timestamp) {
 			this.image_name = data.image_name;
 			this.title = data.title;
 			this.uploaded = data.uploaded;
@@ -202,8 +206,7 @@ export class Author {
 			isString(data.id) &&
 			isString(data.name) &&
 			isString(data.profile_picture_filename) &&
-			(isString(data.profile_picture_url) ||
-				data.profile_picture_url === undefined)
+			(isString(data.profile_picture_url) || data.profile_picture_url === undefined)
 		) {
 			this.id = data.id;
 			this.name = data.name;

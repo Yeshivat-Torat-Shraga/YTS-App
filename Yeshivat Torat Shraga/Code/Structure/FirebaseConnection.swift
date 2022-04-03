@@ -721,6 +721,55 @@ final class FirebaseConnection {
         
         httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
     }
+    
+    // MARK: - LoadCategories
+    static func loadCategories(completion: @escaping (_ results: [Tag]?, _ error: Error?) -> Void) {
+        
+        let httpsCallable = functions.httpsCallable("loadCategories")
+        
+        httpsCallable.call() { callResult, callError in
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            guard let categoryDocuments = response["results"] as? [[String: Any]]
+//                  let metadata = response["metadata"] as? [String: Any]
+            else {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            }
+            
+            var categories: [Tag] = []
+                        
+            let group = DispatchGroup()
+            
+            for _ in categoryDocuments {
+                group.enter()
+            }
+            
+            for category in categoryDocuments {
+                guard let name = category["name"] as? String,
+                      let displayName = category["displayName"] as? String
+                else {
+                    print("Tag ID \(category["id"] as? String ?? "-Unknown-") is missing a name or displayName")
+                    group.leave()
+                    continue
+                }
+                if let image = UIImage(named: name) {
+                    let swiftUIImage = Image(uiImage: image)
+                    categories.append(Category(name: displayName, icon: swiftUIImage))
+                } else {
+                    categories.append(Tag(displayName))
+                }
+                group.leave()
+            }
+            
+            group.notify(queue: .main) {
+                completion(categories, callError)
+            }
+        }
+    }
 }
 
 

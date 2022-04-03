@@ -579,18 +579,6 @@ class Category: Tag, URLImageable {
     }
 }
 
-let tags: [Tag] = [
-    Category(name: "Parsha", icon: Image("parsha")),
-    Category(name: "Gemara", icon: Image("Gemara")),
-    Category(name: "Mussar", icon: Image("Mussar")),
-    Category(name: "Nach", icon: Image("Nach")),
-    Category(name: "Tefilla", icon: Image("Tefilla")),
-    Category(name: "Halacha", icon: Image("Halacha")),
-    Category(name: "Yimei Iyun", icon: Image("YomIyun")),
-    Category(name: "Chagim", icon: Image("Chagim")),
-    Category(name: "Misc.", icon: Image("Misc"))
-]
-
 typealias AVContent = (videos: [Video], audios: [Audio])
 
 // MARK: - SortableYTSContent

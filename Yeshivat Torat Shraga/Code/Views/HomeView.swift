@@ -115,19 +115,28 @@ struct HomeView: View {
                         }
                         .padding(.horizontal)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack {
-                                ForEach(tags, id: \.name) { tag in
-                                    TagTileView(tag)
-                                        .padding(.vertical)
-                                        .simultaneousGesture(
-                                            TapGesture()
-                                                .onEnded {
-                                                    Haptics.shared.play(UI.Haptics.navLink)
-                                                })
-                                    
-                                }
-                            }.padding(.horizontal)
+                        if let tags = model.tags {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack {
+                                    ForEach(tags, id: \.name) { tag in
+                                        TagTileView(tag)
+                                            .padding(.vertical)
+                                            .simultaneousGesture(
+                                                TapGesture()
+                                                    .onEnded {
+                                                        Haptics.shared.play(UI.Haptics.navLink)
+                                                    })
+                                        
+                                    }
+                                }.padding(.horizontal)
+                            }
+                        } else {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(YTSProgressViewStyle())
+                                Spacer()
+                            }.padding()
                         }
                         Divider().padding(.horizontal)
                     }

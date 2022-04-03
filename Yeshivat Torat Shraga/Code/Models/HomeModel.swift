@@ -20,6 +20,7 @@ class HomeModel: ObservableObject, ErrorShower {
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     @Published var slideshowImages: [SlideshowImage]?
+    @Published var tags: [Tag]?
     
     init() {
         load()
@@ -37,7 +38,7 @@ class HomeModel: ObservableObject, ErrorShower {
         
         let group = DispatchGroup()
 
-        for _ in ["Rebbeim", "Sortables", "Slideshow images", "HomePageAlert"] {
+        for _ in ["Rebbeim", "Sortables", "Slideshow images", "HomePageAlert", "Tags"] {
             group.enter()
         }
         
@@ -94,6 +95,16 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showAlert = true
                 self.homePageAlertToShow = homeAlert
             }
+            group.leave()
+        }
+        
+        FirebaseConnection.loadCategories() { tags, error in
+            guard let tags = tags else {
+                group.leave()
+                self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
+                return
+            }
+            self.tags = tags
             group.leave()
         }
         
