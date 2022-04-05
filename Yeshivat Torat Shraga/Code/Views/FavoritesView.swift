@@ -24,6 +24,8 @@ struct FavoritesView: View {
                                     .font(.title3)
                                 Spacer()
                             }
+                            .padding()
+                            
                             if let contentArray = favorites[rabbi] {
                                 ForEach(contentArray, id: \.self) { sortable in
                                     SortableFavoritesCardView(content: sortable)
