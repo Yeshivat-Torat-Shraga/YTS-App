@@ -390,7 +390,7 @@ exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
 	let query = db.collection(COLLECTION).orderBy('dateIssued', 'desc');
 
 	const alert = await query.limit(1).get();
-	if (alert.docs) {
+	if (alert.docs && alert.docs.length > 0 && alert.docs[0].exists) {
 		const doc = alert.docs[0];
 		const data = new AlertFirebaseDocument(doc.data());
 		const document: AlertDocument = {
