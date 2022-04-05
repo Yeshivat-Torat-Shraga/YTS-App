@@ -265,7 +265,7 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 					url: url,
 					uploaded: data.uploaded,
 				};
-				log(`Returning data: '${JSON.stringify(document)}'`);
+				// log(`Returning data: '${JSON.stringify(document)}'`);
 
 				return document;
 			} catch (err) {

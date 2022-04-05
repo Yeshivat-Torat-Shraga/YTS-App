@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
 const FirebaseFirestore = admin.firestore;
-import { log } from 'firebase-functions/logger';
+// import { log } from 'firebase-functions/logger';
+import { logger } from 'firebase-functions/v1';
 import { isString } from './helpers';
 
 export interface LoadData {
@@ -82,10 +83,7 @@ export class NewsFirebaseDocument {
 			this.date = data.date;
 			this.imageURLs = data.imageURLs;
 			this.title = data.title;
-		} else {
-			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
-			throw new Error('Invalid data');
-		}
+		} else initFailure(data);
 	}
 }
 
@@ -106,10 +104,7 @@ export class AlertFirebaseDocument {
 			this.body = data.body;
 			this.dateIssued = data.dateIssued;
 			this.dateExpired = data.dateExpired;
-		} else {
-			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
-			throw new Error('Invalid data');
-		}
+		} else initFailure(data);
 	}
 }
 
@@ -125,10 +120,7 @@ export class SlideshowImageFirebaseDocument {
 			this.title = data.title;
 			this.uploaded = data.uploaded;
 			// log(`Succeeded initializing new object: ${JSON.stringify(data)}`);
-		} else {
-			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
-			throw new Error('Invalid data');
-		}
+		} else initFailure(data);
 	}
 }
 
@@ -146,10 +138,7 @@ export class RebbeimFirebaseDocument {
 			this.name = data.name;
 			this.profile_picture_filename = data.profile_picture_filename;
 			this.search_index = data.search_index;
-		} else {
-			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
-			throw new Error('Invalid data');
-		}
+		} else initFailure(data);
 	}
 }
 
@@ -188,10 +177,7 @@ export class ContentFirebaseDocument {
 			this.tags = data.tags;
 			this.title = data.title;
 			this.type = data.type;
-		} else {
-			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
-			throw new Error('Invalid data');
-		}
+		} else initFailure(data);
 	}
 }
 
@@ -212,9 +198,12 @@ export class Author {
 			this.name = data.name;
 			this.profile_picture_filename = data.profile_picture_filename;
 			this.profile_picture_url = data.profile_picture_url;
-		} else {
-			log(`Failed to initialize new object: ${JSON.stringify(data)}`);
-			throw new Error('Invalid data');
-		}
+		} else initFailure(data);
 	}
+}
+
+function initFailure(badData: any): never {
+	logger.warn(`Failed to initialize new object`);
+	console.warn(JSON.stringify(badData, null, 2));
+	throw new Error(`Invalid data in document ${badData.id}`);
 }
