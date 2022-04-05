@@ -898,6 +898,12 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 					return null;
 				}
 
+				const tagData = {
+					id: data.tagData.id,
+					name: data.tagData.name,
+					displayName: data.tagData.displayName,
+				};
+
 				try {
 					const sourcePath = await getURLFor(`${data.source_path}`);
 					const author = await getRabbiFor(
@@ -916,6 +922,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 						type: data.type,
 						source_url: sourcePath,
 						author: author,
+						tagData,
 					};
 				} catch (err) {
 					errors.push(err as string);
