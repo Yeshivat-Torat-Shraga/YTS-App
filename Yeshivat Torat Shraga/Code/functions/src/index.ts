@@ -526,6 +526,11 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 				return null;
 			}
 
+			const tagData = {
+				id: data.tagData.id,
+				name: data.tagData.name,
+				displayName: data.tagData.displayName,
+			};
 			try {
 				const sourcePath = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(data.attributionID, queryOptions.includeAllAuthorData);
