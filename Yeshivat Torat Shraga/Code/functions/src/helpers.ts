@@ -17,7 +17,7 @@ export function verifyAppCheck(context: https.CallableContext): void {
 				'failed-precondition',
 				'The function must be called from an App Check verified app.'
 			);
-		else log('App Check verification failed, but App Check is not enforced.');
+		else logger.warn('App Check verification failed, but App Check is not enforced.');
 	} else log('App Check verification passed.');
 }
 
