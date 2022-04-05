@@ -54,13 +54,20 @@ export interface ContentDocument {
 	type: string;
 	source_url: string;
 	author: Author;
+	tagData: {
+		id: string;
+		name: string;
+		displayName: string;
+	};
 }
 
-export interface TagFirebaseDocument {
+export interface TagDocument {
 	id: string;
 	name: string;
 	displayName: string;
-	subCategories?: TagFirebaseDocument[];
+	isParent: boolean;
+	parentID?: string;
+	subCategories?: TagDocument[];
 }
 
 export class NewsFirebaseDocument {
@@ -150,7 +157,11 @@ export class ContentFirebaseDocument {
 	duration: number;
 	search_index: string[];
 	source_path: string;
-	tags: string[];
+	tagData: {
+		id: string;
+		name: string;
+		displayName: string;
+	};
 	title: string;
 	type: string;
 
@@ -163,7 +174,10 @@ export class ContentFirebaseDocument {
 			typeof data.duration === 'number' &&
 			Array.isArray(data.search_index) &&
 			isString(data.source_path) &&
-			Array.isArray(data.tags) &&
+			data.tagData !== undefined &&
+			isString(data.tagData.id) &&
+			isString(data.tagData.name) &&
+			isString(data.tagData.displayName) &&
 			isString(data.title) &&
 			isString(data.type)
 		) {
@@ -174,9 +188,33 @@ export class ContentFirebaseDocument {
 			this.duration = data.duration;
 			this.search_index = data.search_index;
 			this.source_path = data.source_path;
-			this.tags = data.tags;
+			this.tagData = data.tagData;
 			this.title = data.title;
 			this.type = data.type;
+		} else initFailure(data);
+	}
+}
+
+export class TagFirebaseDocument {
+	name: string;
+	displayName: string;
+	parentID?: string;
+	isParent?: boolean;
+	subCategories?: string[];
+
+	constructor(data: FirebaseFirestore.DocumentData) {
+		if (
+			isString(data.name) &&
+			isString(data.displayName) &&
+			(data.parentID === undefined || isString(data.parentID)) &&
+			(data.isParent === undefined || typeof data.isParent === 'boolean') &&
+			(data.subCategories === undefined || Array.isArray(data.subCategories))
+		) {
+			this.name = data.name;
+			this.displayName = data.displayName;
+			this.parentID = data.parentID;
+			this.isParent = data.isParent;
+			this.subCategories = data.subCategories;
 		} else initFailure(data);
 	}
 }
