@@ -5,8 +5,6 @@ from flask_basicauth import BasicAuth
 import ffmpeg
 import os
 import settings
-import json
-
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 
 # Check if the following environment variables are set:
