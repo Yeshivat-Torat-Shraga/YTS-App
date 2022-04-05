@@ -17,16 +17,16 @@ struct DisplayRabbiView: View {
     var body: some View {
         ScrollView {
             Group {
-                HStack {
-                    Text("Favorites")
-                        .font(.title3)
-                        .bold()
-                    Spacer()
-                }
-                .padding()
-                
-                VStack {
-                    if let favorites = model.favorites, favorites.count > 0 {
+                if let favorites = model.favorites, favorites.count > 0 {
+                    HStack {
+                        Text("Favorites")
+                            .font(.title3)
+                            .bold()
+                        Spacer()
+                    }
+                    .padding()
+                    
+                    VStack {
                         ForEach(favorites, id: \.self) { favorite in
                             if let video = favorite.video {
                                 VideoCardView(video: video)
