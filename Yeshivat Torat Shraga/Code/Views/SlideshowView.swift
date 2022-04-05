@@ -29,7 +29,7 @@ struct SlideshowView: View {
         } else {
         SingleAxisGeometryReader(axis: .horizontal) { width in
             TabView(selection: $imageTabIndex) {
-                ForEach(slideshowImages.indices) { index in
+                ForEach(slideshowImages.indices, id: \.self) { index in
                     let image = slideshowImages[index].downloadableImage
                     image
                         .scaledToFill()

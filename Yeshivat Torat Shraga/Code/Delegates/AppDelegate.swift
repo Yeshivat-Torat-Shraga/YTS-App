@@ -98,7 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let stringToken = deviceToken.reduce("", {$0 + String(format: "%02X", $1)}).uppercased()
+//        let stringToken = deviceToken.reduce("", {$0 + String(format: "%02X", $1)}).uppercased()
 //        print("APNs token retrieved: \(stringToken)")
         Messaging.messaging().subscribe(toTopic: "all") { error in
             if let error = error {
@@ -126,7 +126,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         print("source application = \(sendingAppID ?? "Unknown")")
         
         // Process the URL.
-        guard let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true), let albumPath = components.path, let params = components.queryItems else {
+        guard let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true), // components
+              let _ = components.path, // albumPath
+              let _ = components.queryItems // params
+        else {
             print("Invalid URL or album path missing")
             return false
         }
@@ -212,7 +215,7 @@ extension AppDelegate {
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions)
                                 -> Void) {
-        let userInfo = notification.request.content.userInfo
+//        let userInfo = notification.request.content.userInfo
         
         // With swizzling disabled you must let Messaging know about the message, for Analytics
         // Messaging.messaging().appDidReceiveMessage(userInfo)
@@ -232,7 +235,7 @@ extension AppDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
-        let userInfo = response.notification.request.content.userInfo
+//        let userInfo = response.notification.request.content.userInfo
         
         // [START_EXCLUDE]
         // Print message ID.

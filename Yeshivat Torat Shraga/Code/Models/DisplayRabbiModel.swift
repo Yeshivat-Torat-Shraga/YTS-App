@@ -49,13 +49,13 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
                 if self.content == nil {
                     self.content = results.content
                 } else {
-                    if self.content!.videos == nil {
+                    if self.content?.videos == nil {
                         self.content!.videos = results.content.videos
                     } else {
                         self.content!.videos.append(contentsOf: results.content.videos)
                     }
                     
-                    if self.content!.audios == nil {
+                    if self.content?.audios == nil {
                         self.content!.audios = results.content.audios
                     } else {
                         self.content!.audios.append(contentsOf: results.content.audios)
