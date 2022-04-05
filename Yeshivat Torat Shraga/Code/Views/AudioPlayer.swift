@@ -246,6 +246,10 @@ struct AudioPlayer: View {
                     if RootModel.audioPlayer.player.timeControlStatus == .paused {
                         Button(action: {
                             Haptics.shared.play(.soft)
+                            let threshhold = 0.05
+                            if player.displayTime + threshhold >= player.itemDuration {
+                                player.scrub(to: .zero)
+                            }
                             self.play()
                         }, label: {
                             Image(systemName: "play.fill")
