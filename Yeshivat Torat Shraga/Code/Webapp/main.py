@@ -7,6 +7,8 @@ import os
 import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 
+PRODUCTION = os.getenv("PRODUCTION")
+
 # Check if the following environment variables are set:
 username = settings.username
 password = settings.password
@@ -15,7 +17,8 @@ cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
 
 app = Flask(__name__)
-basic_auth = BasicAuth(app)
+if PRODUCTION:
+    basic_auth = BasicAuth(app)
 
 app.config["BASIC_AUTH_USERNAME"] = settings.username
 app.config["BASIC_AUTH_PASSWORD"] = settings.password
@@ -450,7 +453,7 @@ def slideshow_upload():
 
 if __name__ == "__main__":
     app.secret_key = "super secret key"
-    if os.getenv("PRODUCTION"):
+    if PRODUCTION:
         print("Running in production mode")
         app.run(debug=False, host="0.0.0.0", port=80)
     else:
