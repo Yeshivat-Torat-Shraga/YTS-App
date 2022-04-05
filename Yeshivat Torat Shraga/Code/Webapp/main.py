@@ -286,23 +286,24 @@ def shiurim_upload():
         source_path = f"HLSStreams/{content_type}/{stripped_name}/{stripped_name}.m3u8"
 
         # Tags:
-        selected_tags = request.form.get("tags", "").split(",")
-        # lowercase the entire list
-        full_tags = []
-        [
-            full_tags.append({"name": tag.lower(), "fullname": tag})
-            for tag in selected_tags
-        ]
-        # - For each tag, check if it exists in the tags collection,
-        #   if it doesn't, create it.
-        for tag in selected_tags:
-            if tag not in [tag["name"] for tag in tags]:
-                tags_collection.add({"name": tag})
+        # Default to MISC.
+        selected_tag_ID = request.form.get("tag", "NKwXl5QXmOe6rlQ9J3kW")
+
+        # Get the tag document from the tag ID.
+        selected_tag = [tag for tag in tags if tag["id"] == selected_tag_ID][0]
+        tag_data = {
+            "name": selected_tag["name"],
+            "displayName": selected_tag["displayName"],
+            "id": selected_tag["id"],
+        }
 
         # Search Index:
         #   Decide on a formulae for creating the search indices
         search_index = [word.lower() for word in title.split(" ")]
-        [search_index.append(tag) for tag in selected_tags]
+        search_index.extend([word.lower()
+                            for word in selected_tag["displayName"].split(" ")])
+        search_index.extend([word.lower()
+                            for word in author.split(" ") if word != "rabbi"])
 
         new_content_document = {
             "attributionID": attributionID,
@@ -312,7 +313,7 @@ def shiurim_upload():
             "duration": duration,
             "search_index": search_index,
             "source_path": source_path,
-            "tags": selected_tags,
+            "tagData": tag_data,
             "title": title,
             "type": content_type,
         }
@@ -329,7 +330,7 @@ def shiurim_upload():
         for tmpfile in os.listdir("tmp"):
             os.remove("tmp/" + tmpfile)
         os.rmdir("tmp")
-        return render_template("shiurim.html", data=collection)
+        return redirect(url_for("shiurim"))
 
 
 @app.route("/news", methods=["GET"])
