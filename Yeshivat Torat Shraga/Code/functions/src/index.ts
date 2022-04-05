@@ -751,12 +751,36 @@ exports.loadCategories = https.onCall(async (callData, context): Promise<LoadDat
 			results: [],
 		};
 	}
-	let categories: any[] = [];
+	let categories: TagDocument[] = [];
 	querySnapshot.forEach((doc) => {
-		const id = doc.id;
-		const data = doc.data() as TagFirebaseDocument;
-		data.id = id;
-		categories.push(data);
+		let data = new TagFirebaseDocument(doc.data());
+		let category: TagDocument = {
+			id: doc.id,
+			name: data.name,
+			displayName: data.displayName,
+			isParent: data.isParent || false,
+		};
+		if (data.subCategories) {
+			category.subCategories = data.subCategories
+				.map((subCategoryID: string) => {
+					// Get the subcategory document
+					let subCategory = querySnapshot.docs.find((doc) => doc.id === subCategoryID);
+					if (!subCategory) {
+						return null;
+					}
+					let subCategoryData = new TagFirebaseDocument(subCategory.data());
+					return {
+						id: subCategory.id,
+						name: subCategoryData.name,
+						displayName: subCategoryData.displayName,
+						isParent: subCategoryData.isParent || false, // This should always be false
+					} as TagDocument;
+				})
+				.filter((subCategory) => subCategory !== null) as TagDocument[];
+		}
+		// Add the category to the list if
+		// it does not have a parentID
+		if (!data.parentID) categories.push(category);
 	});
 	return {
 		metadata: {
