@@ -42,7 +42,7 @@ struct TagView: View {
                 VStack {
                     if let sortables = model.sortables {
                         if model.tag.isParent {
-                            ForEach(Array(sortables.keys), id: \.self) { subCategory in
+                            ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
                                 HStack {
                                     Text(subCategory.name)
                                         .font(.title3)
