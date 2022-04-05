@@ -441,9 +441,36 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	const db = admin.firestore();
 	let query = db.collection(COLLECTION);
 	if (queryOptions.search) {
-		if (queryOptions.search.field == 'tag') {
-			query = query.where('tags', 'array-contains', queryOptions.search.value) as any;
-			log(`Only getting content where [tags] contains ${queryOptions.search.value}`);
+		// Make sure the field and value are set
+		if (!queryOptions.search.field || !queryOptions.search.value) {
+			throw new https.HttpsError('invalid-argument', 'The search field and value must be set.');
+		}
+		if (queryOptions.search.field == 'tagID') {
+			// If it's a tag ID, we need to get the tag document using the tag ID
+			const tagSnapshot = await db.collection('tags').doc(queryOptions.search.value).get();
+			// If the tag document doesn't exist, return
+			if (!tagSnapshot.exists) {
+				return {
+					metadata: {
+						lastLoadedDocID: null,
+						finalCall: true,
+					},
+					results: null,
+				};
+			}
+			// Get the tag document
+			const tagDoc = new TagFirebaseDocument(tagSnapshot.data()!);
+			// If the tag is a child tag, we're good to go.
+			// Otherwise, it't a parent tag, so we need to get all the child tags
+			if (tagDoc.isParent) {
+				let subCategoryIDs = tagDoc.subCategories!;
+				// Get the child tags
+				// Search the tags collection for all tags with a parentTagID equal to the tagID
+				query = query.where('tagData.id', 'in', subCategoryIDs) as any;
+			} else {
+				query = query.where('tagData.id', '==', queryOptions.search.value) as any;
+				log(`Only getting content where tagID == ${queryOptions.search.value}`);
+			}
 		} else {
 			query = query.where(queryOptions.search.field, '==', queryOptions.search.value) as any;
 			log(
@@ -513,6 +540,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					type: data.type,
 					source_url: sourcePath,
 					author: author,
+					tagData,
 				};
 			} catch (err) {
 				log(`Error getting data for docID: '${doc.id}': ${err}`, true);
@@ -526,9 +554,13 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 			lastLoadedDocID: lastDocumentFromQueryID,
 			finalCall: queryOptions.limit > docs.length,
 		},
-		results: contentDocs.filter((doc) => {
-			return doc != null;
-		}),
+		results: contentDocs
+			.filter((doc) => {
+				return doc != null;
+			})
+			.sort((lhs, rhs) => {
+				return lhs!.date < rhs!.date ? 1 : -1;
+			}),
 	};
 });
 
