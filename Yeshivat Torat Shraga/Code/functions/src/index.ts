@@ -16,6 +16,7 @@ import {
 	RebbeimFirebaseDocument,
 	SlideshowImageDocument,
 	SlideshowImageFirebaseDocument,
+	TagDocument,
 	TagFirebaseDocument,
 } from './types';
 import {
