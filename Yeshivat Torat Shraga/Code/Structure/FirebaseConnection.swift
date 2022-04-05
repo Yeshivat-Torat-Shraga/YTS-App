@@ -88,7 +88,11 @@ final class FirebaseConnection {
             }
             
             for document in urlDocuments {
-                guard let body = document["body"] as? String, let title = document["title"] as? String, let author = document["author"] as? String, let uploadDict = document["uploaded"] as? [String: Int] else {
+                guard let body = document["body"] as? String,
+                      let title = document["title"] as? String,
+                      let author = document["author"] as? String,
+                      let uploadDict = document["uploaded"] as? [String: Int]
+                else {
                     print("Invalid data. Exiting scope.")
                     group.leave()
                     return
@@ -262,7 +266,10 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let metadata = response["metadata"] as? [String: Any], let contentMetadata = metadata["content"] as? [String: Any], let rebbeimMetadata = metadata["rebbeim"] as? [String: Any] else {
+            guard let metadata = response["metadata"] as? [String: Any],
+                  let contentMetadata = metadata["content"] as? [String: Any],
+                  let rebbeimMetadata = metadata["rebbeim"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -292,10 +299,34 @@ final class FirebaseConnection {
                 }
                 
                 for contentDocument in contentDocuments {
-                    guard let id = contentDocument["id"] as? FirestoreID, let title = contentDocument["title"] as? String, let description = contentDocument["description"] as? String, let dateDictionary = contentDocument["date"] as? [String: Int], let type = contentDocument["type"] as? String, let author = contentDocument["author"] as? [String: Any], let sourceURLString = contentDocument["source_url"] as? String else {
+                    guard let id = contentDocument["id"] as? FirestoreID,
+                          let type = contentDocument["type"] as? String,
+                          let title = contentDocument["title"] as? String,
+                          let author = contentDocument["author"] as? [String: Any],
+                          let description = contentDocument["description"] as? String,
+                          let dateDictionary = contentDocument["date"] as? [String: Int],
+                          let sourceURLString = contentDocument["source_url"] as? String,
+                          let categoryDocument = contentDocument["tagData"] as? [String: Any]
+                    else {
                         print("Document missing sufficient data. Continuing to next document.")
                         group.leave()
                         continue
+                    }
+                    
+                    guard let tagDisplayName = categoryDocument["displayName"] as? String,
+                          let tagName = categoryDocument["name"] as? String,
+                          let tagID = categoryDocument["id"] as? FirestoreID
+                    else {
+                        print("Content tag data is invalid. Continuing to the next document.")
+                        group.leave()
+                        continue
+                    }
+                    let tag: Tag?
+                    if let image = UIImage(named: tagName) {
+                        let swiftUIImage = Image(uiImage: image)
+                        tag = Category(name: tagDisplayName, id: tagID, icon: swiftUIImage)
+                    } else {
+                        tag = Tag(tagDisplayName, id: tagID)
                     }
                     
                     guard let sourceURL = URL(string: sourceURLString) else {
@@ -312,7 +343,9 @@ final class FirebaseConnection {
                         continue
                     }
                     
-                    guard let authorID = author["id"] as? FirestoreID, let authorName = author["name"] as? String else {
+                    guard let authorID = author["id"] as? FirestoreID,
+                          let authorName = author["name"] as? String
+                    else {
                         print("Invalid author value. Exiting scope.")
                         group.leave()
                         continue
@@ -322,7 +355,9 @@ final class FirebaseConnection {
                     case "video":
                         let rabbi: Rabbi
                         if contentOptions.includeDetailedAuthors {
-                            guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                            guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                                  let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                            else {
                                 print("Author profile picture URL is invalid, continuing to next document.")
                                 group.leave()
                                 continue
@@ -340,13 +375,15 @@ final class FirebaseConnection {
                             description: description,
                             date: date,
                             duration: duration,
-                            tags: []))
+                            tag: tag!))
                         group.leave()
                         continue
                     case "audio":
                         let rabbi: Rabbi
                         if contentOptions.includeDetailedAuthors {
-                            guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                            guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                                  let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                            else {
                                 print("Author profile picture URL is invalid, continuing to next document.")
                                 group.leave()
                                 continue
@@ -363,7 +400,7 @@ final class FirebaseConnection {
                             description: description,
                             date: date,
                             duration: duration,
-                            tags: []))
+                            tag: tag!))
                         group.leave()
                         continue
                     default:
@@ -397,14 +434,17 @@ final class FirebaseConnection {
                 }
                 
                 for rabbiDocument in rabbiDocuments {
-                    guard let id = rabbiDocument["id"] as? FirestoreID, let name = rabbiDocument["name"] as? String else {
+                    guard let id = rabbiDocument["id"] as? FirestoreID,
+                          let name = rabbiDocument["name"] as? String
+                    else {
                         print("Document missing sufficient data. Continuing to next document.")
                         group.leave()
                         continue
                     }
                     
                     if rebbeimOptions.includePictureURLs {
-                        if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String, let profilePictureURL = URL(string: profilePictureURLString) {
+                        if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String,
+                           let profilePictureURL = URL(string: profilePictureURLString) {
                             rebbeim.append(DetailedRabbi(id: id, name: name, profileImageURL: profilePictureURL))
                             group.leave()
                             continue
@@ -468,7 +508,9 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let rabbiDocuments = response["results"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
+            guard let rabbiDocuments = response["results"] as? [[String: Any]],
+                  let metadata = response["metadata"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -492,14 +534,17 @@ final class FirebaseConnection {
             }
             
             for rabbiDocument in rabbiDocuments {
-                guard let id = rabbiDocument["id"] as? FirestoreID, let name = rabbiDocument["name"] as? String else {
+                guard let id = rabbiDocument["id"] as? FirestoreID,
+                      let name = rabbiDocument["name"] as? String
+                else {
                     print("Document missing sufficient data. Continuing to next document.")
                     group.leave()
                     continue
                 }
                 
                 if options.includePictureURLs {
-                    if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String, let profilePictureURL = URL(string: profilePictureURLString) {
+                    if let profilePictureURLString = rabbiDocument["profile_picture_url"] as? String,
+                       let profilePictureURL = URL(string: profilePictureURLString) {
                         rebbeim.append(DetailedRabbi(id: id, name: name, profileImageURL: profilePictureURL))
                         group.leave()
                         continue
@@ -531,7 +576,9 @@ final class FirebaseConnection {
                 return
             }
             
-            guard let contentDocuments = response["results"] as? [[String: Any]], let metadata = response["metadata"] as? [String: Any] else {
+            guard let contentDocuments = response["results"] as? [[String: Any]],
+                  let metadata = response["metadata"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
@@ -554,11 +601,37 @@ final class FirebaseConnection {
             }
             
             for contentDocument in contentDocuments {
-                guard let id = contentDocument["id"] as? FirestoreID, let fileID = contentDocument["fileID"] as? FileID, let title = contentDocument["title"] as? String, let description = contentDocument["description"] as? String, let dateDictionary = contentDocument["date"] as? [String: Int], let type = contentDocument["type"] as? String, let author = contentDocument["author"] as? [String: Any], let sourceURLString = contentDocument["source_url"] as? String else {
+                guard let id = contentDocument["id"] as? FirestoreID,
+                      let type = contentDocument["type"] as? String,
+                      let title = contentDocument["title"] as? String,
+                      let fileID = contentDocument["fileID"] as? FileID,
+                      let author = contentDocument["author"] as? [String: Any],
+                      let description = contentDocument["description"] as? String,
+                      let dateDictionary = contentDocument["date"] as? [String: Int],
+                      let sourceURLString = contentDocument["source_url"] as? String,
+                      let categoryDocument = contentDocument["tagData"] as? [String: Any]
+                else {
                     print("Document missing sufficient data. Continuing to next document.")
                     group.leave()
                     continue
                 }
+                
+                guard let tagDisplayName = categoryDocument["displayName"] as? String,
+                      let tagName = categoryDocument["name"] as? String,
+                      let tagID = categoryDocument["id"] as? FirestoreID
+                else {
+                    print("Content tag data is invalid. Continuing to the next document.")
+                    group.leave()
+                    continue
+                }
+                let tag: Tag?
+                if let image = UIImage(named: tagName) {
+                    let swiftUIImage = Image(uiImage: image)
+                    tag = Category(name: tagDisplayName, id: tagID, icon: swiftUIImage)
+                } else {
+                    tag = Tag(tagDisplayName, id: tagID)
+                }
+
                 
                 guard let sourceURL = URL(string: sourceURLString) else {
                     print("Source URL is invalid. Continuing to next document.")
@@ -574,7 +647,9 @@ final class FirebaseConnection {
                     continue
                 }
                 
-                guard let authorID = author["id"] as? FirestoreID, let authorName = author["name"] as? String else {
+                guard let authorID = author["id"] as? FirestoreID,
+                      let authorName = author["name"] as? String
+                else {
                     print("Invalid author value. Exiting scope.")
                     group.leave()
                     continue
@@ -585,7 +660,9 @@ final class FirebaseConnection {
                     let rabbi: Rabbi
                     
                     if options.includeDetailedAuthors {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                        else {
                             print("Author profile picture URL is invalid, continuing to next document.")
                             group.leave()
                             continue
@@ -604,13 +681,15 @@ final class FirebaseConnection {
                         description: description,
                         date: date,
                         duration: duration,
-                        tags: []))
+                        tag: tag!))
                     group.leave()
                     continue
                 case "audio":
                     let rabbi: Rabbi
                     if options.includeDetailedAuthors {
-                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String, let authorProfilePictureURL = URL(string: authorProfilePictureURLString) else {
+                        guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
+                              let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
+                        else {
                             print("Author profile picture URL is invalid, continuing to next document.")
                             group.leave()
                             continue
@@ -630,7 +709,7 @@ final class FirebaseConnection {
                         description: description,
                         date: date,
                         duration: duration,
-                        tags: []))
+                        tag: tag!))
                     group.leave()
                     continue
                 default:
@@ -709,7 +788,7 @@ final class FirebaseConnection {
     static func loadContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), matching tag: Tag, completion: @escaping (_ results: (content: AVContent, metadata: (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool))?, _ error: Error?) -> Void) {
         var data: [String: Any] = [
             "limit": options.limit,
-            "search": ["field": "tag", "value": tag.name.lowercased()],
+            "search": ["field": "tagID", "value": tag.id],
             "includeThumbnailURLs": options.includeThumbnailURLs,
             "includeAllAuthorData": options.includeDetailedAuthors
         ]
@@ -749,18 +828,31 @@ final class FirebaseConnection {
             }
             
             for category in categoryDocuments {
-                guard let name = category["name"] as? String,
+                guard let id = category["id"] as? String,
+                      let name = category["name"] as? String,
+                      let isParent = category["isParent"] as? Bool,
                       let displayName = category["displayName"] as? String
                 else {
                     print("Tag ID \(category["id"] as? String ?? "-Unknown-") is missing a name or displayName")
                     group.leave()
                     continue
                 }
+                var children: [Tag]? = nil
+                if let subCategory = category["subCategories"] as? [[String: Any]] {
+                var childCategories: [Tag] = []
+                    for child in subCategory {
+                        if let name = child["displayName"] as? String,
+                           let id = child["id"] as? String {
+                                childCategories.append(Tag(name, id: id))
+                        }
+                    }
+                    children = childCategories
+                }
                 if let image = UIImage(named: name) {
                     let swiftUIImage = Image(uiImage: image)
-                    categories.append(Category(name: displayName, icon: swiftUIImage))
+                    categories.append(Category(name: displayName, id: id, isParent: isParent, icon: swiftUIImage, children: children))
                 } else {
-                    categories.append(Tag(displayName))
+                    categories.append(Tag(displayName, id: id, isParent: isParent, children: children))
                 }
                 group.leave()
             }

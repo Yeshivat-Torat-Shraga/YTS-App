@@ -40,41 +40,68 @@ struct TagView: View {
             
             ScrollView {
                 VStack {
-                    //                        HStack {
-                    //                            Text("Recently Uploaded")
-                    //                                .font(.title3)
-                    //                                .bold()
-                    //                            Spacer()
-                    //                        }
                     if let sortables = model.sortables {
-                        ForEach(sortables, id: \.self) { sortable in
-                            if let video = sortable.video {
-                                VideoCardView(video: video)
-                                    .contextMenu {
-                                        Button(action: {}, label: {
-                                            Label("Play", systemImage: "play.fill")
-                                        })
+                        if model.tag.isParent {
+                            ForEach(Array(sortables.keys), id: \.self) { subCategory in
+                                HStack {
+                                    Text(subCategory.name)
+                                        .font(.title3)
+                                        .bold()
+                                    Spacer()
+                                }
+//                                .padding()
+                                if let contentGroup = sortables[subCategory] {
+                                    ForEach(contentGroup, id: \.self) { sortable in
+                                        if let video = sortable.video {
+                                            VideoCardView(video: video)
+                                                .contextMenu {
+                                                    Button(action: {}, label: {
+                                                        Label("Play", systemImage: "play.fill")
+                                                    })
+                                                }
+                                        } else if let audio = sortable.audio {
+                                            AudioCardView(audio: audio)
+                                                .contextMenu {
+                                                    Button(action: {}, label: {
+                                                        Label("Play", systemImage: "play.fill")
+                                                    })
+                                                }
+                                        }
+                                        
                                     }
-                            } else if let audio = sortable.audio {
-                                AudioCardView(audio: audio)
-                                    .contextMenu {
-                                        Button(action: {}, label: {
-                                            Label("Play", systemImage: "play.fill")
-                                        })
+                                }
+                            }
+                        } else {
+                            if let category = sortables[model.tag] {
+                                ForEach(category, id: \.self) { sortable in
+                                    if let video = sortable.video {
+                                        VideoCardView(video: video)
+                                            .contextMenu {
+                                                Button(action: {}, label: {
+                                                    Label("Play", systemImage: "play.fill")
+                                                })
+                                            }
+                                    } else if let audio = sortable.audio {
+                                        AudioCardView(audio: audio)
+                                            .contextMenu {
+                                                Button(action: {}, label: {
+                                                    Label("Play", systemImage: "play.fill")
+                                                })
+                                            }
                                     }
+                                    
+                                }
                             }
                         }
                     } else {
                         ForEach(0..<4, id: \.self) { _ in
                             AudioCardView(audio: .sample)
                                 .redacted(reason: .placeholder)
-                            //                                    .shimmering()
                         }
                     }
                 }
                 .padding([.horizontal, .top])
             }
-            //                Spacer()
         }
         .background(
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)

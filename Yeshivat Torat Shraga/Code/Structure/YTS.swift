@@ -214,7 +214,7 @@ protocol YTSContent: URLImageable, Hashable {
     var duration: TimeInterval? { get }
     
     /// `Tag` references to this object's topics
-    var tags: [Tag] { get }
+    var tag: Tag { get }
     
     var name: String { get }
     
@@ -244,7 +244,7 @@ class Video: YTSContent, URLImageable {
     var description: String
     var date: Date
     var duration: TimeInterval?
-    var tags: [Tag]
+    var tag: Tag
     var thumbnail: Image?
     var thumbnailURL: URL?
 //    var favoritedAt: Date?
@@ -274,9 +274,9 @@ class Video: YTSContent, URLImageable {
     ///   - description: The content description
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
-    ///   - tags: `Tag` references to this object's topics
+    ///   - tag: `Tag` reference to this object's topics
     ///   - thumbnail: The thumbnail associated with this content
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnail: Image, favoritedAt: Date? = nil) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, thumbnail: Image, favoritedAt: Date? = nil) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -285,7 +285,7 @@ class Video: YTSContent, URLImageable {
         self.description = description
         self.date = date
         self.duration = duration
-        self.tags = tags
+        self.tag = tag
         self.thumbnail = thumbnail
 //        self.favoritedAt = favoritedAt
     }
@@ -300,9 +300,9 @@ class Video: YTSContent, URLImageable {
     ///   - description: The content description
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
-    ///   - tags: `Tag` references to this object's topics
+    ///   - tag: `Tag` reference to this object's topics
     ///   - thumbnailURL: The `URL` associated with this content's thumbnail image
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], thumbnailURL: URL, favoritedAt: Date? = nil) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, thumbnailURL: URL, favoritedAt: Date? = nil) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -311,7 +311,7 @@ class Video: YTSContent, URLImageable {
         self.description = description
         self.date = date
         self.duration = duration
-        self.tags = tags
+        self.tag = tag
         self.thumbnailURL = thumbnailURL
 //        self.favoritedAt = favoritedAt
     }
@@ -326,8 +326,8 @@ class Video: YTSContent, URLImageable {
     ///   - description: The content description
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
-    ///   - tags: `Tag` references to this object's topics
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag]) {
+    ///   - tag: `Tag` reference to this object's topics
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -336,11 +336,18 @@ class Video: YTSContent, URLImageable {
         self.description = description
         self.date = date
         self.duration = duration
-        self.tags = tags
+        self.tag = tag
     }
     
     init?(cdVideo: CDVideo) {
-        guard let firestoreID = cdVideo.firestoreID, let fileID = cdVideo.fileID, let title = cdVideo.title, let description = cdVideo.body, let uploadDate = cdVideo.uploadDate, let author = cdVideo.author, let thumbnailData = cdVideo.thumbnailData else {
+        guard let firestoreID = cdVideo.firestoreID,
+                let fileID = cdVideo.fileID,
+                let title = cdVideo.title,
+                let description = cdVideo.body,
+                let uploadDate = cdVideo.uploadDate,
+                let author = cdVideo.author,
+                let thumbnailData = cdVideo.thumbnailData
+        else {
             return nil
         }
         
@@ -363,8 +370,9 @@ class Video: YTSContent, URLImageable {
         self.fileID = fileID
         self.title = title
         self.description = description
-//            MARK: TAGS HARD-PASSED IN
-        self.tags = []
+//            MARK: HARD "NIL" FOR DEBUG
+        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > VIDEO > INIT(CD...)")
+        self.tag = Tag("NilTag", id: "nilTag")
         self.date = uploadDate
         self.duration = TimeInterval(cdVideo.duration)
     }
@@ -412,7 +420,7 @@ class Video: YTSContent, URLImageable {
                               description: "Testing Video",
                               date: .distantPast,
                               duration: 100,
-                              tags: [],
+                              tag: .sample,
                               thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!,
                               favoritedAt: nil)
 }
@@ -430,7 +438,7 @@ class Audio: YTSContent, Hashable {
     var description: String
     var date: Date
     var duration: TimeInterval?
-    var tags: [Tag]
+    var tag: Tag
 //    var favoritedAt: Date?
     var name: String {
         return title
@@ -447,7 +455,7 @@ class Audio: YTSContent, Hashable {
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tags: [Tag], favoritedAt: Date? = nil) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, favoritedAt: Date? = nil) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -456,12 +464,18 @@ class Audio: YTSContent, Hashable {
         self.description = description
         self.date = date
         self.duration = duration
-        self.tags = tags
+        self.tag = tag
 //        self.favoritedAt = favoritedAt
     }
     
     init?(cdAudio: CDAudio) {
-        guard let firestoreID = cdAudio.firestoreID, let fileID = cdAudio.fileID, let title = cdAudio.title, let description = cdAudio.body, let uploadDate = cdAudio.uploadDate, let author = cdAudio.author else {
+        guard let firestoreID = cdAudio.firestoreID,
+              let fileID = cdAudio.fileID,
+              let title = cdAudio.title,
+              let description = cdAudio.body,
+              let uploadDate = cdAudio.uploadDate,
+              let author = cdAudio.author
+        else {
             return nil
         }
         
@@ -478,8 +492,9 @@ class Audio: YTSContent, Hashable {
         self.title = title
         self.description = description
 //        self.favoritedAt = cdAudio.favoritedAt
-//            MARK: TAGS HARD-PASSED IN
-        self.tags = []
+//            MARK: HARD "NIL" FOR DEBUG
+        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > AUDIO > INIT(CD...)")
+        self.tag = Tag("NilTag", id: "nilTag")
         self.date = uploadDate
         self.duration = TimeInterval(cdAudio.duration)
     }
@@ -533,26 +548,32 @@ class Audio: YTSContent, Hashable {
         description: "Test description",
         date: .distantPast,
         duration: 2609,
-        tags: [])
+        tag: .sample)
 }
 
 // MARK: - Tag
 class Tag: Hashable {
+    var id: FirestoreID
     var name: String
+    var children: [Tag]?
+    var isParent: Bool
     
-    init(_ name: String) {
+    init(_ name: String, id: FirestoreID, isParent: Bool = false, children: [Tag]? = nil) {
         self.name = name
+        self.id = id
+        self.isParent = isParent
+        self.children = children
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+        hasher.combine(id)
     }
     
     static func == (lhs: Tag, rhs: Tag) -> Bool {
-        lhs.name == rhs.name
+        lhs.id == rhs.id
     }
     
-    static var sample = Tag("Parsha")
+    static var sample = Tag("Halacha", id: "wE3Zc2EQ3Rresy1eP8Lw")
 }
 
 // MARK: - Category
@@ -573,9 +594,9 @@ class Category: Tag, URLImageable {
         return nil
     }
     
-    init(name: String, icon: Image) {
+    init(name: String, id: FirestoreID, isParent: Bool = false, icon: Image, children: [Tag]? = nil) {
         self.icon = icon
-        super.init(name)
+        super.init(name, id: id, isParent: isParent, children: children)
     }
 }
 

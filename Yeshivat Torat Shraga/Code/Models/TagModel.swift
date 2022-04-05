@@ -16,8 +16,9 @@ class TagModel: ObservableObject, ErrorShower {
     var retry: (() -> Void)?
     
     @Published var tag: Tag
-    @Published var sortables: [SortableYTSContent]?
+    @Published var sortables: [Tag: [SortableYTSContent]]?
     @Published var content: AVContent?
+//    @Published var 
     
     init(tag: Tag) {
         self.tag = tag
@@ -25,49 +26,34 @@ class TagModel: ObservableObject, ErrorShower {
     
     func set(tag: Tag) {
         withAnimation {
-        self.tag = tag
-        self.content = nil
-        self.load()
+            self.tag = tag
+            self.content = nil
+            self.load()
         }
     }
     
     func load() {
         FirebaseConnection.loadContent(matching: tag) { results, error in
-                guard let results = results else {
-                    self.showError(error: error ?? YTSError.unknownError, retry: self.load)
-                    return
-                }
-//                print(results)
-                withAnimation {
-                    self.content = results.content
-                    
-                    var sortables: [SortableYTSContent] = []
-                    for audio in self.content!.audios {
-                        sortables.append(audio.sortable)
-                    }
-                    for video in self.content!.videos {
-                        sortables.append(video.sortable)
-                    }
-                    
-                    self.sortables = sortables.sorted(by: { lhs, rhs in
-                        return lhs.date! > rhs.date!
-                    })
-                    
-                    
-                }
-                
-//                DispatchQueue.global(qos: .background).async {
-//                    for audio in self.content!.audios {
-//                        if !(audio.author is DetailedRabbi) {
-//                            audio.author = self.rabbi
-//                        }
-//                    }
-//                    for video in self.content!.videos {
-//                        if !(video.author is DetailedRabbi) {
-//                            video.author = self.rabbi
-//                        }
-//                    }
-//                }
+            guard let results = results else {
+                self.showError(error: error ?? YTSError.unknownError, retry: self.load)
+                return
             }
+            // The data will be unsorted, we need to sort the data by
+            // tagID
+            var sortedContent: [Tag: [SortableYTSContent]] = [:]
+            for video in results.content.videos {
+                if sortedContent[video.tag] == nil {
+                    sortedContent[video.tag] = []
+                }
+                sortedContent[video.tag]!.append(video.sortable)
+            }
+            for audio in results.content.audios {
+                if sortedContent[audio.tag] == nil {
+                    sortedContent[audio.tag] = []
+                }
+                sortedContent[audio.tag]!.append(audio.sortable)
+            }
+            self.sortables = sortedContent
+        }
     }
 }
