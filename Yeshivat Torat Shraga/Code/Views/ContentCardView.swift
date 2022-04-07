@@ -64,6 +64,7 @@ struct ContentCardView<Content: YTSContent>: View {
                                 Spacer()
                             }
                             
+                            Spacer()
                         }
                         if let detailedRabbi = content.author as? DetailedRabbi {
                             VStack {
