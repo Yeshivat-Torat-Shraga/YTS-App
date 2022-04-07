@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FirebaseDynamicLinks
 
 typealias FirestoreID = String
 typealias FileID = String
@@ -224,6 +225,10 @@ protocol YTSContent: URLImageable, Hashable {
 //    var favoritedAt: Date? { get set }
     
 //    func toggleFavorites() -> Error?
+    
+    var storedShareURL: URL? { get set }
+    
+    mutating func shareURL(completion: (_ shareURL: URL?) -> Void)
 }
 
 extension YTSContent {
@@ -234,6 +239,27 @@ extension YTSContent {
             return SortableYTSContent(audio: content)
         }
         fatalError("Not able to handle content that is not Video nor Audio. (G01F)")
+    }
+    
+    mutating func shareURL(completion: (_ shareURL: URL?) -> Void) {
+        if let shareURL = storedShareURL {
+            completion(shareURL)
+        } else {
+            let link = URL(string: "https://app.toratshraga.com/content?cid=\(firestoreID)")!
+            let dynamicLinksDomainURIPrefix = "https://app.toratshraga.com/content"
+            let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
+        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.example.ios")
+//            linkBuilder.androidParameters = DynamicLinkAndroidParameters(packageName: "com.example.android")
+
+        guard let longDynamicLink = linkBuilder?.url else {
+            self.storedShareURL = nil
+            completion(nil)
+            return
+        }
+            
+            self.storedShareURL = longDynamicLink
+            completion(longDynamicLink)
+        }
     }
 }
 
@@ -251,6 +277,8 @@ class Video: YTSContent, URLImageable {
     var thumbnail: Image?
     var thumbnailURL: URL?
 //    var favoritedAt: Date?
+    
+    internal var storedShareURL: URL?
     
     var name: String {
         return title
@@ -443,6 +471,9 @@ class Audio: YTSContent, Hashable {
     var duration: TimeInterval?
     var tag: Tag
 //    var favoritedAt: Date?
+    
+    var storedShareURL: URL?
+    
     var name: String {
         return title
     }
