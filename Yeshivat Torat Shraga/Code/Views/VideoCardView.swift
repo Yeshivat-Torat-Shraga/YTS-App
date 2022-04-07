@@ -10,9 +10,11 @@ import SwiftUI
 struct VideoCardView: View {
     @ObservedObject var model: VideoCardModel
     @State var isShowingPlayerSheet = false
+    let showAuthor: Bool
     
-    init(video: Video) {
+    init(video: Video, showAuthor: Bool = false) {
         self.model = VideoCardModel(video: video)
+        self.showAuthor = showAuthor
     }
     
     var body: some View {
@@ -42,7 +44,13 @@ struct VideoCardView: View {
                     Spacer()
                     
                     HStack {
-                        HStack {
+                        if showAuthor {
+                            HStack {
+                                Image(systemName: "person")
+                                Text("\(model.video.author.name)")
+                                    .foregroundColor(Color("Gray"))
+                            }
+                        } else {
                             if let date = model.video.date {
                                 if let month = Date.monthNameFor(date.get(.month), short: true) {
                                     HStack {
