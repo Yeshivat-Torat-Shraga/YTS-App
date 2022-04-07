@@ -253,7 +253,17 @@ class Favorites: ObservableObject {
             let authorProfilePicture = (audioToSave.author as? DetailedRabbi)?.profileImage
             let authorProfilePictureURL = (audioToSave.author as? DetailedRabbi)?.profileImageURL
             
-            if let authorProfilePicture = authorProfilePicture {
+            if let authorProfilePictureURL = authorProfilePictureURL {
+                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
+                    DispatchQueue.main.async {
+                        self.loadFavorites(completion: completion)
+                    }
+                    return
+                }
+                authorProfilePictureData = data
+                group.leave()
+            } else if let authorProfilePicture = authorProfilePicture {
+                print("Saving AssetsImage to CoreData, this causes an image offset for some reason. Try to use a URL instead.")
                 DispatchQueue.main.async {
                     guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
                         DispatchQueue.main.async {
@@ -264,15 +274,6 @@ class Favorites: ObservableObject {
                     authorProfilePictureData = data
                     group.leave()
                 }
-            } else if let authorProfilePictureURL = authorProfilePictureURL {
-                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
-                    DispatchQueue.main.async {
-                        self.loadFavorites(completion: completion)
-                    }
-                    return
-                }
-                authorProfilePictureData = data
-                group.leave()
             } else {
                 group.leave()
             }
