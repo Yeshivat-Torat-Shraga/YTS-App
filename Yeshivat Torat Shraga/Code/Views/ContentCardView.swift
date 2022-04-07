@@ -34,14 +34,14 @@ struct ContentCardView<Content: YTSContent>: View {
                 RootModel.audioPlayer.play(audio: content.sortable.audio!)
                 isShowingPlayerSheet = true
             } else {
-//                 Video Player goes here
+                //                 Video Player goes here
             }
         }) {
             ZStack {
                 if isAudio {
                     // If the card is for Audios
                     UI.cardBlueGradient
-                        Blur(style: .systemUltraThinMaterial)
+                    Blur(style: .systemUltraThinMaterial)
                 } else {
                     // If the card is for Videos
                     DownloadableImage(object: content)
@@ -66,16 +66,16 @@ struct ContentCardView<Content: YTSContent>: View {
                             
                         }
                         if let detailedRabbi = content.author as? DetailedRabbi {
-                        VStack {
-                            DownloadableImage(object: detailedRabbi)
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 40, height: 40)
-                                .background(Color("Gray"))
-                                .clipShape(Circle())
-                                .clipped()
-                                .shadow(radius: 2)
-                            Spacer()
-                        }
+                            VStack {
+                                DownloadableImage(object: detailedRabbi)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color("Gray"))
+                                    .clipShape(Circle())
+                                    .clipped()
+                                    .shadow(radius: 2)
+                                Spacer()
+                            }
                         }
                     }
                     Spacer()
@@ -97,7 +97,7 @@ struct ContentCardView<Content: YTSContent>: View {
                 }
                 .padding()
                 .clipped()
-
+                
             }
             .foregroundColor(.primary)
             .frame(width: 225, height: 125)
