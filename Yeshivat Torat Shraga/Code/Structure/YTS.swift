@@ -224,7 +224,7 @@ protocol YTSContent: URLImageable, Hashable {
     
 //    var favoritedAt: Date? { get set }
     
-//    func toggleFavorites() -> Error?
+    //    func toggleFavorites() -> Error?
     
     var storedShareURL: URL? { get set }
     
@@ -245,17 +245,49 @@ extension YTSContent {
         if let shareURL = storedShareURL {
             completion(shareURL)
         } else {
-            let link = URL(string: "https://app.toratshraga.com/content?cid=\(firestoreID)")!
-            let dynamicLinksDomainURIPrefix = "https://app.toratshraga.com/content"
-            let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
-        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.example.ios")
-//            linkBuilder.androidParameters = DynamicLinkAndroidParameters(packageName: "com.example.android")
-
-        guard let longDynamicLink = linkBuilder?.url else {
-            self.storedShareURL = nil
-            completion(nil)
-            return
-        }
+            var components = URLComponents()
+            components.scheme = "https"
+            components.host = "app.toratshraga.com"
+            components.path = "/content"
+            
+            let itemIDQueryItem = URLQueryItem(name: "id", value: firestoreID)
+            components.queryItems = [itemIDQueryItem]
+            
+            guard let linkParameter = components.url else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            let domain = "https://app.toratshraga.com/content"
+            
+            guard let linkBuilder = DynamicLinkComponents(link: linkParameter, domainURIPrefix: domain) else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            guard let myBundleId = Bundle.main.bundleIdentifier else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            linkBuilder.iOSParameters?.appStoreID = "1598556472"
+            linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: myBundleId)
+            linkBuilder.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+            linkBuilder.socialMetaTagParameters?.title = title
+            linkBuilder.socialMetaTagParameters?.descriptionText = author.name
+            linkBuilder.socialMetaTagParameters?.imageURL = URL(string: "http://toratshraga.com/wp-content/uploads/2016/11/cropped-torat.jpg")!
+            
+            linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.reesedevelopment.YTS")
+            //            linkBuilder.androidParameters = DynamicLinkAndroidParameters(packageName: "com.example.android")
+            
+            guard let longDynamicLink = linkBuilder.url else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
             
             self.storedShareURL = longDynamicLink
             completion(longDynamicLink)
