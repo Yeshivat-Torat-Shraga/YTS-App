@@ -10,9 +10,11 @@ import SwiftUI
 struct TagTileView: View {
     @State var isShowingSheet = false
     var tag: Tag
+    var tagView: TagView
     
     init(_ tag: Tag) {
         self.tag = tag
+        self.tagView = TagView(tag: tag)
     }
     
     var body: some View {
@@ -59,7 +61,7 @@ struct TagTileView: View {
             }
         }
         .sheet(isPresented: $isShowingSheet) {
-            TagView(tag: tag)
+            tagView
                 .background(BackgroundClearView())
         }
     }

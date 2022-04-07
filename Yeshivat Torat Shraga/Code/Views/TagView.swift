@@ -107,7 +107,7 @@ struct TagView: View {
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
         )
         .onAppear {
-            self.model.load()
+            self.model.loadOnlyIfNeeded()
         }
         .alert(isPresented: $model.showError, content: {
             Alert(
