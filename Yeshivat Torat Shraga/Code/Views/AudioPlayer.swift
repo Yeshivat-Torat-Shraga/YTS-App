@@ -36,6 +36,10 @@ struct AudioPlayer: View {
             //            self.model = AudioPlayerModel(player: player)
             //            self.avPlayer = player
             self.player.set(avPlayer: player)
+            
+            self.audio?.shareURL(completion: { shareURL in
+                print(shareURL)
+            })
         } else {
             print("Audio sourceURL is nil, could not set audio.")
         }
