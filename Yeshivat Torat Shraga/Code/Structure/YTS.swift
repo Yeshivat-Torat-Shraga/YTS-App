@@ -225,7 +225,7 @@ protocol YTSContent: URLImageable, Hashable {
     
     var storedShareURL: URL? { get set }
     
-    mutating func shareURL(completion: @escaping (_ shareURL: URL?) -> Void)
+    mutating func shareURL(completion: ((_ shareURL: URL?) -> Void)?)
 }
 
 extension YTSContent {
@@ -394,9 +394,9 @@ class Video: YTSContent, URLImageable {
         lhs.firestoreID == rhs.firestoreID
     }
     
-    func shareURL(completion: @escaping (_ shareURL: URL?) -> Void) {
+    func shareURL(completion: ((_ shareURL: URL?) -> Void)? = nil) {
         if let shareURL = storedShareURL {
-            completion(shareURL)
+            completion?(shareURL)
         } else {
             var components = URLComponents()
             components.scheme = "https"
@@ -408,7 +408,7 @@ class Video: YTSContent, URLImageable {
             
             guard let linkParameter = components.url else {
                 self.storedShareURL = nil
-                completion(nil)
+                completion?(nil)
                 return
             }
             
@@ -416,13 +416,13 @@ class Video: YTSContent, URLImageable {
             
             guard let linkBuilder = DynamicLinkComponents(link: linkParameter, domainURIPrefix: domain) else {
                 self.storedShareURL = nil
-                completion(nil)
+                completion?(nil)
                 return
             }
             
             guard let myBundleId = Bundle.main.bundleIdentifier else {
                 self.storedShareURL = nil
-                completion(nil)
+                completion?(nil)
                 return
             }
             
@@ -446,7 +446,7 @@ class Video: YTSContent, URLImageable {
                 if let error = error {
                     print("Error getting shortened URL: \(error)")
                     self.storedShareURL = nil
-                    completion(nil)
+                    completion?(nil)
                     return
                   }
                 
@@ -458,12 +458,12 @@ class Video: YTSContent, URLImageable {
                 
                   guard let url = url else {
                       self.storedShareURL = nil
-                      completion(nil)
+                      completion?(nil)
                       return
                   }
                 
                 self.storedShareURL = url
-                completion(url)
+                completion?(url)
                 return
             }
         }
@@ -590,9 +590,9 @@ class Audio: YTSContent, Hashable {
         hasher.combine(firestoreID)
     }
     
-    func shareURL(completion: @escaping (_ shareURL: URL?) -> Void) {
+    func shareURL(completion: ((_ shareURL: URL?) -> Void)? = nil) {
         if let shareURL = storedShareURL {
-            completion(shareURL)
+            completion?(shareURL)
         } else {
             var components = URLComponents()
             components.scheme = "https"
@@ -604,7 +604,7 @@ class Audio: YTSContent, Hashable {
             
             guard let linkParameter = components.url else {
                 self.storedShareURL = nil
-                completion(nil)
+                completion?(nil)
                 return
             }
             
@@ -612,13 +612,13 @@ class Audio: YTSContent, Hashable {
             
             guard let linkBuilder = DynamicLinkComponents(link: linkParameter, domainURIPrefix: domain) else {
                 self.storedShareURL = nil
-                completion(nil)
+                completion?(nil)
                 return
             }
             
             guard let myBundleId = Bundle.main.bundleIdentifier else {
                 self.storedShareURL = nil
-                completion(nil)
+                completion?(nil)
                 return
             }
             
@@ -642,7 +642,7 @@ class Audio: YTSContent, Hashable {
                 if let error = error {
                     print("Error getting shortened URL: \(error)")
                     self.storedShareURL = nil
-                    completion(nil)
+                    completion?(nil)
                     return
                   }
                 
@@ -654,12 +654,12 @@ class Audio: YTSContent, Hashable {
                 
                   guard let url = url else {
                       self.storedShareURL = nil
-                      completion(nil)
+                      completion?(nil)
                       return
                   }
                 
                 self.storedShareURL = url
-                completion(url)
+                completion?(url)
                 return
             }
         }
