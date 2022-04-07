@@ -21,11 +21,12 @@ struct SortableContentCardView<Content: SortableYTSContent>: View {
 struct ContentCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
     let content: Content
-    let isAudio: Bool
+    var isAudio: Bool {
+        return content is Audio
+    }
     
     init(content: Content) {
         self.content = content
-        self.isAudio = (content.sortable.audio != nil)
     }
     
     var body: some View {
@@ -47,6 +48,7 @@ struct ContentCardView<Content: YTSContent>: View {
                     DownloadableImage(object: content)
                     Blur(style: .systemUltraThinMaterial)
                 }
+                
                 VStack {
                     HStack {
                         VStack {
@@ -64,6 +66,7 @@ struct ContentCardView<Content: YTSContent>: View {
                                 Spacer()
                             }
                             
+                            Spacer()
                         }
                         if let detailedRabbi = content.author as? DetailedRabbi {
                             VStack {

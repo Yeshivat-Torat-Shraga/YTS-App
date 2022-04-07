@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FirebaseDynamicLinks
 
 typealias FirestoreID = String
 typealias FileID = String
@@ -223,7 +224,11 @@ protocol YTSContent: URLImageable, Hashable {
     
 //    var favoritedAt: Date? { get set }
     
-//    func toggleFavorites() -> Error?
+    //    func toggleFavorites() -> Error?
+    
+    var storedShareURL: URL? { get set }
+    
+    mutating func shareURL(completion: (_ shareURL: URL?) -> Void)
 }
 
 extension YTSContent {
@@ -234,6 +239,59 @@ extension YTSContent {
             return SortableYTSContent(audio: content)
         }
         fatalError("Not able to handle content that is not Video nor Audio. (G01F)")
+    }
+    
+    mutating func shareURL(completion: (_ shareURL: URL?) -> Void) {
+        if let shareURL = storedShareURL {
+            completion(shareURL)
+        } else {
+            var components = URLComponents()
+            components.scheme = "https"
+            components.host = "app.toratshraga.com"
+            components.path = "/content"
+            
+            let itemIDQueryItem = URLQueryItem(name: "id", value: firestoreID)
+            components.queryItems = [itemIDQueryItem]
+            
+            guard let linkParameter = components.url else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            let domain = "https://app.toratshraga.com/content"
+            
+            guard let linkBuilder = DynamicLinkComponents(link: linkParameter, domainURIPrefix: domain) else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            guard let myBundleId = Bundle.main.bundleIdentifier else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            linkBuilder.iOSParameters?.appStoreID = "1598556472"
+            linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: myBundleId)
+            linkBuilder.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
+            linkBuilder.socialMetaTagParameters?.title = title
+            linkBuilder.socialMetaTagParameters?.descriptionText = author.name
+            linkBuilder.socialMetaTagParameters?.imageURL = URL(string: "http://toratshraga.com/wp-content/uploads/2016/11/cropped-torat.jpg")!
+            
+            linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.reesedevelopment.YTS")
+            //            linkBuilder.androidParameters = DynamicLinkAndroidParameters(packageName: "com.example.android")
+            
+            guard let longDynamicLink = linkBuilder.url else {
+                self.storedShareURL = nil
+                completion(nil)
+                return
+            }
+            
+            self.storedShareURL = longDynamicLink
+            completion(longDynamicLink)
+        }
     }
 }
 
@@ -251,6 +309,8 @@ class Video: YTSContent, URLImageable {
     var thumbnail: Image?
     var thumbnailURL: URL?
 //    var favoritedAt: Date?
+    
+    internal var storedShareURL: URL?
     
     var name: String {
         return title
@@ -443,6 +503,9 @@ class Audio: YTSContent, Hashable {
     var duration: TimeInterval?
     var tag: Tag
 //    var favoritedAt: Date?
+    
+    var storedShareURL: URL?
+    
     var name: String {
         return title
     }

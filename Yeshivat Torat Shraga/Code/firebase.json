@@ -25,5 +25,10 @@
     "ui": {
       "enabled": true
     }
+  },
+  "hosting": {
+      // Dynamic Links will start with https://app.toratshraga.com/content
+      "appAssociation": "AUTO",
+      "rewrites": [ { "source": "/content/**", "dynamicLinks": true } ]
   }
 }
