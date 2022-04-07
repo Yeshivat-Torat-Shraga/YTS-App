@@ -1,4 +1,6 @@
-[![Deploy](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/deploy.yml/badge.svg)](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/deploy.yml)
+[![iOS Build & Distribution](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/fastlane.yml/badge.svg)](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/fastlane.yml)
+
+[![Upload Website Build & Deploy](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/upload.yml/badge.svg)](https://github.com/Yeshivat-Torat-Shraga/YTS-App/actions/workflows/upload.yml)
 
 # Yeshivat-Torat-Shraga
 Official repository for the Yeshivat Torat Shraga app.
