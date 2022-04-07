@@ -374,7 +374,7 @@ class Video: YTSContent, URLImageable {
         self.title = title
         self.description = description
 //            MARK: HARD "NIL" FOR DEBUG
-        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > VIDEO > INIT(CD...)")
+//        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > VIDEO > INIT(CD...)")
         self.tag = Tag("NilTag", id: "nilTag")
         self.date = uploadDate
         self.duration = TimeInterval(cdVideo.duration)
@@ -496,7 +496,7 @@ class Audio: YTSContent, Hashable {
         self.description = description
 //        self.favoritedAt = cdAudio.favoritedAt
 //            MARK: HARD "NIL" FOR DEBUG
-        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > AUDIO > INIT(CD...)")
+//        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > AUDIO > INIT(CD...)")
         self.tag = Tag("NilTag", id: "nilTag")
         self.date = uploadDate
         self.duration = TimeInterval(cdAudio.duration)
