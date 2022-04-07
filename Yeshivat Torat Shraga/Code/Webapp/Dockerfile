@@ -17,7 +17,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Install ffmpeg
-RUN apt install -y ffmpeg
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -qq install ffmpeg
+
 # Copy the contents of the local src directory to the working directory
 COPY . /app
 
