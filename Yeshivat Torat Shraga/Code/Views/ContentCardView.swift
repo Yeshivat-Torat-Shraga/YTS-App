@@ -21,11 +21,12 @@ struct SortableContentCardView<Content: SortableYTSContent>: View {
 struct ContentCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
     let content: Content
-    let isAudio: Bool
+    var isAudio: Bool {
+        return content is Audio
+    }
     
     init(content: Content) {
         self.content = content
-        self.isAudio = (content.sortable.audio != nil)
     }
     
     var body: some View {
@@ -34,19 +35,20 @@ struct ContentCardView<Content: YTSContent>: View {
                 RootModel.audioPlayer.play(audio: content.sortable.audio!)
                 isShowingPlayerSheet = true
             } else {
-//                 Video Player goes here
+                //                 Video Player goes here
             }
         }) {
             ZStack {
                 if isAudio {
                     // If the card is for Audios
                     UI.cardBlueGradient
-                        Blur(style: .systemUltraThinMaterial)
+                    Blur(style: .systemUltraThinMaterial)
                 } else {
                     // If the card is for Videos
                     DownloadableImage(object: content)
                     Blur(style: .systemUltraThinMaterial)
                 }
+                
                 VStack {
                     HStack {
                         VStack {
@@ -64,18 +66,19 @@ struct ContentCardView<Content: YTSContent>: View {
                                 Spacer()
                             }
                             
-                        }
-                        if let detailedRabbi = content.author as? DetailedRabbi {
-                        VStack {
-                            DownloadableImage(object: detailedRabbi)
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 40, height: 40)
-                                .background(Color("Gray"))
-                                .clipShape(Circle())
-                                .clipped()
-                                .shadow(radius: 2)
                             Spacer()
                         }
+                        if let detailedRabbi = content.author as? DetailedRabbi {
+                            VStack {
+                                DownloadableImage(object: detailedRabbi)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color("Gray"))
+                                    .clipShape(Circle())
+                                    .clipped()
+                                    .shadow(radius: 2)
+                                Spacer()
+                            }
                         }
                     }
                     Spacer()
@@ -97,7 +100,7 @@ struct ContentCardView<Content: YTSContent>: View {
                 }
                 .padding()
                 .clipped()
-
+                
             }
             .foregroundColor(.primary)
             .frame(width: 225, height: 125)

@@ -17,7 +17,6 @@ class TagModel: ObservableObject, ErrorShower {
     
     @Published var tag: Tag
     @Published var sortables: [Tag: [SortableYTSContent]]?
-    @Published var content: AVContent?
 //    @Published var 
     
     init(tag: Tag) {
@@ -27,10 +26,16 @@ class TagModel: ObservableObject, ErrorShower {
     func set(tag: Tag) {
         withAnimation {
             self.tag = tag
-            self.content = nil
             self.load()
         }
     }
+    
+    func loadOnlyIfNeeded() {
+        if sortables == nil {
+            load()
+        }
+    }
+
     
     func load() {
         FirebaseConnection.loadContent(matching: tag) { results, error in

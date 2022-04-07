@@ -124,7 +124,10 @@ class DetailedRabbi: Rabbi, URLImageable {
     }
     
     init?(cdPerson: CDPerson, isFavorite: Bool = false) {
-        guard let firestoreID = cdPerson.firestoreID, let name = cdPerson.name, let profileImageData = cdPerson.profileImageData else {
+        guard let firestoreID = cdPerson.firestoreID,
+              let name = cdPerson.name,
+              let profileImageData = cdPerson.profileImageData
+        else {
             return nil
         }
         
@@ -164,7 +167,7 @@ class DetailedRabbi: Rabbi, URLImageable {
     static public var samples: [DetailedRabbi] = [
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David", profileImage: Image("SampleRabbi")),
-        DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/profile-pictures/test.png")!),
+        DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
     ]
@@ -380,7 +383,7 @@ class Video: YTSContent, URLImageable {
         self.title = title
         self.description = description
 //            MARK: HARD "NIL" FOR DEBUG
-        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > VIDEO > INIT(CD...)")
+//        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > VIDEO > INIT(CD...)")
         self.tag = Tag("NilTag", id: "nilTag")
         self.date = uploadDate
         self.duration = TimeInterval(cdVideo.duration)
@@ -580,7 +583,7 @@ class Audio: YTSContent, Hashable {
         self.description = description
 //        self.favoritedAt = cdAudio.favoritedAt
 //            MARK: HARD "NIL" FOR DEBUG
-        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > AUDIO > INIT(CD...)")
+//        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > AUDIO > INIT(CD...)")
         self.tag = Tag("NilTag", id: "nilTag")
         self.date = uploadDate
         self.duration = TimeInterval(cdAudio.duration)
@@ -706,7 +709,7 @@ class Audio: YTSContent, Hashable {
         title: "Hilchot Har Habayit",
         author: DetailedRabbi(
             id: "wEDCQ71W0bVEUtTM1x5Z",
-            name: "Rabbi David", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Fadavid_lp-2.jpg?alt=media&token=0debf11a-d4ef-4aa8-b224-ba6420e1d246")!),
+            name: "Rabbi Ifrah", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2FD3_0069-e1604486300557-174x174.jpg?alt=media&token=bc0b78bb-f354-464d-8d78-9dae1693093d")!),
         description: "Test description",
         date: .distantPast,
         duration: 2609,

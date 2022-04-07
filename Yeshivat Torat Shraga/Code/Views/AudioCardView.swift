@@ -10,9 +10,11 @@ import SwiftUI
 struct AudioCardView: View {
     @ObservedObject var model: AudioCardModel
     @State var isShowingPlayerSheet = false
+    let showAuthor: Bool
     
-    init(audio: Audio) {
+    init(audio: Audio, showAuthor: Bool = false) {
         self.model = AudioCardModel(audio: audio)
+        self.showAuthor = showAuthor
     }
     
     var body: some View {
@@ -53,7 +55,13 @@ struct AudioCardView: View {
                     }
                     Spacer()
                     HStack {
-                        HStack {
+                        if showAuthor {
+                            HStack {
+                                Image(systemName: "person.fill")
+                                Text("\(model.audio.author.name)")
+                                    .foregroundColor(Color("Gray"))
+                            }
+                        } else {
                             if let date = model.audio.date {
                                 if let month = Date.monthNameFor(date.get(.month), short: true) {
                                     HStack {
@@ -65,6 +73,7 @@ struct AudioCardView: View {
                                 }
                             }
                         }
+                        
                         
                         Spacer()
                         

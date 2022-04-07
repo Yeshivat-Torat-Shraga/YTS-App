@@ -41,26 +41,49 @@ struct TagView: View {
             ScrollView {
                 VStack {
                     if let sortables = model.sortables {
-                        if model.tag.isParent {
-                            ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
-                                HStack {
-                                    Text(subCategory.name)
-                                        .font(.title3)
-                                        .bold()
-                                    Spacer()
+                        if sortables.count > 0 {
+                            if model.tag.isParent {
+                                ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
+                                    HStack {
+                                        Text(subCategory.name)
+                                            .font(.title3)
+                                            .bold()
+                                        Spacer()
+                                    }
+                                    .padding(.top)
+                                    if let contentGroup = sortables[subCategory] {
+                                        ForEach(contentGroup, id: \.self) { sortable in
+                                            if let video = sortable.video {
+                                                VideoCardView(video: video, showAuthor: true)
+                                                    .contextMenu {
+                                                        Button(action: {}, label: {
+                                                            Label("Play", systemImage: "play.fill")
+                                                        })
+                                                    }
+                                            } else if let audio = sortable.audio {
+                                                AudioCardView(audio: audio, showAuthor: true)
+                                                    .contextMenu {
+                                                        Button(action: {}, label: {
+                                                            Label("Play", systemImage: "play.fill")
+                                                        })
+                                                    }
+                                            }
+                                            
+                                        }
+                                    }
                                 }
-//                                .padding()
-                                if let contentGroup = sortables[subCategory] {
-                                    ForEach(contentGroup, id: \.self) { sortable in
+                            } else {
+                                if let category = sortables[model.tag] {
+                                    ForEach(category, id: \.self) { sortable in
                                         if let video = sortable.video {
-                                            VideoCardView(video: video)
+                                            VideoCardView(video: video, showAuthor: true)
                                                 .contextMenu {
                                                     Button(action: {}, label: {
                                                         Label("Play", systemImage: "play.fill")
                                                     })
                                                 }
                                         } else if let audio = sortable.audio {
-                                            AudioCardView(audio: audio)
+                                            AudioCardView(audio: audio, showAuthor: true)
                                                 .contextMenu {
                                                     Button(action: {}, label: {
                                                         Label("Play", systemImage: "play.fill")
@@ -72,32 +95,23 @@ struct TagView: View {
                                 }
                             }
                         } else {
-                            if let category = sortables[model.tag] {
-                                ForEach(category, id: \.self) { sortable in
-                                    if let video = sortable.video {
-                                        VideoCardView(video: video)
-                                            .contextMenu {
-                                                Button(action: {}, label: {
-                                                    Label("Play", systemImage: "play.fill")
-                                                })
-                                            }
-                                    } else if let audio = sortable.audio {
-                                        AudioCardView(audio: audio)
-                                            .contextMenu {
-                                                Button(action: {}, label: {
-                                                    Label("Play", systemImage: "play.fill")
-                                                })
-                                            }
-                                    }
-                                    
-                                }
+                            VStack {
+                                Text("Sorry, no Shiurim here yet.")
+                                    .bold()
+                                    .font(.title2)
+                                    .padding(.vertical)
+                                Text("Check again in a little bit.")
                             }
+                            .multilineTextAlignment(.center)
+                            .padding()
                         }
                     } else {
-                        ForEach(0..<4, id: \.self) { _ in
-                            AudioCardView(audio: .sample)
-                                .redacted(reason: .placeholder)
-                        }
+                        ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
+//                        ForEach(0..<4, id: \.self) { _ in
+//                            AudioCardView(audio: .sample)
+//                                .redacted(reason: .placeholder)
+//                        }
                     }
                 }
                 .padding([.horizontal, .top])
@@ -107,7 +121,7 @@ struct TagView: View {
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
         )
         .onAppear {
-            self.model.load()
+            self.model.loadOnlyIfNeeded()
         }
         .alert(isPresented: $model.showError, content: {
             Alert(
