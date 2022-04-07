@@ -58,6 +58,7 @@
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
 		F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */; };
 		F2570DE327AAE05B00BF7E7A /* LoadMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */; };
+		F27E6BFD27FE1764003180EA /* FirebaseDynamicLinks in Frameworks */ = {isa = PBXBuildFile; productRef = F27E6BFC27FE1764003180EA /* FirebaseDynamicLinks */; };
 		F28E291F2756A78700D9F4AF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = F28E291E2756A78700D9F4AF /* FirebaseAnalytics */; };
 		F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29202756A78700D9F4AF /* FirebaseFirestore */; };
 		F28E29232756A78700D9F4AF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = F28E29222756A78700D9F4AF /* FirebaseFunctions */; };
@@ -160,6 +161,7 @@
 				F28E29212756A78700D9F4AF /* FirebaseFirestore in Frameworks */,
 				08FABDFF27CFC43100BB84BE /* ExternalAccessory.framework in Frameworks */,
 				08EFBACB27A9977B00900A90 /* SwiftyGif in Frameworks */,
+				F27E6BFD27FE1764003180EA /* FirebaseDynamicLinks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,6 +362,7 @@
 				08EFBACA27A9977B00900A90 /* SwiftyGif */,
 				08BBDDBD27B54FE30020AABB /* FirebaseMessaging */,
 				0805ACE527D4F21E00CC18FB /* Shimmer */,
+				F27E6BFC27FE1764003180EA /* FirebaseDynamicLinks */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -829,6 +832,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 08EFBAC127A989D500900A90 /* XCRemoteSwiftPackageReference "SwiftyGif" */;
 			productName = SwiftyGif;
+		};
+		F27E6BFC27FE1764003180EA /* FirebaseDynamicLinks */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F28E291D2756A78700D9F4AF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDynamicLinks;
 		};
 		F28E291E2756A78700D9F4AF /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
