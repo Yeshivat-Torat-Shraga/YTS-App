@@ -60,13 +60,32 @@ struct FavoritesCardView<Content: YTSContent>: View {
                         .font(.title3)
                         .bold()
                         .foregroundColor(Color("ShragaBlue"))
-                    Text(content.author.name)
+//                    Text("")
+//                    Text(content.hashValue.description)
                     //                    .foregroundColor(.black)
                     HStack {
-                        Image(systemName: "clock")
-                        Text(timeFormattedMini(totalSeconds: content.duration ?? 0))
+                        if let date = content.date {
+                            if let month = Date.monthNameFor(date.get(.month), short: true) {
+                                HStack {
+                                    let yearAsString = String(date.get(.year))
+                                    Image(systemName: "calendar")
+                                    Text("\(month) \(date.get(.day)), \(yearAsString)")
+                                        .foregroundColor(Color("Gray"))
+                                }
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        HStack {
+                            Text(timeFormattedMini(totalSeconds: content.duration ?? 0))
+                                .foregroundColor(Color("Gray"))
+                            Image(systemName: "clock")
+                        }
+                        .padding(.trailing, 5)
                     }
-                    .font(.subheadline)
+                    .font(.footnote)
+                    
                     .foregroundColor(Color("Gray"))
                     .padding(.top, 1)
                 }
@@ -75,31 +94,31 @@ struct FavoritesCardView<Content: YTSContent>: View {
         }
         //        .padding(.vertical)
         .background(Color.CardViewBG)
-//        .overlay(
-//            VStack {
-////                Spacer()
-//                GeometryReader { proxy in
-//                    HStack {
-////                        Spacer()
-//                        Rectangle()
-//                            .fill(Color.shragaBlue.darker(by: 10))
-//                            .rotationEffect(.degrees(45))
-//                            .overlay(
-//                                Image(systemName: isAudio
-//                                      ? getFillState("mic", invert: true)
-//                                      : getFillState("play.square", invert: true))
-//                                    .foregroundColor(Color("ShragaGold"))
-//                                    .offset(
-//                                        x: isAudio ? -2.5 : -3.5,
-//                                        y: isAudio ? 1.25 : 3.25)
-//                            )
-//                            .frame(width: 25, height: 85 * 1.19)
-//                            .offset(x: proxy.size.width - 25, y: 10)
-//                            .shadow(radius: 5)
-//                    }
-//                }
-//            }
-//        )
+        //        .overlay(
+        //            VStack {
+        ////                Spacer()
+        //                GeometryReader { proxy in
+        //                    HStack {
+        ////                        Spacer()
+        //                        Rectangle()
+        //                            .fill(Color.shragaBlue.darker(by: 10))
+        //                            .rotationEffect(.degrees(45))
+        //                            .overlay(
+        //                                Image(systemName: isAudio
+        //                                      ? getFillState("mic", invert: true)
+        //                                      : getFillState("play.square", invert: true))
+        //                                    .foregroundColor(Color("ShragaGold"))
+        //                                    .offset(
+        //                                        x: isAudio ? -2.5 : -3.5,
+        //                                        y: isAudio ? 1.25 : 3.25)
+        //                            )
+        //                            .frame(width: 25, height: 85 * 1.19)
+        //                            .offset(x: proxy.size.width - 25, y: 10)
+        //                            .shadow(radius: 5)
+        //                    }
+        //                }
+        //            }
+        //        )
         .overlay(
             VStack {
                 HStack {
@@ -113,7 +132,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
                 Spacer()
             }
         )
-
+        
         .cornerRadius(UI.cornerRadius)
         .clipped()
         .sheet(isPresented: $isShowingPlayerSheet) {
@@ -147,11 +166,11 @@ struct FavoritesCardView_Previews: PreviewProvider {
                 SortableFavoritesCardView(content: SortableYTSContent(audio: Audio.sample))
                 SortableFavoritesCardView(content: SortableYTSContent(audio: Audio.sample))
                 SortableFavoritesCardView(content: SortableYTSContent(audio: Audio.sample))
-//                SortableFavoritesCardView(content: SortableYTSContent(video: Video.sample))
+                //                SortableFavoritesCardView(content: SortableYTSContent(video: Video.sample))
             }
             .shadow(radius: UI.shadowRadius)
             .padding(.horizontal)
         }
-//        .preferredColorScheme(.dark)
+        //        .preferredColorScheme(.dark)
     }
 }

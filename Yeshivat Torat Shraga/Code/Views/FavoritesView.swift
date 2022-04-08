@@ -24,15 +24,19 @@ struct FavoritesView: View {
                                     .font(.title3)
                                 Spacer()
                             }
-                            .padding()
+                            .padding(.top)
+                            .padding(.horizontal)
                             
                             if let contentArray = favorites[rabbi] {
-                                ForEach(contentArray, id: \.self) { sortable in
-                                    SortableFavoritesCardView(content: sortable)
-                                        .shadow(radius: UI.shadowRadius)
+                                Group {
+                                    ForEach(contentArray, id: \.self) { sortable in
+                                        SortableFavoritesCardView(content: sortable)
+                                            .shadow(radius: UI.shadowRadius)
+                                    }
+                                    Divider()
                                 }
-                                .padding(.horizontal)
-                                .padding(.vertical, UI.shadowRadius)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, UI.shadowRadius)
                             }
                         }
                     } else {
@@ -42,6 +46,7 @@ struct FavoritesView: View {
                         .padding()
                     }
                 }
+                .padding(.bottom)
             }
             .background(Color("FavoritesBG").ignoresSafeArea())
             .navigationTitle("Favorites")
