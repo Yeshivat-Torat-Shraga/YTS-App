@@ -400,16 +400,20 @@ def news_create():
 def slideshow():
     bucket = storage.bucket()
     db = firestore.client()
-    if request.method == "GET":
-        collection = [
-            (slide.to_dict(), slide.id)
-            for slide in db.collection("slideshowImages").get()
-        ]
-        for slide in collection:
-            blob = bucket.get_blob(f"slideshow/{slide[0]['image_name']}")
-            url = blob.generate_signed_url(timedelta(seconds=300))
-            slide[0]["url"] = url
-        return render_template("slideshow.html", images=collection)
+    collection = []
+    for article in db.collection("slideshowImages").get():
+        id = article.id
+        article = article.to_dict()
+        article["id"] = id
+        collection.append(article)
+    # Sort collection by date
+    collection.sort(key=lambda x: x["uploaded"], reverse=True)
+
+    for slide in collection:
+        blob = bucket.get_blob(f"slideshow/{slide['image_name']}")
+        url = blob.generate_signed_url(timedelta(seconds=300))
+        slide["url"] = url
+    return render_template("slideshow.html", images=collection)
 
 
 @app.route("/slideshow/delete/<ID>", methods=["POST"])
