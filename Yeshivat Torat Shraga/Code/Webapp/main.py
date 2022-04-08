@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fileinput import filename
-from flask import Flask, Response, redirect, render_template, request, url_for, flash
+from flask import Flask, Response, redirect, render_template, request, send_from_directory, url_for, flash
 from flask_basicauth import BasicAuth
 import ffmpeg
 import os
@@ -30,7 +30,13 @@ def index():
     return render_template("home.html")
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 # healtcheck return 200
+
+
 @app.route("/healthcheck")
 def healthcheck():
     return Response(status=200)
