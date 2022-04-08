@@ -37,9 +37,7 @@ struct AudioPlayer: View {
             //            self.avPlayer = player
             self.player.set(avPlayer: player)
             
-            self.audio?.shareURL(completion: { shareURL in
-                print(shareURL)
-            })
+            self.audio?.shareURL()
         } else {
             print("Audio sourceURL is nil, could not set audio.")
         }
@@ -387,13 +385,14 @@ struct AudioPlayer: View {
                 }
                 .menuStyle(iOS14BorderedProminentMenuStyle())
                 
-//                Button(action: {
-//                    sharing = true
-//                }, label: {
-//                    Image(systemName: "square.and.arrow.up")
-//                        .foregroundColor(.gray)
-//                        .frame(width: 20, height: 20)
-//                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                Button(action: {
+                    sharing = true
+                }, label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.gray)
+                        .frame(width: 20, height: 20)
+                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                
                 Spacer()
             }
             Spacer()
@@ -428,7 +427,7 @@ struct AudioPlayer: View {
             )
         }
         .sheet(isPresented: $sharing) {
-            if let audio = audio, let shareURL = "yts://\(audio.firestoreID)" {
+            if let audio = audio, let shareURL = audio.storedShareURL {
                 if let title = audio.title, let authorName = audio.author.name {
                     ShareSheet(activityItems: [title, authorName, shareURL])
                 }
