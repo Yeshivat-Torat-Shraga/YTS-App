@@ -76,7 +76,7 @@ def push_notification():
 
 @app.route("/notifications", methods=["GET"])
 def notifications():
-    return render_template("notifications.html")
+    return render_template("notifications.html", type="Notifications")
 
 
 @app.route("/rabbis", methods=["GET"])
@@ -94,7 +94,7 @@ def rabbis():
         rabbi["imgURL"] = url
         collection.append(rabbi)
 
-    return render_template("rabbis.html", data=collection)
+    return render_template("rabbis.html", data=collection, type="Rebbi")
 
 
 @app.route("/rabbis/<ID>", methods=["GET", "POST"])
@@ -109,7 +109,7 @@ def rabbiDetail(ID):
         url = blob.generate_signed_url(timedelta(seconds=300))
         rabbi["imgURL"] = url
 
-        return render_template("rabbisdetail.html", rabbi=rabbi, new=False)
+        return render_template("rabbisdetail.html", rabbi=rabbi, new=False, type="Rebbi")
     else:
         file = request.files.get("file")
         name = request.form.get("name")
@@ -138,7 +138,7 @@ def rabbiDelete(ID):
 @app.route("/rabbis/create", methods=["GET", "POST"])
 def rabbiCreate():
     if request.method == "GET":
-        return render_template("rabbisdetail.html", rabbi=None, new=True)
+        return render_template("rabbisdetail.html", rabbi=None, new=True, type="Rebbi")
     else:
         # Upload the profile picture file from the form to Cloud Storage
         profile_picture_file = request.files["file"]
@@ -173,7 +173,7 @@ def shiurim():
         collection.append(shiur)
     # Sort collection by date
     collection.sort(key=lambda x: x["date"], reverse=True)
-    return render_template("shiurim.html", data=collection)
+    return render_template("shiurim.html", data=collection, type="Shiurim")
 
 
 @app.route("/shiurim/<ID>", methods=["GET", "POST"])
@@ -190,7 +190,7 @@ def shiurimDetail(ID):
             doc_dict["id"] = doc.id
             rabbis.append(doc_dict)
         return render_template(
-            "shiurimdetail.html", shiur=collection, rabbis=rabbis, ID=ID
+            "shiurimdetail.html", shiur=collection, rabbis=rabbis, ID=ID, type="Shiurim"
         )
     else:
         # Update the shiur document
@@ -340,7 +340,7 @@ def news():
         collection.append(article)
     # Sort collection by date
     collection.sort(key=lambda x: x["date"], reverse=True)
-    return render_template("news.html", news=collection)
+    return render_template("news.html", news=collection, type="News")
 
 
 @app.route("/news/<ID>", methods=["GET", "POST"])
@@ -349,7 +349,7 @@ def news_detail(ID):
     if request.method == "GET":
         article = db.collection("news").document(ID).get().to_dict()
         article["id"] = ID
-        return render_template("newsdetail.html", article=article)
+        return render_template("newsdetail.html", article=article, type="News")
     else:
         # Update the shiur document
 
@@ -379,7 +379,7 @@ def news_delete(ID):
 def news_create():
     db = firestore.client()
     if request.method == "GET":
-        return render_template("newsdetail.html", article=None)
+        return render_template("newsdetail.html", article=None, type="News")
     else:
         author = request.form.get("author")
         title = request.form.get("title")
@@ -413,7 +413,7 @@ def slideshow():
         blob = bucket.get_blob(f"slideshow/{slide['image_name']}")
         url = blob.generate_signed_url(timedelta(seconds=300))
         slide["url"] = url
-    return render_template("slideshow.html", images=collection)
+    return render_template("slideshow.html", images=collection, type="Slideshow")
 
 
 @app.route("/slideshow/delete/<ID>", methods=["POST"])
@@ -427,7 +427,7 @@ def slideshow_delete(ID):
 @app.route("/slideshow/create", methods=["GET", "POST"])
 def slideshow_upload():
     if request.method == "GET":
-        return render_template("slideshowdetail.html")
+        return render_template("slideshowdetail.html", type="Slideshow")
     else:
         db = firestore.client()
         bucket = storage.bucket()
