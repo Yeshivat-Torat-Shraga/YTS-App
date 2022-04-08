@@ -283,7 +283,7 @@ def shiurim_upload():
             stripped_name = filename_components[-2]
         else:
             stripped_name = filename_components[0]
-        source_path = f"HLSStreams/{content_type}/{stripped_name}/{stripped_name}.m3u8"
+        source_path = f"HLSStreams/{file.mimetype.split('/')[0]}/{stripped_name}/{stripped_name}.m3u8"
 
         # Tags:
         # Default to MISC.
