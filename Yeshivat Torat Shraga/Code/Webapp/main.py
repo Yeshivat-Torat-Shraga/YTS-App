@@ -322,10 +322,6 @@ def shiurim_upload():
         bucket = storage.bucket()
         blob = bucket.blob(f"content/{file.filename}")
         blob.upload_from_filename("tmp/" + file.filename)
-        flash("Shiur added!")
-        collection = [
-            (shuir.to_dict(), shuir.id) for shuir in db.collection("content").get()
-        ]
         # delete everything in tmp folder
         for tmpfile in os.listdir("tmp"):
             os.remove("tmp/" + tmpfile)
