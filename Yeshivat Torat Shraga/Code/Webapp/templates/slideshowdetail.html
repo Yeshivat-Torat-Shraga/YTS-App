@@ -4,7 +4,7 @@
 <form action="{{ url_for('slideshow_upload') }}" method="post" enctype="multipart/form-data">
 
   <div class="form-group">
-    <label for="title">Image title<span>This title will only be applied on the <strong>first</strong> image
+    <label for="title">Image title<span>Optional. This title will only be applied to the <strong>first</strong> image
         selected.</span></label>
     <input type="text" name="title" id="title" class="form-control" />
   </div>
@@ -12,7 +12,8 @@
 
   <div class="form-group file-area">
     <label for="file">
-      Slideshow Images<span>These photos will be displayed in the <em>Featured Photos</em> section of the app.</span>
+      Slideshow Images<span>These photos will be displayed in the <strong>Featured Photos</strong> section of the
+        app.</span>
     </label>
     <input type="file" id="file" name="file" accept="image/*" required multiple />
     <div class="file-dummy">
@@ -22,7 +23,7 @@
   </div>
 
   <div class="form-group">
-    <button type="submit">Submit photos to Firebase</button>
+    <button type="submit">Submit photo(s)</button>
   </div>
 </form>
 
