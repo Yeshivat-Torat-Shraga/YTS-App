@@ -19,7 +19,7 @@
     <tr>
       <td scope="row" style="width:120px">
         <img src="{{ rabbi.imgURL }}" alt="{{ rabbi.name }}" width="100" height="100"
-          style="clip-path:inset(0 0 0 0 round 5%);">
+          style="clip-path:inset(0 0 0 0 round 5%); object-fit:cover;">
       </td>
       <td>{{ rabbi.name }}</td>
       <td><a href="{{ url_for('rabbiDetail', ID=rabbi.id) }}"><b>Edit<br></b></a></td>
