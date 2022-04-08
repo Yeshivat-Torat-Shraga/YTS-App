@@ -1,18 +1,83 @@
 {% extends 'base.html' %}
 {% block content %}
-<a href="{{ url_for('slideshow_upload')}}">Upload new image</a>
-<br>
-{% for slide in images %}
-<a href=""><b>ID: {{ slide[1] }}<br></b></a>
 
-<img src="{{slide[0].url}}" alt=""><br>
-<form action="{{ url_for('slideshow_delete', ID=slide[1]) }}" method="post">
-  <div class="form-group">
-    <button style="color:red;" type="submit">Delete Image</button>
-  </div>
-</form>
-<hr>
-{% endfor %}
-<br>
+<style>
+  .inline {
+    display: inline;
+  }
+
+  .link-button {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: serif;
+    text-transform: unset;
+    padding: unset;
+    text-shadow: unset;
+
+  }
+
+  .link-button:focus {
+    outline: none;
+  }
+
+  .link-button:active {
+    color: red;
+  }
+</style>
+
+<table class="table table-dark table-striped table-bordered table-hover" style="overflow-x: hidden;">
+  <thead>
+    <tr>
+      <th scope="col">Image</th>
+      <th scope="col">Caption</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td scope="row" style="width:120px">
+        <a href="{{ url_for('slideshow_upload') }}">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/assets%2Fupload.jpeg?alt=media&token=4582118f-1beb-4428-bc9f-4057f2b4014e"
+            alt="Upload a new image" width="250" height="250"
+            style="clip-path:inset(0 0 0 0 round 5%); object-fit:cover;">
+        </a>
+      </td>
+      <td scope="row">
+        <a href="{{ url_for('slideshow_upload') }}">
+          <b>
+            Add a new image to the slideshow
+          </b>
+        </a>
+      </td>
+    </tr>
+    {% for slide in images %}
+    <tr>
+      <td scope="row" style="width:120px">
+        <img src="{{ slide.url }}" alt="{{ slide.title }}" width="300" height="300"
+          style="clip-path:inset(0 0 0 0 round 5%); object-fit:cover;">
+      </td>
+      <td scope="row">
+        {% if slide.title %}
+        {{ slide.title }}
+        {% else %}
+        <i>No caption provided</i>
+        {% endif %}
+        <br>
+        <!-- Delete link -->
+        <form method="post" action="{{ url_for('slideshow_delete', ID=slide.id) }}" class="inline">
+          <input type="hidden" name="extra_submit_param" value="extra_submit_value">
+          <button type="submit" name="submit_param" value="submit_value" class="link-button"
+            style="color:red;"><b>Delete</b>
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock content %}
