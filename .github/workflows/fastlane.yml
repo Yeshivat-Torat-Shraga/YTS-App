@@ -11,10 +11,8 @@ on:
   workflow_dispatch:
   
 env:
-  CC: clang
-  CPLUSPLUS: clang++
-  LD: clang
-  LDPLUSPLUS: clang++
+  # BUILDCACHE upload logs:
+  UPLOAD_BUILDCACHE_LOGS: "true"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

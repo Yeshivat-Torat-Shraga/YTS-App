@@ -115,6 +115,11 @@ platform :ios do
     settings_to_override = {
       :BUNDLE_IDENTIFIER => "com.reesedevelopment.YTS",
       :PROVISIONING_PROFILE_SPECIFIER => app_profile_name,
+      # Use BUILDCACHE override compiler paths to ensure that the correct compiler paths are used.
+      :CC => "clang",
+      :CPLUSPLUS => "clang++",
+      :LD => "clang",
+      :LDPLUSPLUS => "clang++",
     }
 
  
