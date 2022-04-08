@@ -13,14 +13,14 @@
       placeholder="The title that will show up in the Shraga App" required />
   </div>
 
-  <div class="form-group">
-    <label for="title">
+  <!-- <div class="form-group">
+    <label for="description">
       Description
       <span>Small bite-size discription of the shiur</span>
     </label>
-    <input type="text" name="description" id="title" class="form-control"
+    <input type="text" name="description" id="description" class="form-control"
       placeholder="An optional description that will be displayed in the app" />
-  </div>
+  </div> -->
 
   <div class="form-group">
     <label for="author">
@@ -41,8 +41,8 @@
       <span>Select a category to be associated with this Shiur.</span>
     </label>
 
-    <select name="tag" id="tags" class="form-control">
-      <option selected value="no_tag"><b>No Category</b></option>
+    <select name="tag" id="tags" class="form-control" required>
+      <option selected disabled></option>
       {% for tag in tags %}
       {% if not tag.isParent %}
       <option value="{{ tag.id }}">{{ tag.displayName }}</option>
@@ -74,14 +74,14 @@
 
   <div class="form-group">
     <label for="date">
-      Date<span>Select the time and date of the recording.</span>
+      Date<span>Select the time and date of the recording. Default is now.</span>
     </label>
     <input type="text" name="date" id="datePicker" class="form-control" readonly required>
   </div>
 
   <div class="form-group file-area">
     <label for="file">
-      Shiur<span>This <strong>must</strong> be an audio or video file.</span>
+      Shiur<span>This <strong>must</strong> be an audio file.</span>
     </label>
     <input type="file" id="file" name="file" required />
     <div class="file-dummy">
@@ -93,7 +93,7 @@
   <br />
 
   <div class="form-group">
-    <button type="submit" class="success">Submit changes to Firebase</button>
+    <button type="submit" class="success">Submit Shiur</button>
   </div>
 </form>
 
