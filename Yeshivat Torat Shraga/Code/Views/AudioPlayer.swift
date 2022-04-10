@@ -392,6 +392,7 @@ struct AudioPlayer: View {
 //                }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 Spacer()
             }
+            .preferredColorScheme(.light)
             Spacer()
         }
         .preferredColorScheme(.light)
