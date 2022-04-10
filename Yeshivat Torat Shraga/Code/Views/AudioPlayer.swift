@@ -395,6 +395,7 @@ struct AudioPlayer: View {
                 
                 Spacer()
             }
+            .preferredColorScheme(.light)
             Spacer()
         }
         .preferredColorScheme(.light)
