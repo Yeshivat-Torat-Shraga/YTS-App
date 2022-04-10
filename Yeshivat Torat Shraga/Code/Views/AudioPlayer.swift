@@ -133,7 +133,7 @@ struct AudioPlayer: View {
                 .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
                 .padding()
                 .shadow(radius: UI.shadowRadius)
-//                .preferredColorScheme(.light)
+                .preferredColorScheme(.light)
             
             HStack {
                 VStack {
@@ -397,11 +397,11 @@ struct AudioPlayer: View {
             }
             Spacer()
         }
+        .preferredColorScheme(.light)
         .background(LinearGradient(
             colors: [Color("ShragaBlue"), Color(white: 0.8)],
             startPoint: .bottomLeading, endPoint: .topTrailing)
                         .ignoresSafeArea())
-        
         .onAppear {
             favoriteIDs = Favorites.shared.favoriteIDs
 //            if let audio = audio {
@@ -410,7 +410,6 @@ struct AudioPlayer: View {
 //                isFavorited = false
 //            }
         }
-        
         .alert(isPresented: Binding (get: {
             favoriteErr != nil
         }, set: {
@@ -433,7 +432,6 @@ struct AudioPlayer: View {
                 }
             }
         }
-
     }
 }
 
