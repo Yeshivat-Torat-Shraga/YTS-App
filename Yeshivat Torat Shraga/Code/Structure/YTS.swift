@@ -625,14 +625,14 @@ class Audio: YTSContent, Hashable {
                 return
             }
             
-            linkBuilder.iOSParameters?.appStoreID = "1598556472"
             linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: myBundleId)
+            linkBuilder.iOSParameters?.appStoreID = "1598556472"
+            
             linkBuilder.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
             linkBuilder.socialMetaTagParameters?.title = title
             linkBuilder.socialMetaTagParameters?.descriptionText = author.name
             linkBuilder.socialMetaTagParameters?.imageURL = URL(string: "http://toratshraga.com/wp-content/uploads/2016/11/cropped-torat.jpg")!
             
-            linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: "com.reesedevelopment.YTS")
             //            linkBuilder.androidParameters = DynamicLinkAndroidParameters(packageName: "com.example.android")
             
 //            guard let longDynamicLink = linkBuilder.url else {
@@ -660,6 +660,8 @@ class Audio: YTSContent, Hashable {
                       completion?(nil)
                       return
                   }
+                
+                print("Generated deep link: \(url)")
                 
                 self.storedShareURL = url
                 completion?(url)
