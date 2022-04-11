@@ -6,6 +6,7 @@ import ffmpeg
 import os
 import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
+from blake3 import blake3
 
 PRODUCTION = os.getenv("PRODUCTION")
 
@@ -217,6 +218,12 @@ def shiurimDetail(ID):
 def shiurim_delete(ID):
     db = firestore.client()
     shiur = db.collection("content").document(ID)
+    shiur_data = shiur.get().to_dict()
+    source_path = shiur_data["source_path"]
+    content_type = shiur_data["content_type"]
+    bucket = storage.bucket()
+    file_hash = source_path.split("/")[2]
+    bucket.delete_blob(f"{content_type}/{file_hash}")
     shiur.delete()
     return redirect(url_for("shiurim"))
 
@@ -245,9 +252,12 @@ def shiurim_upload():
             "shiur_upload.html", rabbis=rabbis, type="Shiurim", tags=tags
         )
     else:
+        file = request.files["file"]
+        if "audio" not in file.content_type and "video" not in file.content_type:
+            flash("You must upload an audio or video file.")
+            return redirect(url_for("shiurim_upload"))
         # try:
         rabbi = request.form.get("author").split("~")
-        file = request.files["file"]
         date = datetime.strptime(
             request.form.get(
                 "date", datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
@@ -268,6 +278,10 @@ def shiurim_upload():
         if not os.path.exists("tmp"):
             os.makedirs("tmp")
         file.save("tmp/" + file.filename)
+        # Calculate the blake3 hash of the file
+        with open("tmp/" + file.filename, "rb") as f:
+            file_hash = blake3(f.read()).hexdigest()
+
         duration = ffmpeg.probe("tmp/" + file.filename)["format"]["duration"]
         duration = int(float(duration))
 
@@ -277,19 +291,7 @@ def shiurim_upload():
         # Content Type:
         content_type = request.form.get("type", "")
 
-        # Source Path:
-        #   Based on the file type, decide on the source path.
-        #   Part of this process will be to give the file a
-        #   unique name based on the rabbi's name and the date.
-        #   We first need to strip the file extension.
-        # get second to last element of file name
-        filename_components = file.filename.split(".")
-        stripped_name = ""
-        if len(filename_components) > 1:
-            stripped_name = filename_components[-2]
-        else:
-            stripped_name = filename_components[0]
-        source_path = f"HLSStreams/{file.mimetype.split('/')[0]}/{stripped_name}/{stripped_name}.m3u8"
+        source_path = f"HLSStreams/{file.mimetype.split('/')[0]}/{file_hash}/{file_hash}.m3u8"
 
         # Tags:
         # Default to MISC.
@@ -326,7 +328,7 @@ def shiurim_upload():
         content_collection = db.collection("content")
         content_collection.add(new_content_document)
         bucket = storage.bucket()
-        blob = bucket.blob(f"content/{file.filename}")
+        blob = bucket.blob(f"content/{file_hash}")
         blob.upload_from_filename("tmp/" + file.filename)
         # delete everything in tmp folder
         for tmpfile in os.listdir("tmp"):
