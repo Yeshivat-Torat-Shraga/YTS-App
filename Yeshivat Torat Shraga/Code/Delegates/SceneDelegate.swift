@@ -69,14 +69,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
             if let incomingURL = userActivity.webpageURL {
                 print("Incoming URL is \(incomingURL)")
-                let linkHandled = DynamicLinks.dynamicLinks().handleUniversalLink(incomingURL) { (dynamicLink, error) in
-                    guard error == nil, let dynamicLink = dynamicLink, let url = dynamicLink.url else{
+                let linkHandled = DynamicLinks.dynamicLinks().handleUniversalLink(incomingURL) { dynamicLink, error in
+                    guard error == nil, let dynamicLink = dynamicLink, let url = dynamicLink.url else {
                         print("Error: \(error!.localizedDescription) (U01C)")
                         return
                     }
                     
-                    guard let components = dynamicLink.url?.query?.components(separatedBy: "=") else {
-                        print("Error: Could not find query or URL in dynamicLink. (U03C)")
+                    guard let components = url.query?.components(separatedBy: "=") else {
+                        print("Error: Could not read query in URL. (U03C)")
                         return
                     }
                     guard let idIndex = components.firstIndex(of: "id") else {
