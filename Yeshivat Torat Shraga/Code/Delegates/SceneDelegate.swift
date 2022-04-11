@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import FirebaseDynamicLinks
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -65,6 +66,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
     }
 
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+            if let incomingURL = userActivity.webpageURL {
+                print("Incoming URL is \(incomingURL)")
+                let linkHandled = DynamicLinks.dynamicLinks().handleUniversalLink(incomingURL) { (dynamicLink, error) in
+                    guard error == nil, let dynamicLink = dynamicLink, let url = dynamicLink.url else{
+                        print("Error: \(error!.localizedDescription) (U01C)")
+                        return
+                    }
+                    
+                    guard let components = dynamicLink.url?.query?.components(separatedBy: "=") else {
+                        print("Error: Could not find query or URL in dynamicLink. (U03C)")
+                        return
+                    }
+                    guard let idIndex = components.firstIndex(of: "id") else {
+                        print("Error: Could not find query paramater 'id' in URL. (U02C)")
+                        return
+                    }
+                    
+                    guard components.count > idIndex.magnitude + 1 else {
+                        print("Error: No id found in URL query. (U04C)")
+                        return
+                    }
+                    
+                    let contentID = components[idIndex.advanced(by: 1)]
+                    
+                    print("Linking to content id \(contentID)...")
+                }
+            }
+        }
 
 }
 
