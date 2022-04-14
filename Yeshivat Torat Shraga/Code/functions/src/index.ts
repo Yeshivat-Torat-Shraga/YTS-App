@@ -286,6 +286,58 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 	};
 });
 
+exports.loadContentByID = https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
+	if (!data.documentID || typeof data.documentID !== 'string') {
+		throw new Error('Invalid document ID');
+	}
+	let documentID: string = data.documentID;
+	const COLLECTION = 'content';
+	const db = admin.firestore();
+	const doc = await db.collection(COLLECTION).doc(documentID).get();
+	if (!doc.exists) {
+		throw new Error('Document does not exist');
+	}
+	const documentData = new ContentFirebaseDocument(doc.data()!);
+
+	// Get the document data
+	const tagData = {
+		id: documentData.tagData.id,
+		name: documentData.tagData.name,
+		displayName: documentData.tagData.displayName,
+	};
+	let result;
+	try {
+		const sourcePath = await getURLFor(`${documentData.source_path}`);
+		const author = await getRabbiFor(documentData.attributionID, true);
+		result = {
+			id: documentID,
+			fileID: strippedFilename(documentData.source_path),
+			attributionID: documentData.attributionID,
+			title: documentData.title,
+			description: documentData.description,
+			duration: documentData.duration,
+			date: documentData.date,
+			type: documentData.type,
+			source_url: sourcePath,
+			author: author,
+			tagData,
+		};
+	} catch (err) {
+		log(`Error getting data for docID: '${doc.id}': ${err}`, true);
+		result = null;
+	}
+
+	return {
+		metadata: {
+			lastLoadedDocID: documentID,
+			finalCall: true,
+		},
+		results: [result],
+	};
+});
+
 exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
 	verifyAppCheck(context);

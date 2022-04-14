@@ -111,7 +111,7 @@ final class FirebaseConnection {
                         let urlObject = URL(string: url)!
                         let image = SlideshowImage(url: urlObject, name: nil, uploaded: Date.init(timeIntervalSince1970: 0))
                         slideshow.append(image)
-//                        slideshow.append(SlideshowImage(image: Image("SampleRabbi")))
+                        //                        slideshow.append(SlideshowImage(image: Image("SampleRabbi")))
                     }
                 }
                 
@@ -567,7 +567,7 @@ final class FirebaseConnection {
     }
     
     // MARK: ContentClosure()
-    private static func contentClosure(options: ContentOptions, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
+    private static func contentClosure(options: ContentOptions? = nil, completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) -> ((HTTPSCallableResult?, Error?) -> Void) {
         var content: AVContent = (videos: [], audios: [])
         
         return { callResult, callError in
@@ -589,9 +589,9 @@ final class FirebaseConnection {
             }
             var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
-            if newLastLoadedDocumentID == nil && options.startAfterDocumentID != nil {
+            if newLastLoadedDocumentID == nil && options?.startAfterDocumentID != nil {
                 print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startAfterDocumentID'.")
-                newLastLoadedDocumentID = options.startAfterDocumentID
+                newLastLoadedDocumentID = options?.startAfterDocumentID
             }
             
             let group = DispatchGroup()
@@ -631,7 +631,7 @@ final class FirebaseConnection {
                 } else {
                     tag = Tag(tagDisplayName, id: tagID)
                 }
-
+                
                 
                 guard let sourceURL = URL(string: sourceURLString) else {
                     print("Source URL is invalid. Continuing to next document.")
@@ -659,7 +659,7 @@ final class FirebaseConnection {
                 case "video":
                     let rabbi: Rabbi
                     
-                    if options.includeDetailedAuthors {
+                    if let options = options, options.includeDetailedAuthors {
                         guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
                               let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
                         else {
@@ -686,7 +686,7 @@ final class FirebaseConnection {
                     continue
                 case "audio":
                     let rabbi: Rabbi
-                    if options.includeDetailedAuthors {
+                    if let options = options, options.includeDetailedAuthors {
                         guard let authorProfilePictureURLString = author["profile_picture_url"] as? String,
                               let authorProfilePictureURL = URL(string: authorProfilePictureURLString)
                         else {
@@ -770,7 +770,7 @@ final class FirebaseConnection {
         if let startAfterDocumentID = options.startAfterDocumentID {
             data["lastLoadedDocID"] = startAfterDocumentID
         }
-    
+        
         let httpsCallable = functions.httpsCallable("loadContent")
         
         httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
@@ -795,7 +795,7 @@ final class FirebaseConnection {
         if let startAfterDocumentID = options.startAfterDocumentID {
             data["lastLoadedDocID"] = startAfterDocumentID
         }
-    
+        
         let httpsCallable = functions.httpsCallable("loadContent")
         
         httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
@@ -813,14 +813,14 @@ final class FirebaseConnection {
             }
             
             guard let categoryDocuments = response["results"] as? [[String: Any]]
-//                  let metadata = response["metadata"] as? [String: Any]
+                    //                  let metadata = response["metadata"] as? [String: Any]
             else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
             
             var categories: [Tag] = []
-                        
+            
             let group = DispatchGroup()
             
             for _ in categoryDocuments {
@@ -839,11 +839,11 @@ final class FirebaseConnection {
                 }
                 var children: [Tag]? = nil
                 if let subCategory = category["subCategories"] as? [[String: Any]] {
-                var childCategories: [Tag] = []
+                    var childCategories: [Tag] = []
                     for child in subCategory {
                         if let name = child["displayName"] as? String,
                            let id = child["id"] as? String {
-                                childCategories.append(Tag(name, id: id))
+                            childCategories.append(Tag(name, id: id))
                         }
                     }
                     children = childCategories
@@ -861,6 +861,34 @@ final class FirebaseConnection {
                 completion(categories, callError)
             }
         }
+    }
+    
+    static func loadContentByID(_ id: FirestoreID, completion: @escaping (_ results: SortableYTSContent?, _ error: Error?) -> Void) {
+        var result: SortableYTSContent?
+        let data: [String: Any] = ["documentID": id]
+        let httpsCallable = functions.httpsCallable("loadContentByID")
+        httpsCallable.call(data, completion: contentClosure() { results, error in
+            guard error == nil else {
+                completion(nil, error)
+                return
+            }
+            guard let content = results?.content else {
+                completion(nil, error ?? YTSError.noDataReceived)
+                return
+            }
+            
+            // There should only be one result.
+            if content.videos.count > 0 {
+                let selectedContent = content.videos.first!
+                result = SortableYTSContent(video: selectedContent)
+            } else if content.audios.count > 0 {
+                let selectedContent = content.audios.first!
+                result = SortableYTSContent(audio: selectedContent)
+            }
+            
+            completion(result, error)
+            return
+        })
     }
 }
 
