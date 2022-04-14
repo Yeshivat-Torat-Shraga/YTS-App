@@ -18,7 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-
+        var sourceURL: URL? = nil
+        
+        if let url = connectionOptions.userActivities.first?.webpageURL {
+            sourceURL = url
+        }
         // Get the managed object context from the shared persistent container.
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
@@ -32,6 +36,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.rootViewController = UIHostingController(rootView: contentView)
             self.window = window
             window.makeKeyAndVisible()
+        }
+        
+        if let incomingURL = sourceURL {
+            print("Incoming URL is \(incomingURL)")
+            let _ = DynamicLinks.dynamicLinks().handleUniversalLink(incomingURL) { dynamicLink, error in
+                guard error == nil, let dynamicLink = dynamicLink, let url = dynamicLink.url else {
+                    print("Error: \(error!.localizedDescription) (U01C)")
+                    return
+                }
+                
+                guard let components = url.query?.components(separatedBy: "=") else {
+                    print("Error: Could not read query in URL. (U03C)")
+                    return
+                }
+                guard let idIndex = components.firstIndex(of: "id") else {
+                    print("Error: Could not find query paramater 'id' in URL. (U02C)")
+                    return
+                }
+                
+                guard components.count > idIndex.magnitude + 1 else {
+                    print("Error: No id found in URL query. (U04C)")
+                    return
+                }
+                
+                let contentID = components[idIndex.advanced(by: 1)]
+                
+                print("Linking to content id \(contentID)...")
+                self.show(contentID)
+            }
         }
     }
 
@@ -67,34 +100,52 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-            if let incomingURL = userActivity.webpageURL {
-                print("Incoming URL is \(incomingURL)")
-                let linkHandled = DynamicLinks.dynamicLinks().handleUniversalLink(incomingURL) { dynamicLink, error in
-                    guard error == nil, let dynamicLink = dynamicLink, let url = dynamicLink.url else {
-                        print("Error: \(error!.localizedDescription) (U01C)")
-                        return
-                    }
-                    
-                    guard let components = url.query?.components(separatedBy: "=") else {
-                        print("Error: Could not read query in URL. (U03C)")
-                        return
-                    }
-                    guard let idIndex = components.firstIndex(of: "id") else {
-                        print("Error: Could not find query paramater 'id' in URL. (U02C)")
-                        return
-                    }
-                    
-                    guard components.count > idIndex.magnitude + 1 else {
-                        print("Error: No id found in URL query. (U04C)")
-                        return
-                    }
-                    
-                    let contentID = components[idIndex.advanced(by: 1)]
-                    
-                    print("Linking to content id \(contentID)...")
+        if let incomingURL = userActivity.webpageURL {
+            print("Incoming URL is \(incomingURL)")
+            let _ = DynamicLinks.dynamicLinks().handleUniversalLink(incomingURL) { dynamicLink, error in
+                guard error == nil, let dynamicLink = dynamicLink, let url = dynamicLink.url else {
+                    print("Error: \(error!.localizedDescription) (U01C)")
+                    return
                 }
+                
+                guard let components = url.query?.components(separatedBy: "=") else {
+                    print("Error: Could not read query in URL. (U03C)")
+                    return
+                }
+                guard let idIndex = components.firstIndex(of: "id") else {
+                    print("Error: Could not find query paramater 'id' in URL. (U02C)")
+                    return
+                }
+                
+                guard components.count > idIndex.magnitude + 1 else {
+                    print("Error: No id found in URL query. (U04C)")
+                    return
+                }
+                
+                let contentID = components[idIndex.advanced(by: 1)]
+                
+                print("Linking to content id \(contentID)...")
+                self.show(contentID)
             }
         }
-
+    }
+    func show(_ contentID: String) {
+        FirebaseConnection.loadContentByID(contentID) { result, error in
+            if let result = result {
+                if let audio = result.audio {
+                    RootModel.audioPlayer.play(audio: audio)
+                    let vc = UIHostingController(rootView: RootModel.audioPlayer)
+                    self.window?.rootViewController?.present(vc, animated: true)
+//                }  else if let video = result.video {
+//                    let vc = UIHostingController(rootView: Text("Detected unsupported video content"))
+//                    self.window?.rootViewController?.present(vc, animated: true)
+                }
+            } else {
+                let alert = UIAlertController(title: "An error occured", message: "The linked content could not be loaded", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))
+                self.window?.rootViewController?.present(alert, animated: true)
+            }
+        }
+    }
 }
 
