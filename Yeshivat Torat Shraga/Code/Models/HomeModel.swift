@@ -16,6 +16,7 @@ class HomeModel: ObservableObject, ErrorShower {
     var hideLoadingScreen: (() -> Void)?
     var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
     var homePageAlertToShow: HomePageAlert? = nil
+    private var shouldRetryOnAppCheckFailure = true
     @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
@@ -44,6 +45,10 @@ class HomeModel: ObservableObject, ErrorShower {
         
         FirebaseConnection.loadRebbeim() { results, error in
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
+                if error?._code == 9 {
+                    self.retryOnceOnAppCheckFailure(error: error!)
+                    return
+                }
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
@@ -54,6 +59,10 @@ class HomeModel: ObservableObject, ErrorShower {
         
         FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
             guard let content = results?.content else {
+                if error?._code == 9 {
+                    self.retryOnceOnAppCheckFailure(error: error!)
+                    return
+                }
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
@@ -78,6 +87,11 @@ class HomeModel: ObservableObject, ErrorShower {
         }
         
         FirebaseConnection.loadSlideshowImages(limit: 25) { results, error in
+            if error?._code == 9 {
+                self.retryOnceOnAppCheckFailure(error: error!)
+                return
+            }
+
             self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
                 lhs.uploaded > rhs.uploaded
             })
@@ -86,6 +100,11 @@ class HomeModel: ObservableObject, ErrorShower {
         }
         
         FirebaseConnection.loadAlert() { result, error in
+            if error?._code == 9 {
+                self.retryOnceOnAppCheckFailure(error: error!)
+                return
+            }
+
             guard let homeAlert = result else {
                 group.leave()
                 return
@@ -99,6 +118,11 @@ class HomeModel: ObservableObject, ErrorShower {
         }
         
         FirebaseConnection.loadCategories() { tags, error in
+            if error?._code == 9 {
+                self.retryOnceOnAppCheckFailure(error: error!)
+                return
+            }
+
             guard let tags = tags else {
                 group.leave()
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
@@ -114,5 +138,16 @@ class HomeModel: ObservableObject, ErrorShower {
 //                self.showErrorOnRoot?(errorToShow, self.retry)
 //            }
         }
+    }
+    
+    private func retryOnceOnAppCheckFailure(error: Error) {
+        guard self.shouldRetryOnAppCheckFailure == true else {
+            self.showErrorOnRoot?(error , self.load)
+            return
+        }
+            self.shouldRetryOnAppCheckFailure = false
+            print("Silently handling AppCheck Failure")
+            self.load()
+            return
     }
 }
