@@ -29,13 +29,8 @@ struct HomeView: View {
                     
                     // MARK: - Recently Uploaded
                     VStack(spacing: 0.0) {
-                        HStack {
-                            Text("Recently Uploaded")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }
-                        .padding(.horizontal)
+                        LabeledDivider(title: "Recently Uploaded")
+                            .padding(.horizontal)
                         
                         if let sortables = model.sortables {
                             if sortables.count < 1 {
@@ -60,19 +55,13 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        
-                        Divider().padding(.horizontal)
                     }
                     
                     
                     // MARK: - Rebbeim
+                    LabeledDivider(title: "Rebbeim")
+                        .padding(.horizontal)
                     VStack(spacing: 0) {
-                        HStack {
-                            Text("Rebbeim")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }.padding(.horizontal)
                         if let rebbeim = model.rebbeim {
                             if rebbeim.count < 1 {
                                 Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
@@ -102,18 +91,12 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider().padding(.horizontal)
                     }
                     
                     // MARK: - CATEGORIES
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("Categories")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }
+                    LabeledDivider(title: "Categories")
                         .padding(.horizontal)
+                    VStack(spacing: 0) {
                         
                         if let tags = model.tags {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -138,20 +121,13 @@ struct HomeView: View {
                                 Spacer()
                             }.padding()
                         }
-                        Divider().padding(.horizontal)
                     }
 
                     
                     // MARK: - SLIDESHOW
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("Featured Photos")
-                                .font(.title3)
-                                .bold()
-                            Spacer()
-                        }
+                    LabeledDivider(title: "Featured Photos")
                         .padding(.horizontal)
-                        
+                    VStack(spacing: 0) {
                         if let slideshowImages = model.slideshowImages {
                             if slideshowImages.count < 1 {
                                 Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
@@ -227,5 +203,20 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
+    }
+}
+
+struct LabeledDivider: View {
+    let title: String
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.title3)
+                .bold()
+            VStack {
+                Divider()
+            }
+        }
     }
 }
