@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         FirebaseApp.configure()
         
-        if let fbApp = FirebaseApp.app () {
+        if let fbApp = FirebaseApp.app() {
             providerFactory.createProvider(with: fbApp)?.getToken { token, error in
 //                if let token = token {
 //                    print ("AppCheck token: \(token.token), expiration date: \(token.expirationDate)")
@@ -121,6 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
     
+    /*
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let sendingAppID = options[.sourceApplication]
         print("source application = \(sendingAppID ?? "Unknown")")
@@ -145,6 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         //                return false
         //            }
     }
+     */
     
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
         // Called when the user discards a scene session.
@@ -249,6 +251,34 @@ extension AppDelegate {
 //        print(userInfo)
         
         completionHandler()
+    }
+}
+
+extension AppDelegate {
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { dynamicLink, error in
+            print("Opened with URL: \(dynamicLink?.url?.absoluteString ?? "null")")
+            print(dynamicLink?.url?.query?.components(separatedBy: "="))
+//            fatalError()
+        }
+        
+        return handled
+    }
+    
+    @available(iOS 9.0, *)
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
+        return application(app, open: url, sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: "")
+    }
+    
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?,
+                     annotation: Any) -> Bool {
+        if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
+            print("Opened with URL: \(dynamicLink.url?.absoluteString ?? "null")")
+            print(dynamicLink.url?.query?.components(separatedBy: "="))
+//            fatalError()
+            return true
+        }
+        return false
     }
 }
 
