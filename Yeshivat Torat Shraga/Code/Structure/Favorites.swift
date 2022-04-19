@@ -13,7 +13,7 @@ import CoreData
 class Favorites: ObservableObject {
     static var shared = Favorites()
     let delegate = (UIApplication.shared.delegate as! AppDelegate)
-    typealias FavoritesTuple = (videos: [Video]?, audios: [Audio]?, people: [DetailedRabbi]?)
+    typealias FavoritesTuple = (content: [SortableYTSContent]?, people: [DetailedRabbi]?)
     
     private init() {
         loadFavorites()
@@ -33,7 +33,7 @@ class Favorites: ObservableObject {
     }
     
     func clearFavorites() {
-        let entities = [CDVideo.entity(), CDAudio.entity(), CDPerson.entity()]
+        let entities = [CDContent.entity(), CDPerson.entity()]
         for entity in entities {
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity.name!)
             let deleteReqest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
@@ -47,37 +47,7 @@ class Favorites: ObservableObject {
     
     func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
-            let group = DispatchGroup()
             
-            group.enter()
-            var profilePictureData: Data?
-            
-            let profilePicture = rabbiToSave.profileImage
-            let profilePictureURL = rabbiToSave.profileImageURL
-            
-            if let profilePicture = profilePicture {
-                DispatchQueue.main.async {
-                    guard let data = profilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
-                        DispatchQueue.main.async {
-                            self.loadFavorites(completion: completion)
-                        }
-                        return
-                    }
-                    profilePictureData = data
-                    group.leave()
-                }
-            } else if let profilePictureURL = profilePictureURL {
-                guard let data = try? Data(contentsOf: profilePictureURL) else {
-                    DispatchQueue.main.async {
-                        self.loadFavorites(completion: completion)
-                    }
-                    return
-                }
-                profilePictureData = data
-                group.leave()
-            } else {
-                group.leave()
-            }
             
             let managedContext = self.delegate.persistentContainer.viewContext
             
@@ -85,223 +55,69 @@ class Favorites: ObservableObject {
             cdAuthor = CDPerson(context: managedContext)
             
             cdAuthor.firestoreID = rabbiToSave.firestoreID
-            cdAuthor.name = rabbiToSave.name
-            cdAuthor.owned = false
             
-            group.notify(queue: .main) {
-                cdAuthor.profileImageData = profilePictureData
-                
-                DispatchQueue.main.async {
-                    do {
-                        try managedContext.save()
-                        self.loadFavorites(completion: completion)
-                    } catch let error as NSError {
-                        print("Failed to save: \(error), \(error.userInfo)")
-                        self.loadFavorites(completion: completion)
-                    }
+            DispatchQueue.main.async {
+                do {
+                    try managedContext.save()
+                    self.loadFavorites(completion: completion)
+                } catch let error as NSError {
+                    print("Failed to save: \(error), \(error.userInfo)")
+                    self.loadFavorites(completion: completion)
                 }
             }
+            
         }
     }
     
     func save(_ videoToSave: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
-            let group = DispatchGroup()
-            
-            group.enter()
-            var authorProfilePictureData: Data?
-            
-            let authorProfilePicture = (videoToSave.author as? DetailedRabbi)?.profileImage
-            let authorProfilePictureURL = (videoToSave.author as? DetailedRabbi)?.profileImageURL
-            
-            if let authorProfilePicture = authorProfilePicture {
-                DispatchQueue.main.async {
-                    guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
-                        DispatchQueue.main.async {
-                            self.loadFavorites(completion: completion)
-                        }
-                        return
-                    }
-                    authorProfilePictureData = data
-                    group.leave()
-                }
-            } else if let authorProfilePictureURL = authorProfilePictureURL {
-                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
-                    DispatchQueue.main.async {
-                        self.loadFavorites(completion: completion)
-                    }
-                    return
-                }
-                authorProfilePictureData = data
-                group.leave()
-            } else {
-                group.leave()
-            }
-            
-            group.enter()
-            var thumbnailData: Data?
-            
-            let thumbnail = videoToSave.thumbnail
-            let thumbnailURL = videoToSave.thumbnailURL
-            
-            if let thumbnail = thumbnail {
-                DispatchQueue.main.async {
-                    guard let data = thumbnail.asUIImage().jpegData(compressionQuality: 1.0) else {
-                        DispatchQueue.main.async {
-                            self.loadFavorites(completion: completion)
-                        }
-                        return
-                    }
-                    thumbnailData = data
-                    group.leave()
-                }
-            } else if let thumbnailURL = thumbnailURL {
-                guard let data = try? Data(contentsOf: thumbnailURL) else {
-                    DispatchQueue.main.async {
-                        self.loadFavorites(completion: completion)
-                    }
-                    return
-                }
-                thumbnailData = data
-                group.leave()
-            } else {
-                group.leave()
-            }
-            
-            
-            guard let duration = videoToSave.duration else {
-                DispatchQueue.main.async {
-                    self.loadFavorites(completion: completion)
-                }
-                return
-            }
-            
             let managedContext = self.delegate.persistentContainer.viewContext
             
-            let entity = CDVideo.entity()
+            let entity = CDContent.entity()
             
-            let cdVideo = CDVideo(entity: entity,
+            let cdVideo = CDContent(entity: entity,
                                   insertInto: managedContext)
             
             cdVideo.firestoreID = videoToSave.firestoreID
-            cdVideo.fileID = videoToSave.fileID
-            cdVideo.title = videoToSave.title
-            cdVideo.body = videoToSave.description
-//            cdVideo.favoritedAt = videoToSave.favoritedAt
-            //            MARK: NOT SAVING TAGS
-            //            cdAudio.tags = audioToSave.tags
-            cdVideo.uploadDate = videoToSave.date
-            cdVideo.duration = Int64(duration)
             
             
-            var cdAuthor: CDPerson
-            cdAuthor = CDPerson(context: managedContext)
             
-            cdAuthor.firestoreID = videoToSave.author.firestoreID
-            cdAuthor.name = videoToSave.author.name
-            cdAuthor.owned = true
-            
-            cdVideo.author = cdAuthor
-            
-            group.notify(queue: .main) {
-                cdAuthor.profileImageData = authorProfilePictureData
-                cdVideo.thumbnailData = thumbnailData
-                
-                
-                DispatchQueue.main.async {
-                    do {
-                        try managedContext.save()
-                        self.loadFavorites(completion: completion)
-                    } catch let error as NSError {
-                        print("Failed to save: \(error), \(error.userInfo)")
-                        self.loadFavorites(completion: completion)
-                    }
+            DispatchQueue.main.async {
+                do {
+                    try managedContext.save()
+                    self.loadFavorites(completion: completion)
+                } catch let error as NSError {
+                    print("Failed to save: \(error), \(error.userInfo)")
+                    self.loadFavorites(completion: completion)
                 }
             }
+            
         }
     }
     
     func save(_ audioToSave: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
-            let group = DispatchGroup()
             
-            group.enter()
-            var authorProfilePictureData: Data?
             
-            let authorProfilePicture = (audioToSave.author as? DetailedRabbi)?.profileImage
-            let authorProfilePictureURL = (audioToSave.author as? DetailedRabbi)?.profileImageURL
-            
-            if let authorProfilePictureURL = authorProfilePictureURL {
-                guard let data = try? Data(contentsOf: authorProfilePictureURL) else {
-                    DispatchQueue.main.async {
-                        self.loadFavorites(completion: completion)
-                    }
-                    return
-                }
-                authorProfilePictureData = data
-                group.leave()
-            } else if let authorProfilePicture = authorProfilePicture {
-                print("Saving AssetsImage to CoreData, this causes an image offset for some reason. Try to use a URL instead.")
-                DispatchQueue.main.async {
-                    guard let data = authorProfilePicture.asUIImage().jpegData(compressionQuality: 1.0) else {
-                        DispatchQueue.main.async {
-                            self.loadFavorites(completion: completion)
-                        }
-                        return
-                    }
-                    authorProfilePictureData = data
-                    group.leave()
-                }
-            } else {
-                group.leave()
-            }
-            
-            guard let duration = audioToSave.duration else {
-                DispatchQueue.main.async {
-                    self.loadFavorites(completion: completion)
-                }
-                return
-            }
             
             let managedContext = self.delegate.persistentContainer.viewContext
             
-            let entity = CDAudio.entity()
+            let entity = CDContent.entity()
             
-            let cdAudio = CDAudio(entity: entity,
+            let cdAudio = CDContent(entity: entity,
                                   insertInto: managedContext)
             
             cdAudio.firestoreID = audioToSave.firestoreID
-            cdAudio.fileID = audioToSave.fileID
-            cdAudio.title = audioToSave.title
-            cdAudio.body = audioToSave.description
-//            cdAudio.favoritedAt = audioToSave.favoritedAt
-            //            MARK: NOT SAVING TAGS
-            //            cdAudio.tags = audioToSave.tags
-            cdAudio.uploadDate = audioToSave.date
-            cdAudio.duration = Int64(duration)
             
             
-            var cdAuthor: CDPerson
-            cdAuthor = CDPerson(context: managedContext)
             
-            cdAuthor.firestoreID = audioToSave.author.firestoreID
-            cdAuthor.name = audioToSave.author.name
-            cdAuthor.owned = true
-            
-            cdAudio.author = cdAuthor
-            
-            group.notify(queue: .main) {
-                cdAuthor.profileImageData = authorProfilePictureData
-                
-                
-                DispatchQueue.main.async {
-                    do {
-                        try managedContext.save()
-                        self.loadFavorites(completion: completion)
-                    } catch let error as NSError {
-                        print("Failed to save: \(error), \(error.userInfo)")
-                        self.loadFavorites(completion: completion)
-                    }
+            DispatchQueue.main.async {
+                do {
+                    try managedContext.save()
+                    self.loadFavorites(completion: completion)
+                } catch let error as NSError {
+                    print("Failed to save: \(error), \(error.userInfo)")
+                    self.loadFavorites(completion: completion)
                 }
             }
         }
@@ -334,7 +150,7 @@ class Favorites: ObservableObject {
     
     internal func delete(_ videoToDelete: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
-        let fetchRequest = CDVideo.fetchRequest()
+        let fetchRequest = CDContent.fetchRequest()
         
         do {
             let result = try managedContext.fetch(fetchRequest)
@@ -359,7 +175,7 @@ class Favorites: ObservableObject {
     
     func delete(_ audioToDelete: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
-        let fetchRequest = CDAudio.fetchRequest()
+        let fetchRequest = CDContent.fetchRequest()
         do {
             let result = try managedContext.fetch(fetchRequest)
             
@@ -384,7 +200,8 @@ class Favorites: ObservableObject {
     }
     
     func loadFavorites(completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
-        var favoriteIDs: Set<FirestoreID> = []
+        var contentIDs: Set<FirestoreID> = []
+        var rabbiIDs: Set<FirestoreID> = []
         let managedContext = self.delegate.persistentContainer.viewContext
         
         let group = DispatchGroup()
@@ -400,73 +217,60 @@ class Favorites: ObservableObject {
                     favoritePeople = []
                 }
                 for personEntity in personEntities {
-                    if personEntity.owned == false {
-                        guard let person = DetailedRabbi(cdPerson: personEntity) else {
-                            continue
-                        }
-                        
-                        if !favoriteIDs.contains(person.firestoreID) {
-                            favoritePeople?.append(person)
-                            favoriteIDs.insert(person.firestoreID)
-                        }
-                    }
-                }
-            }
-            group.leave()
-        }
-        
-        group.enter()
-        var favoriteVideos: [Video]? = nil
-        queue.async {
-            let fetchRequest = CDVideo.fetchRequest()
-            
-            if let videoEntities = try? managedContext.fetch(fetchRequest) {
-                if favoriteVideos == nil {
-                    favoriteVideos = []
-                }
-                for videoEntity in videoEntities {
-                    guard let video = Video(cdVideo: videoEntity) else {
+                    guard let firestoreID = personEntity.firestoreID else {
+                        print("CD personEntity missing firestoreID")
                         continue
                     }
+                    rabbiIDs.insert(firestoreID)
                     
-                    if !favoriteIDs.contains(video.firestoreID) {
-                        favoriteVideos?.append(video)
-                        favoriteIDs.insert(video.firestoreID)
-                    }
                 }
             }
-            group.leave()
+            // MARK: Get Rabbis by IDs here
+            FirebaseConnection.loadRabbisByIDs(rabbiIDs) { rabbis, error in
+                if let rabbis = rabbis {
+                    favoritePeople = rabbis
+                } else if let error = error {
+                    print("An error occured while loading rabbis from Firestore using CD: \(error.localizedDescription)")
+                }
+                group.leave()
+            }
         }
         
         
         group.enter()
-        var favoriteAudios: [Audio]? = nil
+        var favoriteContents: [SortableYTSContent]? = nil
         queue.async {
-            let fetchRequest = CDAudio.fetchRequest()
+            let fetchRequest = CDContent.fetchRequest()
             
-            if let audioEntities = try? managedContext.fetch(fetchRequest) {
-                if favoriteAudios == nil {
-                    favoriteAudios = []
+            if let contentEntities = try? managedContext.fetch(fetchRequest) {
+                if favoriteContents == nil {
+                    favoriteContents = []
                 }
-                for audioEntity in audioEntities {
-                    guard let audio = Audio(cdAudio: audioEntity) else {
+                for contentEntity in contentEntities {
+                    guard let firestoreID = contentEntity.firestoreID else {
+                        print("CD Content entity missing firestoreID")
                         continue
                     }
-                    
-                    if !favoriteIDs.contains(audio.firestoreID) {
-                        favoriteAudios?.append(audio)
-                        favoriteIDs.insert(audio.firestoreID)
-                    }
+                    contentIDs.insert(firestoreID)
                 }
             }
-            group.leave()
+            // MARK: Get Content By IDs here
+            FirebaseConnection.loadContentByIDs(contentIDs) { results, error in
+                if let results = results {
+                    favoriteContents = results
+                } else if let error = error {
+                    print("An error occured while loading contents from Firestore using CD: \(error.localizedDescription)")
+                    return
+                }
+                group.leave()
+            }
+            // Must have SortableYTSContent before calling .leave()
         }
         
         group.notify(queue: .main) {
-            let favorites = (videos: favoriteVideos, audios: favoriteAudios, people: favoritePeople)
+            let favorites = (content: favoriteContents, people: favoritePeople)
             self.favorites = favorites
-            self.favoriteIDs = favoriteIDs
-
+            self.favoriteIDs = contentIDs.union(rabbiIDs)
             completion?(favorites, nil)
         }
     }
