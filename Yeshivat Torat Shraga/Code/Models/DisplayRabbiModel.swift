@@ -105,18 +105,18 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     func initialLoad() {
         // Load Favorites (This will be called onAppear
         var favorites: [SortableYTSContent] = []
-        if let allFavorites = Favorites.shared.favorites,
-           let audios = allFavorites.audios,
-           let videos = allFavorites.videos {
-            for audio in audios {
-                if audio.author.firestoreID == self.rabbi.firestoreID {
-                    favorites.append(audio.sortable)
+        if let allFavorites = Favorites.shared.favorites?.content {
+            for content in allFavorites {
+                if let audio = content.audio {
+                    if audio.author.firestoreID == self.rabbi.firestoreID {
+                        favorites.append(audio.sortable)
+                    }
+                } else if let video = content.video {
+                    if video.author.firestoreID == self.rabbi.firestoreID {
+                        favorites.append(video.sortable)
+                    }
                 }
-            }
-            for video in videos {
-                if video.author.firestoreID == self.rabbi.firestoreID {
-                    favorites.append(video.sortable)
-                }
+                
             }
         }
         withAnimation {
