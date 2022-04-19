@@ -335,7 +335,7 @@ struct AudioPlayer: View {
                                 isFavoritesBusy = false
                             }
                         }
-                        Favorites.shared.loadFavorites()
+//                        Favorites.shared.loadFavorites()
                     }
                 }, label: {
                     Image(systemName: favoriteIDs.contains(audio.firestoreID)
