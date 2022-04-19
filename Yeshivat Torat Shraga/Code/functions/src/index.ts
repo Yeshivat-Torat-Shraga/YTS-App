@@ -7,6 +7,7 @@ import os from 'os';
 import {
 	AlertDocument,
 	AlertFirebaseDocument,
+	Author,
 	ContentDocument,
 	ContentFirebaseDocument,
 	LoadData,
@@ -26,6 +27,7 @@ import {
 	strippedFilename,
 	supplyDefaultParameters,
 	verifyAppCheck,
+	ENABLEAPPCHECK,
 } from './helpers';
 import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
@@ -33,9 +35,9 @@ const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	// credential: admin.credential.cert(
-	// 	require('/Users/benjitusk/Downloads/firebase.json')
-	// ),
+	credential: !ENABLEAPPCHECK
+		? admin.credential.cert(require('/Users/benjitusk/Downloads/firebase.json'))
+		: undefined,
 });
 
 exports.createAlert = https.onCall(async (data, context) => {
@@ -286,55 +288,122 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 	};
 });
 
-exports.loadContentByID = https.onCall(async (data, context): Promise<LoadData> => {
+exports.loadRabbisByIDs = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
 	verifyAppCheck(context);
-	if (!data.documentID || typeof data.documentID !== 'string') {
-		throw new Error('Invalid document ID');
-	}
-	let documentID: string = data.documentID;
-	const COLLECTION = 'content';
+	// check if data.documentIDs is an array
+	if (!Array.isArray(data.documentIDs ?? false))
+		throw new Error('data.documentIDs must be an array of strings');
+
+	// check if data.documentIDs is not empty
+	// if (data.documentIDs.length == 0) throw new Error('data.documentIDs must not be empty');
+	// check if data.documentIDs only contains strings
+	for (const id of data.documentIDs)
+		if (typeof id !== 'string') throw new Error('data.documentIDs must only contain strings');
+
+	let documentIDs: string[] = data.documentIDs;
+	const COLLECTION = 'rebbeim';
 	const db = admin.firestore();
-	const doc = await db.collection(COLLECTION).doc(documentID).get();
-	if (!doc.exists) {
-		throw new Error('Document does not exist');
-	}
-	const documentData = new ContentFirebaseDocument(doc.data()!);
 
 	// Get the document data
-	const tagData = {
-		id: documentData.tagData.id,
-		name: documentData.tagData.name,
-		displayName: documentData.tagData.displayName,
-	};
-	let result;
-	try {
-		const sourcePath = await getURLFor(`${documentData.source_path}`);
-		const author = await getRabbiFor(documentData.attributionID, true);
-		result = {
-			id: documentID,
-			fileID: strippedFilename(documentData.source_path),
-			attributionID: documentData.attributionID,
-			title: documentData.title,
-			description: documentData.description,
-			duration: documentData.duration,
-			date: documentData.date,
-			type: documentData.type,
-			source_url: sourcePath,
-			author: author,
-			tagData,
-		};
-	} catch (err) {
-		log(`Error getting data for docID: '${doc.id}': ${err}`, true);
-		result = null;
-	}
+	let unfilteredContentDocs: (Author | null)[] = await Promise.all(
+		documentIDs.map(async (docID) => {
+			// Fetch the document with the specified ID from Firestore.
+			const snapshot = await db.collection(COLLECTION).doc(docID).get();
+			// If the document does not exist, return null
+			if (!snapshot.exists) return null;
+			// Get the document data
+			try {
+				return await getRabbiFor(docID, true);
+			} catch (err) {
+				log(`Error getting data for docID: '${docID}': ${err}`, true);
+				return null;
+			}
+		})
+	);
+
+	let contentDocs = unfilteredContentDocs.filter((doc) => {
+		return doc != null;
+	}) as Author[];
 
 	return {
 		metadata: {
-			lastLoadedDocID: documentID,
-			finalCall: true,
+			lastLoadedDocID: contentDocs.length > 0 ? contentDocs[contentDocs.length - 1].id : null,
+			finalCall: documentIDs.length > contentDocs.length,
 		},
-		results: [result],
+		results: contentDocs,
+	};
+});
+
+exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
+	// check if data.documentIDs is an array
+	if (!Array.isArray(data.documentIDs))
+		throw new Error('data.documentIDs must be an array of strings');
+
+	// check if data.documentIDs is not empty
+	// if (data.documentIDs.length == 0) throw new Error('data.documentIDs must not be empty');
+	// check if data.documentIDs only contains strings
+	for (const id of data.documentIDs)
+		if (typeof id !== 'string') throw new Error('data.documentIDs must only contain strings');
+
+	let documentIDs: string[] = data.documentIDs;
+	const COLLECTION = 'content';
+	const db = admin.firestore();
+
+	// Get the document data
+	let unfilteredContentDocs: (ContentDocument | null)[] = await Promise.all(
+		documentIDs.map(async (docID) => {
+			// Fetch the document with the specified ID from Firestore.
+			const snapshot = await db.collection(COLLECTION).doc(docID).get();
+			// If the document does not exist, return null
+			if (!snapshot.exists) return null;
+			// Get the document data
+			try {
+				var data = new ContentFirebaseDocument(snapshot.data()!);
+			} catch {
+				return null;
+			}
+
+			const tagData = {
+				id: data.tagData.id,
+				name: data.tagData.name,
+				displayName: data.tagData.displayName,
+			};
+			try {
+				const sourcePath = await getURLFor(`${data.source_path}`);
+				const author = await getRabbiFor(data.attributionID, true);
+				return {
+					id: docID,
+					fileID: strippedFilename(data.source_path),
+					attributionID: data.attributionID,
+					title: data.title,
+					description: data.description,
+					duration: data.duration,
+					date: data.date,
+					type: data.type,
+					source_url: sourcePath,
+					author: author,
+					tagData,
+				};
+			} catch (err) {
+				log(`Error getting data for docID: '${docID}': ${err}`, true);
+				return null;
+			}
+		})
+	);
+
+	let contentDocs = unfilteredContentDocs.filter((doc) => {
+		return doc != null;
+	}) as ContentDocument[];
+
+	return {
+		metadata: {
+			lastLoadedDocID: contentDocs.length > 0 ? contentDocs[contentDocs.length - 1].id : null,
+			finalCall: documentIDs.length > contentDocs.length,
+		},
+		results: contentDocs,
 	};
 });
 

@@ -863,33 +863,74 @@ final class FirebaseConnection {
         }
     }
     
-    static func loadContentByID(_ id: FirestoreID, completion: @escaping (_ results: SortableYTSContent?, _ error: Error?) -> Void) {
-        var result: SortableYTSContent?
-        let data: [String: Any] = ["documentID": id]
-        let httpsCallable = functions.httpsCallable("loadContentByID")
-        httpsCallable.call(data, completion: contentClosure() { results, error in
-            guard error == nil else {
+    static func loadContentByIDs(_ ids: Set<FirestoreID>, completion: @escaping (_ results: [SortableYTSContent]?, _ error: Error?) -> Void) {
+        let data: [String: Any] = ["documentIDs": Array(ids)]
+        let httpsCallable = functions.httpsCallable("loadContentByIDs")
+        httpsCallable.call(data, completion: contentClosure(options: (limit: 0, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
+            guard let results = results else {
+                if let error = error {
+                    print(error.localizedDescription)
+                }
                 completion(nil, error)
                 return
             }
-            guard let content = results?.content else {
-                completion(nil, error ?? YTSError.noDataReceived)
-                return
+
+            let content = results.content
+            var sortables: [SortableYTSContent] = []
+            for audio in content.audios {
+                sortables.append(SortableYTSContent(audio: audio))
             }
-            
-            // There should only be one result.
-            if content.videos.count > 0 {
-                let selectedContent = content.videos.first!
-                result = SortableYTSContent(video: selectedContent)
-            } else if content.audios.count > 0 {
-                let selectedContent = content.audios.first!
-                result = SortableYTSContent(audio: selectedContent)
+            for video in content.videos {
+                sortables.append(SortableYTSContent(video: video))
             }
-            
-            completion(result, error)
+            completion(sortables, error)
             return
         })
     }
+    
+    // MARK: LoadRabbiByID
+    static func loadRabbisByIDs(_ ids: Set<FirestoreID>, completion: @escaping (_ results: [DetailedRabbi]?, _ error: Error?) -> Void) {
+        var result: [DetailedRabbi]?
+        let data: [String: Any] = ["documentIDs": Array(ids)]
+        let httpsCallable = functions.httpsCallable("loadRabbisByIDs")
+        httpsCallable.call(data) { callResult, callError in
+            guard let response = callResult?.data as? [String: Any] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            guard let content = response["results"] as? [[String: Any]] else {
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            
+            let group = DispatchGroup()
+            for _ in content {
+                group.enter()
+            }
+            
+            result = []
+            for document in content {
+                guard let id = document["id"] as? String,
+                      let name = document["name"] as? String,
+                      let pfpURLPath = document["profile_picture_url"] as? String,
+                      let pfpURL = URL(string: pfpURLPath)
+                else {
+                    print("Invalid Response (loadRabbisByIDs)")
+                    continue
+                }
+                
+                    let rabbiToAdd = DetailedRabbi(id: id, name: name, profileImageURL: pfpURL)
+                
+                
+                result!.append(rabbiToAdd)
+            }
+            
+            
+            completion(result, callError)
+            return
+        }
+    }
+
 }
 
 

@@ -2,7 +2,7 @@ import { https, logger } from 'firebase-functions';
 import admin from 'firebase-admin';
 import { Author } from './types';
 
-const ENABLEAPPCHECK = true;
+export const ENABLEAPPCHECK = true;
 
 export function log(data: any, structured = false) {
 	logger.info(data, {
