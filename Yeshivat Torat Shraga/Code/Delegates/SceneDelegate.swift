@@ -130,20 +130,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     func show(_ contentID: String) {
-        FirebaseConnection.loadContentByID(contentID) { result, error in
-            if let result = result {
-                if let audio = result.audio {
-                    RootModel.audioPlayer.play(audio: audio)
-                    let vc = UIHostingController(rootView: RootModel.audioPlayer)
-                    self.window?.rootViewController?.present(vc, animated: true)
-//                }  else if let video = result.video {
-//                    let vc = UIHostingController(rootView: Text("Detected unsupported video content"))
-//                    self.window?.rootViewController?.present(vc, animated: true)
-                }
+        let group = DispatchGroup()
+        var content: SortableYTSContent?
+        group.enter()
+        FirebaseConnection.loadContentByIDs([contentID]) { result, error in
+            if let result = result?.first{
+                content = result
+            }
+            group.leave()
+        }
+        group.enter()
+        Favorites.shared.loadFavorites(completion: {_,_ in group.leave()})
+        group.notify(queue: .main) {
+            if let audio = content?.audio {
+                RootModel.audioPlayer.play(audio: audio)
+                let vc = UIHostingController(rootView: RootModel.audioPlayer)
+                self.window?.rootViewController?.present(vc, animated: true)
+                //                                }  else if let video = content?.video {
+                //                                    let vc = UIHostingController(rootView: Text("Detected unsupported video content"))
+                //                                    self.window?.rootViewController?.present(vc, animated: true)
             } else {
                 let alert = UIAlertController(title: "An error occured", message: "The linked content could not be loaded", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))
                 self.window?.rootViewController?.present(alert, animated: true)
+                return
             }
         }
     }
