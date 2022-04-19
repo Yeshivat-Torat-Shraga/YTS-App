@@ -62,17 +62,7 @@ class Rabbi: Hashable {
     init(id firestoreID: FirestoreID, name: String, isFavorite: Bool = false) {
         self.firestoreID = firestoreID
         self.name = name
-        self.isFavorite = isFavorite
     }
-    
-    convenience init?(cdPerson: CDPerson, isFavorite: Bool = false) {
-        guard let firestoreID = cdPerson.firestoreID, let name = cdPerson.name else {
-            return nil
-        }
-        
-        self.init(id: firestoreID, name: name, isFavorite: isFavorite)
-    }
-    
     func hash(into hasher: inout Hasher) {
         hasher.combine(firestoreID)
     }
@@ -123,53 +113,8 @@ class DetailedRabbi: Rabbi, URLImageable {
         self.profileImageURL = profileImageURL
     }
     
-    init?(cdPerson: CDPerson, isFavorite: Bool = false) {
-        guard let firestoreID = cdPerson.firestoreID,
-              let name = cdPerson.name,
-              let profileImageData = cdPerson.profileImageData
-        else {
-            return nil
-        }
-        
-        guard let profileUIImage = UIImage(data: profileImageData) else {
-            return nil
-        }
-        
-        self.profileImage = Image(uiImage: profileUIImage)
-        super.init(id: firestoreID, name: name, isFavorite: isFavorite)
-    }
-    
-    func toggleFavorites() -> Error? {
-        var error: Error? = nil
-        self.isFavorite.toggle()
-        if self.isFavorite {
-            Favorites.shared.save(self) { favorites, err in
-                if err != nil {
-                    Haptics.shared.notify(.error)
-                    error = err
-                } else {
-                    Haptics.shared.notify(.success)
-                }
-            }
-        } else {
-            Favorites.shared.delete(self) { favorites, err in
-                if err != nil {
-                    Haptics.shared.notify(.error)
-                    error = err
-                } else {
-                    Haptics.shared.notify(.warning)
-                }
-            }
-        }
-        return error
-    }
-    
     static public var samples: [DetailedRabbi] = [
-        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        DetailedRabbi(id: "wEDCQ71W0bVEUtTM1x5Z", name: "Rabbi David", profileImage: Image("SampleRabbi")),
         DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!),
-        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
-        DetailedRabbi(id: "INVALID ID", name: "Rabbi Shmuel Silber", profileImage: Image("SampleRabbi")),
     ]
     
     /*
@@ -351,43 +296,6 @@ class Video: YTSContent, URLImageable {
         self.tag = tag
     }
     
-    init?(cdVideo: CDVideo) {
-        guard let firestoreID = cdVideo.firestoreID,
-                let fileID = cdVideo.fileID,
-                let title = cdVideo.title,
-                let description = cdVideo.body,
-                let uploadDate = cdVideo.uploadDate,
-                let author = cdVideo.author,
-                let thumbnailData = cdVideo.thumbnailData
-        else {
-            return nil
-        }
-        
-        guard let thumbnailUIImage = UIImage(data: thumbnailData) else {
-            return nil
-        }
-        
-        self.thumbnail = Image(uiImage: thumbnailUIImage)
-//        self.favoritedAt = cdVideo.favoritedAt
-        
-        if let author = DetailedRabbi(cdPerson: author) {
-            self.author = author
-        } else if let author = Rabbi(cdPerson: author) {
-            self.author = author
-        } else {
-            return nil
-        }
-        
-        self.firestoreID = firestoreID
-        self.fileID = fileID
-        self.title = title
-        self.description = description
-//            MARK: HARD "NIL" FOR DEBUG
-//        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > VIDEO > INIT(CD...)")
-        self.tag = Tag("NilTag", id: "nilTag")
-        self.date = uploadDate
-        self.duration = TimeInterval(cdVideo.duration)
-    }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(firestoreID)
@@ -555,40 +463,8 @@ class Audio: YTSContent, Hashable {
         self.date = date
         self.duration = duration
         self.tag = tag
-//        self.favoritedAt = favoritedAt
     }
-    
-    init?(cdAudio: CDAudio) {
-        guard let firestoreID = cdAudio.firestoreID,
-              let fileID = cdAudio.fileID,
-              let title = cdAudio.title,
-              let description = cdAudio.body,
-              let uploadDate = cdAudio.uploadDate,
-              let author = cdAudio.author
-        else {
-            return nil
-        }
         
-        if let author = DetailedRabbi(cdPerson: author) {
-            self.author = author
-        } else if let author = Rabbi(cdPerson: author) {
-            self.author = author
-        } else {
-            return nil
-        }
-        
-        self.firestoreID = firestoreID
-        self.fileID = fileID
-        self.title = title
-        self.description = description
-//        self.favoritedAt = cdAudio.favoritedAt
-//            MARK: HARD "NIL" FOR DEBUG
-//        print("DEFAULT GARBAGE TAG FROM CD, SEE YTS > AUDIO > INIT(CD...)")
-        self.tag = Tag("NilTag", id: "nilTag")
-        self.date = uploadDate
-        self.duration = TimeInterval(cdAudio.duration)
-    }
-    
     func hash(into hasher: inout Hasher) {
         hasher.combine(firestoreID)
     }

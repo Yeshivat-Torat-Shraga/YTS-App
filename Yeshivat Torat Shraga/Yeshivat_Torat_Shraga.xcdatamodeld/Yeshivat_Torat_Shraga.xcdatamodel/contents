@@ -1,35 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="CDAudio" representedClassName="CDAudio" syncable="YES" codeGenerationType="class">
-        <attribute name="body" optional="YES" attributeType="String"/>
-        <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="fileID" optional="YES" attributeType="String"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CDContent" representedClassName="CDContent" syncable="YES" codeGenerationType="class">
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
-        <attribute name="title" optional="YES" attributeType="String"/>
-        <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="author" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPerson"/>
     </entity>
     <entity name="CDPerson" representedClassName="CDPerson" syncable="YES" codeGenerationType="class">
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="owned" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="profileImageData" optional="YES" attributeType="Binary"/>
-    </entity>
-    <entity name="CDVideo" representedClassName="CDVideo" syncable="YES" codeGenerationType="class">
-        <attribute name="body" optional="YES" attributeType="String"/>
-        <attribute name="duration" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="fileID" optional="YES" attributeType="String"/>
-        <attribute name="firestoreID" optional="YES" attributeType="String"/>
-        <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
-        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
-        <attribute name="title" optional="YES" attributeType="String"/>
-        <attribute name="uploadDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="author" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="CDPerson"/>
     </entity>
     <elements>
-        <element name="CDAudio" positionX="157.3817749023438" positionY="-107.6398010253906" width="128" height="149"/>
-        <element name="CDPerson" positionX="-63" positionY="-18" width="128" height="89"/>
-        <element name="CDVideo" positionX="-1.2655029296875" positionY="189.0763854980469" width="128" height="164"/>
+        <element name="CDPerson" positionX="157.3817749023438" positionY="-107.6398010253906" width="128" height="44"/>
+        <element name="CDContent" positionX="45" positionY="45" width="128" height="44"/>
     </elements>
 </model>
