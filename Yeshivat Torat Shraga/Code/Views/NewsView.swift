@@ -24,7 +24,20 @@ struct NewsView: View {
                                 TapGesture()
                                     .onEnded {
                                         Haptics.shared.play(UI.Haptics.navLink)
+                                        if article.isMostRecentArticle {
+                                            @AppStorage("mostRecentArticleID") var mostRecentArticleID = ""
+                                            mostRecentArticleID = article.id
+                                            model.hasUnreadArticles = false
+                                        }
                                     })
+                        }
+                        if !model.loadingArticles && !model.loadedAllArticles {
+                            LoadMoreBar(action: {
+                                withAnimation {
+                                    model.load()
+                                }
+                            })
+                            .padding()
                         }
                     } else {
                         VStack {
@@ -38,14 +51,11 @@ struct NewsView: View {
                         .padding(.vertical)
 
                     }
-                } else {
-                    ForEach(0..<4, id: \.self) { _ in
-                        NewsArticleCardView(.sample)
-                    }
-                    .shadow(radius: UI.shadowRadius)
-                    .redacted(reason: .placeholder)
-                    .shimmering()
-                    .padding(.horizontal)
+                }
+                
+                if model.loadingArticles {
+                    ProgressView()
+                        .progressViewStyle(YTSProgressViewStyle())
                 }
             }
             .navigationTitle(Text("News"))
@@ -64,9 +74,6 @@ struct NewsView: View {
                         }
                     }))
         })
-        .onDidAppear {
-            model.loadOnlyIfNeeded()
-        }
     }
 }
 
