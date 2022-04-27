@@ -21,9 +21,8 @@
 
   <div class="form-group">
     <label for="body">Content</label>
-    <textarea form="news" type="text" name="body" id="body" class="form-control" style="min-height: 200px;" required>
-      {% if article is not none %}{{article.body}}{% endif %}
-    </textarea>
+    <textarea form="news" type="text" name="body" id="body" class="form-control" style="min-height: 200px;"
+      onload="this.innerHTML=''" required>{% if article is not none %}{{article.body}}{% endif %}</textarea>
   </div>
 
   <br>
@@ -41,6 +40,5 @@
   </div>
 </form>
 {% endif %}
-
 
 {% endblock content %}
