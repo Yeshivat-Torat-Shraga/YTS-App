@@ -214,6 +214,7 @@ struct LabeledDivider: View {
             Text(title)
                 .font(.title3)
                 .bold()
+                .layoutPriority(1)
             VStack {
                 Divider()
             }
