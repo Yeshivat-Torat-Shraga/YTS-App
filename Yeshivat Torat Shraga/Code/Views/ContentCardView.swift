@@ -103,7 +103,8 @@ struct ContentCardView<Content: YTSContent>: View {
                 
             }
             .foregroundColor(.primary)
-            .frame(width: 225, height: 125)
+            .frame(minWidth: 225)
+            .frame(height: 125)
             .clipped()
             
             
