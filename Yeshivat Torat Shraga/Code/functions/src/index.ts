@@ -158,6 +158,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 			}
 
 			const imageURLs: string[] = [];
+			/*
 			// load the images
 			if (queryOptions.includePictures) {
 				for (const path of data.imageURLs || []) {
@@ -168,7 +169,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 					}
 				}
 			}
-
+			*/
 			// return the document data
 			const document: NewsDocument = {
 				id: doc.id,
