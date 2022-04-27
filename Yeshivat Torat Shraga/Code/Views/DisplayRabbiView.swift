@@ -85,8 +85,11 @@ struct DisplayRabbiView: View {
                         }
                     }
                     
-                    LoadMoreView(loadingContent: Binding(get: { model.loadingContent }, set: { model.loadingContent = $0 }), showingError: Binding(get: { model.showError }, set: { model.showError = $0 }), retreivedAllContent: Binding(get: { model.retreivedAllContent }, set: { model.retreivedAllContent = $0 }), loadMore: {
-//                        self.model.loadingContent = true
+                    LoadMoreView(loadingContent: Binding(get: { model.loadingContent }, set: { model.loadingContent = $0 }),
+                                 showingError: Binding(get: { model.showError }, set: { model.showError = $0 }),
+                                 retreivedAllContent: Binding(get: { model.retreivedAllContent }, set: { model.retreivedAllContent = $0 }),
+                                 loadMore: {
+                        //                        self.model.loadingContent = true
                         let count = 5
                         model.load(next: count)
                     })
