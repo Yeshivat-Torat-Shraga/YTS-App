@@ -31,6 +31,7 @@ import {
 } from './helpers';
 import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
+import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
@@ -949,10 +950,10 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	}
 	const searchQuery = callData.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
-	const documentsThatMeetSearchCriteria = [];
+	const documentsThatMeetSearchCriteria: QueryDocumentSnapshot[] = [];
 	// For each collection, run the following async function:
 
-	let databases = [];
+	let databases: string[] = [];
 	if (searchOptions['content'].limit > 0) {
 		databases.push('content');
 	} else {
