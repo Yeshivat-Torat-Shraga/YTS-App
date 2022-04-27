@@ -11,11 +11,14 @@ class NewsModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     @Published internal var loadedAllArticles: Bool = false
     @Published internal var loadingArticles: Bool = false
+    @Published var hasUnreadArticles: Bool = false
     internal var lastLoadedArticleID: FirestoreID?
     var errorToShow: Error?
     var retry: (() -> Void)?
-
-    init() {}
+    
+    init() {
+        loadOnlyIfNeeded()
+    }
     
     func loadOnlyIfNeeded() {
         if articles == nil {
@@ -33,6 +36,14 @@ class NewsModel: ObservableObject, ErrorShower {
                 return
             }
             
+            if self.lastLoadedArticleID == nil,
+               let newMostRecentArticle = sortedArticles.first { // If this is the first request, containing the most recent articles...
+                newMostRecentArticle.isMostRecentArticle = true
+                @AppStorage("mostRecentArticleID") var previousMostRecentArticleID = ""
+                if newMostRecentArticle.id != previousMostRecentArticleID {
+                    self.hasUnreadArticles = true
+                }
+            }
             
             if let metadata = results?.metadata {
                 if let newLastLoadedArticleID = metadata.newLastLoadedDocumentID {
