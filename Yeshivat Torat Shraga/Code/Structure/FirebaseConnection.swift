@@ -56,7 +56,8 @@ final class FirebaseConnection {
         let httpsCallable = functions.httpsCallable("loadNews")
         
         var data: [String: Any] = [
-            "limit": limit
+            "limit": limit,
+            "includePictures": false
         ]
         if let lastLoadedDocumentID = lastLoadedDocumentID {
             data["lastLoadedDocID"] = lastLoadedDocumentID
@@ -70,12 +71,14 @@ final class FirebaseConnection {
             }
             
             // Check if response contains valid data
-            guard let urlDocuments = response["results"] as? [[String: Any]] else {
+            guard let urlDocuments = response["results"] as? [[String: Any]],
+                  let metadata = response["metadata"] as? [String: Any]
+            else {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            let finalCall = response["finalCall"] as? Bool ?? true
-            var newLastLoadedDocumentID = response["lastLoadedDocID"] as? FirestoreID
+            let finalCall = metadata["finalCall"] as? Bool ?? true
+            var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
             if newLastLoadedDocumentID == nil && lastLoadedDocumentID != nil {
                 print("This isn't supposed to happen, the sequential loader will run in circles...")
@@ -89,6 +92,7 @@ final class FirebaseConnection {
             
             for document in urlDocuments {
                 guard let body = document["body"] as? String,
+                      let id = document["id"] as? FirestoreID,
                       let title = document["title"] as? String,
                       let author = document["author"] as? String,
                       let uploadDict = document["uploaded"] as? [String: Int]
@@ -115,7 +119,7 @@ final class FirebaseConnection {
                     }
                 }
                 
-                let article = NewsArticle(title: title, body: body, uploaded: uploaded, author: author, images: slideshow)
+                let article = NewsArticle(id: id, title: title, body: body, uploaded: uploaded, author: author, images: slideshow)
                 articles.append(article)
                 group.leave()
             }

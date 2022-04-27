@@ -174,35 +174,6 @@ struct SearchView: View {
             .padding(.top)
         }
     }
-    
-    struct LoadMoreBar: View {
-        @Environment(\.colorScheme) var colorScheme: ColorScheme
-        var action: () -> Void
-        
-        var body: some View {
-            Button(action: {
-                action()
-            }) {
-                VStack {
-                    Spacer()
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Image(systemName: "ellipsis")
-                            .foregroundColor(colorScheme == .light
-                                             ? .shragaBlue
-                                             : .shragaGold)
-                        Spacer()
-                    }
-                    Spacer()
-                    Spacer()
-                }
-            }
-            .buttonStyle(BackZStackButtonStyle(backgroundColor: .CardViewBG))
-            .cornerRadius(6)
-            .shadow(radius: 2)
-        }
-    }
 }
 
 struct SearchView_Previews: PreviewProvider {

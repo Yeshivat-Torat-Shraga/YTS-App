@@ -53,7 +53,14 @@ class SearchModel: ObservableObject, ErrorShower {
         
         loadingContent = true
         loadingRebbeim = true
-        FirebaseConnection.search(query: query, contentOptions: (limit: contentLimit, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: lastLoadedContentID), rebbeimOptions: (limit: rebbeimLimit, includePictureURLs: true, startAfterDocumentID: lastLoadedRabbiID)) { results, error in
+        FirebaseConnection.search(query: query,
+                                  contentOptions: (limit: contentLimit,
+                                                   includeThumbnailURLs: true,
+                                                   includeDetailedAuthors: false,
+                                                   startAfterDocumentID: lastLoadedContentID),
+                                  rebbeimOptions: (limit: rebbeimLimit,
+                                                   includePictureURLs: true,
+                                                   startAfterDocumentID: lastLoadedRabbiID)) { results, error in
             guard let content = results?.content else {
                 self.loadingContent = false
                 self.loadingRebbeim = false
@@ -83,7 +90,7 @@ class SearchModel: ObservableObject, ErrorShower {
                 }
                 
                 if self.sortables == nil {
-                    //                  //MARK: Possible issue when the return is nil, not sure how this will be handled
+//                  MARK: Possible issue when the return is nil, not sure how this will be handled
                     self.sortables = []
                     for video in content.videos {
                         self.sortables!.append(video.sortable)
@@ -134,18 +141,4 @@ class SearchModel: ObservableObject, ErrorShower {
             self.sortables = nil
         }
     }
-    
-    //    func reload() {
-    //        if !reloading {
-    //            reloading = true
-    //            self.lastLoadedContentID = nil
-    //            self.lastLoadedRabbiID = nil
-    //            self.content = nil
-    //            self.rebbeim = nil
-    ////            self.favoriteContent = nil
-    //            self.calledInitialLoad = false
-    //            initialLoad()
-    ////            loadFavorites()
-    //        }
-    //    }
 }

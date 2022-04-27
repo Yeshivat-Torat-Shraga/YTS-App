@@ -4,7 +4,7 @@
 	"scripts": {
 		"build": "tsc",
 		"lint": "eslint src/**/*.ts",
-		"debug": "tsc && firebase emulators:start --only functions --inspect-functions",
+		"debug": "npm run build && firebase emulators:start --only functions --inspect-functions",
 		"serve": "firebase emulators:start --only functions",
 		"shell": "firebase functions:shell",
 		"start": "npm run shell",
@@ -19,7 +19,7 @@
 		"@ffmpeg-installer/ffmpeg": "^1.1.0",
 		"child-process-promise": "^2.2.1",
 		"firebase-admin": "^10.0.2",
-		"firebase-functions": "^3.14.1",
+		"firebase-functions": "^3.20.1",
 		"fs": "0.0.1-security",
 		"os": "^0.1.2",
 		"path": "^0.12.7"

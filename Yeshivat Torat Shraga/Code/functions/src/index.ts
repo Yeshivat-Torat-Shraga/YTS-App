@@ -31,6 +31,7 @@ import {
 } from './helpers';
 import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
+import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
@@ -113,14 +114,16 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
 		// Overwrite the query to start after the specified document.
 		query = query.startAfter(snapshot);
-		log(`Starting after document '${snapshot}'`);
+		log(`Starting after document '${snapshot.id}'`);
 	}
 
 	// Execute the query
-	const newsSnapshot = await query.limit(queryOptions.limit).get();
-
+	const newsSnapshot = await query.get();
+	const totalDocs = newsSnapshot.size;
+	// apply the limit
+	const docs = newsSnapshot.docs.slice(0, queryOptions.limit);
 	// Get the documents returned from the query
-	const docs = newsSnapshot.docs;
+	// const docs = newsSnapshot.docs;
 	// if null, return with an error
 	if (!docs || docs.length == 0) {
 		return {
@@ -155,6 +158,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 			}
 
 			const imageURLs: string[] = [];
+			/*
 			// load the images
 			if (queryOptions.includePictures) {
 				for (const path of data.imageURLs || []) {
@@ -165,7 +169,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 					}
 				}
 			}
-
+			*/
 			// return the document data
 			const document: NewsDocument = {
 				id: doc.id,
@@ -183,7 +187,7 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			finalCall: queryOptions.limit > docs.length,
+			finalCall: queryOptions.limit > totalDocs,
 		},
 		results: newsDocs.filter((doc) => doc != null),
 	};
@@ -949,10 +953,10 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	}
 	const searchQuery = callData.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
-	const documentsThatMeetSearchCriteria = [];
+	const documentsThatMeetSearchCriteria: QueryDocumentSnapshot[] = [];
 	// For each collection, run the following async function:
 
-	let databases = [];
+	let databases: string[] = [];
 	if (searchOptions['content'].limit > 0) {
 		databases.push('content');
 	} else {

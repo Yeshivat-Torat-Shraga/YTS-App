@@ -25,6 +25,7 @@
 		08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D3493C27CD26A000538697 /* OnboardingView.swift */; };
 		08EFBACD27A9996400900A90 /* logoDarkMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACC27A9996400900A90 /* logoDarkMode.gif */; };
 		08EFBACF27A9B67700900A90 /* logoLightMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACE27A9B67700900A90 /* logoLightMode.gif */; };
+		08F2CCEE2811B7240094DAED /* LoadMoreBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */; };
 		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
 		B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB832273B103C00B17CC0 /* SceneDelegate.swift */; };
@@ -105,6 +106,7 @@
 		08D3493C27CD26A000538697 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		08EFBACC27A9996400900A90 /* logoDarkMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoDarkMode.gif; sourceTree = "<group>"; };
 		08EFBACE27A9B67700900A90 /* logoLightMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoLightMode.gif; sourceTree = "<group>"; };
+		08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreBarView.swift; sourceTree = "<group>"; };
 		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		08FABDFE27CFC43100BB84BE /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yeshivat Torat Shraga.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -253,6 +255,7 @@
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
 				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
 				08D3493C27CD26A000538697 /* OnboardingView.swift */,
+				08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -454,6 +457,7 @@
 				085D438227B06C8C00F2F8FD /* FavoritesCardView.swift in Sources */,
 				F2570DE327AAE05B00BF7E7A /* LoadMoreView.swift in Sources */,
 				087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */,
+				08F2CCEE2811B7240094DAED /* LoadMoreBarView.swift in Sources */,
 				087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */,
 				B1ACF9242744497E00079F9A /* DisplayRabbiModel.swift in Sources */,
 				B1ACF927274456F900079F9A /* LogoView.swift in Sources */,

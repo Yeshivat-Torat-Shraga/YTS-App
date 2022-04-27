@@ -31,10 +31,18 @@ struct RootView: View {
                         .tabItem {
                             Label("Favorites", systemImage: "heart.fill")
                         }.tag(1)
-                    model.newsView
-                        .tabItem {
-                            Label("News", systemImage: "newspaper.fill")
-                        }.tag(2)
+                    if #available(iOS 15.0, *), model.newsView.model.hasUnreadArticles {
+                        model.newsView
+                            .tabItem {
+                                Label("News", systemImage: "newspaper.fill")
+                            }.tag(2)
+                            .badge("!")
+                    } else {
+                        model.newsView
+                            .tabItem {
+                                Label("News", systemImage: "newspaper.fill")
+                            }.tag(2)
+                    }
                     model.settingsView
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
