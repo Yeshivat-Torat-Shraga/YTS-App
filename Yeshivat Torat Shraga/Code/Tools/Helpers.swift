@@ -155,11 +155,11 @@ extension Error {
         }
         switch code {
         case NSURLErrorNotConnectedToInternet:
-            return "Sorry, it seems you don't have an internet connection."
+            return "Please connect to the internet and try again."
         case -1020:
-            return "This app does not have Internet access. Please check your cellular settings."
+            return "This app does not have Internet access. Please check your cellular settings and try again."
         case 9:
-            return "This app is not verified with AppCheck."
+            return "There was an authentication issue. Please try again."
         default:
             return "An unknown error has occured. (\(code))"
         }
