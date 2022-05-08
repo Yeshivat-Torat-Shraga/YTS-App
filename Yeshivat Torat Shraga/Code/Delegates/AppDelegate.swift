@@ -100,12 +100,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 //        let stringToken = deviceToken.reduce("", {$0 + String(format: "%02X", $1)}).uppercased()
 //        print("APNs token retrieved: \(stringToken)")
-        Messaging.messaging().subscribe(toTopic: "all") { error in
-            if let error = error {
-                print("\n\n\nError subscribing to notifications: \(error)\n\n\n")
-            }
-          print("Subscribed to all notifications successfuly")
-        }
+
         
         // With swizzling disabled you must set the APNs token here.
         // Messaging.messaging().apnsToken = deviceToken

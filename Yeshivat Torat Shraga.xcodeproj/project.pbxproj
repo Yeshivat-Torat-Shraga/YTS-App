@@ -11,6 +11,7 @@
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
 		0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0847BA282784A22A0097910A /* RabbiCardView.swift */; };
+		0848BF58281AF15A0060BBDA /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0848BF57281AF15A0060BBDA /* SettingsModel.swift */; };
 		084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C22794760D00CCEED6 /* NewsModel.swift */; };
 		084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */; };
 		085D438227B06C8C00F2F8FD /* FavoritesCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */; };
@@ -91,6 +92,7 @@
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
 		0847BA282784A22A0097910A /* RabbiCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiCardView.swift; sourceTree = "<group>"; };
+		0848BF57281AF15A0060BBDA /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		084E99C22794760D00CCEED6 /* NewsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsModel.swift; sourceTree = "<group>"; };
 		084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleCardView.swift; sourceTree = "<group>"; };
 		085D438127B06C8C00F2F8FD /* FavoritesCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCardView.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
 				084E99C22794760D00CCEED6 /* NewsModel.swift */,
 				08AF240D27A35315001331EA /* FavoritesModel.swift */,
+				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -433,6 +436,7 @@
 				08469DE72762D878007EF981 /* NewsView.swift in Sources */,
 				B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */,
 				F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */,
+				0848BF58281AF15A0060BBDA /* SettingsModel.swift in Sources */,
 				087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,

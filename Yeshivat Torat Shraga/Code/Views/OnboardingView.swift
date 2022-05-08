@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseMessaging
 
 struct OnboardingView: View {
     var dismiss: (()->Void)?
@@ -153,6 +154,17 @@ struct OnboardingView: View {
                                 print(granted)
                             }
                         )
+                        
+                        UNUserNotificationCenter.current().getNotificationSettings { settings in
+                            if settings.authorizationStatus == .authorized {
+                                Messaging.messaging().subscribe(toTopic: "all") { error in
+                                    if let error = error {
+                                        print("\n\n\nError subscribing to notifications: \(error)\n\n\n")
+                                    }
+                                  print("Subscribed to all notifications successfuly")
+                                }
+                            }
+                        }
 
                     }) {
                         Text("Enable Notifications")
