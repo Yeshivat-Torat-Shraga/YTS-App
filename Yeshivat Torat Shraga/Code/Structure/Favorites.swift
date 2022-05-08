@@ -207,8 +207,8 @@ class Favorites: ObservableObject {
         let group = DispatchGroup()
         let queue = DispatchQueue(label: "favorites_queue", attributes: .concurrent)
         
-        group.enter()
         var favoritePeople: [DetailedRabbi]? = nil
+        group.enter()
         queue.async {
             let fetchRequest = CDPerson.fetchRequest()
             
@@ -225,20 +225,23 @@ class Favorites: ObservableObject {
                     
                 }
             }
-            // MARK: Get Rabbis by IDs here
-            FirebaseConnection.loadRabbisByIDs(rabbiIDs) { rabbis, error in
-                if let rabbis = rabbis {
-                    favoritePeople = rabbis
-                } else if let error = error {
-                    print("An error occured while loading rabbis from Firestore using CD: \(error.localizedDescription)")
-                }
+            if rabbiIDs.isEmpty {
                 group.leave()
+            } else {
+                FirebaseConnection.loadRabbisByIDs(rabbiIDs) { rabbis, error in
+                    if let rabbis = rabbis {
+                        favoritePeople = rabbis
+                    } else if let error = error {
+                        print("An error occured while loading rabbis from Firestore using CD: \(error.localizedDescription)")
+                    }
+                    group.leave()
+                }
             }
         }
         
         
-        group.enter()
         var favoriteContents: [SortableYTSContent]? = nil
+        group.enter()
         queue.async {
             let fetchRequest = CDContent.fetchRequest()
             
@@ -254,15 +257,19 @@ class Favorites: ObservableObject {
                     contentIDs.insert(firestoreID)
                 }
             }
-            // MARK: Get Content By IDs here
-            FirebaseConnection.loadContentByIDs(contentIDs) { results, error in
-                if let results = results {
-                    favoriteContents = results
-                } else if let error = error {
-                    print("An error occured while loading contents from Firestore using CD: \(error.localizedDescription)")
-                    return
-                }
+            
+            if contentIDs.isEmpty {
                 group.leave()
+            } else {
+                FirebaseConnection.loadContentByIDs(contentIDs) { results, error in
+                    if let results = results {
+                        favoriteContents = results
+                    } else if let error = error {
+                        print("An error occured while loading contents from Firestore using CD: \(error.localizedDescription)")
+                        return
+                    }
+                    group.leave()
+                }
             }
             // Must have SortableYTSContent before calling .leave()
         }

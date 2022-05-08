@@ -53,11 +53,7 @@ struct RootView: View {
                 }
             }
         }
-        .alert(isPresented: Binding(get: {
-            model.showError
-        }, set: {
-            model.showError = $0
-        }), content: {
+        .alert(isPresented: $model.showError, content: {
             Alert(
                 title: Text("Oops! Something went wrong."),
                 message: Text(model.errorToShow?.getUIDescription() ?? "We're not even sure what it is, but something is definitely not working. Sorry."),
