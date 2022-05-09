@@ -7,6 +7,7 @@ import os
 import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 from blake3 import blake3
+from google.cloud.exceptions import NotFound
 
 PRODUCTION = os.getenv("PRODUCTION")
 
@@ -223,8 +224,11 @@ def shiurim_delete(ID):
     content_type = shiur_data["type"]
     bucket = storage.bucket()
     file_hash = source_path.split("/")[2]
-    bucket.delete_blob(f"{content_type}/{file_hash}")
     shiur.delete()
+    try:
+        bucket.delete_blob(f"{content_type}/{file_hash}")
+    except NotFound as e:
+        pass
     return redirect(url_for("shiurim"))
 
 
