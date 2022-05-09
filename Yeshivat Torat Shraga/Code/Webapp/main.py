@@ -220,7 +220,7 @@ def shiurim_delete(ID):
     shiur = db.collection("content").document(ID)
     shiur_data = shiur.get().to_dict()
     source_path = shiur_data["source_path"]
-    content_type = shiur_data["content_type"]
+    content_type = shiur_data["type"]
     bucket = storage.bucket()
     file_hash = source_path.split("/")[2]
     bucket.delete_blob(f"{content_type}/{file_hash}")
