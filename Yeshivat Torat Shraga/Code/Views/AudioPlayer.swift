@@ -12,17 +12,12 @@ import MediaPlayer
 struct AudioPlayer: View {
     @ObservedObject var player = Player()
     var audio: Audio?
-    
+    @EnvironmentObject var favorites: Favorites
     @State private var showFavoritesAlert = false
     @State private var favoriteErr: Error?
-    @State private var favoriteIDs = Favorites.shared.favoriteIDs
     @State private var isFavoritesBusy = false
     @State private var sharing = false
-    var refreshFavorites: (() -> Void)?
-    
-    init(refreshFavorites: (() -> Void)? = nil) {
-        self.refreshFavorites = refreshFavorites
-    }
+    @State private var heartFillOverride = true
     
     mutating func set(audio: Audio) {
         self.audio = audio
@@ -230,16 +225,6 @@ struct AudioPlayer: View {
                     })
                         .frame(width: 25)
                     
-//                    Spacer()
-                    
-//                    Button(action: {
-//                        Haptics.shared.play(.soft)
-//                    }, label: {
-//                        Image(systemName: "backward.fill")
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fit)
-//                    })
-//                        .frame(width: 40)
                 }
                 
                 Group {
@@ -258,7 +243,7 @@ struct AudioPlayer: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                         })
-                            .frame(width: 30)
+                        .frame(width: 30)
                     } else if RootModel.audioPlayer.player.timeControlStatus == .playing {
                         Button(action: {
                             Haptics.shared.play(.soft)
@@ -277,16 +262,6 @@ struct AudioPlayer: View {
                 }
                 
                 Group {
-//                    Button(action: {
-//                        Haptics.shared.play(.light)
-//                    }, label: {
-//                        Image(systemName: "forward.fill")
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fit)
-//                    })
-//                        .frame(width: 40)
-                    
-//                    Spacer()
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
@@ -318,32 +293,34 @@ struct AudioPlayer: View {
             HStack {
                 Spacer()
                 
-                if let audio = audio, let favoriteIDs = favoriteIDs {
-                Button(action: {
-                    if !isFavoritesBusy {
-                        isFavoritesBusy = true
-                        if favoriteIDs.contains(audio.firestoreID) {
-                            Favorites.shared.delete(audio) { favorites, error in
-                                self.refreshFavorites?()
-                                self.favoriteIDs = Favorites.shared.favoriteIDs
-                                isFavoritesBusy = false
-                            }
-                        } else {
-                            Favorites.shared.save(audio) { favorites, error in
-                                self.refreshFavorites?()
-                                self.favoriteIDs = Favorites.shared.favoriteIDs
-                                isFavoritesBusy = false
+                if let audio = audio, let favoriteIDs = favorites.favoriteIDs {
+                    Button(action: {
+                        if !isFavoritesBusy {
+                            heartFillOverride = false
+                            isFavoritesBusy = true
+                            if favoriteIDs.contains(audio.firestoreID) {
+                                favorites.delete(audio) { favorites, error in
+                                    isFavoritesBusy = false
+                                }
+                            } else {
+                                heartFillOverride = true
+                                self.favorites.save(audio) { favorites, error in
+                                    isFavoritesBusy = false
+                                }
                             }
                         }
-//                        Favorites.shared.loadFavorites()
-                    }
-                }, label: {
-                    Image(systemName: favoriteIDs.contains(audio.firestoreID)
-                          ? "heart.fill"
-                          : "heart")
+                    }, label: {
+                        Image(systemName: isFavoritesBusy
+                              ? heartFillOverride
+                                  ? "heart.fill"
+                                  : "heart"
+                              
+                              : favoriteIDs.contains(audio.firestoreID)
+                                  ? "heart.fill"
+                                  : "heart")
                         .foregroundColor(.shragaGold)
                         .frame(width: 20, height: 20)
-                }).buttonStyle(iOS14BorderedProminentButtonStyle())
+                    }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 }
                 
                 Menu {
@@ -403,14 +380,6 @@ struct AudioPlayer: View {
             colors: [Color("ShragaBlue"), Color(white: 0.8)],
             startPoint: .bottomLeading, endPoint: .topTrailing)
                         .ignoresSafeArea())
-        .onAppear {
-            favoriteIDs = Favorites.shared.favoriteIDs
-//            if let audio = audio {
-//                isFavorited = favoriteIDs?.contains(audio.firestoreID) ?? false
-//            } else {
-//                isFavorited = false
-//            }
-        }
         .alert(isPresented: Binding (get: {
             favoriteErr != nil
         }, set: {
