@@ -15,28 +15,40 @@ struct FavoritesView: View {
             ScrollView {
                 VStack {
                     if let favorites = model.sortables {
-                        ForEach(Array(favorites.keys.sorted { lhs, rhs in
-                            lhs.name < rhs.name
-                        }), id: \.self) { rabbi in
-                            HStack {
-                                Text(rabbi.name)
+                        if favorites.isEmpty {
+                            VStack {
+                                Text("No favorites found.")
                                     .bold()
-                                    .font(.title3)
-                                Spacer()
+                                    .font(.title2)
+                                    .padding(.vertical)
+                                Text("Press the heart while playing a Shiur to add it to this list.")
                             }
-                            .padding(.top)
-                            .padding(.horizontal)
-                            
-                            if let contentArray = favorites[rabbi] {
-                                Group {
-                                    ForEach(contentArray, id: \.self) { sortable in
-                                        SortableFavoritesCardView(content: sortable)
-                                            .shadow(radius: UI.shadowRadius)
-                                    }
-                                    Divider()
+                            .multilineTextAlignment(.center)
+                            .padding()
+                        } else {
+                            ForEach(Array(favorites.keys.sorted { lhs, rhs in
+                                lhs.name < rhs.name
+                            }), id: \.self) { rabbi in
+                                HStack {
+                                    Text(rabbi.name)
+                                        .bold()
+                                        .font(.title3)
+                                    Spacer()
                                 }
+                                .padding(.top)
+                                .padding(.horizontal)
+                                
+                                if let contentArray = favorites[rabbi] {
+                                    Group {
+                                        ForEach(contentArray, id: \.self) { sortable in
+                                            SortableFavoritesCardView(content: sortable)
+                                                .shadow(radius: UI.shadowRadius)
+                                        }
+                                        Divider()
+                                    }
                                     .padding(.horizontal)
                                     .padding(.vertical, UI.shadowRadius)
+                                }
                             }
                         }
                     } else {
