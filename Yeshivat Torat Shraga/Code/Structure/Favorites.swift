@@ -10,12 +10,12 @@ import UIKit
 import SwiftUI
 import CoreData
 
+
 class Favorites: ObservableObject {
-    static var shared = Favorites()
     let delegate = (UIApplication.shared.delegate as! AppDelegate)
     typealias FavoritesTuple = (content: [SortableYTSContent]?, people: [DetailedRabbi]?)
     
-    private init() {
+    init() {
         loadFavorites()
     }
     
@@ -43,6 +43,7 @@ class Favorites: ObservableObject {
                 print(error)
             }
         }
+        loadFavorites()
     }
     
     func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
