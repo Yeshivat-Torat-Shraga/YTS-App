@@ -106,9 +106,8 @@ class DetailedRabbi: Rabbi, URLImageable {
         self.profileImageURL = profileImageURL
     }
     
-    static public var samples: [DetailedRabbi] = [
-        DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!),
-    ]
+    static public var sample: DetailedRabbi =
+        DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!)
     
     /*
     init?(name: String, profileImageURL: URL) throws {
@@ -377,7 +376,7 @@ class Video: YTSContent, URLImageable {
                               fileID: "testvideo",
                               sourceURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/HLSStreams/video/SSStest.mp4/test.mp4.m3u8")!,
                               title: "Test Video",
-                              author: DetailedRabbi.samples[2],
+                              author: DetailedRabbi.sample,
                               description: "Testing Video",
                               date: .distantPast,
                               duration: 100,
@@ -519,7 +518,7 @@ class Audio: YTSContent, Hashable {
         id: "PD9DX0Hf8v1dJPmGMk97",
         fileID: "RabbiDavid",
         sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!,
-        title: "Hilchot Har Habayit",
+        title: "really really really long sample title that should force the card to expand horizontally",
         author: DetailedRabbi(
             id: "wEDCQ71W0bVEUtTM1x5Z",
             name: "Rabbi Ifrah", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2FD3_0069-e1604486300557-174x174.jpg?alt=media&token=bc0b78bb-f354-464d-8d78-9dae1693093d")!),

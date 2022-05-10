@@ -49,7 +49,7 @@ struct RabbiCardView: View {
 
 struct RabbiCardView_Previews: PreviewProvider {
     static var previews: some View {
-        RabbiCardView(rabbi: DetailedRabbi.samples[0])
+        RabbiCardView(rabbi: DetailedRabbi.sample)
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
             .preferredColorScheme(.light)

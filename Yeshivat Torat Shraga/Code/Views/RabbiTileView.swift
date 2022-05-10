@@ -84,6 +84,6 @@ struct RabbiTileView: View {
 
 struct TileCardView_Previews: PreviewProvider {
     static var previews: some View {
-        RabbiTileView(rabbi: DetailedRabbi.samples[0], size: .medium)
+        RabbiTileView(rabbi: DetailedRabbi.sample, size: .medium)
     }
 }

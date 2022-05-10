@@ -117,7 +117,7 @@ struct DisplayRabbiView: View {
 struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            DisplayRabbiView(rabbi: DetailedRabbi.samples[2])
+            DisplayRabbiView(rabbi: DetailedRabbi.sample)
                 .foregroundColor(.shragaBlue)
         }
     }
