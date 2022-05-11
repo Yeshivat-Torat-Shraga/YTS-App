@@ -38,7 +38,6 @@ struct FavoritesView: View {
                                         .font(.title3)
                                     Spacer()
                                 }
-                                .padding(.top)
                                 .padding(.horizontal)
                                 
                                 if let contentArray = favorites[rabbi] {
@@ -48,6 +47,7 @@ struct FavoritesView: View {
                                                 .shadow(radius: UI.shadowRadius)
                                         }
                                         Divider()
+                                            .padding(.bottom, 5)
                                     }
                                     .padding(.horizontal)
                                     .padding(.vertical, UI.shadowRadius)
