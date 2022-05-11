@@ -92,7 +92,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
                         }
                         .padding(.trailing, 5)
                     }
-                    .font(.footnote)
+                    .font(.caption)
                     .foregroundColor(Color("Gray"))
                     .padding(.top, 1)
                     
