@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftyGif
 
 struct RootView: View {
-    @EnvironmentObject var FavoritesManager: Favorites
+    @EnvironmentObject var favorites: Favorites
     @ObservedObject var model: RootModel
     @State private var imageData: Data? = nil
     @State var selectedView = 0

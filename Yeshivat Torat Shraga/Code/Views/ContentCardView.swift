@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SortableContentCardView<Content: SortableYTSContent>: View {
     let content: Content
+    
     var body: some View {
         if let audio = content.audio {
             ContentCardView(content: audio)
@@ -19,6 +20,7 @@ struct SortableContentCardView<Content: SortableYTSContent>: View {
 }
 
 struct ContentCardView<Content: YTSContent>: View {
+    @EnvironmentObject var favorites: Favorites
     @State var isShowingPlayerSheet = false
     let content: Content
     var isAudio: Bool {
@@ -113,7 +115,7 @@ struct ContentCardView<Content: YTSContent>: View {
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
-            RootModel.audioPlayer
+            RootModel.audioPlayer.environmentObject(favorites)
         }
     }
 }

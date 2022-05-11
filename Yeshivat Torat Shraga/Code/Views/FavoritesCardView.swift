@@ -22,6 +22,8 @@ struct FavoritesCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
     @Environment(\.colorScheme) var colorScheme
     
+    @EnvironmentObject var favorites: Favorites
+    
     let content: Content
     let isAudio: Bool
     
@@ -136,7 +138,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
         .cornerRadius(UI.cornerRadius)
         .clipped()
         .sheet(isPresented: $isShowingPlayerSheet) {
-            RootModel.audioPlayer
+            RootModel.audioPlayer.environmentObject(favorites)
         }
     }
     
