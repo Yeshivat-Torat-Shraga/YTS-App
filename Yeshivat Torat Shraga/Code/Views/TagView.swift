@@ -96,7 +96,7 @@ struct TagView: View {
                             }
                         } else {
                             VStack {
-                                Text("Sorry, no Shiurim here yet.")
+                                Text("Sorry, no shiurim here yet.")
                                     .bold()
                                     .font(.title2)
                                     .padding(.vertical)

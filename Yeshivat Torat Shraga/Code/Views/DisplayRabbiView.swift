@@ -74,11 +74,11 @@ struct DisplayRabbiView: View {
                             .padding(.horizontal)
                         } else {
                             VStack {
-                                Text("Sorry, no Shiurim were found.")
+                                Text("Sorry, no shiurim were found.")
                                     .bold()
                                     .font(.title2)
                                     .padding(.vertical)
-                                Text("\(model.rabbi.name) didn't upload any Shiurim yet.")
+                                Text("\(model.rabbi.name) didn't upload any shiurim yet.")
                                 Text("Check again in a little bit.")
                             }
                             .padding(.vertical)
