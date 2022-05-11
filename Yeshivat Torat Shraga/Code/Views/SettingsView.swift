@@ -15,6 +15,8 @@ struct SettingsView: View {
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
     
+    var playerAudio: Binding<Audio?>
+    
     var body: some View {
         NavigationView {
             List {
@@ -81,7 +83,10 @@ struct SettingsView: View {
                                 }
                             }
                         }
+                        .foregroundColor(Color("ShragaBlue"))
+                    
                     Toggle("Slideshow Autoscroll", isOn: $enableTimer)
+                        .foregroundColor(Color("ShragaBlue"))
                 }
                 
                 Section {
@@ -90,12 +95,18 @@ struct SettingsView: View {
                     } label: {
                         Text("Clear favorites")
                     }
-                    .disabled(favorites.favoriteIDs?.isEmpty ?? false)
+                    .foregroundColor(Color("ShragaBlue"))
                     .alert(isPresented: self.$showClearFavoritesConfirmation, content: {
                         Alert(title: Text("Confirmation"), message: Text("Are you sure you want to clear all favorites? This action cannot be undone."), primaryButton: Alert.Button.cancel(), secondaryButton: Alert.Button.destructive(Text("Delete"), action: {
                             favorites.clearFavorites()
                         }))
                     })
+                }
+                
+                Section {
+                    NavigationLink("About") {
+                        AboutView()
+                    }.foregroundColor(Color("ShragaBlue"))
                 }
             }
             .navigationTitle("Settings")
@@ -115,6 +126,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(playerAudio: .constant(nil))
     }
 }

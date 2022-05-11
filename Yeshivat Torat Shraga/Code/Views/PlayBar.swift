@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlayBar: View {
     @StateObject var model: PlayBarModel = PlayBarModel()
-    @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var favorites: Favorites
     var audioCurrentlyPlaying: Binding<Audio?>
     let lightColor = Color(hex: 0xDEDEDE)
     let darkColor = Color(hex: 0x121212)
@@ -95,7 +95,7 @@ struct PlayBar: View {
                     .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear, percentage: 30))
             )
             .sheet(isPresented: $presenting) {
-                RootModel.audioPlayer.environmentObject(favoritesManager)
+                RootModel.audioPlayer.environmentObject(favorites)
             }
             .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
             .clipped()
@@ -110,7 +110,7 @@ struct PlayBar: View {
 struct PlayBar_Previews: PreviewProvider {
     static var previews: some View {
         TabView {
-            HomeView()
+            HomeView(playerAudio: .constant(nil))
                 .overlay(VStack {
                     Spacer()
                     PlayBar(audioCurrentlyPlaying: .constant(.sample))
@@ -118,15 +118,15 @@ struct PlayBar_Previews: PreviewProvider {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }.tag(0)
-            SettingsView()
+            SettingsView(playerAudio: .constant(nil))
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
                 }.tag(1)
-            SettingsView()
+            SettingsView(playerAudio: .constant(nil))
                 .tabItem {
                     Label("News", systemImage: "newspaper.fill")
                 }.tag(2)
-            SettingsView()
+            SettingsView(playerAudio: .constant(nil))
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }.tag(3)

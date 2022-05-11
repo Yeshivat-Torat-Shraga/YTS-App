@@ -10,6 +10,9 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
     @EnvironmentObject var favorites: Favorites
+    
+    var playerAudio: Binding<Audio?>
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -20,8 +23,8 @@ struct FavoritesView: View {
                                 Text("No favorites found.")
                                     .bold()
                                     .font(.title2)
-                                    .padding(.vertical)
-                                Text("Press the heart while playing a Shiur to add it to this list.")
+                                    .padding(.bottom, 3)
+                                Text("Press the heart while playing a shiur to add it to this list.")
                             }
                             .multilineTextAlignment(.center)
                             .padding()
@@ -35,7 +38,6 @@ struct FavoritesView: View {
                                         .font(.title3)
                                     Spacer()
                                 }
-                                .padding(.top)
                                 .padding(.horizontal)
                                 
                                 if let contentArray = favorites[rabbi] {
@@ -45,6 +47,7 @@ struct FavoritesView: View {
                                                 .shadow(radius: UI.shadowRadius)
                                         }
                                         Divider()
+                                            .padding(.bottom, 5)
                                     }
                                     .padding(.horizontal)
                                     .padding(.vertical, UI.shadowRadius)
@@ -74,7 +77,7 @@ struct FavoritesView: View {
 
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-        FavoritesView()
+        FavoritesView(playerAudio: .constant(nil))
             .foregroundColor(.shragaBlue)
     }
 }

@@ -22,6 +22,8 @@ struct FavoritesCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
     @Environment(\.colorScheme) var colorScheme
     
+    @EnvironmentObject var favorites: Favorites
+    
     let content: Content
     let isAudio: Bool
     
@@ -56,13 +58,19 @@ struct FavoritesCardView<Content: YTSContent>: View {
                 .background(UI.cardBlueGradient)
                 
                 VStack(alignment: .leading) {
+                    Spacer()
+                    
                     Text(content.title)
-                        .font(.title3)
+                        .font(.headline)
                         .bold()
+                        .minimumScaleFactor(0.6)
                         .foregroundColor(Color("ShragaBlue"))
 //                    Text("")
 //                    Text(content.hashValue.description)
                     //                    .foregroundColor(.black)
+                    
+                    Spacer()
+                    
                     HStack {
                         if let date = content.date {
                             if let month = Date.monthNameFor(date.get(.month), short: true) {
@@ -84,41 +92,16 @@ struct FavoritesCardView<Content: YTSContent>: View {
                         }
                         .padding(.trailing, 5)
                     }
-                    .font(.footnote)
-                    
+                    .font(.caption)
                     .foregroundColor(Color("Gray"))
                     .padding(.top, 1)
+                    
+                    Spacer()
                 }
                 Spacer()
             }
         }
-        //        .padding(.vertical)
         .background(Color.CardViewBG)
-        //        .overlay(
-        //            VStack {
-        ////                Spacer()
-        //                GeometryReader { proxy in
-        //                    HStack {
-        ////                        Spacer()
-        //                        Rectangle()
-        //                            .fill(Color.shragaBlue.darker(by: 10))
-        //                            .rotationEffect(.degrees(45))
-        //                            .overlay(
-        //                                Image(systemName: isAudio
-        //                                      ? getFillState("mic", invert: true)
-        //                                      : getFillState("play.square", invert: true))
-        //                                    .foregroundColor(Color("ShragaGold"))
-        //                                    .offset(
-        //                                        x: isAudio ? -2.5 : -3.5,
-        //                                        y: isAudio ? 1.25 : 3.25)
-        //                            )
-        //                            .frame(width: 25, height: 85 * 1.19)
-        //                            .offset(x: proxy.size.width - 25, y: 10)
-        //                            .shadow(radius: 5)
-        //                    }
-        //                }
-        //            }
-        //        )
         .overlay(
             VStack {
                 HStack {
@@ -136,7 +119,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
         .cornerRadius(UI.cornerRadius)
         .clipped()
         .sheet(isPresented: $isShowingPlayerSheet) {
-            RootModel.audioPlayer
+            RootModel.audioPlayer.environmentObject(favorites)
         }
     }
     

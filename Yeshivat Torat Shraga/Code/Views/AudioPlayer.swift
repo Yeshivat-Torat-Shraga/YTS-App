@@ -138,6 +138,9 @@ struct AudioPlayer: View {
                             .bold()
                         Spacer()
                     }
+                    
+                    Spacer().frame(height: 1)
+                    
                     HStack {
                         Text(self.audio?.author.name ?? "")
                             .font(.subheadline)

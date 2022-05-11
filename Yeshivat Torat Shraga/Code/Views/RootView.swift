@@ -9,10 +9,18 @@ import SwiftUI
 import SwiftyGif
 
 struct RootView: View {
-    @EnvironmentObject var FavoritesManager: Favorites
+    var favorites: Favorites = Favorites()
     @ObservedObject var model: RootModel
     @State private var imageData: Data? = nil
     @State var selectedView = 0
+    
+    init() {
+        self.model = RootModel()
+    }
+    
+    init(model: RootModel) {
+        self.model = model
+    }
     
     var body: some View {
         Group {
@@ -23,7 +31,8 @@ struct RootView: View {
                     model.homeView
                         .tabItem {
                             Label("Home", systemImage: "house")
-                        }.tag(0)
+                        }
+                        .tag(0)
                         .overlay(VStack {
                             Spacer()
                             PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
@@ -31,23 +40,43 @@ struct RootView: View {
                     model.favoritesView
                         .tabItem {
                             Label("Favorites", systemImage: "heart.fill")
-                        }.tag(1)
+                        }
+                        .tag(1)
+                        .overlay(VStack {
+                            Spacer()
+                            PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                        })
                     if #available(iOS 15.0, *), model.newsView.model.hasUnreadArticles {
                         model.newsView
                             .tabItem {
                                 Label("News", systemImage: "newspaper.fill")
-                            }.tag(2)
+                            }
+                            .tag(2)
                             .badge("!")
+                            .overlay(VStack {
+                                Spacer()
+                                PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                            })
                     } else {
                         model.newsView
                             .tabItem {
                                 Label("News", systemImage: "newspaper.fill")
-                            }.tag(2)
+                            }
+                            .tag(2)
+                            .overlay(VStack {
+                                Spacer()
+                                PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                            })
                     }
                     model.settingsView
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
-                        }.tag(3)
+                        }
+                        .tag(3)
+                        .overlay(VStack {
+                            Spacer()
+                            PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                        })
                 }
                 .onChange(of: selectedView) { _ in
                     Haptics.shared.impact()
@@ -76,6 +105,6 @@ struct RootView: View {
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView(model: RootModel(nil))
+        RootView()
     }
 }

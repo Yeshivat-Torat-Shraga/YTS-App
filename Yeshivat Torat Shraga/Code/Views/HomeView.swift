@@ -12,14 +12,18 @@ struct HomeView: View {
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
+    var playerAudio: Binding<Audio?>
+    
     init(hideLoadingScreen: @escaping (() -> Void),
-         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
+         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void), playerAudio: Binding<Audio?>) {
         self.model = HomeModel(hideLoadingScreen: hideLoadingScreen,
                                showErrorOnRoot: showErrorOnRoot)
+        self.playerAudio = playerAudio
     }
     
-    init() {
+    init(playerAudio: Binding<Audio?>) {
         self.model = HomeModel()
+        self.playerAudio = playerAudio
     }
     
     var body: some View {
@@ -59,9 +63,9 @@ struct HomeView: View {
                     
                     
                     // MARK: - Rebbeim
-                    LabeledDivider(title: "Rebbeim")
-                        .padding(.horizontal)
                     VStack(spacing: 0) {
+                        LabeledDivider(title: "Rebbeim")
+                            .padding(.horizontal)
                         if let rebbeim = model.rebbeim {
                             if rebbeim.count < 1 {
                                 Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
@@ -94,9 +98,9 @@ struct HomeView: View {
                     }
                     
                     // MARK: - CATEGORIES
-                    LabeledDivider(title: "Categories")
-                        .padding(.horizontal)
                     VStack(spacing: 0) {
+                        LabeledDivider(title: "Categories")
+                            .padding(.horizontal)
                         
                         if let tags = model.tags {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -125,9 +129,9 @@ struct HomeView: View {
 
                     
                     // MARK: - SLIDESHOW
-                    LabeledDivider(title: "Featured Photos")
-                        .padding(.horizontal)
                     VStack(spacing: 0) {
+                        LabeledDivider(title: "Featured Photos")
+                            .padding(.horizontal)
                         if let slideshowImages = model.slideshowImages {
                             if slideshowImages.count < 1 {
                                 Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
@@ -150,8 +154,10 @@ struct HomeView: View {
                         }
                     }
                     
+                    if playerAudio.wrappedValue != nil {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
-                .padding(.bottom, UI.playerBarHeight)
                 .navigationTitle("Home")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -200,7 +206,7 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(playerAudio: .constant(nil))
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
     }
