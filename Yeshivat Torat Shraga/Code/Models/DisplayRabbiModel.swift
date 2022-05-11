@@ -12,7 +12,8 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     @Published var rabbi: DetailedRabbi
     @Published var content: AVContent?
     @Published var sortables: [SortableYTSContent]?
-    @Published var favorites: [SortableYTSContent]?
+    @Published var favoriteContent: [SortableYTSContent]?
+    var favoritesManager: Favorites? = nil
     
     @Published internal var loadingContent: Bool = false
     internal var reloadingContent: Bool = false
@@ -102,27 +103,33 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
         }
     }
     
-    func initialLoad() {
-        // Load Favorites (This will be called onAppear
-        var favorites: [SortableYTSContent] = []
-        if let allFavorites = Favorites.shared.favorites?.content {
+    func loadFavorites() {
+        // Load Favorites (This will be called onAppear)
+        var favoriteContent: [SortableYTSContent] = []
+        let favorites = self.favoritesManager!
+        if let allFavorites = favorites.favorites?.content {
             for content in allFavorites {
                 if let audio = content.audio {
                     if audio.author.firestoreID == self.rabbi.firestoreID {
-                        favorites.append(audio.sortable)
+                        favoriteContent.append(audio.sortable)
                     }
                 } else if let video = content.video {
                     if video.author.firestoreID == self.rabbi.firestoreID {
-                        favorites.append(video.sortable)
+                        favoriteContent.append(video.sortable)
                     }
                 }
                 
             }
         }
         withAnimation {
-            self.favorites = favorites
+            self.favoriteContent = favoriteContent
         }
+
+    }
+    
+    func initialLoad() {
         
+        loadFavorites()
         
         if !calledInitialLoad {
             self.calledInitialLoad = true
@@ -137,6 +144,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
             self.content = nil
             //            self.favoriteContent = nil
             self.calledInitialLoad = false
+            favoritesManager!.loadFavorites()
             initialLoad()
             //            loadFavorites()
         }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PlayBar: View {
     @StateObject var model: PlayBarModel = PlayBarModel()
+    @EnvironmentObject var favoritesManager: Favorites
     var audioCurrentlyPlaying: Binding<Audio?>
     let lightColor = Color(hex: 0xDEDEDE)
     let darkColor = Color(hex: 0x121212)
@@ -94,7 +95,7 @@ struct PlayBar: View {
                     .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear, percentage: 30))
             )
             .sheet(isPresented: $presenting) {
-                RootModel.audioPlayer
+                RootModel.audioPlayer.environmentObject(favoritesManager)
             }
             .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
             .clipped()

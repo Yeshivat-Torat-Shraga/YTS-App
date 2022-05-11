@@ -10,6 +10,7 @@ import FirebaseMessaging
 
 struct SettingsView: View {
     @ObservedObject var model = SettingsModel()
+    @EnvironmentObject var favorites: Favorites
     @State var showClearFavoritesConfirmation = false
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
@@ -88,9 +89,11 @@ struct SettingsView: View {
                         showClearFavoritesConfirmation = true
                     } label: {
                         Text("Clear favorites")
-                    }.alert(isPresented: self.$showClearFavoritesConfirmation, content: {
+                    }
+                    .disabled(favorites.favoriteIDs?.isEmpty ?? false)
+                    .alert(isPresented: self.$showClearFavoritesConfirmation, content: {
                         Alert(title: Text("Confirmation"), message: Text("Are you sure you want to clear all favorites? This action cannot be undone."), primaryButton: Alert.Button.cancel(), secondaryButton: Alert.Button.destructive(Text("Delete"), action: {
-                            Favorites.shared.clearFavorites()
+                            favorites.clearFavorites()
                         }))
                     })
                 }
@@ -106,6 +109,7 @@ struct SettingsView: View {
                 }
             }, secondaryButton: .cancel())
         }
+        .foregroundColor(.blue)
     }
 }
 

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DisplayRabbiView: View {
     @ObservedObject var model: DisplayRabbiModel
+    @EnvironmentObject var favoritesManager: Favorites
     
     init(rabbi: DetailedRabbi) {
         model = DisplayRabbiModel(rabbi: rabbi)
@@ -17,7 +18,7 @@ struct DisplayRabbiView: View {
     var body: some View {
         ScrollView {
             Group {
-                if let favorites = model.favorites, favorites.count > 0 {
+                if let favorites = model.favoriteContent, favorites.count > 0 {
                     HStack {
                         Text("Favorites")
                             .font(.title3)
@@ -42,9 +43,8 @@ struct DisplayRabbiView: View {
                         }
                         .padding(.horizontal)
                     }
-                }
-                
-                Divider()
+                    Divider()
+                }            
             }
             Group {
                 HStack {
@@ -94,7 +94,12 @@ struct DisplayRabbiView: View {
                 }
             }
         }
+        .onChange(of: self.favoritesManager.favoriteIDs) { _ in
+            model.favoritesManager = favoritesManager
+            model.loadFavorites()
+        }
         .onAppear {
+            model.favoritesManager = favoritesManager
             model.initialLoad()
         }
         

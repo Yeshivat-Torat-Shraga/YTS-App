@@ -873,7 +873,7 @@ final class FirebaseConnection {
         httpsCallable.call(data, completion: contentClosure(options: (limit: 0, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
             guard let results = results else {
                 if let error = error {
-                    print(error.localizedDescription)
+                    print(error)
                 }
                 completion(nil, error)
                 return

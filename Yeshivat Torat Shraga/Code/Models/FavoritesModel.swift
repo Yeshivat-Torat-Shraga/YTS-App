@@ -8,18 +8,13 @@
 import SwiftUI
 
 class FavoritesModel: ObservableObject {
-    @Published var favorites = Favorites.shared.favorites
     @Published var sortables: [DetailedRabbi: [SortableYTSContent]]?
     init() {}
     
-    func load() {
+    func load(favorites: Favorites) {
         var sortables: [DetailedRabbi: [SortableYTSContent]] = [:]
-        guard let favorites = Favorites.shared.favorites else {
-            print("An error occured whilst loading favorites")
-            return
-        }
         
-        if let contents = favorites.content {
+        if let contents = favorites.favorites?.content {
             for content in contents {
                 if let video = content.video {
                     if let author = video.author as? DetailedRabbi {

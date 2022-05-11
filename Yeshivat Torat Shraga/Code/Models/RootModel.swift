@@ -12,7 +12,6 @@ class RootModel: ObservableObject, ErrorShower {
     @AppStorage("firstLaunch")
     private var isFirstLaunch = true
     @Published var showOnboarding = false
-        
     internal var retry: (() -> Void)?
     @Published var showError: Bool = false
     internal var errorToShow: Error?
@@ -33,7 +32,7 @@ class RootModel: ObservableObject, ErrorShower {
     @Published var alert: Alert?
     
     
-    init() {
+    init(_ favoritesManager: Favorites?) {
         if isFirstLaunch {
             showOnboarding = true
             isFirstLaunch = false
@@ -50,11 +49,7 @@ class RootModel: ObservableObject, ErrorShower {
             self.showLoadingScreen = false
         }, showErrorOnRoot: { error, retry in
             self.showError(error: error, retry: retry!)
-        })
-        
-        RootModel.audioPlayer.refreshFavorites = {
-            self.favoritesView.model.load()
-        }
+        })        
     }
     
 }

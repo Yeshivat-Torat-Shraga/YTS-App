@@ -10,7 +10,7 @@ import SwiftUI
 import FirebaseDynamicLinks
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    @ObservedObject var FavoritesManager = Favorites()
     var window: UIWindow?
 
 
@@ -28,7 +28,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let contentView = RootView().environment(\.managedObjectContext, context)
+        let rootModel = RootModel(FavoritesManager)
+        let contentView = RootView(model: rootModel).environment(\.managedObjectContext, context).environmentObject(FavoritesManager)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
@@ -140,11 +141,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             group.leave()
         }
         group.enter()
-        Favorites.shared.loadFavorites(completion: {_,_ in group.leave()})
+        self.FavoritesManager.loadFavorites(completion: {_,_ in group.leave()})
         group.notify(queue: .main) {
             if let audio = content?.audio {
                 RootModel.audioPlayer.play(audio: audio)
-                let vc = UIHostingController(rootView: RootModel.audioPlayer)
+                let vc = UIHostingController(rootView: RootModel.audioPlayer.environmentObject(self.FavoritesManager))
                 self.window?.rootViewController?.present(vc, animated: true)
                 //                                }  else if let video = content?.video {
                 //                                    let vc = UIHostingController(rootView: Text("Detected unsupported video content"))

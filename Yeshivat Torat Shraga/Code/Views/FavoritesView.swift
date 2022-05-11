@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
-    @ObservedObject var favorites = Favorites.shared
+    @EnvironmentObject var favorites: Favorites
     var body: some View {
         NavigationView {
             ScrollView {
@@ -62,9 +62,12 @@ struct FavoritesView: View {
             }
             .background(Color("FavoritesBG").ignoresSafeArea())
             .navigationTitle("Favorites")
-        }
-        .onAppear {
-            model.load()
+            .onAppear {
+                model.load(favorites: favorites)
+            }
+            .onChange(of: self.favorites.favoriteIDs) { _ in
+                model.load(favorites: favorites)
+            }
         }
     }
 }
