@@ -401,7 +401,8 @@ struct AudioPlayer: View {
         .sheet(isPresented: $sharing) {
             if let audio = audio, let shareURL = audio.storedShareURL {
                 if let title = audio.title, let authorName = audio.author.name {
-                    ShareSheet(activityItems: [title, authorName, shareURL])
+                    
+                    ShareSheet(activityItems: [MyActivityItemSource(title: title, text:  "Torat Shraga Shiur by \(authorName)"), shareURL])
                 }
             }
         }
