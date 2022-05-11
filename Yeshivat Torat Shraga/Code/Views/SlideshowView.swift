@@ -95,7 +95,7 @@ struct ImageCarouselView_Previews: PreviewProvider {
     ]
     
     static var previews: some View {
-        HomeView()
+        HomeView(playerAudio: .constant(nil))
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
     }

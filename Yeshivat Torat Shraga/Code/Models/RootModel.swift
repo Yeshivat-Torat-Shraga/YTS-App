@@ -31,8 +31,7 @@ class RootModel: ObservableObject, ErrorShower {
     
     @Published var alert: Alert?
     
-    
-    init(_ favoritesManager: Favorites?) {
+    init() {
         if isFirstLaunch {
             showOnboarding = true
             isFirstLaunch = false
@@ -49,7 +48,7 @@ class RootModel: ObservableObject, ErrorShower {
             self.showLoadingScreen = false
         }, showErrorOnRoot: { error, retry in
             self.showError(error: error, retry: retry!)
-        })        
+        }, playerAudio: RootModel.audioPlayerBinding.audio)        
     }
     
 }

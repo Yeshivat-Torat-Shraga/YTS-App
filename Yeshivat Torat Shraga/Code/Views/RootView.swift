@@ -9,10 +9,18 @@ import SwiftUI
 import SwiftyGif
 
 struct RootView: View {
-    @EnvironmentObject var favorites: Favorites
+    var favorites: Favorites = Favorites()
     @ObservedObject var model: RootModel
     @State private var imageData: Data? = nil
     @State var selectedView = 0
+    
+    init() {
+        self.model = RootModel()
+    }
+    
+    init(model: RootModel) {
+        self.model = model
+    }
     
     var body: some View {
         Group {
@@ -76,6 +84,6 @@ struct RootView: View {
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView(model: RootModel(nil))
+        RootView()
     }
 }

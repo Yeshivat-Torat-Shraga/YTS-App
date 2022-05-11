@@ -110,7 +110,7 @@ struct PlayBar: View {
 struct PlayBar_Previews: PreviewProvider {
     static var previews: some View {
         TabView {
-            HomeView()
+            HomeView(playerAudio: .constant(nil))
                 .overlay(VStack {
                     Spacer()
                     PlayBar(audioCurrentlyPlaying: .constant(.sample))

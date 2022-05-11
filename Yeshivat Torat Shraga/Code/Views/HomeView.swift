@@ -12,14 +12,18 @@ struct HomeView: View {
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
+    var playerAudio: Binding<Audio?>
+    
     init(hideLoadingScreen: @escaping (() -> Void),
-         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
+         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void), playerAudio: Binding<Audio?>) {
         self.model = HomeModel(hideLoadingScreen: hideLoadingScreen,
                                showErrorOnRoot: showErrorOnRoot)
+        self.playerAudio = playerAudio
     }
     
-    init() {
+    init(playerAudio: Binding<Audio?>) {
         self.model = HomeModel()
+        self.playerAudio = playerAudio
     }
     
     var body: some View {
@@ -150,8 +154,10 @@ struct HomeView: View {
                         }
                     }
                     
+                    if playerAudio.wrappedValue != nil {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
-                .padding(.bottom, UI.playerBarHeight)
                 .navigationTitle("Home")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -200,7 +206,7 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(playerAudio: .constant(nil))
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
     }
