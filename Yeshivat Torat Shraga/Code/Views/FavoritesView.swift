@@ -20,8 +20,8 @@ struct FavoritesView: View {
                                 Text("No favorites found.")
                                     .bold()
                                     .font(.title2)
-                                    .padding(.vertical)
-                                Text("Press the heart while playing a Shiur to add it to this list.")
+                                    .padding(.bottom, 3)
+                                Text("Press the heart while playing a shiur to add it to this list.")
                             }
                             .multilineTextAlignment(.center)
                             .padding()
