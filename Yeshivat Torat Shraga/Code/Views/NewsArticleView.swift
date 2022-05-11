@@ -31,6 +31,6 @@ struct NewsArticleView: View {
 
 struct NewsArticleView_Previews: PreviewProvider {
     static var previews: some View {
-        NewsView()
+        NewsView(playerAudio: .constant(nil))
     }
 }

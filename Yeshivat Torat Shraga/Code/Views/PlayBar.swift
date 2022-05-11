@@ -118,15 +118,15 @@ struct PlayBar_Previews: PreviewProvider {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }.tag(0)
-            SettingsView()
+            SettingsView(playerAudio: .constant(nil))
                 .tabItem {
                     Label("Favorites", systemImage: "heart.fill")
                 }.tag(1)
-            SettingsView()
+            SettingsView(playerAudio: .constant(nil))
                 .tabItem {
                     Label("News", systemImage: "newspaper.fill")
                 }.tag(2)
-            SettingsView()
+            SettingsView(playerAudio: .constant(nil))
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }.tag(3)

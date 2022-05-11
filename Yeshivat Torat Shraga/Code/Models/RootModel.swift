@@ -25,9 +25,9 @@ class RootModel: ObservableObject, ErrorShower {
     
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
-    @Published var favoritesView = FavoritesView()
-    @Published var newsView = NewsView()
-    @Published var settingsView = SettingsView()
+    @Published var favoritesView = FavoritesView(playerAudio: RootModel.audioPlayerBinding.audio)
+    @Published var newsView = NewsView(playerAudio: RootModel.audioPlayerBinding.audio)
+    @Published var settingsView = SettingsView(playerAudio: RootModel.audioPlayerBinding.audio)
     
     @Published var alert: Alert?
     

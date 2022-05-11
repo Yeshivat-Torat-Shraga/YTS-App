@@ -10,6 +10,9 @@ import Shimmer
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
+    
+    var playerAudio: Binding<Audio?>
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -79,6 +82,6 @@ struct NewsView: View {
 
 struct NewsView_Previews: PreviewProvider {
     static var previews: some View {
-        NewsView()
+        NewsView(playerAudio: .constant(nil))
     }
 }

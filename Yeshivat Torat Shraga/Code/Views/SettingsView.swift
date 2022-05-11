@@ -15,6 +15,8 @@ struct SettingsView: View {
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
     
+    var playerAudio: Binding<Audio?>
+    
     var body: some View {
         NavigationView {
             List {
@@ -124,6 +126,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(playerAudio: .constant(nil))
     }
 }

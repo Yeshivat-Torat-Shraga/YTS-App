@@ -10,6 +10,9 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
     @EnvironmentObject var favorites: Favorites
+    
+    var playerAudio: Binding<Audio?>
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -74,7 +77,7 @@ struct FavoritesView: View {
 
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-        FavoritesView()
+        FavoritesView(playerAudio: .constant(nil))
             .foregroundColor(.shragaBlue)
     }
 }
