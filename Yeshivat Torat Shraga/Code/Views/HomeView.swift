@@ -59,9 +59,9 @@ struct HomeView: View {
                     
                     
                     // MARK: - Rebbeim
-                    LabeledDivider(title: "Rebbeim")
-                        .padding(.horizontal)
                     VStack(spacing: 0) {
+                        LabeledDivider(title: "Rebbeim")
+                            .padding(.horizontal)
                         if let rebbeim = model.rebbeim {
                             if rebbeim.count < 1 {
                                 Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
@@ -94,9 +94,9 @@ struct HomeView: View {
                     }
                     
                     // MARK: - CATEGORIES
-                    LabeledDivider(title: "Categories")
-                        .padding(.horizontal)
                     VStack(spacing: 0) {
+                        LabeledDivider(title: "Categories")
+                            .padding(.horizontal)
                         
                         if let tags = model.tags {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -125,9 +125,9 @@ struct HomeView: View {
 
                     
                     // MARK: - SLIDESHOW
-                    LabeledDivider(title: "Featured Photos")
-                        .padding(.horizontal)
                     VStack(spacing: 0) {
+                        LabeledDivider(title: "Featured Photos")
+                            .padding(.horizontal)
                         if let slideshowImages = model.slideshowImages {
                             if slideshowImages.count < 1 {
                                 Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
