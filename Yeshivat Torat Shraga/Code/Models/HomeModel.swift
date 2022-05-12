@@ -17,7 +17,7 @@ class HomeModel: ObservableObject, ErrorShower {
     var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
     var homePageAlertToShow: HomePageAlert? = nil
     private var shouldRetryOnAppCheckFailure = true
-    private let thingsToLoad = ["Rebbeim", "Sortables", "Slideshow images", "HomePageAlert", "Tags"]
+    private let thingsToLoad = ["Rebbeim", "Sortables", "Slideshow images", "Tags"]
     private var appCheckRetryCount = 0
     @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
@@ -106,7 +106,6 @@ class HomeModel: ObservableObject, ErrorShower {
                 return
             }
             guard let homeAlert = result else {
-                group.leave()
                 return
             }
             @AppStorage("lastViewedAlertID") var previousAlertID = ""
@@ -114,7 +113,6 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showAlert = true
                 self.homePageAlertToShow = homeAlert
             }
-            group.leave()
         }
         
         FirebaseConnection.loadCategories() { tags, error in
@@ -123,7 +121,6 @@ class HomeModel: ObservableObject, ErrorShower {
                 return
             }
             guard let tags = tags else {
-                group.leave()
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
