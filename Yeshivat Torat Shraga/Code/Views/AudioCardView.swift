@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct AudioCardView: View {
+    @EnvironmentObject var favoritesManager: Favorites
     @ObservedObject var model: AudioCardModel
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @State var isShowingPlayerSheet = false
     let showAuthor: Bool
     
@@ -19,7 +21,7 @@ struct AudioCardView: View {
     
     var body: some View {
         Button {
-            RootModel.audioPlayer.play(audio: model.audio)
+            audioPlayerModel.play(audio: model.audio)
             isShowingPlayerSheet = true
         } label: {
             HStack {
@@ -101,7 +103,9 @@ struct AudioCardView: View {
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
-            RootModel.audioPlayer
+            AudioPlayer()
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
         }
     }
 }

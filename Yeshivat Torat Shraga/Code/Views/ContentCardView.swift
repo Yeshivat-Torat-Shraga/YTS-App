@@ -20,7 +20,9 @@ struct SortableContentCardView<Content: SortableYTSContent>: View {
 }
 
 struct ContentCardView<Content: YTSContent>: View {
-    @EnvironmentObject var favorites: Favorites
+    @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @Environment(\.colorScheme) var colorScheme
     @State var isShowingPlayerSheet = false
     let content: Content
     var isAudio: Bool {
@@ -34,7 +36,7 @@ struct ContentCardView<Content: YTSContent>: View {
     var body: some View {
         Button(action: {
             if isAudio {
-                RootModel.audioPlayer.play(audio: content.sortable.audio!)
+                audioPlayerModel.play(audio: content.sortable.audio!)
                 isShowingPlayerSheet = true
             } else {
                 //                 Video Player goes here
@@ -115,7 +117,9 @@ struct ContentCardView<Content: YTSContent>: View {
         .cornerRadius(UI.cornerRadius)
         .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
-            RootModel.audioPlayer.environmentObject(favorites)
+            AudioPlayer()
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
         }
     }
 }

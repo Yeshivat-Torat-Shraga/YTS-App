@@ -16,20 +16,14 @@ class RootModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     internal var errorToShow: Error?
         
-    static var audioPlayer: AudioPlayer = AudioPlayer()
-    static var audioPlayerBinding: Binding<AudioPlayer> = Binding {
-        audioPlayer
-    } set: { val in
-        audioPlayer = val
-    }
-    
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
-    @Published var favoritesView = FavoritesView(playerAudio: RootModel.audioPlayerBinding.audio)
-    @Published var newsView = NewsView(playerAudio: RootModel.audioPlayerBinding.audio)
-    @Published var settingsView = SettingsView(playerAudio: RootModel.audioPlayerBinding.audio)
+    @Published var favoritesView = FavoritesView()
+    @Published var newsView = NewsView()
+    @Published var settingsView = SettingsView()
     
     @Published var alert: Alert?
+    
     
     init() {
         if isFirstLaunch {
@@ -48,7 +42,7 @@ class RootModel: ObservableObject, ErrorShower {
             self.showLoadingScreen = false
         }, showErrorOnRoot: { error, retry in
             self.showError(error: error, retry: retry!)
-        }, playerAudio: RootModel.audioPlayerBinding.audio)        
+        })        
     }
     
 }

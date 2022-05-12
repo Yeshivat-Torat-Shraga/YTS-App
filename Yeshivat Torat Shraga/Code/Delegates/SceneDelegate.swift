@@ -10,7 +10,8 @@ import SwiftUI
 import FirebaseDynamicLinks
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    @ObservedObject var FavoritesManager = Favorites()
+    @ObservedObject var favoritesManager = Favorites()
+    var rootView = RootView()
     var window: UIWindow?
 
 
@@ -28,8 +29,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let rootModel = RootModel()
-        let contentView = RootView(model: rootModel).environment(\.managedObjectContext, context).environmentObject(FavoritesManager)
+        let contentView = self.rootView.environment(\.managedObjectContext, context)
+            .environmentObject(favoritesManager)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
@@ -141,18 +142,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             group.leave()
         }
         group.enter()
-        self.FavoritesManager.loadFavorites(completion: {_,_ in group.leave()})
+        self.favoritesManager.loadFavorites(completion: {_,_ in group.leave()})
+        
         group.notify(queue: .main) {
             if let audio = content?.audio {
-                RootModel.audioPlayer.play(audio: audio)
-                let vc = UIHostingController(rootView: RootModel.audioPlayer.environmentObject(self.FavoritesManager))
+
+
+                let audioPlayerModel = self.rootView.audioPlayerModel
+                audioPlayerModel.play(audio: audio)
+                let vc = UIHostingController(rootView: AudioPlayer()
+                    .environmentObject(self.favoritesManager)
+                    .environmentObject(audioPlayerModel))
+                    
                 self.window?.rootViewController?.present(vc, animated: true)
                 //                                }  else if let video = content?.video {
                 //                                    let vc = UIHostingController(rootView: Text("Detected unsupported video content"))
                 //                                    self.window?.rootViewController?.present(vc, animated: true)
             } else {
                 let alert = UIAlertController(title: "An error occured", message: "The linked content could not be loaded", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                 self.window?.rootViewController?.present(alert, animated: true)
                 return
             }

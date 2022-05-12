@@ -9,17 +9,19 @@ import SwiftUI
 import SwiftyGif
 
 struct RootView: View {
-    var favorites: Favorites = Favorites()
-    @ObservedObject var model: RootModel
+    @EnvironmentObject var FavoritesManager: Favorites
+    @State var model: RootModel
+    @State var player: Player
+    @State var audioPlayerModel = AudioPlayerModel(player: Player())
     @State private var imageData: Data? = nil
     @State var selectedView = 0
     
     init() {
+        let player = Player()
+        let audioPlayerModel = AudioPlayerModel(player: player)
         self.model = RootModel()
-    }
-    
-    init(model: RootModel) {
-        self.model = model
+        self.audioPlayerModel = audioPlayerModel
+        self.player = player
     }
     
     var body: some View {
@@ -35,7 +37,7 @@ struct RootView: View {
                         .tag(0)
                         .overlay(VStack {
                             Spacer()
-                            PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                            PlayBar()
                         })
                     model.favoritesView
                         .tabItem {
@@ -100,11 +102,16 @@ struct RootView: View {
         }
         .foregroundColor(Color("ShragaBlue"))
         .accentColor(Color("ShragaBlue"))
+        .onAppear {
+            model.setup(FavoritesManager)
+        }
+        .environmentObject(audioPlayerModel)
     }
 }
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         RootView()
+            .environmentObject(Favorites())
     }
 }
