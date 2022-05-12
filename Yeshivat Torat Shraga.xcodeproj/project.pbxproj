@@ -26,6 +26,7 @@
 		08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D3493C27CD26A000538697 /* OnboardingView.swift */; };
 		08EFBACD27A9996400900A90 /* logoDarkMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACC27A9996400900A90 /* logoDarkMode.gif */; };
 		08EFBACF27A9B67700900A90 /* logoLightMode.gif in Resources */ = {isa = PBXBuildFile; fileRef = 08EFBACE27A9B67700900A90 /* logoLightMode.gif */; };
+		08F2AE18282C227D00E09367 /* AudioPlayerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F2AE17282C227D00E09367 /* AudioPlayerModel.swift */; };
 		08F2CCEE2811B7240094DAED /* LoadMoreBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */; };
 		08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA96C8277B2ED1006CC195 /* SearchModel.swift */; };
 		B12AB831273B103C00B17CC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12AB830273B103C00B17CC0 /* AppDelegate.swift */; };
@@ -108,6 +109,7 @@
 		08D3493C27CD26A000538697 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		08EFBACC27A9996400900A90 /* logoDarkMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoDarkMode.gif; sourceTree = "<group>"; };
 		08EFBACE27A9B67700900A90 /* logoLightMode.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logoLightMode.gif; sourceTree = "<group>"; };
+		08F2AE17282C227D00E09367 /* AudioPlayerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerModel.swift; sourceTree = "<group>"; };
 		08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreBarView.swift; sourceTree = "<group>"; };
 		08FA96C8277B2ED1006CC195 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		08FABDFE27CFC43100BB84BE /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
@@ -277,6 +279,7 @@
 				084E99C22794760D00CCEED6 /* NewsModel.swift */,
 				08AF240D27A35315001331EA /* FavoritesModel.swift */,
 				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
+				08F2AE17282C227D00E09367 /* AudioPlayerModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -451,6 +454,7 @@
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */,
+				08F2AE18282C227D00E09367 /* AudioPlayerModel.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* RabbiTileView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
 				F29FFB2927529D3A005D6355 /* PlayBarModel.swift in Sources */,
