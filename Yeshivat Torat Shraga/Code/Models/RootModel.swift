@@ -16,13 +16,6 @@ class RootModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     internal var errorToShow: Error?
         
-    static var audioPlayer: AudioPlayer = AudioPlayer()
-    static var audioPlayerBinding: Binding<AudioPlayer> = Binding {
-        audioPlayer
-    } set: { val in
-        audioPlayer = val
-    }
-    
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
     @Published var favoritesView = FavoritesView()
@@ -32,7 +25,7 @@ class RootModel: ObservableObject, ErrorShower {
     @Published var alert: Alert?
     
     
-    init(_ favoritesManager: Favorites?) {
+    init() {
         if isFirstLaunch {
             showOnboarding = true
             isFirstLaunch = false
