@@ -123,6 +123,7 @@ struct DisplayRabbiView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             DisplayRabbiView(rabbi: DetailedRabbi.sample)
+                .environmentObject(Favorites())
                 .foregroundColor(.shragaBlue)
         }
     }

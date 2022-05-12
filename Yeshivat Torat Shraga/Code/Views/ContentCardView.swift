@@ -133,5 +133,8 @@ struct ContentCardView_Previews: PreviewProvider {
         .padding()
         .previewLayout(.sizeThatFits)
         .preferredColorScheme(.dark)
+        .environmentObject(AudioPlayerModel(player: Player()))
+        .environmentObject(Favorites())
+
     }
 }

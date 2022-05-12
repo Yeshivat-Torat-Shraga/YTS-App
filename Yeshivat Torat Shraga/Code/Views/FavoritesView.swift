@@ -11,7 +11,6 @@ struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
     @EnvironmentObject var favorites: Favorites
     
-    var playerAudio: Binding<Audio?>
     
     var body: some View {
         NavigationView {
@@ -77,7 +76,9 @@ struct FavoritesView: View {
 
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-        FavoritesView(playerAudio: .constant(nil))
+        FavoritesView()
             .foregroundColor(.shragaBlue)
+            .environmentObject(AudioPlayerModel(player: Player()))
+            .environmentObject(Favorites())
     }
 }

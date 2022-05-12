@@ -158,6 +158,9 @@ struct FavoritesCardView_Previews: PreviewProvider {
             .shadow(radius: UI.shadowRadius)
             .padding(.horizontal)
         }
+        .environmentObject(AudioPlayerModel(player: Player()))
+        .environmentObject(Favorites())
+
         //        .preferredColorScheme(.dark)
     }
 }

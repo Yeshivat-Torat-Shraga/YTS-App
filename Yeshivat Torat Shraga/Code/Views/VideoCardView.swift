@@ -100,6 +100,7 @@ struct VideoCardView_Previews: PreviewProvider {
             }
             .padding()
             .foregroundColor(Color("ShragaBlue"))
+            .environmentObject(AudioPlayerModel(player: Player()))
 //            .background(Color.black)
         }
     }

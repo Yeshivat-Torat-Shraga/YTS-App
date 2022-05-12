@@ -206,9 +206,11 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView(playerAudio: .constant(nil))
+        HomeView()
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
+            .environmentObject(AudioPlayerModel(player: Player()))
+            .environmentObject(Favorites())
     }
 }
 
