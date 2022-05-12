@@ -12,7 +12,7 @@ struct RootView: View {
     @EnvironmentObject var FavoritesManager: Favorites
     @State var model: RootModel
     @State var player: Player
-    @State var audioPlayerModel = AudioPlayerModel(player: Player())
+    @State var audioPlayerModel: AudioPlayerModel
     @State private var imageData: Data? = nil
     @State var selectedView = 0
     
@@ -46,7 +46,7 @@ struct RootView: View {
                         .tag(1)
                         .overlay(VStack {
                             Spacer()
-                            PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                            PlayBar()
                         })
                     if #available(iOS 15.0, *), model.newsView.model.hasUnreadArticles {
                         model.newsView
@@ -57,7 +57,7 @@ struct RootView: View {
                             .badge("!")
                             .overlay(VStack {
                                 Spacer()
-                                PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                                PlayBar()
                             })
                     } else {
                         model.newsView
@@ -67,7 +67,7 @@ struct RootView: View {
                             .tag(2)
                             .overlay(VStack {
                                 Spacer()
-                                PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                                PlayBar()
                             })
                     }
                     model.settingsView
@@ -77,7 +77,7 @@ struct RootView: View {
                         .tag(3)
                         .overlay(VStack {
                             Spacer()
-                            PlayBar(audioCurrentlyPlaying: RootModel.audioPlayerBinding.audio)
+                            PlayBar()
                         })
                 }
                 .onChange(of: selectedView) { _ in
@@ -102,9 +102,6 @@ struct RootView: View {
         }
         .foregroundColor(Color("ShragaBlue"))
         .accentColor(Color("ShragaBlue"))
-        .onAppear {
-            model.setup(FavoritesManager)
-        }
         .environmentObject(audioPlayerModel)
     }
 }

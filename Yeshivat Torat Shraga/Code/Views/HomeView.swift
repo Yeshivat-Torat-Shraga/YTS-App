@@ -8,22 +8,20 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var playerAudio: AudioPlayerModel
     @ObservedObject var model: HomeModel
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
-    var playerAudio: Binding<Audio?>
     
     init(hideLoadingScreen: @escaping (() -> Void),
-         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void), playerAudio: Binding<Audio?>) {
+         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
         self.model = HomeModel(hideLoadingScreen: hideLoadingScreen,
                                showErrorOnRoot: showErrorOnRoot)
-        self.playerAudio = playerAudio
     }
     
-    init(playerAudio: Binding<Audio?>) {
+    init() {
         self.model = HomeModel()
-        self.playerAudio = playerAudio
     }
     
     var body: some View {
@@ -154,7 +152,7 @@ struct HomeView: View {
                         }
                     }
                     
-                    if playerAudio.wrappedValue != nil {
+                    if playerAudio.audio != nil {
                         Spacer().frame(height: UI.playerBarHeight)
                     }
                 }

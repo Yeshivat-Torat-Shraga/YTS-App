@@ -124,5 +124,8 @@ struct AudioCardView_Previews: PreviewProvider {
             //            .background(Color.black)
         }
         .preferredColorScheme(.dark)
+        .environmentObject(AudioPlayerModel(player: Player()))
+        .environmentObject(Favorites())
+
     }
 }

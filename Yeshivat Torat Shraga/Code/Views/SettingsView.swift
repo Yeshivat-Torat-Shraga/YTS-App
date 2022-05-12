@@ -15,7 +15,6 @@ struct SettingsView: View {
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
     
-    var playerAudio: Binding<Audio?>
     
     var body: some View {
         NavigationView {
