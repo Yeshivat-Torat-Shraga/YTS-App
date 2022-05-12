@@ -20,6 +20,8 @@ struct SortableFavoritesCardView<Content: SortableYTSContent>: View {
 
 struct FavoritesCardView<Content: YTSContent>: View {
     @State var isShowingPlayerSheet = false
+    @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @Environment(\.colorScheme) var colorScheme
     
     let content: Content
@@ -32,7 +34,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
     var body: some View {
         Button(action: {
             if isAudio {
-                RootModel.audioPlayer.play(audio: content.sortable.audio!)
+                audioPlayerModel.play(audio: content.sortable.audio!)
                 isShowingPlayerSheet = true
             } else {
                 //                 Video Player goes here
@@ -136,7 +138,9 @@ struct FavoritesCardView<Content: YTSContent>: View {
         .cornerRadius(UI.cornerRadius)
         .clipped()
         .sheet(isPresented: $isShowingPlayerSheet) {
-            RootModel.audioPlayer
+            AudioPlayer()
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
         }
     }
     
