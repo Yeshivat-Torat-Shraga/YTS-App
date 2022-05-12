@@ -9,19 +9,15 @@ import SwiftUI
 
 struct PlayBar: View {
     @StateObject var model: PlayBarModel = PlayBarModel()
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
-    var audioCurrentlyPlaying: Binding<Audio?>
     let lightColor = Color(hex: 0xDEDEDE)
     let darkColor = Color(hex: 0x121212)
     @State private var presenting = false
     @Environment(\.colorScheme) var colorScheme
     
-    init(audioCurrentlyPlaying: Binding<Audio?>) {
-        self.audioCurrentlyPlaying = audioCurrentlyPlaying
-    }
-    
     var body: some View {
-        if let audioCurrentlyPlaying = audioCurrentlyPlaying.wrappedValue {
+        if let audioCurrentlyPlaying = audioPlayerModel.audio {
             HStack {
                 //                DownloadableImage(object: audioCurrentlyPlaying)
                 Image("Logo")
@@ -48,7 +44,7 @@ struct PlayBar: View {
                 Spacer()
                 HStack {
                     Button(action: {
-                        RootModel.audioPlayer.player.scrub(seconds: -10)
+                        audioPlayerModel.player.scrub(seconds: -10)
                     }, label: {
                         Image(systemName: "gobackward.10")
                             .padding(.vertical)
@@ -56,9 +52,9 @@ struct PlayBar: View {
                         //                            .resizable()
                         //                            .frame(width: 45, height: 25)
                     })
-                    if RootModel.audioPlayer.player.timeControlStatus == .playing {
+                    if audioPlayerModel.player.timeControlStatus == .playing {
                         Button(action: {
-                            RootModel.audioPlayer.pause()
+                            audioPlayerModel.pause()
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "pause.fill")
@@ -66,9 +62,9 @@ struct PlayBar: View {
                             //                                .resizable()
                             //                                .frame(width: 20, height: 25)
                         })
-                    } else if RootModel.audioPlayer.player.timeControlStatus == .paused {
+                    } else if audioPlayerModel.player.timeControlStatus == .paused {
                         Button(action: {
-                            RootModel.audioPlayer.play()
+                            audioPlayerModel.play()
                             self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "play.fill")
@@ -95,7 +91,9 @@ struct PlayBar: View {
                     .buttonStyle(BackZStackButtonStyle(backgroundColor: .clear, percentage: 30))
             )
             .sheet(isPresented: $presenting) {
-                RootModel.audioPlayer.environmentObject(favoritesManager)
+                AudioPlayer()
+                    .environmentObject(audioPlayerModel)
+                    .environmentObject(favoritesManager)
             }
             .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
             .clipped()
@@ -108,12 +106,23 @@ struct PlayBar: View {
 }
 
 struct PlayBar_Previews: PreviewProvider {
+    
+    static var model: RootModel = RootModel()
+    static var audioPlayerModel = AudioPlayerModel(player: Player())
+    static var favoritesManager = Favorites()
+
+    
+    init() {
+        let model = AudioPlayerModel(player: Player())
+        model.set(audio: Audio.sample)
+    }
+
     static var previews: some View {
         TabView {
             HomeView()
                 .overlay(VStack {
                     Spacer()
-                    PlayBar(audioCurrentlyPlaying: .constant(.sample))
+                    PlayBar()
                 })
                 .tabItem {
                     Label("Home", systemImage: "house")
@@ -131,5 +140,7 @@ struct PlayBar_Previews: PreviewProvider {
                     Label("Settings", systemImage: "gearshape")
                 }.tag(3)
         }
+        .environmentObject(audioPlayerModel)
+        .environmentObject(favoritesManager)
     }
 }
