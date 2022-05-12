@@ -10,7 +10,7 @@ import SwiftyGif
 
 struct RootView: View {
     @EnvironmentObject var FavoritesManager: Favorites
-    @State var model: RootModel
+    @StateObject var model = RootModel()
     @State var player: Player
     @State var audioPlayerModel: AudioPlayerModel
     @State private var imageData: Data? = nil
@@ -18,10 +18,9 @@ struct RootView: View {
     
     init() {
         let player = Player()
-        let audioPlayerModel = AudioPlayerModel(player: player)
-        self.model = RootModel()
-        self.audioPlayerModel = audioPlayerModel
         self.player = player
+        let audioPlayerModel = AudioPlayerModel(player: player)
+        self.audioPlayerModel = audioPlayerModel
     }
     
     var body: some View {
