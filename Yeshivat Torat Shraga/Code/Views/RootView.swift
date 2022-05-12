@@ -39,7 +39,7 @@ struct RootView: View {
                             Spacer()
                             PlayBar()
                         })
-                    model.favoritesView
+                    FavoritesView()
                         .tabItem {
                             Label("Favorites", systemImage: "heart.fill")
                         }
@@ -70,7 +70,7 @@ struct RootView: View {
                                 PlayBar()
                             })
                     }
-                    model.settingsView
+                    SettingsView()
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
                         }

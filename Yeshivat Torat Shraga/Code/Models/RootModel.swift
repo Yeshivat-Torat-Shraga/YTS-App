@@ -18,9 +18,7 @@ class RootModel: ObservableObject, ErrorShower {
         
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
-    @Published var favoritesView = FavoritesView()
     @Published var newsView = NewsView()
-    @Published var settingsView = SettingsView()
     
     @Published var alert: Alert?
     
