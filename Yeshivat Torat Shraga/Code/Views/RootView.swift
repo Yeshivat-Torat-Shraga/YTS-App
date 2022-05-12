@@ -50,7 +50,7 @@ struct RootView: View {
                     if #available(iOS 15.0, *), model.newsView.model.hasUnreadArticles {
                         model.newsView
                             .tabItem {
-                                Label("News", systemImage: "newspaper.fill")
+                                Label("Text", systemImage: "newspaper.fill")
                             }
                             .tag(2)
                             .badge("!")
@@ -61,7 +61,7 @@ struct RootView: View {
                     } else {
                         model.newsView
                             .tabItem {
-                                Label("News", systemImage: "newspaper.fill")
+                                Label("Text", systemImage: "newspaper.fill")
                             }
                             .tag(2)
                             .overlay(VStack {

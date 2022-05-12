@@ -60,7 +60,7 @@ struct NewsView: View {
                         .progressViewStyle(YTSProgressViewStyle())
                 }
             }
-            .navigationTitle(Text("News"))
+            .navigationTitle(Text("Torah and News"))
         }
         .alert(isPresented: $model.showError, content: {
             Alert(

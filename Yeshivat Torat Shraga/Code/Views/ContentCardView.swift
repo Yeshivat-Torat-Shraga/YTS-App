@@ -46,12 +46,14 @@ struct ContentCardView<Content: YTSContent>: View {
                 if isAudio {
                     // If the card is for Audios
                     UI.cardBlueGradient
-                    Blur(style: .systemUltraThinMaterial)
                 } else {
                     // If the card is for Videos
                     DownloadableImage(object: content)
-                    Blur(style: .systemUltraThinMaterial)
                 }
+                Blur(style: .systemUltraThinMaterial)
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
                 
                 VStack {
                     HStack {
@@ -61,6 +63,8 @@ struct ContentCardView<Content: YTSContent>: View {
                                     .font(.title3)
                                     .bold()
                                     .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
                                 Spacer()
                             }
                             
@@ -76,7 +80,7 @@ struct ContentCardView<Content: YTSContent>: View {
                             VStack {
                                 DownloadableImage(object: detailedRabbi)
                                     .aspectRatio(contentMode: .fill)
-                                    .frame(width: 40, height: 40)
+                                    .frame(width: 45, height: 45)
                                     .background(Color("Gray"))
                                     .clipShape(Circle())
                                     .clipped()
@@ -108,6 +112,7 @@ struct ContentCardView<Content: YTSContent>: View {
             }
             .foregroundColor(.primary)
             .frame(minWidth: 225)
+            .frame(maxWidth: 350)
             .frame(height: 125)
             .clipped()
             
