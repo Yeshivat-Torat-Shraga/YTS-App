@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MarqueeText
 
 struct PlayBar: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
@@ -30,7 +31,14 @@ struct PlayBar: View {
                     .shadow(radius: UI.shadowRadius)
                 VStack {
                     HStack {
-                        Text(audioCurrentlyPlaying.title)
+                        MarqueeText(
+                            text: audioCurrentlyPlaying.title,
+                            font: UIFont.systemFont(ofSize: 14),
+                            leftFade: 16,
+                            rightFade: 16,
+                            startDelay: 3,
+                            alignment: .leading
+                        )
                         Spacer()
                     }
                     HStack {
@@ -54,7 +62,6 @@ struct PlayBar: View {
                     if audioPlayerModel.player.timeControlStatus == .playing {
                         Button(action: {
                             audioPlayerModel.pause()
-                            self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "pause.fill")
                                 .padding()
@@ -64,7 +71,6 @@ struct PlayBar: View {
                     } else if audioPlayerModel.player.timeControlStatus == .paused {
                         Button(action: {
                             audioPlayerModel.play()
-                            self.model.objectWillChange.send()
                         }, label: {
                             Image(systemName: "play.fill")
                                 .padding()
