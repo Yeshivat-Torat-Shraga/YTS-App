@@ -11,10 +11,12 @@ struct TagTileView: View {
     @State var isShowingSheet = false
     var tag: Tag
     var tagView: TagView
+    var colorMix: [Color]?
     
     init(_ tag: Tag) {
         self.tag = tag
         self.tagView = TagView(tag: tag)
+        colorMix = randomColorMix()
     }
     
     var body: some View {
@@ -51,7 +53,7 @@ struct TagTileView: View {
                 .frame(height: 110)
                 .frame(minWidth: 150)
                 .background(LinearGradient(
-                    colors: randomColorMix(),
+                    colors: colorMix!,
                     startPoint: .bottomLeading,
                     endPoint: .topTrailing)
                                 .cornerRadius(UI.cornerRadius)
