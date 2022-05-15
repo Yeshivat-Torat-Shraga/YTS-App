@@ -329,8 +329,12 @@ class Video: YTSContent, URLImageable {
                 return
             }
             
+            linkBuilder.navigationInfoParameters = DynamicLinkNavigationInfoParameters()
+            linkBuilder.navigationInfoParameters?.isForcedRedirectEnabled = true
+
             linkBuilder.iOSParameters?.appStoreID = "1598556472"
             linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: myBundleId)
+            
             linkBuilder.socialMetaTagParameters = DynamicLinkSocialMetaTagParameters()
             linkBuilder.socialMetaTagParameters?.title = title
             linkBuilder.socialMetaTagParameters?.descriptionText = author.name
@@ -465,6 +469,8 @@ class Audio: YTSContent, Hashable {
                 return
             }
             
+            linkBuilder.navigationInfoParameters = DynamicLinkNavigationInfoParameters()
+            linkBuilder.navigationInfoParameters?.isForcedRedirectEnabled = true
             linkBuilder.iOSParameters = DynamicLinkIOSParameters(bundleID: myBundleId)
             linkBuilder.iOSParameters?.appStoreID = "1598556472"
             
