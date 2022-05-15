@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 //                if let token = token {
 //                    print ("AppCheck token: \(token.token), expiration date: \(token.expirationDate)")
 //                } else
-                if let error = error {
+                if let error = error as? NSError, error.description != "null" {
                     print ("AppCheck error: \(error as NSError).userInfo)")
                 }
             }
