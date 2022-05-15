@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct PlayBar: View {
-    @StateObject var model: PlayBarModel = PlayBarModel()
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
     let lightColor = Color(hex: 0xDEDEDE)
