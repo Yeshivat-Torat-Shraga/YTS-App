@@ -306,9 +306,12 @@ struct AudioPlayer: View {
         .sheet(isPresented: $sharing) {
             if let audio = model.audio, let shareURL = audio.storedShareURL {
                 if let title = audio.title, let authorName = audio.author.name {
-                    
-                    ShareSheet(activityItems: [MyActivityItemSource(title: title, text:  "Torat Shraga Shiur by \(authorName)"), shareURL])
+                    ShareSheet(activityItems: [MyActivityItemSource(title: title,
+                                                                    text:  "Torat Shraga Shiur by \(authorName)"),
+                                               shareURL])
                 }
+            } else {
+                Text("Sorry, there was a problem sharing this content.")
             }
         }
         .preferredColorScheme(.light)
