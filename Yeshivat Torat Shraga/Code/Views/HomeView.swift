@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var playerAudio: AudioPlayerModel
     @ObservedObject var model: HomeModel
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
@@ -152,9 +151,7 @@ struct HomeView: View {
                         }
                     }
                     
-                    if playerAudio.audio != nil {
-                        Spacer().frame(height: UI.playerBarHeight)
-                    }
+                    Spacer().frame(height: UI.playerBarHeight)
                 }
                 .navigationTitle("Home")
                 .toolbar {
@@ -207,8 +204,6 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
-            .environmentObject(AudioPlayerModel(player: Player()))
-            .environmentObject(Favorites())
     }
 }
 

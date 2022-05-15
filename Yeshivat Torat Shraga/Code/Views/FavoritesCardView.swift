@@ -24,8 +24,6 @@ struct FavoritesCardView<Content: YTSContent>: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @Environment(\.colorScheme) var colorScheme
     
-    @EnvironmentObject var favorites: Favorites
-    
     let content: Content
     let isAudio: Bool
     
