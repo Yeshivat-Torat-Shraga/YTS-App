@@ -12,7 +12,11 @@ on:
   
 env:
   # BUILDCACHE upload logs:
-  UPLOAD_BUILDCACHE_LOGS: "true"
+  BUILDCACHE_DIR: ../.buildcache # optional: Put the cache somewhere else
+  BUILDCACHE_DEBUG: 2 # optional: If you need more logging?
+  BUILDCACHE_MAX_CACHE_SIZE: 1000000000 # optional: Need a bigger cache?
+  BUILDCACHE_LOG_FILE: ../buildcache.log # optional: Log where you like
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -21,6 +25,8 @@ jobs:
    steps:
      - uses: actions/checkout@v2
      - uses: mikehardy/buildcache-action@v1.2.2
+       with:
+        upload_buildcache_log: 'true' # optional: 100% cache misses? Find out why
      - name: Set up ruby env
        uses: ruby/setup-ruby@v1
        with:
