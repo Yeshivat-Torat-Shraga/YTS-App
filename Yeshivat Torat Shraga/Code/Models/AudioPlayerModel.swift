@@ -13,7 +13,7 @@ class AudioPlayerModel: ObservableObject {
     @Published var audio: Audio?
     init(player: Player) {
         self.player = player
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
             if self.audio != nil {
                 self.objectWillChange.send()
             }
