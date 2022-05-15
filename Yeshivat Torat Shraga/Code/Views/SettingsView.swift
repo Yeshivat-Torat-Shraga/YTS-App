@@ -15,6 +15,7 @@ struct SettingsView: View {
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
     
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     var body: some View {
         NavigationView {
@@ -106,6 +107,10 @@ struct SettingsView: View {
                     NavigationLink("About") {
                         AboutView()
                     }.foregroundColor(Color("ShragaBlue"))
+                }
+                
+                if audioPlayerModel.audio != nil {
+                    Spacer().frame(height: UI.playerBarHeight)
                 }
             }
             .navigationTitle("Settings")

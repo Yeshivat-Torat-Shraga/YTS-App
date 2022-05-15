@@ -10,7 +10,7 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
     @EnvironmentObject var favorites: Favorites
-    
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     var body: some View {
         NavigationView {
@@ -60,6 +60,10 @@ struct FavoritesView: View {
                                 Text("We're loading your favorites, hang tight....")
                             }
                             .padding()
+                        }
+                        
+                        if audioPlayerModel.audio != nil {
+                            Spacer().frame(height: UI.playerBarHeight)
                         }
                     }
                     .padding(.bottom)
