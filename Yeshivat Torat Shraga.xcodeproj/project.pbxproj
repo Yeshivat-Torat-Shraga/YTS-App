@@ -63,7 +63,6 @@
 		F25AEDFA27FECCFD00DCB79F /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = F25AEDF927FECCFD00DCB79F /* FirebaseStorage */; };
 		F25AEDFD27FECEEB00DCB79F /* SwiftyGif in Frameworks */ = {isa = PBXBuildFile; productRef = F25AEDFC27FECEEB00DCB79F /* SwiftyGif */; };
 		F25AEDFF27FECF8400DCB79F /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = F25AEDFE27FECF8400DCB79F /* FirebaseMessaging */; };
-		F25AEE0227FECFB700DCB79F /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = F25AEE0127FECFB700DCB79F /* Shimmer */; };
 		F2638D5728035BED00E0AE88 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F2638D5628035BED00E0AE88 /* GoogleService-Info.plist */; };
 		F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E293A2758E2FB00D9F4AF /* TagTileView.swift */; };
 		F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2627529CD4005D6355 /* PlayBar.swift */; };
@@ -160,7 +159,6 @@
 				F25AEDFF27FECF8400DCB79F /* FirebaseMessaging in Frameworks */,
 				F25AEDF227FECCFD00DCB79F /* FirebaseAppCheck in Frameworks */,
 				F25AEDF627FECCFD00DCB79F /* FirebaseFirestore in Frameworks */,
-				F25AEE0227FECFB700DCB79F /* Shimmer in Frameworks */,
 				F25AEDFD27FECEEB00DCB79F /* SwiftyGif in Frameworks */,
 				F25AEDF827FECCFD00DCB79F /* FirebaseFunctions in Frameworks */,
 				F25AEDF027FECCFD00DCB79F /* FirebaseAnalytics in Frameworks */,
@@ -369,7 +367,6 @@
 				F25AEDF927FECCFD00DCB79F /* FirebaseStorage */,
 				F25AEDFC27FECEEB00DCB79F /* SwiftyGif */,
 				F25AEDFE27FECF8400DCB79F /* FirebaseMessaging */,
-				F25AEE0127FECFB700DCB79F /* Shimmer */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -401,7 +398,6 @@
 			packageReferences = (
 				F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F25AEDFB27FECEEB00DCB79F /* XCRemoteSwiftPackageReference "SwiftyGif" */,
-				F25AEE0027FECFB700DCB79F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
@@ -809,14 +805,6 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		F25AEE0027FECFB700DCB79F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -859,11 +847,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
-		};
-		F25AEE0127FECFB700DCB79F /* Shimmer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F25AEE0027FECFB700DCB79F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
-			productName = Shimmer;
 		};
 /* End XCSwiftPackageProductDependency section */
 

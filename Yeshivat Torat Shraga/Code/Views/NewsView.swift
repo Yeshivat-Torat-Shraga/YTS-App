@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Shimmer
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
