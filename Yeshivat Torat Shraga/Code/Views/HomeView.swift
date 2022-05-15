@@ -12,6 +12,7 @@ struct HomeView: View {
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     init(hideLoadingScreen: @escaping (() -> Void),
          showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
@@ -151,7 +152,9 @@ struct HomeView: View {
                         }
                     }
                     
-                    Spacer().frame(height: UI.playerBarHeight)
+                    if audioPlayerModel.audio != nil {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
                 .navigationTitle("Home")
                 .toolbar {

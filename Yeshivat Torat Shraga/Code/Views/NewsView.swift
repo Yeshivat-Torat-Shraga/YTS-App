@@ -10,7 +10,7 @@ import Shimmer
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
-    
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     var body: some View {
         NavigationView {
@@ -58,6 +58,10 @@ struct NewsView: View {
                 if model.loadingArticles {
                     ProgressView()
                         .progressViewStyle(YTSProgressViewStyle())
+                }
+                
+                if audioPlayerModel.audio != nil {
+                    Spacer().frame(height: UI.playerBarHeight)
                 }
             }
             .navigationTitle(Text("Torah and News"))

@@ -11,6 +11,7 @@ import MediaPlayer
 class AudioPlayerModel: ObservableObject {
     @Published var player: Player
     @Published var audio: Audio?
+    
     init(player: Player) {
         self.player = player
         Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
@@ -18,7 +19,6 @@ class AudioPlayerModel: ObservableObject {
                 self.objectWillChange.send()
             }
         }
-
     }
     
     func set(audio: Audio) {
