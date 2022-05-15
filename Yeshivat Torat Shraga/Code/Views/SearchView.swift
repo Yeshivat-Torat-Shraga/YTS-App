@@ -82,14 +82,8 @@ struct SearchView: View {
                                 ForEach(sortables, id: \.self) { sortable in
                                     if let video = sortable.video {
                                         VideoCardView(video: video)
-                                            .contextMenu {
-                                                Button("Play") {}
-                                            }
                                     } else if let audio = sortable.audio {
                                         AudioCardView(audio: audio)
-                                            .contextMenu {
-                                                Button("Play") {}
-                                            }
                                     }
                                 }
                                 .padding(.horizontal)

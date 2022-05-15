@@ -31,14 +31,8 @@ struct DisplayRabbiView: View {
                         ForEach(favorites, id: \.self) { favorite in
                             if let video = favorite.video {
                                 VideoCardView(video: video)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
                             } else if let audio = favorite.audio {
                                 AudioCardView(audio: audio)
-                                    .contextMenu {
-                                        Button("Play") {}
-                                    }
                             }
                         }
                         .padding(.horizontal)
@@ -61,14 +55,14 @@ struct DisplayRabbiView: View {
                             ForEach(sortables, id: \.self) { sortable in
                                 if let video = sortable.video {
                                     VideoCardView(video: video)
-                                        .contextMenu {
-                                            Button("Play") {}
-                                        }
+//                                        .contextMenu {
+//                                            Button("Play") {}
+//                                        }
                                 } else if let audio = sortable.audio {
                                     AudioCardView(audio: audio)
-                                        .contextMenu {
-                                            Button("Play") {}
-                                        }
+//                                        .contextMenu {
+//                                            Button("Play") {}
+//                                        }
                                 }
                             }
                             .padding(.horizontal)

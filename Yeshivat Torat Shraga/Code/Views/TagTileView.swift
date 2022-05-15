@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TagTileView: View {
     @State var isShowingSheet = false
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @EnvironmentObject var favoritesManager: Favorites
     var tag: Tag
     var tagView: TagView
     var colorMix: [Color]?
@@ -65,6 +67,8 @@ struct TagTileView: View {
         .sheet(isPresented: $isShowingSheet) {
             tagView
                 .background(BackgroundClearView())
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
         }
     }
     

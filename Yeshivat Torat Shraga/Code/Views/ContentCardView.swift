@@ -24,6 +24,8 @@ struct ContentCardView<Content: YTSContent>: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @Environment(\.colorScheme) var colorScheme
     @State var isShowingPlayerSheet = false
+    @State private var isFavoritesBusy = false
+    @State private var heartFillOverride = false
     let content: Content
     var isAudio: Bool {
         return content is Audio
@@ -125,6 +127,50 @@ struct ContentCardView<Content: YTSContent>: View {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)
                 .environmentObject(favoritesManager)
+        }
+        .contextMenu {
+            if let audio = content.sortable.audio, let favoriteIDs = favoritesManager.favoriteIDs {
+                Button(action: {
+                    if !isFavoritesBusy {
+                        heartFillOverride = false
+                        isFavoritesBusy = true
+                        if favoriteIDs.contains(audio.firestoreID) {
+                            self.favoritesManager.delete(audio) { favorites, error in
+                                isFavoritesBusy = false
+                            }
+                        } else {
+                            heartFillOverride = true
+                            self.favoritesManager.save(audio) { favorites, error in
+                                isFavoritesBusy = false
+                            }
+                        }
+                    }
+                }) {
+                    Label(isFavoritesBusy
+                          ? heartFillOverride
+                              ? "heart.fill"
+                              : "heart"
+
+                          : favoriteIDs.contains(audio.firestoreID)
+                              ? "Unfavorite"
+                              : "Favorite",
+                          
+                          systemImage: isFavoritesBusy
+                          ? heartFillOverride
+                              ? "heart.fill"
+                              : "heart"
+                      
+                          : favoriteIDs.contains(audio.firestoreID)
+                              ? "heart.fill"
+                              : "heart")
+                }
+                Button(action: {
+                    audioPlayerModel.play(audio: audio)
+                    isShowingPlayerSheet = true
+                }) {
+                    Label("Play", systemImage: "play")
+                }
+            }
         }
     }
 }

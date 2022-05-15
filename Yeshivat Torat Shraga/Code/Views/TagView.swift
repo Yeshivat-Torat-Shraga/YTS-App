@@ -10,6 +10,7 @@ import Shimmer
 
 struct TagView: View {
     @ObservedObject var model: TagModel
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     init(tag: Tag) {
         self.model = TagModel(tag: tag)
@@ -55,18 +56,8 @@ struct TagView: View {
                                         ForEach(contentGroup, id: \.self) { sortable in
                                             if let video = sortable.video {
                                                 VideoCardView(video: video, showAuthor: true)
-                                                    .contextMenu {
-                                                        Button(action: {}, label: {
-                                                            Label("Play", systemImage: "play.fill")
-                                                        })
-                                                    }
                                             } else if let audio = sortable.audio {
                                                 AudioCardView(audio: audio, showAuthor: true)
-                                                    .contextMenu {
-                                                        Button(action: {}, label: {
-                                                            Label("Play", systemImage: "play.fill")
-                                                        })
-                                                    }
                                             }
                                             
                                         }
@@ -77,18 +68,8 @@ struct TagView: View {
                                     ForEach(category, id: \.self) { sortable in
                                         if let video = sortable.video {
                                             VideoCardView(video: video, showAuthor: true)
-                                                .contextMenu {
-                                                    Button(action: {}, label: {
-                                                        Label("Play", systemImage: "play.fill")
-                                                    })
-                                                }
                                         } else if let audio = sortable.audio {
                                             AudioCardView(audio: audio, showAuthor: true)
-                                                .contextMenu {
-                                                    Button(action: {}, label: {
-                                                        Label("Play", systemImage: "play.fill")
-                                                    })
-                                                }
                                         }
                                         
                                     }
