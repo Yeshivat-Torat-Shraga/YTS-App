@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios set_xcode_version
+
+```sh
+[bundle exec] fastlane ios set_xcode_version
+```
+
+Set the Xcode version to be used
+
 ### ios load_asc_api_key
 
 ```sh
