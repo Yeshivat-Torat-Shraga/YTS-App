@@ -312,6 +312,7 @@ struct AudioPlayer: View {
                 }
             } else {
                 Text("Sorry, there was a problem sharing this content.")
+                    .padding()
             }
         }
         .preferredColorScheme(.light)
