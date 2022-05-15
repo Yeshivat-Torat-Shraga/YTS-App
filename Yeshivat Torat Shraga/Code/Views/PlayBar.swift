@@ -29,7 +29,8 @@ struct PlayBar: View {
                     .padding(.vertical, 10)
                     .padding(.horizontal, 8)
                     .shadow(radius: UI.shadowRadius)
-                VStack {
+                VStack(spacing: 3.0) {
+                    Spacer()
                     HStack {
                         MarqueeText(
                             text: audioCurrentlyPlaying.title,
@@ -43,9 +44,11 @@ struct PlayBar: View {
                     }
                     HStack {
                         Text(audioCurrentlyPlaying.author.name)
+                            .font(.caption)
                             .foregroundColor(Color("Gray"))
                         Spacer()
                     }
+                    Spacer()
                 }
                 .font(.system(size: 14))
                 Spacer()
