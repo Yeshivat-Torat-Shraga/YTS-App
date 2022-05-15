@@ -1,34 +1,35 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "functions": {
-    "source": "functions",
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run build"
-    ]
-  },
-  "storage": {
-    "rules": "storage.rules"
-  },
-  "emulators": {
-    "functions": {
-      "port": 5001
-    },
-    "firestore": {
-      "port": 8081
-    },
-    "storage": {
-      "port": 9199
-    },
-    "ui": {
-      "enabled": true
-    }
-  },
-  "hosting": {
-      // Dynamic Links will start with https://app.toratshraga.com/content
-      "appAssociation": "AUTO",
-      "rewrites": [ { "source": "/content/**", "dynamicLinks": true } ]
-  }
+	"firestore": {
+		"rules": "firestore.rules",
+		"indexes": "firestore.indexes.json"
+	},
+	"functions": {
+		"source": "functions",
+		"predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+	},
+	"storage": {
+		"rules": "storage.rules"
+	},
+	"emulators": {
+		"functions": {
+			"port": 5001,
+			"host": "127.0.0.1"
+		},
+		"firestore": {
+			"port": 8081,
+			"host": "127.0.0.1"
+		},
+		"storage": {
+			"port": 9199,
+			"host": "127.0.0.1"
+		},
+		"ui": {
+			"enabled": true,
+			"host": "127.0.0.1"
+		}
+	},
+	"hosting": {
+		"appAssociation": "AUTO",
+		"rewrites": [{ "source": "/content/**", "dynamicLinks": true }]
+	}
 }
