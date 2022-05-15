@@ -11,10 +11,10 @@ import SwiftyGif
 struct RootView: View {
     @EnvironmentObject var FavoritesManager: Favorites
     @StateObject var model = RootModel()
-    @State var player: Player
-    @State var audioPlayerModel: AudioPlayerModel
+    @State private var player: Player
+    var audioPlayerModel: AudioPlayerModel
     @State private var imageData: Data? = nil
-    @State var selectedView = 0
+    @State private var selectedView = 0
     
     init() {
         let player = Player()
@@ -38,7 +38,7 @@ struct RootView: View {
                             Spacer()
                             PlayBar()
                         })
-                    FavoritesView()
+                    model.favoritesView
                         .tabItem {
                             Label("Favorites", systemImage: "heart.fill")
                         }
@@ -69,7 +69,7 @@ struct RootView: View {
                                 PlayBar()
                             })
                     }
-                    SettingsView()
+                    model.settingsView
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
                         }
