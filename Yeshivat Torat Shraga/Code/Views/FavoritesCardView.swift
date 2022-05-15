@@ -103,7 +103,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
                 Spacer()
             }
         }
-        .background(Color.CardViewBG)
+        .background(Color.cardViewBG)
         .overlay(
             VStack {
                 HStack {

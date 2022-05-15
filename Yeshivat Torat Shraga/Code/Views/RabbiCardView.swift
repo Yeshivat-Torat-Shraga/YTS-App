@@ -35,7 +35,7 @@ struct RabbiCardView: View {
         .padding()
         .background(
             Rectangle()
-                .fill(Color.CardViewBG)
+                .fill(Color.cardViewBG)
         )
 //        .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)

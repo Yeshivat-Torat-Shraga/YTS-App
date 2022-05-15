@@ -97,7 +97,7 @@ struct AudioCardView: View {
         .frame(height: 105)
         .background(
             Rectangle()
-                .fill(Color.CardViewBG)
+                .fill(Color.cardViewBG)
                 .cornerRadius(UI.cornerRadius)
         )
         .cornerRadius(UI.cornerRadius)

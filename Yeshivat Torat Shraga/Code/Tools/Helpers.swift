@@ -72,8 +72,11 @@ extension Color {
     static var playerBarBG: Color {
         return Color("PlayerBarBG")
     }
-    static var CardViewBG: Color {
+    static var cardViewBG: Color {
         return Color("AVCardBG")
+    }
+    static var favoritesBG: Color {
+        return Color("FavoritesBG")
     }
 
 }

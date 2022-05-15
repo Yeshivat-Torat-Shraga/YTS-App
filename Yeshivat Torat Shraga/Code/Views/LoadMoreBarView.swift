@@ -30,7 +30,7 @@ struct LoadMoreBar: View {
                 Spacer()
             }
         }
-        .buttonStyle(BackZStackButtonStyle(backgroundColor: .CardViewBG))
+        .buttonStyle(BackZStackButtonStyle(backgroundColor: .cardViewBG))
         .cornerRadius(6)
         .shadow(radius: 2)
     }

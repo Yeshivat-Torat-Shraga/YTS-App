@@ -77,7 +77,7 @@ struct NewsArticleCardView: View {
         .clipped()
         .background(
             RoundedRectangle(cornerRadius: UI.cornerRadius)
-                .fill(Color.CardViewBG)
+                .fill(Color.cardViewBG)
                 .shadow(radius: UI.shadowRadius))
         //        .frame(maxHeight: 130)
     }
