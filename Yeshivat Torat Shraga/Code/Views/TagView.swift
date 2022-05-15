@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Shimmer
 
 struct TagView: View {
     @ObservedObject var model: TagModel
