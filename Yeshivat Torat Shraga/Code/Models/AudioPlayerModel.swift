@@ -31,6 +31,8 @@ class AudioPlayerModel: ObservableObject {
             let playerItem = AVPlayerItem(url: sourceURL)
             let player = AVPlayer(playerItem: playerItem)
             self.player.set(avPlayer: player)
+            // Generate the share link
+            self.audio?.shareURL()
         } else {
             print("Audio sourceURL is nil, couldn't set audio.")
         }

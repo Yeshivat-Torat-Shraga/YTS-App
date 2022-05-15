@@ -12,7 +12,6 @@ import MediaPlayer
 struct AudioPlayer: View {
     @EnvironmentObject var model: AudioPlayerModel
     @EnvironmentObject var favorites: Favorites
-    @State private var showFavoritesAlert = false
     @State private var favoriteErr: Error?
     @State private var isFavoritesBusy = false
     @State private var sharing = false
@@ -265,11 +264,18 @@ struct AudioPlayer: View {
                 .menuStyle(iOS14BorderedProminentMenuStyle())
                 
                 Button(action: {
-                    sharing = true
+                    if model.audio?.storedShareURL != nil {
+                        sharing = true
+                    }
                 }, label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .foregroundColor(.gray)
-                        .frame(width: 20, height: 20)
+                    if model.audio?.storedShareURL == nil {
+                        ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
+                    } else {
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.gray)
+                            .frame(width: 20, height: 20)
+                    }
                 }).buttonStyle(iOS14BorderedProminentButtonStyle())
                 
                 Spacer()
