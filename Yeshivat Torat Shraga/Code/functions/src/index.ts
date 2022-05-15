@@ -727,25 +727,30 @@ exports.generateHLSStream = storage
 		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
 
 		// Create the HLS stream
+		let ffmpegArgs = [
+			'-y',
+			'-i',
+			inputPath,
+			'-hls_time',
+			'10',
+			'-hls_list_size',
+			'0',
+			'-hls_flags',
+			'append_list',
+			'-hls_segment_filename',
+			`${outputDir}/${filename}_%d.ts`,
+			`${outputDir}/${filename}.m3u8`,
+		];
+
+		if (object.contentType?.startsWith('audio/')) {
+			ffmpegArgs.splice(3, 0, '-vn');
+		}
+
+		log(`ffmpegArgs: ${ffmpegArgs}`);
 		try {
-			await childProcessPromise.spawn(
-				ffmpeg.path,
-				[
-					'-y',
-					'-i',
-					inputPath,
-					'-hls_list_size',
-					'0',
-					'-hls_time',
-					'10',
-					'-hls_segment_filename',
-					`${outputDir}/${filename}-%03d.ts`,
-					`${outputDir}/${filename}.m3u8`,
-				],
-				{
-					stdio: 'inherit',
-				}
-			);
+			await childProcessPromise.spawn(ffmpeg.path, ffmpegArgs, {
+				stdio: 'inherit',
+			});
 		} catch (err) {
 			log(`Error creating HLS stream for ${filename}: ${err}`);
 		}
