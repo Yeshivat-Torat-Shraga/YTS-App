@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0828729B2831352A0002EB78 /* MarqueeText in Frameworks */ = {isa = PBXBuildFile; productRef = 0828729A2831352A0002EB78 /* MarqueeText */; };
 		083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083AE1022799A770003A36ED /* NewsArticleView.swift */; };
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
@@ -162,7 +161,6 @@
 				F25AEDF227FECCFD00DCB79F /* FirebaseAppCheck in Frameworks */,
 				F25AEDF627FECCFD00DCB79F /* FirebaseFirestore in Frameworks */,
 				F25AEE0227FECFB700DCB79F /* Shimmer in Frameworks */,
-				0828729B2831352A0002EB78 /* MarqueeText in Frameworks */,
 				F25AEDFD27FECEEB00DCB79F /* SwiftyGif in Frameworks */,
 				F25AEDF827FECCFD00DCB79F /* FirebaseFunctions in Frameworks */,
 				F25AEDF027FECCFD00DCB79F /* FirebaseAnalytics in Frameworks */,
@@ -372,7 +370,6 @@
 				F25AEDFC27FECEEB00DCB79F /* SwiftyGif */,
 				F25AEDFE27FECF8400DCB79F /* FirebaseMessaging */,
 				F25AEE0127FECFB700DCB79F /* Shimmer */,
-				0828729A2831352A0002EB78 /* MarqueeText */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -405,7 +402,6 @@
 				F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F25AEDFB27FECEEB00DCB79F /* XCRemoteSwiftPackageReference "SwiftyGif" */,
 				F25AEE0027FECFB700DCB79F /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
-				08287299283135290002EB78 /* XCRemoteSwiftPackageReference "MarqueeText" */,
 			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
@@ -797,14 +793,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		08287299283135290002EB78 /* XCRemoteSwiftPackageReference "MarqueeText" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/joekndy/MarqueeText.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -832,11 +820,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0828729A2831352A0002EB78 /* MarqueeText */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 08287299283135290002EB78 /* XCRemoteSwiftPackageReference "MarqueeText" */;
-			productName = MarqueeText;
-		};
 		F25AEDEF27FECCFD00DCB79F /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import MarqueeText
 
 struct PlayBar: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
