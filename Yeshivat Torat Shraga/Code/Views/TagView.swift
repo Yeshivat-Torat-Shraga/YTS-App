@@ -108,10 +108,6 @@ struct TagView: View {
                     } else {
                         ProgressView()
                             .progressViewStyle(YTSProgressViewStyle())
-//                        ForEach(0..<4, id: \.self) { _ in
-//                            AudioCardView(audio: .sample)
-//                                .redacted(reason: .placeholder)
-//                        }
                     }
                 }
                 .padding([.horizontal, .top])
