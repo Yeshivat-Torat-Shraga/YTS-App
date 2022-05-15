@@ -27,7 +27,7 @@ import {
 	strippedFilename,
 	supplyDefaultParameters,
 	verifyAppCheck,
-	ENABLEAPPCHECK,
+	// ENABLEAPPCHECK,
 } from './helpers';
 import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
@@ -36,9 +36,9 @@ const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	credential: !ENABLEAPPCHECK
-		? admin.credential.cert(require('/Users/benjitusk/Downloads/firebase.json'))
-		: undefined,
+	// credential: !ENABLEAPPCHECK
+	// 	? admin.credential.cert(require('/Users/benjitusk/Downloads/firebase.json'))
+	// 	: undefined,
 });
 
 exports.createAlert = https.onCall(async (data, context) => {
