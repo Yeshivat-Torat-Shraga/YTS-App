@@ -14,7 +14,12 @@ struct NewsArticleView: View {
     }
     var body: some View {
         ScrollView {
-            Text(article.body)
+            HStack {
+                Text(article.body)
+                    .multilineTextAlignment(.leading)
+                    .padding()
+                Spacer()
+                }
             if article.images.count > 0 {
                 SlideshowView(article.images)
                     .frame(height: 250)
@@ -24,13 +29,24 @@ struct NewsArticleView: View {
                     .padding(.bottom)
             }
         }
-        .padding(.horizontal)
         .navigationTitle(article.title)
+        .toolbar(content: {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                LogoView(size: .small)
+//                    .padding(.bottom)
+            }
+        })
     }
 }
 
 struct NewsArticleView_Previews: PreviewProvider {
     static var previews: some View {
-        NewsView()
+        NavigationView {
+            NavigationLink(destination: NewsArticleView(.sample)) {
+                NewsArticleCardView(.sample)
+            }
+            .padding()
+        }
+        .foregroundColor(.shragaBlue)
     }
 }

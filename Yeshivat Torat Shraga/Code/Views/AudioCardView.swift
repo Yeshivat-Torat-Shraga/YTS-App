@@ -176,7 +176,6 @@ struct AudioCardView_Previews: PreviewProvider {
             }
             .padding()
             .foregroundColor(Color("ShragaBlue"))
-            //            .background(Color.black)
         }
         .preferredColorScheme(.dark)
         .environmentObject(AudioPlayerModel(player: Player()))
