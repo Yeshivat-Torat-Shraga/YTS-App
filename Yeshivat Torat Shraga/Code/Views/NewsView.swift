@@ -64,7 +64,7 @@ struct NewsView: View {
                     Spacer().frame(height: UI.playerBarHeight)
                 }
             }
-            .navigationTitle(Text("Torah and News"))
+            .navigationTitle("Articles")
         }
         .alert(isPresented: $model.showError, content: {
             Alert(
