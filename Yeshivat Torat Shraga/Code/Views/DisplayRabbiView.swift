@@ -19,13 +19,7 @@ struct DisplayRabbiView: View {
         ScrollView {
             Group {
                 if let favorites = model.favoriteContent, favorites.count > 0 {
-                    HStack {
-                        Text("Favorites")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }
-                    .padding()
+                    LabeledDivider(title: "Favorites")
                     
                     VStack {
                         ForEach(favorites, id: \.self) { favorite in
@@ -35,19 +29,16 @@ struct DisplayRabbiView: View {
                                 AudioCardView(audio: audio)
                             }
                         }
-                        .padding(.horizontal)
                     }
-                    Divider()
-                }            
-            }
-            Group {
-                HStack {
-                    Text("Recently Uploaded")
-                        .font(.title3)
-                        .bold()
-                    Spacer()
+//                    Divider()
                 }
-                .padding(.horizontal)
+            }
+            .padding(.horizontal)
+            
+            Spacer()
+            
+            Group {
+                LabeledDivider(title: "Recently Uploaded")
                  
                 LazyVStack {
                     if let sortables = model.sortables {
@@ -65,17 +56,14 @@ struct DisplayRabbiView: View {
 //                                        }
                                 }
                             }
-                            .padding(.horizontal)
                         } else {
                             VStack {
                                 Text("Sorry, no shiurim were found.")
                                     .bold()
                                     .font(.title2)
-                                    .padding(.vertical)
                                 Text("\(model.rabbi.name) didn't upload any shiurim yet.")
                                 Text("Check again in a little bit.")
                             }
-                            .padding(.vertical)
                         }
                     }
                     
@@ -84,9 +72,9 @@ struct DisplayRabbiView: View {
                                  retreivedAllContent: $model.retreivedAllContent,
                                  loadMore: { model.load(next: 5) }
                     )
-                    .padding(.horizontal)
                 }
             }
+            .padding(.horizontal)
         }
         .onChange(of: self.favoritesManager.favoriteIDs) { _ in
             model.favoritesManager = favoritesManager
