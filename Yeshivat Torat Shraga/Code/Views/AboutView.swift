@@ -48,7 +48,7 @@ struct AboutView: View {
                     .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                 }
                 .padding()
-                .frame(minWidth: 200)
+                .frame(minWidth: 236)
                 }
                 .foregroundColor(.black)
                 .background(Color(UIColor.systemGray4))
@@ -81,7 +81,7 @@ struct AboutView: View {
                     .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                 }
                 .padding()
-                .frame(minWidth: 200)
+                .frame(minWidth: 236)
                 }
                 .foregroundColor(.black)
                 .background(Color(UIColor.systemGray4))
@@ -159,17 +159,10 @@ struct AboutView: View {
             .shadow(radius: UI.shadowRadius)
             .padding()
         
-        
-        
-        
-//        You can reach the developers here:
-//        • Benji Tusk: __MethodOfContact__
-//        • David Reese: __MethodOfContact__
-//        """)
-//            .foregroundColor(.shragaBlue)
             Spacer()
         }
         .navigationTitle("About")
+        .navigationBarItems(trailing: LogoView(size: .small))
     }
     
     func sendEmail(to address: String) {
