@@ -119,16 +119,6 @@ struct TagView: View {
     }
 }
 
-struct iOS14BorderedButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            .background(Color(hex: 0x526B98))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-}
-
 struct TagView_Previews: PreviewProvider {
     static var previews: some View {
         TagView(tag: .sample)

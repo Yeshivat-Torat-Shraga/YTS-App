@@ -88,7 +88,7 @@ struct ContentCardView<Content: YTSContent>: View {
                                     .background(Color("Gray"))
                                     .clipShape(Circle())
                                     .clipped()
-                                    .shadow(radius: 2)
+                                    .shadow(radius: UI.shadowRadius)
                                 Spacer()
                             }
                         }
