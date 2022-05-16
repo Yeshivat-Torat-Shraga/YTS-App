@@ -25,19 +25,11 @@ struct RootView: View {
                             Label("Home", systemImage: "house")
                         }
                         .tag(0)
-                        .overlay(VStack {
-                            Spacer()
-                            PlayBar()
-                        })
                     model.favoritesView
                         .tabItem {
                             Label("Favorites", systemImage: "heart.fill")
                         }
                         .tag(1)
-                        .overlay(VStack {
-                            Spacer()
-                            PlayBar()
-                        })
                     if #available(iOS 15.0, *), model.newsView.model.hasUnreadArticles {
                         model.newsView
                             .tabItem {
@@ -45,31 +37,26 @@ struct RootView: View {
                             }
                             .tag(2)
                             .badge("!")
-                            .overlay(VStack {
-                                Spacer()
-                                PlayBar()
-                            })
                     } else {
                         model.newsView
                             .tabItem {
                                 Label("Articles", systemImage: "newspaper.fill")
                             }
                             .tag(2)
-                            .overlay(VStack {
-                                Spacer()
-                                PlayBar()
-                            })
                     }
                     model.settingsView
                         .tabItem {
                             Label("Settings", systemImage: "gearshape")
                         }
                         .tag(3)
-                        .overlay(VStack {
-                            Spacer()
-                            PlayBar()
-                        })
                 }
+                .overlay(VStack(spacing: 0) {
+                    Spacer()
+                    PlayBar()
+                        .shadow(radius: UI.shadowRadius)
+                        .padding(3)
+                    Spacer().frame(height: UI.playerBarHeight)
+                })
                 .onChange(of: selectedView) { _ in
                     Haptics.shared.impact()
                 }

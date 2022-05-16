@@ -59,17 +59,17 @@ struct SettingsView: View {
                                             }
                                         }
                                     )
-
+                                    
                                     break
                                 case .authorized,
-                                     .provisional,
-                                     .ephemeral:
+                                        .provisional,
+                                        .ephemeral:
                                     if newToggleValue == true {
                                         Messaging.messaging().subscribe(toTopic: "all") { error in
                                             if let error = error {
                                                 print("\n\n\nError subscribing to notifications: \(error)\n\n\n")
                                             }
-                                          print("Subscribed to all notifications successfuly")
+                                            print("Subscribed to all notifications successfuly")
                                         }
                                     } else {
                                         Messaging.messaging().unsubscribe(fromTopic: "all")
@@ -109,9 +109,8 @@ struct SettingsView: View {
                     }.foregroundColor(Color("ShragaBlue"))
                 }
                 
-                if audioPlayerModel.audio != nil {
-                    Spacer().frame(height: UI.playerBarHeight)
-                }
+                .background(Color.blue)
+                .cornerRadius(UI.cornerRadius)
             }
             .navigationTitle("Settings")
             .listStyle(InsetGroupedListStyle())

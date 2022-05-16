@@ -155,9 +155,9 @@ struct SearchView: View {
                     TextField("", text: $searchText, onCommit: {
                         search(searchText)
                     })
-                        .placeholder(when: searchText.isEmpty) {
-                            Text("Search")
-                        }
+                    .placeholder(when: searchText.isEmpty) {
+                        Text("Search")
+                    }
                     
                 }
                 .padding(.leading, 13)

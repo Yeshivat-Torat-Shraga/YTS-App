@@ -99,7 +99,7 @@ struct PlayBar: View {
                     .environmentObject(favoritesManager)
                     .environmentObject(player)
             }
-            .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
+            .cornerRadius(UI.cornerRadius)
             .clipped()
         } else {
             EmptyView()
