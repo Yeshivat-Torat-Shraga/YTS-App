@@ -38,7 +38,6 @@ struct TagView: View {
             
             Divider()
             
-            
             ScrollView {
                 VStack {
                     if let sortables = model.sortables {
@@ -51,7 +50,8 @@ struct TagView: View {
                                             .bold()
                                         Spacer()
                                     }
-                                    .padding(.top)
+//                                    .padding(.top)
+                                    
                                     if let contentGroup = sortables[subCategory] {
                                         ForEach(contentGroup, id: \.self) { sortable in
                                             if let video = sortable.video {
