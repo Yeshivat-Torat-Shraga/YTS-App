@@ -10,6 +10,7 @@ import SwiftUI
 struct DisplayRabbiView: View {
     @ObservedObject var model: DisplayRabbiModel
     @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     init(rabbi: DetailedRabbi) {
         model = DisplayRabbiModel(rabbi: rabbi)
@@ -87,6 +88,10 @@ struct DisplayRabbiView: View {
                 }
             }
             .padding(.horizontal)
+            
+            if audioPlayerModel.audio != nil {
+                Spacer().frame(height: UI.playerBarHeight)
+            }
         }
         .onChange(of: self.favoritesManager.favoriteIDs) { _ in
             model.favoritesManager = favoritesManager

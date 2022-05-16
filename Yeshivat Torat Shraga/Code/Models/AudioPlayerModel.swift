@@ -8,6 +8,8 @@
 import Foundation
 import AVKit
 import MediaPlayer
+import SwiftUI
+
 class AudioPlayerModel: ObservableObject {
     private var player: Player
     @Published var audio: Audio?
@@ -33,17 +35,23 @@ class AudioPlayerModel: ObservableObject {
     }
     
     func pause() {
-        self.player.pause()
+        withAnimation {
+            self.player.pause()
+        }
     }
     
     func play(audio: Audio) {
-        set(audio: audio)
-        play()
+        withAnimation {
+            set(audio: audio)
+            play()
+        }
     }
     
     func play() {
-        self.player.play()
-        configureControlCenterMedia()
+        withAnimation {
+            self.player.play()
+            configureControlCenterMedia()
+        }
     }
     
     private func configureControlCenterMedia() {
