@@ -59,17 +59,22 @@ struct DisplayRabbiView: View {
                                 }
                             }
                         } else {
-                            Divider()
+                            Group {
                             VStack {
                                 Text("Sorry, no shiurim here yet.")
                                     .bold()
-                                    .font(.title2)
+                                    .font(.title3)
                                 
-                                Spacer().frame(height: 6)
+                                Spacer()
                                 
                                 Text("Check again in a little bit.")
                             }
                             .multilineTextAlignment(.center)
+                            .padding()
+                            }
+                            .background(Color(UIColor.systemGray4))
+                            .cornerRadius(5)
+                            .shadow(radius: 2)
                         }
                     }
                     
