@@ -11,6 +11,7 @@ struct TagTileView: View {
     @State var isShowingSheet = false
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var player: Player
     var tag: Tag
     var tagView: TagView
     var colorMix: [Color]?
@@ -69,6 +70,7 @@ struct TagTileView: View {
                 .background(BackgroundClearView())
                 .environmentObject(audioPlayerModel)
                 .environmentObject(favoritesManager)
+                .environmentObject(player)
         }
     }
     

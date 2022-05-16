@@ -10,6 +10,7 @@ import SwiftUI
 struct AudioCardView: View {
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @EnvironmentObject var player: Player
     @ObservedObject var model: AudioCardModel
     @State private var isFavoritesBusy = false
     @State private var heartFillOverride = false
@@ -108,6 +109,7 @@ struct AudioCardView: View {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)
                 .environmentObject(favoritesManager)
+                .environmentObject(player)
         }
         .contextMenu {
             if let audio = model.audio, let favoriteIDs = favoritesManager.favoriteIDs {

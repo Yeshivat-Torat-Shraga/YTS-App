@@ -21,6 +21,7 @@ struct SortableFavoritesCardView<Content: SortableYTSContent>: View {
 struct FavoritesCardView<Content: YTSContent>: View {
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @EnvironmentObject var player: Player
     @Environment(\.colorScheme) var colorScheme
     @State var isShowingPlayerSheet = false
     @State private var isFavoritesBusy = false
@@ -125,6 +126,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)
                 .environmentObject(favoritesManager)
+                .environmentObject(player)
         }
         .contextMenu {
             if let audio = audioPlayerModel.audio, let favoriteIDs = favoritesManager.favoriteIDs {

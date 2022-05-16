@@ -10,6 +10,7 @@ import SwiftUI
 struct PlayBar: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var player: Player
     let lightColor = Color(hex: 0xDEDEDE)
     let darkColor = Color(hex: 0x121212)
     @State private var presenting = false
@@ -18,7 +19,6 @@ struct PlayBar: View {
     var body: some View {
         if let audioCurrentlyPlaying = audioPlayerModel.audio {
             HStack {
-                //                DownloadableImage(object: audioCurrentlyPlaying)
                 Image("Logo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -53,36 +53,32 @@ struct PlayBar: View {
                 Spacer()
                 HStack {
                     Button(action: {
-                        audioPlayerModel.player.scrub(seconds: -10)
+                        Haptics.shared.play(.rigid)
+                        player.scrub(seconds: -10)
                     }, label: {
                         Image(systemName: "gobackward.10")
                             .padding(.vertical)
                             .padding(.horizontal, 7)
-                        //                            .resizable()
-                        //                            .frame(width: 45, height: 25)
                     })
-                    if audioPlayerModel.player.timeControlStatus == .playing {
+                    if player.timeControlStatus == .playing {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             audioPlayerModel.pause()
                         }, label: {
                             Image(systemName: "pause.fill")
                                 .padding()
-                            //                                .resizable()
-                            //                                .frame(width: 20, height: 25)
                         })
-                    } else if audioPlayerModel.player.timeControlStatus == .paused {
+                    } else if player.timeControlStatus == .paused {
                         Button(action: {
+                            Haptics.shared.play(.soft)
                             audioPlayerModel.play()
                         }, label: {
                             Image(systemName: "play.fill")
                                 .padding()
-                            //                                .resizable()
-                            //                                .frame(width: 25, height: 25)
                         })
                     } else {
                         ProgressView().progressViewStyle(YTSProgressViewStyle())
                             .padding()
-                        //                            .frame(width: 25, height: 25)
                     }
                 }
                 .padding(.trailing)
@@ -101,11 +97,10 @@ struct PlayBar: View {
                 AudioPlayer()
                     .environmentObject(audioPlayerModel)
                     .environmentObject(favoritesManager)
+                    .environmentObject(player)
             }
             .cornerRadius(UI.cornerRadius, corners: [.topLeft, .topRight])
             .clipped()
-            //            .background(Color.clear.shadow(radius: UI.shadowRadius))
-//            .padding(.bottom)
         } else {
             EmptyView()
         }
@@ -114,14 +109,12 @@ struct PlayBar: View {
 
 struct PlayBar_Previews: PreviewProvider {
     
-    static var model: RootModel = RootModel()
     static var audioPlayerModel = AudioPlayerModel(player: Player())
     static var favoritesManager = Favorites()
 
     
     init() {
-        let model = AudioPlayerModel(player: Player())
-        model.set(audio: Audio.sample)
+        PlayBar_Previews.audioPlayerModel.set(audio: Audio.sample)
     }
 
     static var previews: some View {

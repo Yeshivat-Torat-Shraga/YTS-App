@@ -11,17 +11,8 @@ import SwiftyGif
 struct RootView: View {
     @EnvironmentObject var FavoritesManager: Favorites
     @StateObject var model = RootModel()
-    @State private var player: Player
-    var audioPlayerModel: AudioPlayerModel
     @State private var imageData: Data? = nil
     @State private var selectedView = 0
-    
-    init() {
-        let player = Player()
-        self.player = player
-        let audioPlayerModel = AudioPlayerModel(player: player)
-        self.audioPlayerModel = audioPlayerModel
-    }
     
     var body: some View {
         Group {
@@ -101,7 +92,6 @@ struct RootView: View {
         }
         .foregroundColor(Color("ShragaBlue"))
         .accentColor(Color("ShragaBlue"))
-        .environmentObject(audioPlayerModel)
     }
 }
 

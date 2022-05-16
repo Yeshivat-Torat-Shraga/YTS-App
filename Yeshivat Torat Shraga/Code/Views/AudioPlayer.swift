@@ -11,6 +11,7 @@ import MediaPlayer
 
 struct AudioPlayer: View {
     @EnvironmentObject var model: AudioPlayerModel
+    @EnvironmentObject var player: Player
     @EnvironmentObject var favorites: Favorites
     @State private var favoriteErr: Error?
     @State private var isFavoritesBusy = false
@@ -26,7 +27,6 @@ struct AudioPlayer: View {
                 .clipShape(RoundedRectangle(cornerRadius: UI.cornerRadius))
                 .padding()
                 .shadow(radius: UI.shadowRadius)
-//                .preferredColorScheme(.light)
             
             HStack {
                 VStack {
@@ -60,13 +60,13 @@ struct AudioPlayer: View {
             }.padding(.horizontal)
             
             Group {
-                if model.player.itemDuration >= 0 {
-                    Slider(value: $model.player.displayTime, in: (0...model.player.itemDuration)) { scrubStarted in
+                if player.itemDuration >= 0 {
+                    Slider(value: $player.displayTime, in: (0...player.itemDuration)) { scrubStarted in
                         Haptics.shared.impact()
                         if scrubStarted {
-                            model.player.scrubState = .scrubStarted
+                            player.scrubState = .scrubStarted
                         } else {
-                            model.player.scrubState = .scrubEnded(model.player.displayTime)
+                            player.scrubState = .scrubEnded(player.displayTime)
                         }
                     }
                     .accentColor(Color("ShragaGold"))
@@ -75,7 +75,7 @@ struct AudioPlayer: View {
                 }
                 
                 HStack {
-                    if let displayTime = model.player.displayTime, displayTime.isFinite {
+                    if let displayTime = player.displayTime, displayTime.isFinite {
                         Text("\(timeFormattedMini(totalSeconds: displayTime))")
                             .font(.caption2)
                             .foregroundColor(.white)
@@ -85,7 +85,7 @@ struct AudioPlayer: View {
                             .foregroundColor(.white)
                     }
                     Spacer()
-                    if let duration = model.player.itemDuration, duration.isFinite {
+                    if let duration = player.itemDuration, duration.isFinite {
                         Text("\(timeFormattedMini(totalSeconds: duration))")
                             .font(.caption2)
                             .foregroundColor(.white)
@@ -107,7 +107,7 @@ struct AudioPlayer: View {
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.scrub(seconds: -10)
+                        player.scrub(seconds: -10)
                     }, label: {
                         Image(systemName: "gobackward.10")
                             .resizable()
@@ -118,7 +118,7 @@ struct AudioPlayer: View {
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.scrub(seconds: -30)
+                        player.scrub(seconds: -30)
                     }, label: {
                         Image(systemName: "gobackward.30")
                             .resizable()
@@ -131,12 +131,12 @@ struct AudioPlayer: View {
                 Group {
                     Spacer()
                     
-                    if model.player.timeControlStatus == .paused {
+                    if player.timeControlStatus == .paused {
                         Button(action: {
                             Haptics.shared.play(.soft)
                             let threshhold = 0.05
-                            if model.player.displayTime + threshhold >= model.player.itemDuration {
-                                model.player.scrub(to: .zero)
+                            if player.displayTime + threshhold >= player.itemDuration {
+                                player.scrub(to: .zero)
                             }
                             model.play()
                         }, label: {
@@ -145,7 +145,7 @@ struct AudioPlayer: View {
                                 .aspectRatio(contentMode: .fit)
                         })
                         .frame(width: 30)
-                    } else if model.player.timeControlStatus == .playing {
+                    } else if player.timeControlStatus == .playing {
                         Button(action: {
                             Haptics.shared.play(.soft)
                             model.pause()
@@ -166,7 +166,7 @@ struct AudioPlayer: View {
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.scrub(seconds: 30)
+                        player.scrub(seconds: 30)
                     }, label: {
                         Image(systemName: "goforward.30")
                             .resizable()
@@ -177,7 +177,7 @@ struct AudioPlayer: View {
                     
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.scrub(seconds: 10)
+                        player.scrub(seconds: 10)
                     }, label: {
                         Image(systemName: "goforward.10")
                             .resizable()
@@ -227,33 +227,33 @@ struct AudioPlayer: View {
                 Menu {
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.setRate(0.5)
+                        player.setRate(0.5)
                     }) {
-                        Label("0.5x", systemImage: (model.player.avPlayer?.rate == 0.5) ? "checkmark" : "tortoise")
+                        Label("0.5x", systemImage: (player.avPlayer?.rate == 0.5) ? "checkmark" : "tortoise")
                     }
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.setRate(0.75)
+                        player.setRate(0.75)
                     }) {
-                        Label("0.75x", systemImage: (model.player.avPlayer?.rate == 0.75) ? "checkmark" : "")
+                        Label("0.75x", systemImage: (player.avPlayer?.rate == 0.75) ? "checkmark" : "")
                     }
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.setRate(1)
+                        player.setRate(1)
                     }) {
-                        Label("1x", systemImage: (model.player.avPlayer?.rate == 1) ? "checkmark" : "figure.walk")
+                        Label("1x", systemImage: (player.avPlayer?.rate == 1) ? "checkmark" : "figure.walk")
                     }
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.setRate(1.5)
+                        player.setRate(1.5)
                     }) {
-                        Label("1.5x", systemImage: (model.player.avPlayer?.rate == 1.5) ? "checkmark" : "")
+                        Label("1.5x", systemImage: (player.avPlayer?.rate == 1.5) ? "checkmark" : "")
                     }
                     Button(action: {
                         Haptics.shared.play(.rigid)
-                        model.player.setRate(2)
+                        player.setRate(2)
                     }) {
-                        Label("2x", systemImage: (model.player.avPlayer?.rate == 2) ? "checkmark" : "hare")
+                        Label("2x", systemImage: (player.avPlayer?.rate == 2) ? "checkmark" : "hare")
                     }
                 } label: {
                     Image(systemName: "speedometer")
@@ -321,13 +321,11 @@ struct AudioPlayer: View {
 
 struct AudioPlayer_Previews: PreviewProvider {
     
-    static var model: RootModel = RootModel()
-    static var audioPlayerModel = AudioPlayerModel(player: Player())
+    static var model = AudioPlayerModel(player: Player())
 
     
     init() {
-        let model = AudioPlayerModel(player: Player())
-        model.set(audio: Audio.sample)
+        AudioPlayer_Previews.model.set(audio: Audio.sample)
     }
     
     static var previews: some View {
