@@ -15,53 +15,55 @@ struct NewsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                if let articles = model.articles {
-                    if articles.count > 0 {
-                        ForEach(articles) { article in
-                            NavigationLink(destination: NewsArticleView(article)) {
-                                NewsArticleCardView(article)
-                                    .padding(.horizontal)
-                            }
-                            .simultaneousGesture(
-                                TapGesture()
-                                    .onEnded {
-                                        Haptics.shared.play(UI.Haptics.navLink)
-                                        if article.isMostRecentArticle {
-                                            @AppStorage("mostRecentArticleID") var mostRecentArticleID = ""
-                                            mostRecentArticleID = article.id
-                                            model.hasUnreadArticles = false
-                                        }
-                                    })
-                        }
-                        if !model.loadingArticles && !model.loadedAllArticles {
-                            LoadMoreBar(action: {
-                                withAnimation {
-                                    model.load()
+                LazyVStack {
+                    if let articles = model.articles {
+                        if articles.count > 0 {
+                            ForEach(articles) { article in
+                                NavigationLink(destination: NewsArticleView(article)) {
+                                    NewsArticleCardView(article)
+                                        .padding(.horizontal)
                                 }
-                            })
-                            .padding()
+                                .simultaneousGesture(
+                                    TapGesture()
+                                        .onEnded {
+                                            Haptics.shared.play(UI.Haptics.navLink)
+                                            if article.isMostRecentArticle {
+                                                @AppStorage("mostRecentArticleID") var mostRecentArticleID = ""
+                                                mostRecentArticleID = article.id
+                                                model.hasUnreadArticles = false
+                                            }
+                                        })
+                            }
+                            if !model.loadingArticles && !model.loadedAllArticles {
+                                LoadMoreBar(action: {
+                                    withAnimation {
+                                        model.load()
+                                    }
+                                })
+                                    .padding()
+                            }
+                        } else {
+                            VStack {
+                                Text("No news articles have been posted yet.")
+                                    .bold()
+                                    .multilineTextAlignment(.center)
+                                    .font(.title2)
+                                    .padding(.vertical)
+                                Text("Check again in a little bit.")
+                            }
+                            .padding(.vertical)
+                            
                         }
-                    } else {
-                        VStack {
-                            Text("No news articles have been posted yet.")
-                                .bold()
-                                .multilineTextAlignment(.center)
-                                .font(.title2)
-                                .padding(.vertical)
-                            Text("Check again in a little bit.")
-                        }
-                        .padding(.vertical)
-
                     }
-                }
-                
-                if model.loadingArticles {
-                    ProgressView()
-                        .progressViewStyle(YTSProgressViewStyle())
-                }
-                
-                if audioPlayerModel.audio != nil {
-                    Spacer().frame(height: UI.playerBarHeight)
+                    
+                    if model.loadingArticles {
+                        ProgressView()
+                            .progressViewStyle(YTSProgressViewStyle())
+                    }
+                    
+                    if audioPlayerModel.audio != nil {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
             }
             .navigationTitle("Articles")
