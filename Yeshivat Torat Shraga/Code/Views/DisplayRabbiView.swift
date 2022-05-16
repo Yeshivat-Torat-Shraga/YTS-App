@@ -59,6 +59,7 @@ struct DisplayRabbiView: View {
                                 }
                             }
                         } else {
+                            Divider()
                             VStack {
                                 Text("Sorry, no shiurim here yet.")
                                     .bold()
