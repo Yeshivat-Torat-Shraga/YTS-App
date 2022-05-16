@@ -71,6 +71,7 @@
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
 		F2D6E2C1282BC685000917D2 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D6E2C0282BC685000917D2 /* AboutView.swift */; };
+		F2D6E2C328328137000917D2 /* iOS14BorderedButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D6E2C228328137000917D2 /* iOS14BorderedButtonStyle.swift */; };
 		F2D78B71278695EB003996A8 /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D78B70278695EB003996A8 /* Favorites.swift */; };
 		F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */; };
 		F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F69C4E277C3A790069DCAE /* AppValidation.swift */; };
@@ -148,6 +149,7 @@
 		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		F2D6E2C0282BC685000917D2 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		F2D6E2C228328137000917D2 /* iOS14BorderedButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS14BorderedButtonStyle.swift; sourceTree = "<group>"; };
 		F2D78B70278695EB003996A8 /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
 		F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTSProgressViewStyle.swift; sourceTree = "<group>"; };
 		F2F69C4E277C3A790069DCAE /* AppValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppValidation.swift; sourceTree = "<group>"; };
@@ -341,6 +343,7 @@
 			children = (
 				F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */,
 				F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */,
+				F2D6E2C228328137000917D2 /* iOS14BorderedButtonStyle.swift */,
 			);
 			path = Styles;
 			sourceTree = "<group>";
@@ -486,6 +489,7 @@
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
 				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
 				08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */,
+				F2D6E2C328328137000917D2 /* iOS14BorderedButtonStyle.swift in Sources */,
 				08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
