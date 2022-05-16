@@ -28,7 +28,7 @@ jobs:
        with:
         upload_buildcache_log: 'true' # optional: 100% cache misses? Find out why
      - name: Set up ruby env
-       uses: benjitusk/setup-ruby@v1.108.0
+       uses: benjitusk/setup-ruby@v1.109.0
        with:
          ruby-version: 2.7.2
          bundler-cache: true
