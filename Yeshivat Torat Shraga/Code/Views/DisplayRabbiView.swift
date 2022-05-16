@@ -31,14 +31,15 @@ struct DisplayRabbiView: View {
                         }
                     }
 //                    Divider()
+                    
+                    
+                    Spacer()
+                    Spacer()
+                    Spacer()
                 }
             }
             .padding(.horizontal)
-            
-            Spacer()
-            Spacer()
-            Spacer()
-            
+        
             Group {
                 LazyVStack {
                     if let sortables = model.sortables {
