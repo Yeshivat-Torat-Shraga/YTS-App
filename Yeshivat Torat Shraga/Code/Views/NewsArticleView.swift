@@ -22,7 +22,7 @@ struct NewsArticleView: View {
                     .font(.body)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.black)
-                    .padding()
+                    .padding(.horizontal)
                 Spacer()
             }
           
@@ -30,6 +30,7 @@ struct NewsArticleView: View {
                 SlideshowView(article.images)
                     .frame(height: 250)
                     .clipped()
+                    
                     .cornerRadius(UI.cornerRadius)
                     .shadow(radius: UI.shadowRadius)
                     .padding(.bottom)
