@@ -37,6 +37,7 @@ struct DisplayRabbiView: View {
             
             Spacer()
             Spacer()
+            Spacer()
             
             Group {
                 LazyVStack {
