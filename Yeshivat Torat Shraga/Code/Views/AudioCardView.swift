@@ -160,6 +160,7 @@ struct AudioCardView: View {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)
                 .environmentObject(favoritesManager)
+                .environmentObject(player)
         }
     }
 }
