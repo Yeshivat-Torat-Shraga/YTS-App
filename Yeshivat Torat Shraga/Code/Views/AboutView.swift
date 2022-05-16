@@ -9,6 +9,8 @@ import SwiftUI
 import MessageUI
 
 struct AboutView: View {
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    
     var body: some View {
         ScrollView {
             Group {
@@ -160,6 +162,10 @@ struct AboutView: View {
             .padding()
         
             Spacer()
+            
+            if audioPlayerModel.audio != nil {
+                Spacer().frame(height: UI.playerBarHeight)
+            }
         }
         .navigationTitle("About")
         .navigationBarItems(trailing: LogoView(size: .small))
