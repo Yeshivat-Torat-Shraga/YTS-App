@@ -17,7 +17,7 @@ class TagModel: ObservableObject, ErrorShower {
     
     @Published var tag: Tag
     @Published var sortables: [Tag: [SortableYTSContent]]?
-//    @Published var 
+    //    @Published var
     
     init(tag: Tag) {
         self.tag = tag
@@ -35,7 +35,7 @@ class TagModel: ObservableObject, ErrorShower {
             load()
         }
     }
-
+    
     
     func load() {
         FirebaseConnection.loadContent(matching: tag) { results, error in
@@ -43,22 +43,27 @@ class TagModel: ObservableObject, ErrorShower {
                 self.showError(error: error ?? YTSError.unknownError, retry: self.load)
                 return
             }
-            // The data will be unsorted, we need to sort the data by
-            // tagID
-            var sortedContent: [Tag: [SortableYTSContent]] = [:]
-            for video in results.content.videos {
-                if sortedContent[video.tag] == nil {
-                    sortedContent[video.tag] = []
+            
+            withAnimation {
+                // The data will be unsorted, we need to sort the data by
+                // tagID
+                var sortedContent: [Tag: [SortableYTSContent]] = [:]
+                for video in results.content.videos {
+                    if sortedContent[video.tag] == nil {
+                        sortedContent[video.tag] = []
+                    }
+                    sortedContent[video.tag]!.append(video.sortable)
                 }
-                sortedContent[video.tag]!.append(video.sortable)
-            }
-            for audio in results.content.audios {
-                if sortedContent[audio.tag] == nil {
-                    sortedContent[audio.tag] = []
+                
+                for audio in results.content.audios {
+                    if sortedContent[audio.tag] == nil {
+                        sortedContent[audio.tag] = []
+                    }
+                    sortedContent[audio.tag]!.append(audio.sortable)
                 }
-                sortedContent[audio.tag]!.append(audio.sortable)
+                
+                self.sortables = sortedContent
             }
-            self.sortables = sortedContent
         }
     }
 }
