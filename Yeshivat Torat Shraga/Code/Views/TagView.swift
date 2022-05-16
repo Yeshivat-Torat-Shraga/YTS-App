@@ -39,18 +39,20 @@ struct TagView: View {
             Divider()
             
             ScrollView {
-                VStack {
+                LazyVStack {
                     if let sortables = model.sortables {
                         if sortables.count > 0 {
+                            HStack {
+                                Text("Recently Uploaded")
+                                    .font(.title2)
+                                    .bold()
+                                Spacer()
+                            }
+                            
                             if model.tag.isParent {
                                 ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
-                                    HStack {
-                                        Text(subCategory.name)
-                                            .font(.title3)
-                                            .bold()
-                                        Spacer()
-                                    }
-//                                    .padding(.top)
+                                    LabeledDivider(title: subCategory.name)
+                                    //                                    .padding(.top)
                                     
                                     if let contentGroup = sortables[subCategory] {
                                         ForEach(contentGroup, id: \.self) { sortable in
@@ -80,11 +82,12 @@ struct TagView: View {
                                 Text("Sorry, no shiurim here yet.")
                                     .bold()
                                     .font(.title2)
-                                    .padding(.vertical)
+                                
+                                Spacer().frame(height: 6)
+                                
                                 Text("Check again in a little bit.")
                             }
                             .multilineTextAlignment(.center)
-                            .padding()
                         }
                     } else {
                         ProgressView()
