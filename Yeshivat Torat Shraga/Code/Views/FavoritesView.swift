@@ -44,7 +44,7 @@ struct FavoritesView: View {
                                     if let contentArray = favorites[rabbi] {
                                         Group {
                                             ForEach(contentArray, id: \.self) { sortable in
-                                                SortableFavoritesCardView(content: sortable)
+                                                SortableFavoriteCardView(content: sortable)
                                                     .shadow(radius: UI.shadowRadius)
                                             }
                                             Divider()

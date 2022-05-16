@@ -131,21 +131,21 @@ struct AudioCardView: View {
                 }) {
                     Label(isFavoritesBusy
                           ? heartFillOverride
-                              ? "heart.fill"
-                              : "heart"
-
+                          ? "heart.fill"
+                          : "heart"
+                          
                           : favoriteIDs.contains(audio.firestoreID)
-                              ? "Unfavorite"
-                              : "Favorite",
+                          ? "Unfavorite"
+                          : "Favorite",
                           
                           systemImage: isFavoritesBusy
                           ? heartFillOverride
-                              ? "heart.fill"
-                              : "heart"
-                      
+                          ? "heart.fill"
+                          : "heart"
+                          
                           : favoriteIDs.contains(audio.firestoreID)
-                              ? "heart.fill"
-                              : "heart")
+                          ? "heart.fill"
+                          : "heart")
                 }
             }
             Button(action: {
@@ -154,6 +154,12 @@ struct AudioCardView: View {
             }) {
                 Label("Play", systemImage: "play")
             }
+        }
+        .shadow(radius: UI.shadowRadius)
+        .sheet(isPresented: $isShowingPlayerSheet) {
+            AudioPlayer()
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
         }
     }
 }
@@ -174,6 +180,6 @@ struct AudioCardView_Previews: PreviewProvider {
         .preferredColorScheme(.dark)
         .environmentObject(AudioPlayerModel(player: Player()))
         .environmentObject(Favorites())
-
+        
     }
 }

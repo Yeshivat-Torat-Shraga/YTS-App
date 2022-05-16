@@ -19,13 +19,7 @@ struct DisplayRabbiView: View {
         ScrollView {
             Group {
                 if let favorites = model.favoriteContent, favorites.count > 0 {
-                    HStack {
-                        Text("Favorites")
-                            .font(.title3)
-                            .bold()
-                        Spacer()
-                    }
-                    .padding()
+                    LabeledDivider(title: "Favorites")
                     
                     VStack {
                         ForEach(favorites, id: \.self) { favorite in
@@ -35,23 +29,23 @@ struct DisplayRabbiView: View {
                                 AudioCardView(audio: audio)
                             }
                         }
-                        .padding(.horizontal)
                     }
-                    Divider()
-                }            
-            }
-            Group {
-                HStack {
-                    Text("Recently Uploaded")
-                        .font(.title3)
-                        .bold()
+//                    Divider()
+                    
+                    
+                    Spacer()
+                    Spacer()
                     Spacer()
                 }
-                .padding(.horizontal)
-                 
+            }
+            .padding(.horizontal)
+        
+            Group {
                 LazyVStack {
                     if let sortables = model.sortables {
                         if sortables.count > 0 {
+                            LabeledDivider(title: "Recently Uploaded")
+                            
                             ForEach(sortables, id: \.self) { sortable in
                                 if let video = sortable.video {
                                     VideoCardView(video: video)
@@ -65,17 +59,23 @@ struct DisplayRabbiView: View {
 //                                        }
                                 }
                             }
-                            .padding(.horizontal)
                         } else {
+                            Group {
                             VStack {
-                                Text("Sorry, no shiurim were found.")
+                                Text("Sorry, no shiurim here yet.")
                                     .bold()
-                                    .font(.title2)
-                                    .padding(.vertical)
-                                Text("\(model.rabbi.name) didn't upload any shiurim yet.")
+                                    .font(.title3)
+                                
+                                Spacer()
+                                
                                 Text("Check again in a little bit.")
                             }
-                            .padding(.vertical)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                            }
+                            .background(Color(UIColor.systemGray4))
+                            .cornerRadius(5)
+                            .shadow(radius: 2)
                         }
                     }
                     
@@ -84,9 +84,9 @@ struct DisplayRabbiView: View {
                                  retreivedAllContent: $model.retreivedAllContent,
                                  loadMore: { model.load(next: 5) }
                     )
-                    .padding(.horizontal)
                 }
             }
+            .padding(.horizontal)
         }
         .onChange(of: self.favoritesManager.favoriteIDs) { _ in
             model.favoritesManager = favoritesManager

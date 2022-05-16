@@ -67,13 +67,15 @@ struct ContentCardView<Content: YTSContent>: View {
                                     .bold()
                                     .lineLimit(2)
                                     .multilineTextAlignment(.leading)
+                                    .minimumScaleFactor(0.6)
                                     .fixedSize(horizontal: false, vertical: true)
                                 Spacer()
                             }
+                            .padding(.bottom, 1)
                             
                             HStack {
                                 Text(content.author.name)
-                                    .font(.callout)
+                                    .font(.subheadline)
                                 Spacer()
                             }
                             
