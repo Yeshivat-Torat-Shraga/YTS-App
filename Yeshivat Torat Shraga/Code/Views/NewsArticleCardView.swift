@@ -41,16 +41,25 @@ struct NewsArticleCardView: View {
                     
                     Spacer()
                 }
-                Text(article.body)
-                    .font(.callout)
-                    .foregroundColor(.gray)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
+                if article.body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text("This article is empty.")
+                        .italic()
+                        .font(.callout)
+                        .foregroundColor(.gray)
+                } else {
+                    Text(article.body)
+                        .font(.callout)
+                        .foregroundColor(.gray)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                    
+                }
                 Spacer()
                 HStack {
                     HStack {
                         Image(systemName: "person.fill")
                         Text(article.author)
+                            .lineLimit(1)
                             .foregroundColor(Color("Gray"))
                     }
                     Spacer()

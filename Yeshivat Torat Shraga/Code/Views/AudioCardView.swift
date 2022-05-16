@@ -10,6 +10,7 @@ import SwiftUI
 struct AudioCardView: View {
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @EnvironmentObject var player: Player
     @ObservedObject var model: AudioCardModel
     @State private var isFavoritesBusy = false
     @State private var heartFillOverride = false
@@ -103,6 +104,13 @@ struct AudioCardView: View {
                 .cornerRadius(UI.cornerRadius)
         )
         .cornerRadius(UI.cornerRadius)
+        .shadow(radius: UI.shadowRadius)
+        .sheet(isPresented: $isShowingPlayerSheet) {
+            AudioPlayer()
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
+                .environmentObject(player)
+        }
         .contextMenu {
             if let audio = model.audio, let favoriteIDs = favoritesManager.favoriteIDs {
                 Button(action: {
@@ -152,6 +160,7 @@ struct AudioCardView: View {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)
                 .environmentObject(favoritesManager)
+                .environmentObject(player)
         }
     }
 }
@@ -167,7 +176,6 @@ struct AudioCardView_Previews: PreviewProvider {
             }
             .padding()
             .foregroundColor(Color("ShragaBlue"))
-            //            .background(Color.black)
         }
         .preferredColorScheme(.dark)
         .environmentObject(AudioPlayerModel(player: Player()))

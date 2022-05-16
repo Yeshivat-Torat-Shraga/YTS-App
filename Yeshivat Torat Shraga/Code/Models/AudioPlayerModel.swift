@@ -11,21 +11,15 @@ import MediaPlayer
 import SwiftUI
 
 class AudioPlayerModel: ObservableObject {
-    @Published var player: Player
+    private var player: Player
     @Published var audio: Audio?
     
     init(player: Player) {
         self.player = player
-        Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
-            if self.audio != nil {
-                self.objectWillChange.send()
-            }
-        }
     }
     
     func set(audio: Audio) {
         if self.audio?.firestoreID == audio.firestoreID {
-            print("The current audio is already playing, not re-setting.")
             return
         }
         self.audio = audio

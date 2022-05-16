@@ -11,6 +11,8 @@ import FirebaseDynamicLinks
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @ObservedObject var favoritesManager = Favorites()
+    @ObservedObject var player = Player()
+    lazy var audioPlayerModel = AudioPlayerModel(player: player)
     var rootView = RootView()
     var window: UIWindow?
 
@@ -31,6 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
         let contentView = self.rootView.environment(\.managedObjectContext, context)
             .environmentObject(favoritesManager)
+            .environmentObject(player)
+            .environmentObject(audioPlayerModel)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
@@ -148,11 +152,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if let audio = content?.audio {
 
 
-                let audioPlayerModel = self.rootView.audioPlayerModel
-                audioPlayerModel.play(audio: audio)
+//                let audioPlayerModel = self.audioPlayerModel
+                self.audioPlayerModel.play(audio: audio)
                 let vc = UIHostingController(rootView: AudioPlayer()
                     .environmentObject(self.favoritesManager)
-                    .environmentObject(audioPlayerModel))
+                    .environmentObject(self.audioPlayerModel)
+                    .environmentObject(self.player))
                     
                 self.window?.rootViewController?.present(vc, animated: true)
                 //                                }  else if let video = content?.video {
