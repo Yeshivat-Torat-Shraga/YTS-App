@@ -30,6 +30,8 @@ struct NewsArticleView: View {
                     .padding(.bottom)
             }
             
+            Spacer()
+            
             if audioPlayerModel.audio != nil {
                 Spacer().frame(height: UI.playerBarHeight)
             }

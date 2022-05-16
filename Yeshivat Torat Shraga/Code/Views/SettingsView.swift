@@ -108,13 +108,13 @@ struct SettingsView: View {
                         AboutView()
                     }.foregroundColor(Color("ShragaBlue"))
                 }
-                
-                if audioPlayerModel.audio != nil {
-                    Spacer().frame(height: UI.playerBarHeight)
-                }
             }
             .navigationTitle("Settings")
             .listStyle(InsetGroupedListStyle())
+            
+            if audioPlayerModel.audio != nil {
+                Spacer().frame(height: UI.playerBarHeight)
+            }
         }
         .alert(isPresented: $showNotificationsAlert) {
             Alert(title: Text("Uh oh"), message: Text("You'll need to enable notification permission for this app first."),
