@@ -321,18 +321,19 @@ struct AudioPlayer: View {
 
 struct AudioPlayer_Previews: PreviewProvider {
     
-    static var model = AudioPlayerModel(player: Player())
-
+    static var player = Player()
+    static var model = AudioPlayerModel(player: AudioPlayer_Previews.player)
     
     init() {
-        AudioPlayer_Previews.model.set(audio: Audio.sample)
+        AudioPlayer_Previews.model.set(audio: .sample)
     }
     
     static var previews: some View {
         Group {
             AudioPlayer()
-                .environmentObject(AudioPlayer_Previews.model)
+                .environmentObject(AudioPlayer_Previews.player)
                 .environmentObject(Favorites())
+                .environmentObject(AudioPlayer_Previews.model)
         }
     }
 }

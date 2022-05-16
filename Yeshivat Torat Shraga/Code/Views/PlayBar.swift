@@ -118,29 +118,9 @@ struct PlayBar_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        TabView {
-            HomeView()
-                .overlay(VStack {
-                    Spacer()
-                    PlayBar()
-                })
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }.tag(0)
-            SettingsView()
-                .tabItem {
-                    Label("Favorites", systemImage: "heart.fill")
-                }.tag(1)
-            SettingsView()
-                .tabItem {
-                    Label("News", systemImage: "newspaper.fill")
-                }.tag(2)
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
-                }.tag(3)
-        }
-        .environmentObject(audioPlayerModel)
-        .environmentObject(favoritesManager)
+        PlayBar()
+            .environmentObject(Favorites())
+            .environmentObject(audioPlayerModel)
+            .environmentObject(favoritesManager)
     }
 }

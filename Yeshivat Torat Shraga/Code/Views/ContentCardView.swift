@@ -180,6 +180,7 @@ struct ContentCardView<Content: YTSContent>: View {
 }
 
 struct ContentCardView_Previews: PreviewProvider {
+    static var player = Player()
     static var previews: some View {
         VStack {
             ContentCardView(content: Audio.sample)
@@ -188,7 +189,8 @@ struct ContentCardView_Previews: PreviewProvider {
         .padding()
         .previewLayout(.sizeThatFits)
         .preferredColorScheme(.dark)
-        .environmentObject(AudioPlayerModel(player: Player()))
+        .environmentObject(ContentCardView_Previews.player)
+        .environmentObject(AudioPlayerModel(player: ContentCardView_Previews.player))
         .environmentObject(Favorites())
 
     }

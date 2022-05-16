@@ -166,6 +166,7 @@ struct AudioCardView: View {
 }
 
 struct AudioCardView_Previews: PreviewProvider {
+    static var player = Player()
     static var previews: some View {
         ScrollView {
             VStack {
@@ -178,7 +179,8 @@ struct AudioCardView_Previews: PreviewProvider {
             .foregroundColor(Color("ShragaBlue"))
         }
         .preferredColorScheme(.dark)
-        .environmentObject(AudioPlayerModel(player: Player()))
+        .environmentObject(AudioPlayerModel(player: AudioCardView_Previews.player))
+        .environmentObject(player)
         .environmentObject(Favorites())
         
     }

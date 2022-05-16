@@ -9,7 +9,6 @@ import SwiftUI
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
-    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     var body: some View {
         NavigationView {
@@ -60,9 +59,7 @@ struct NewsView: View {
                             .progressViewStyle(YTSProgressViewStyle())
                     }
                     
-                    if audioPlayerModel.audio != nil {
-                        Spacer().frame(height: UI.playerBarHeight)
-                    }
+                    Spacer().frame(height: UI.playerBarHeight)
                 }
             }
             .navigationTitle("Articles")

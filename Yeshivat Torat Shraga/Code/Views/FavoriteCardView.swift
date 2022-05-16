@@ -198,6 +198,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
 }
 
 struct FavoritesCardView_Previews: PreviewProvider {
+    static var player = Player()
     static var previews: some View {
         ZStack {
             Color("FavoritesBG").ignoresSafeArea()
@@ -212,8 +213,9 @@ struct FavoritesCardView_Previews: PreviewProvider {
             .shadow(radius: UI.shadowRadius)
             .padding(.horizontal)
         }
-        .environmentObject(AudioPlayerModel(player: Player()))
+        .environmentObject(AudioPlayerModel(player: FavoritesCardView_Previews.player))
         .environmentObject(Favorites())
+        .environmentObject(FavoritesCardView_Previews.player)
         
         //        .preferredColorScheme(.dark)
     }

@@ -123,6 +123,8 @@ struct DisplayRabbiView_Previews: PreviewProvider {
         NavigationView {
             DisplayRabbiView(rabbi: DetailedRabbi.sample)
                 .environmentObject(Favorites())
+                .environmentObject(AudioPlayerModel(player: Player()))
+                .environmentObject(Player())
                 .foregroundColor(.shragaBlue)
         }
     }

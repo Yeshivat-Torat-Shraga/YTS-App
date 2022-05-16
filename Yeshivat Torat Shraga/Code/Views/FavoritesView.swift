@@ -85,6 +85,7 @@ struct FavoritesView_Previews: PreviewProvider {
         FavoritesView()
             .foregroundColor(.shragaBlue)
             .environmentObject(AudioPlayerModel(player: Player()))
+            .environmentObject(Player())
             .environmentObject(Favorites())
     }
 }

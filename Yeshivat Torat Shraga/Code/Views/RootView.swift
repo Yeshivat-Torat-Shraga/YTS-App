@@ -83,8 +83,13 @@ struct RootView: View {
 }
 
 struct RootView_Previews: PreviewProvider {
+    static var player = Player()
+    
     static var previews: some View {
         RootView()
             .environmentObject(Favorites())
+            .environmentObject(player)
+            .environmentObject(AudioPlayerModel(player: RootView_Previews.player))
+            
     }
 }

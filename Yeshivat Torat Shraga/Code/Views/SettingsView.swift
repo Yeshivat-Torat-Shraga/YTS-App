@@ -14,8 +14,8 @@ struct SettingsView: View {
     @State var showClearFavoritesConfirmation = false
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
-    
-    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+//    
+//    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     var body: some View {
         NavigationView {
@@ -112,9 +112,9 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .listStyle(InsetGroupedListStyle())
             
-            if audioPlayerModel.audio != nil {
-                Spacer().frame(height: UI.playerBarHeight)
-            }
+//            if audioPlayerModel.audio != nil {
+//                Spacer().frame(height: UI.playerBarHeight)
+//            }
         }
         .alert(isPresented: $showNotificationsAlert) {
             Alert(title: Text("Uh oh"), message: Text("You'll need to enable notification permission for this app first."),
@@ -131,5 +131,6 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
+            .environmentObject(Favorites())
     }
 }

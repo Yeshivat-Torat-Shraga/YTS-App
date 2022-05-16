@@ -82,8 +82,12 @@ struct TagTileView: View {
 }
 
 struct TagTileView_Previews: PreviewProvider {
+    static var player = Player()
     static var previews: some View {
         TagTileView(.sample)
             .previewLayout(.sizeThatFits)
+            .environmentObject(Favorites())
+            .environmentObject(AudioPlayerModel(player: TagTileView_Previews.player))
+            .environmentObject(TagTileView_Previews.player)
     }
 }
