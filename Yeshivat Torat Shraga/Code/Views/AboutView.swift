@@ -95,7 +95,7 @@ struct AboutView: View {
             }
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
-            .padding()
+            .padding([.horizontal, .bottom])
             
             Group {
             VStack {
