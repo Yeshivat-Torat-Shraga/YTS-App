@@ -36,13 +36,14 @@ struct DisplayRabbiView: View {
             .padding(.horizontal)
             
             Spacer()
+            Spacer()
             
             Group {
-                LabeledDivider(title: "Recently Uploaded")
-                 
                 LazyVStack {
                     if let sortables = model.sortables {
                         if sortables.count > 0 {
+                            LabeledDivider(title: "Recently Uploaded")
+                            
                             ForEach(sortables, id: \.self) { sortable in
                                 if let video = sortable.video {
                                     VideoCardView(video: video)
@@ -58,12 +59,15 @@ struct DisplayRabbiView: View {
                             }
                         } else {
                             VStack {
-                                Text("Sorry, no shiurim were found.")
+                                Text("Sorry, no shiurim here yet.")
                                     .bold()
                                     .font(.title2)
-                                Text("\(model.rabbi.name) didn't upload any shiurim yet.")
+                                
+                                Spacer().frame(height: 6)
+                                
                                 Text("Check again in a little bit.")
                             }
+                            .multilineTextAlignment(.center)
                         }
                     }
                     
