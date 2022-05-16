@@ -70,10 +70,11 @@ struct ContentCardView<Content: YTSContent>: View {
                                     .fixedSize(horizontal: false, vertical: true)
                                 Spacer()
                             }
+                            .padding(.bottom, 1)
                             
                             HStack {
                                 Text(content.author.name)
-                                    .font(.callout)
+                                    .font(.subheadline)
                                 Spacer()
                             }
                             
