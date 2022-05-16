@@ -33,16 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         FirebaseApp.configure()
         
-        if let fbApp = FirebaseApp.app() {
-            providerFactory.createProvider(with: fbApp)?.getToken { token, error in
-//                if let token = token {
-//                    print ("AppCheck token: \(token.token), expiration date: \(token.expirationDate)")
-//                } else
-                if let error = error as? NSError, error.description != "null" {
-                    print ("AppCheck error: \(error as NSError).userInfo)")
-                }
-            }
-        }
         
         FirebaseConfiguration.shared.setLoggerLevel(.min)
 #if EMULATORS
