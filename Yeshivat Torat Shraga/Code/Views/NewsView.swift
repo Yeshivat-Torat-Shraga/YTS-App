@@ -10,6 +10,7 @@ import SwiftUI
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
     var miniPlayerShowing: Binding<Bool>
+    @State var presentingSearchView = false
     
     init(miniPlayerShowing: Binding<Bool>) {
         self.miniPlayerShowing = miniPlayerShowing
@@ -70,6 +71,18 @@ struct NewsView: View {
                 }
             }
             .navigationTitle("Articles")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    LogoView(size: .small)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.presentingSearchView = true
+                    }) {
+                        Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+                    }
+                }
+            }
         }
         .alert(isPresented: $model.showError, content: {
             Alert(
@@ -85,6 +98,12 @@ struct NewsView: View {
                         }
                     }))
         })
+        .sheet(isPresented: $presentingSearchView) {
+            NavigationView {
+                SearchView()
+                    .background(BackgroundClearView())
+            }
+        }
     }
 }
 
