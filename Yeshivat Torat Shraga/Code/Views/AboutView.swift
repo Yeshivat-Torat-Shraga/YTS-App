@@ -16,15 +16,16 @@ struct Developer: Hashable {
 }
 
 struct AboutView: View {
+    @Environment(\.colorScheme) var colorScheme
     let developers: [Developer]
     init() {
         self.developers = [
+            Developer(name: "Benji Tusk",
+                      githubURL: "https://github.com/benjitusk",
+                      emailAddress: "benjitusk1@gmail.com"),
             Developer(name: "David Reese",
                       githubURL: "https://github.com/davidreese",
                       emailAddress: "david@reesedevelopment.com"),
-            Developer(name: "Benji Tusk",
-                      githubURL: "https://github.com/benjitusk",
-                      emailAddress: "benjitusk1@gmail.com")
         ]
     }
     var body: some View {
@@ -41,9 +42,10 @@ struct AboutView: View {
                     VStack {
                         ForEach(developers, id: \.uuid) { developer in
                             HStack {
-                                Spacer()
+//                                Spacer()
                                 Text("Contact \(developer.name):")
                                     .font(.subheadline)
+                                    .foregroundColor(.white)
                                 Spacer()
                                 Button(action: {
                                     sendEmail(to: developer.emailAddress)
@@ -52,10 +54,10 @@ struct AboutView: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 18, height: 18)
-                                        .foregroundColor(.primary)
-                                        .colorInvert()
+                                        .foregroundColor(.black)
                                 }
-                                .buttonStyle(iOS14BorderedButtonStyle(color: .primary))
+                                .buttonStyle(iOS14BorderedButtonStyle(color: .white))
+                                .shadow(radius: UI.shadowRadius)
                                 Button(action: {
                                     let link = URL(string: developer.githubURL)!
                                     UIApplication.shared.open(link)
@@ -65,19 +67,24 @@ struct AboutView: View {
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 18, height: 18)
                                 }
-                                .buttonStyle(iOS14BorderedButtonStyle(color: .primary))
-                                Spacer()
+                                .buttonStyle(iOS14BorderedButtonStyle(color: .white))
+                                .shadow(radius: UI.shadowRadius)
                             }
                             .padding()
+                            .padding(.horizontal)
                         }
-                        .background(Color(UIColor.systemGray4))
+                        .background(Color(hex: 0x80A44C))
                         .cornerRadius(UI.cornerRadius)
                         .shadow(radius: UI.shadowRadius)
                     }
                     
                 }
                 .padding()
-                .background(Color.shragaBlue)
+                .background(UI.cardBlueGradient
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
+                )
             }
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
@@ -138,7 +145,11 @@ struct AboutView: View {
                     
                 }
                 .padding()
-                .background(Color.shragaBlue)
+                .background(UI.cardBlueGradient
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
+                )
                 //            .background(Color(UIColor.systemGray4))
             }
             .cornerRadius(UI.cornerRadius)
