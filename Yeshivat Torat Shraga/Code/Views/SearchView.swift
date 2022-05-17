@@ -38,8 +38,20 @@ struct SearchView: View {
             }
             .padding(.horizontal)
             
+            if model.sortables == nil {
+                VStack {
+                    Text("Search for content on the app")
+                        .font(.title2)
+                        .bold()
+                        .padding(5)
+                    Text("Try using one or two words that are unique to what you're searching for.")
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+            }
+            
             ScrollView(showsIndicators: false) {
-                LazyVStack {
+                VStack {
                     if selectedResultTag == .rebbeim || selectedResultTag == .all {
                         Group {
                             if let rebbeim = model.rebbeim {
@@ -190,6 +202,7 @@ struct SearchView_Previews: PreviewProvider {
             .sheet(isPresented: $presentingSearchView) {
                 NavigationView {
                     SearchView()
+                        .foregroundColor(.shragaBlue)
                 }
             }
         }
