@@ -10,9 +10,13 @@ import SwiftyGif
 
 struct RootView: View {
     @EnvironmentObject var FavoritesManager: Favorites
-    @StateObject var model = RootModel()
+    @ObservedObject var model: RootModel
     @State private var imageData: Data? = nil
     @State private var selectedView = 0
+    
+    init(miniPlayerShowing: Binding<Bool>) {
+        self.model = RootModel(miniPlayerShowing: miniPlayerShowing)
+    }
     
     var body: some View {
         Group {
@@ -52,7 +56,7 @@ struct RootView: View {
                 }
                 .overlay(VStack(spacing: 0) {
                     Spacer()
-                    PlayBar()
+                    MiniPlayer()
                         .shadow(radius: UI.shadowRadius)
                         .padding(3)
                     Spacer().frame(height: UI.playerBarHeight)
@@ -86,7 +90,7 @@ struct RootView_Previews: PreviewProvider {
     static var player = Player()
     
     static var previews: some View {
-        RootView()
+        RootView(miniPlayerShowing: .constant(false))
             .environmentObject(Favorites())
             .environmentObject(player)
             .environmentObject(AudioPlayerModel(player: RootView_Previews.player))

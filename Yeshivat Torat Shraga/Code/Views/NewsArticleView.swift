@@ -9,10 +9,11 @@ import SwiftUI
 
 struct NewsArticleView: View {
     var article: NewsArticle
-    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    var miniPlayerShowing: Binding<Bool>
     
-    init(_ article: NewsArticle) {
+    init(_ article: NewsArticle, miniPlayerShowing: Binding<Bool>) {
         self.article = article
+        self.miniPlayerShowing = miniPlayerShowing
     }
     
     var body: some View {
@@ -38,7 +39,7 @@ struct NewsArticleView: View {
             
             Spacer()
             
-            if audioPlayerModel.audio != nil {
+            if miniPlayerShowing.wrappedValue {
                 Spacer().frame(height: UI.playerBarHeight)
             }
         }
@@ -55,7 +56,7 @@ struct NewsArticleView: View {
 struct NewsArticleView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            NavigationLink(destination: NewsArticleView(.sample)) {
+            NavigationLink(destination: NewsArticleView(.sample, miniPlayerShowing: .constant(false))) {
                 NewsArticleCardView(.sample)
             }
             .padding()

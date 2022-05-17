@@ -94,7 +94,7 @@ struct ImageCarouselView_Previews: PreviewProvider {
     ]
     
     static var previews: some View {
-        HomeView()
+        HomeView(miniPlayerShowing: .constant(false))
             .foregroundColor(Color("ShragaBlue"))
             .accentColor(Color("ShragaBlue"))
             .environmentObject(AudioPlayerModel(player: Player()))

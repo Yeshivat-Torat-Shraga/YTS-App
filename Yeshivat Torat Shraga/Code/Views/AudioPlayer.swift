@@ -12,6 +12,7 @@ import MediaPlayer
 struct AudioPlayer: View {
     @EnvironmentObject var model: AudioPlayerModel
     @EnvironmentObject var player: Player
+
     @EnvironmentObject var favorites: Favorites
     @State private var favoriteErr: Error?
     @State private var isFavoritesBusy = false

@@ -18,18 +18,16 @@ class RootModel: ObservableObject, ErrorShower {
         
     @Published var showLoadingScreen = true
     @Published var homeView: HomeView?
-    @Published var favoritesView = FavoritesView()
-    @Published var newsView = NewsView()
-    @Published var settingsView = SettingsView()
+    @Published var favoritesView: FavoritesView
+    @Published var newsView: NewsView
+    @Published var settingsView: SettingsView
 
     @Published var alert: Alert?
     
+//    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
-    init() {
-        if isFirstLaunch {
-            showOnboarding = true
-            isFirstLaunch = false
-        }
+    init(miniPlayerShowing: Binding<Bool>) {
+        
         let appearance = UITabBar.appearance()
         appearance.standardAppearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
         if #available(iOS 15.0, *) {
@@ -38,11 +36,22 @@ class RootModel: ObservableObject, ErrorShower {
             appearance.scrollEdgeAppearance = scrollEdgeAppearance
         }
         
+        self.favoritesView = FavoritesView(miniPlayerShowing: miniPlayerShowing)
+        
+        self.newsView = NewsView(miniPlayerShowing: miniPlayerShowing)
+        
+        self.settingsView = SettingsView(miniPlayerShowing: miniPlayerShowing)
+        
         self.homeView = HomeView(hideLoadingScreen: {
             self.showLoadingScreen = false
         }, showErrorOnRoot: { error, retry in
             self.showError(error: error, retry: retry!)
-        })        
+        }, miniPlayerShowing: miniPlayerShowing)
+        
+        if isFirstLaunch {
+            showOnboarding = true
+            isFirstLaunch = false
+        }
     }
     
 }
