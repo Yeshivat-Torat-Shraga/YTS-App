@@ -61,7 +61,8 @@ struct DisplayRabbiView: View {
                                 }
                             }
                         } else {
-                            Group {
+                            HStack {
+                                Spacer()
                             VStack {
                                 Text("Sorry, no shiurim here yet.")
                                     .bold()
@@ -73,6 +74,7 @@ struct DisplayRabbiView: View {
                             }
                             .multilineTextAlignment(.center)
                             .padding()
+                                Spacer()
                             }
                             .background(Color(UIColor.systemGray4))
                             .cornerRadius(5)
