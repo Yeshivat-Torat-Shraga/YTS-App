@@ -104,13 +104,6 @@ struct AudioCardView: View {
                 .cornerRadius(UI.cornerRadius)
         )
         .cornerRadius(UI.cornerRadius)
-        .shadow(radius: UI.shadowRadius)
-        .sheet(isPresented: $isShowingPlayerSheet) {
-            AudioPlayer()
-                .environmentObject(audioPlayerModel)
-                .environmentObject(favoritesManager)
-                .environmentObject(player)
-        }
         .contextMenu {
             if let audio = model.audio, let favoriteIDs = favoritesManager.favoriteIDs {
                 Button(action: {
@@ -155,6 +148,7 @@ struct AudioCardView: View {
                 Label("Play", systemImage: "play")
             }
         }
+        
         .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
             AudioPlayer()

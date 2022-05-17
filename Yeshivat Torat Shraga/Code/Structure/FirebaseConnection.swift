@@ -591,11 +591,14 @@ final class FirebaseConnection {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             }
-            var newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
             
-            if newLastLoadedDocumentID == nil && options?.startAfterDocumentID != nil {
-                print("This isn't supposed to happen, the sequential loader would run in circles. Correcting by preserving old 'options.startAfterDocumentID'.")
-                newLastLoadedDocumentID = options?.startAfterDocumentID
+            let newLastLoadedDocumentID = metadata["lastLoadedDocID"] as? FirestoreID
+            
+            if !contentDocuments.isEmpty && newLastLoadedDocumentID == nil {
+                completion(nil, callError ?? YTSError.invalidDataReceived)
+                return
+            } else if contentDocuments.isEmpty {
+                print("Empty set received.")
             }
             
             let group = DispatchGroup()
@@ -628,6 +631,7 @@ final class FirebaseConnection {
                     group.leave()
                     continue
                 }
+                
                 let tag: Tag?
                 if let image = UIImage(named: tagName) {
                     let swiftUIImage = Image(uiImage: image)
@@ -635,7 +639,6 @@ final class FirebaseConnection {
                 } else {
                     tag = Tag(tagDisplayName, id: tagID)
                 }
-                
                 
                 guard let sourceURL = URL(string: sourceURLString) else {
                     print("Source URL is invalid. Continuing to next document.")

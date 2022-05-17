@@ -50,10 +50,11 @@ struct TagView: View {
                             
                             if model.tag.isParent {
                                 ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
-                                    LabeledDivider(title: subCategory.name)
-                                    //                                    .padding(.top)
                                     
                                     if let contentGroup = sortables[subCategory] {
+                                        LabeledDivider(title: subCategory.name)
+                                        //                                    .padding(.top)
+                                        
                                         ForEach(contentGroup, id: \.self) { sortable in
                                             if let video = sortable.video {
                                                 VideoCardView(video: video, showAuthor: true)
@@ -62,6 +63,8 @@ struct TagView: View {
                                             }
                                             
                                         }
+                                        
+                                        Spacer()
                                     }
                                 }
                             } else {
