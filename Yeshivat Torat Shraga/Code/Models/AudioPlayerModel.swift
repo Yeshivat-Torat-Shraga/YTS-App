@@ -14,6 +14,17 @@ class AudioPlayerModel: ObservableObject {
     private var player: Player
     @Published var audio: Audio?
     
+    
+    lazy var miniPlayerShowing: Binding<Bool> = Binding {
+        self.audio != nil
+    } set: { val in
+        if val == true {
+            
+        } else {
+            self.audio = nil
+        }
+    }
+    
     init(player: Player) {
         self.player = player
     }

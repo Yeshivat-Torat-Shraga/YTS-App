@@ -14,8 +14,12 @@ struct SettingsView: View {
     @State var showClearFavoritesConfirmation = false
     @State var showNotificationsAlert = false
     @AppStorage("slideshowAutoScroll") private var enableTimer = true
-//    
-//    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    
+    var miniPlayerShowing: Binding<Bool>
+    
+    init(miniPlayerShowing: Binding<Bool>) {
+        self.miniPlayerShowing = miniPlayerShowing
+    }
     
     var body: some View {
         NavigationView {
@@ -105,7 +109,7 @@ struct SettingsView: View {
                 
                 Section {
                     NavigationLink("About") {
-                        AboutView()
+                        AboutView(miniPlayerShowing: miniPlayerShowing)
                     }.foregroundColor(Color("ShragaBlue"))
                 }
             }
@@ -130,7 +134,7 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(miniPlayerShowing: .constant(false))
             .environmentObject(Favorites())
     }
 }

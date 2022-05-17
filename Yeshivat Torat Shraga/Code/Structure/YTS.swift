@@ -390,7 +390,7 @@ class Video: YTSContent, URLImageable {
 }
 
 // MARK: - Audio
-class Audio: YTSContent, Hashable {
+class Audio: YTSContent, Hashable, ObservableObject {
     var image: Image? = Image("AudioPlaceholder")
     var imageURL: URL?
     

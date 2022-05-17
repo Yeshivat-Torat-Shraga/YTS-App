@@ -12,14 +12,19 @@ struct HomeView: View {
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     
+    var miniPlayerShowing: Binding<Bool>
+    
     init(hideLoadingScreen: @escaping (() -> Void),
-         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void)) {
+         showErrorOnRoot: @escaping ((Error, (() -> Void)?) -> Void),
+         miniPlayerShowing: Binding<Bool>) {
         self.model = HomeModel(hideLoadingScreen: hideLoadingScreen,
                                showErrorOnRoot: showErrorOnRoot)
+        self.miniPlayerShowing = miniPlayerShowing
     }
     
-    init() {
+    init(miniPlayerShowing: Binding<Bool>) {
         self.model = HomeModel()
+        self.miniPlayerShowing = miniPlayerShowing
     }
     
     var body: some View {
@@ -150,7 +155,9 @@ struct HomeView: View {
                         }
                     }
                     
-                    Spacer().frame(height: UI.playerBarHeight)
+                    if miniPlayerShowing.wrappedValue {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
                 .navigationTitle("Home")
                 .toolbar {
@@ -200,7 +207,7 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(miniPlayerShowing: .constant(false))
             .environmentObject(Favorites())
             .environmentObject(AudioPlayerModel(player: Player()))
             .foregroundColor(Color("ShragaBlue"))

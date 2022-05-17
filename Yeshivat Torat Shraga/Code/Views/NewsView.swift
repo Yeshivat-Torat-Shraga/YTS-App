@@ -9,6 +9,11 @@ import SwiftUI
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
+    var miniPlayerShowing: Binding<Bool>
+    
+    init(miniPlayerShowing: Binding<Bool>) {
+        self.miniPlayerShowing = miniPlayerShowing
+    }
     
     var body: some View {
         NavigationView {
@@ -17,7 +22,7 @@ struct NewsView: View {
                     if let articles = model.articles {
                         if articles.count > 0 {
                             ForEach(articles) { article in
-                                NavigationLink(destination: NewsArticleView(article)) {
+                                NavigationLink(destination: NewsArticleView(article, miniPlayerShowing: miniPlayerShowing)) {
                                     NewsArticleCardView(article)
                                         .padding(.horizontal)
                                 }
@@ -59,7 +64,9 @@ struct NewsView: View {
                             .progressViewStyle(YTSProgressViewStyle())
                     }
                     
-                    Spacer().frame(height: UI.playerBarHeight)
+                    if miniPlayerShowing.wrappedValue {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
             }
             .navigationTitle("Articles")
@@ -83,6 +90,6 @@ struct NewsView: View {
 
 struct NewsView_Previews: PreviewProvider {
     static var previews: some View {
-        NewsView()
+        NewsView(miniPlayerShowing: .constant(false))
     }
 }

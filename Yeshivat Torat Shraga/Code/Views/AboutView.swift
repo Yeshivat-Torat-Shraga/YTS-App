@@ -18,7 +18,10 @@ struct Developer: Hashable {
 struct AboutView: View {
     @Environment(\.colorScheme) var colorScheme
     let developers: [Developer]
-    init() {
+    
+    var miniPlayerShowing: Binding<Bool>
+    
+    init(miniPlayerShowing: Binding<Bool>) {
         self.developers = [
             Developer(name: "Benji Tusk",
                       githubURL: "https://github.com/benjitusk",
@@ -27,7 +30,10 @@ struct AboutView: View {
                       githubURL: "https://github.com/davidreese",
                       emailAddress: "david@reesedevelopment.com"),
         ]
+        
+        self.miniPlayerShowing = miniPlayerShowing
     }
+    
     var body: some View {
         ScrollView {
             Group {
@@ -158,6 +164,9 @@ struct AboutView: View {
             
             Spacer()
             
+            if miniPlayerShowing.wrappedValue {
+                Spacer().frame(height: UI.playerBarHeight)
+            }
         }
         .navigationTitle("About")
         .navigationBarItems(trailing: LogoView(size: .small))
@@ -185,7 +194,7 @@ struct AboutView: View {
 
 struct AboutView_Previews: PreviewProvider {
     static var previews: some View {
-        AboutView()
+        AboutView(miniPlayerShowing: .constant(false))
             .preferredColorScheme(.dark)
     }
 }

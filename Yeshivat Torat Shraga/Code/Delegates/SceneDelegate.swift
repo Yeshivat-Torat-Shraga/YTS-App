@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @ObservedObject var favoritesManager = Favorites()
     @ObservedObject var player = Player()
     lazy var audioPlayerModel = AudioPlayerModel(player: player)
-    var rootView = RootView()
+    lazy var rootView = RootView(miniPlayerShowing: audioPlayerModel.miniPlayerShowing)
     var window: UIWindow?
 
 
@@ -135,6 +135,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
+    
     func show(_ contentID: String) {
         let group = DispatchGroup()
         var content: SortableYTSContent?

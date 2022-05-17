@@ -12,6 +12,10 @@ struct FavoritesView: View {
     @EnvironmentObject var favorites: Favorites
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
+    init(miniPlayerShowing: Binding<Bool>) {
+        
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -82,7 +86,7 @@ struct FavoritesView: View {
 
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-        FavoritesView()
+        FavoritesView(miniPlayerShowing: .constant(false))
             .foregroundColor(.shragaBlue)
             .environmentObject(AudioPlayerModel(player: Player()))
             .environmentObject(Player())
