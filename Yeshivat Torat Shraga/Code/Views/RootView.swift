@@ -56,7 +56,7 @@ struct RootView: View {
                 }
                 .overlay(VStack(spacing: 0) {
                     Spacer()
-                    PlayBar()
+                    MiniPlayer()
                         .shadow(radius: UI.shadowRadius)
                         .padding(3)
                     Spacer().frame(height: UI.playerBarHeight)
