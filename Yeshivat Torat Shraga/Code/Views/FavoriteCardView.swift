@@ -69,7 +69,7 @@ struct FavoritesCardView<Content: YTSContent>: View {
                             .font(.headline)
                             .bold()
                             .minimumScaleFactor(0.6)
-                            .foregroundColor(Color("ShragaBlue"))
+                            .foregroundColor(.black)
                             .multilineTextAlignment(.leading)
                         //                    Text("")
                         //                    Text(content.hashValue.description)

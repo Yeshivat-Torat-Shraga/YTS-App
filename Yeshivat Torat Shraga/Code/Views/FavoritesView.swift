@@ -10,52 +10,66 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
     @EnvironmentObject var favorites: Favorites
-    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @State var presentingSearchView = false
+    
+    var miniPlayerShowing: Binding<Bool>
     
     init(miniPlayerShowing: Binding<Bool>) {
-        
+        self.miniPlayerShowing = miniPlayerShowing
     }
     
     var body: some View {
         NavigationView {
             ZStack {
-                Color.favoritesBG.ignoresSafeArea()
+//                Color.favoritesBG.ignoresSafeArea()
                 ScrollView {
-                    VStack {
+                    LazyVStack {
                         if let favorites = model.sortables {
                             if favorites.isEmpty {
-                                VStack {
-                                    Text("No favorites found.")
-                                        .bold()
-                                        .font(.title2)
-                                        .padding(.bottom, 3)
-                                    Text("Press the ❤ while playing a shiur to add it to this list.")
+                                HStack {
+                                    Spacer()
+                                    
+                                    VStack {
+                                        Text("Sorry, no favorite shiurim found.")
+                                            .bold()
+                                            .font(.title3)
+                                            .padding(.bottom, 3)
+                                        
+                                        Spacer()
+                                        
+                                        Text("Press the 💛 while playing a shiur to add it to this list.")
+                                            .font(.subheadline)
+                                    }
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                                    
+                                    Spacer()
                                 }
-                                .multilineTextAlignment(.center)
-                                .padding()
+                                .background(Color(UIColor.systemGray4))
+                                .cornerRadius(UI.cornerRadius)
+                                .shadow(radius: UI.shadowRadius)
                             } else {
                                 ForEach(Array(favorites.keys.sorted { lhs, rhs in
                                     lhs.name < rhs.name
                                 }), id: \.self) { rabbi in
-                                    HStack {
-                                        Text(rabbi.name)
-                                            .bold()
-                                            .font(.title3)
-                                        Spacer()
-                                    }
-                                    .padding(.horizontal)
-                                    
                                     if let contentArray = favorites[rabbi] {
-                                        Group {
+                                        VStack(spacing: 6) {
+                                            HStack {
+                                                Text(rabbi.name)
+                                                    .font(Font.callout)
+                                                    .bold()
+                                                Spacer()
+                                            }
+                                            
                                             ForEach(contentArray, id: \.self) { sortable in
                                                 SortableFavoriteCardView(content: sortable)
                                                     .shadow(radius: UI.shadowRadius)
                                             }
+                                            
                                             Divider()
                                                 .padding(.bottom, 5)
+                                                .padding(.vertical, UI.shadowRadius)
                                         }
-                                        .padding(.horizontal)
-                                        .padding(.vertical, UI.shadowRadius)
                                     }
                                 }
                             }
@@ -66,19 +80,37 @@ struct FavoritesView: View {
                             .padding()
                         }
                         
-                        if audioPlayerModel.audio != nil {
+                        if miniPlayerShowing.wrappedValue {
                             Spacer().frame(height: UI.playerBarHeight)
                         }
                     }
-                    .padding(.bottom)
+                    .padding(.horizontal)
                 } // ScrollView
             } // ZStack
             .navigationTitle("Favorites")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    LogoView(size: .small)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.presentingSearchView = true
+                    }) {
+                        Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+                    }
+                }
+            }
             .onAppear {
                 model.initialLoad(favorites: favorites)
             }
             .onChange(of: self.favorites.favoriteIDs) { _ in
                 model.load(favorites: favorites)
+            }
+        }
+        .sheet(isPresented: $presentingSearchView) {
+            NavigationView {
+                SearchView()
+                    .background(BackgroundClearView())
             }
         }
     }

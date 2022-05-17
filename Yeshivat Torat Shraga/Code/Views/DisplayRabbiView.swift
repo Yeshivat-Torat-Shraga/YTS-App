@@ -77,7 +77,7 @@ struct DisplayRabbiView: View {
                                 Spacer()
                             }
                             .background(Color(UIColor.systemGray4))
-                            .cornerRadius(5)
+                            .cornerRadius(UI.cornerRadius)
                             .shadow(radius: UI.shadowRadius)
                         }
                     }

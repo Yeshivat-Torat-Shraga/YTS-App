@@ -80,7 +80,7 @@ struct NewsView: View {
                         self.presentingSearchView = true
                     }) {
                         Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
-                    }
+                    }.hidden()
                 }
             }
         }
