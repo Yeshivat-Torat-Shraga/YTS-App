@@ -75,9 +75,7 @@ struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack {
                                         ForEach(rebbeim, id: \.self) { rabbi in
-                                            NavigationLink(destination: DisplayRabbiView(rabbi: rabbi)) {
                                                 RabbiTileView(rabbi: rabbi, size: .medium)
-                                            }
                                             .simultaneousGesture(
                                                 TapGesture()
                                                     .onEnded {
