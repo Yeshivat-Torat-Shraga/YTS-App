@@ -684,7 +684,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	return {
 		metadata: {
 			lastLoadedDocID: lastDocumentFromQueryID,
-			finalCall: queryOptions.limit >= docs.length,
+			finalCall: queryOptions.limit > docs.length,
 		},
 		results: contentDocs
 			.filter((doc) => {
