@@ -50,11 +50,11 @@ class TagModel: ObservableObject, ErrorShower {
                     self.sortables!.append(audio.sortable)
                 }
                 
-                self.sortables = sortedContent
-                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                    print("Sortables: \(self.sortables)")
-                    self.objectWillChange.send()
-                }
+//                self.sortables = sortedContent
+//                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+//                    print("Sortables: \(self.sortables)")
+//                    self.objectWillChange.send()
+//                }
             }
         }
     }
