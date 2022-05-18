@@ -94,7 +94,7 @@ struct AboutView: View {
             }
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
-            .padding([.horizontal, .bottom])
+            .padding(.bottom)
             
             Group {
                 VStack {
@@ -133,6 +133,38 @@ struct AboutView: View {
                     .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                     
                     Button(action: {
+                        let link = URL(string: "https://www.instagram.com/toratshraga/")!
+                        UIApplication.shared.open(link)
+                    }) {
+                        HStack {
+                            Spacer()
+                            Image("instagram")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                            Text("See YTS on Instagram")
+                                .font(.callout)
+                                .foregroundColor(Color(UIColor.gray))
+                            Spacer()
+                        }
+                    }
+                    .buttonStyle(iOS14BorderedButtonStyle(color: .white))
+                }
+                .padding()
+                .background(UI.cardBlueGradient
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
+                )
+            }
+            .cornerRadius(UI.cornerRadius)
+            .shadow(radius: UI.shadowRadius)
+            .padding(.bottom)
+            
+            Spacer()
+            
+            Group {
+                VStack {
+                    Button(action: {
                         let link = URL(string: "https://github.com/Yeshivat-Torat-Shraga/YTS-App")!
                         UIApplication.shared.open(link)
                     }) {
@@ -148,7 +180,6 @@ struct AboutView: View {
                         }
                     }
                     .buttonStyle(iOS14BorderedButtonStyle(color: .white))
-                    
                 }
                 .padding()
                 .background(UI.cardBlueGradient
@@ -156,11 +187,9 @@ struct AboutView: View {
                                               ? Color.white
                                               : Color.black).opacity(0.2))
                 )
-                //            .background(Color(UIColor.systemGray4))
             }
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
-            .padding()
             
             Spacer()
             
@@ -168,6 +197,7 @@ struct AboutView: View {
                 Spacer().frame(height: UI.playerBarHeight)
             }
         }
+        .padding(.horizontal)
         .navigationTitle("About")
         .navigationBarItems(trailing: LogoView(size: .small))
     }

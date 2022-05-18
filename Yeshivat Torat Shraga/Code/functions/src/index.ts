@@ -633,6 +633,8 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	// Set a variable to hold the ID of the last document returned from the query.
 	// This is so the client can use this ID to load the next page of documents.
 	const lastDocumentFromQueryID = docs[docs.length - 1].id;
+	console.log("Last document ID to be served: " + lastDocumentFromQueryID);
+
 
 	// Loop through the documents returned from the query.
 	// For each document, get the desired data and add it to the content array.

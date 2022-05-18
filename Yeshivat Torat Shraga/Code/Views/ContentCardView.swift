@@ -192,6 +192,5 @@ struct ContentCardView_Previews: PreviewProvider {
         .environmentObject(ContentCardView_Previews.player)
         .environmentObject(AudioPlayerModel(player: ContentCardView_Previews.player))
         .environmentObject(Favorites())
-
     }
 }
