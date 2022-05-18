@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A22833EBE80002EB78 /* ParentTagView.swift */; };
+		082872A52833ED290002EB78 /* ParentTagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A42833ED290002EB78 /* ParentTagModel.swift */; };
 		083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083AE1022799A770003A36ED /* NewsArticleView.swift */; };
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
@@ -89,6 +91,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		082872A22833EBE80002EB78 /* ParentTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagView.swift; sourceTree = "<group>"; };
+		082872A42833ED290002EB78 /* ParentTagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagModel.swift; sourceTree = "<group>"; };
 		083AE1022799A770003A36ED /* NewsArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleView.swift; sourceTree = "<group>"; };
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
@@ -261,6 +265,7 @@
 				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
 				08D3493C27CD26A000538697 /* OnboardingView.swift */,
 				08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */,
+				082872A22833EBE80002EB78 /* ParentTagView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -280,6 +285,7 @@
 				08AF240D27A35315001331EA /* FavoritesModel.swift */,
 				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
 				08F2AE17282C227D00E09367 /* AudioPlayerModel.swift */,
+				082872A42833ED290002EB78 /* ParentTagModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -441,6 +447,7 @@
 				0848BF58281AF15A0060BBDA /* SettingsModel.swift in Sources */,
 				087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
+				082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
 				084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */,
@@ -471,6 +478,7 @@
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
 				F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */,
 				F2235D4727661CA3005E6086 /* EllipseButton.swift in Sources */,
+				082872A52833ED290002EB78 /* ParentTagModel.swift in Sources */,
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
 				F29FFB2727529CD4005D6355 /* PlayBar.swift in Sources */,
 				F22C913A2770A260007A9424 /* SearchView.swift in Sources */,

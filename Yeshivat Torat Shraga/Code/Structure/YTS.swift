@@ -535,17 +535,20 @@ class Audio: YTSContent, Hashable {
 }
 
 // MARK: - Tag
-class Tag: Hashable {
+class Tag: ObservableObject, Hashable {
+    typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool, isLoadingContent: Bool)
     var id: FirestoreID
     var name: String
     var children: [Tag]?
     var isParent: Bool
+    @Published var metadata: Metadata
     
     init(_ name: String, id: FirestoreID, isParent: Bool = false, children: [Tag]? = nil) {
         self.name = name
         self.id = id
         self.isParent = isParent
         self.children = children
+        self.metadata = (newLastLoadedDocumentID: nil, finalCall: false, isLoadingContent: true)
     }
     
     func hash(into hasher: inout Hasher) {

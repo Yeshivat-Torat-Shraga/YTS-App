@@ -13,12 +13,16 @@ struct TagTileView: View {
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var player: Player
     var tag: Tag
-    var tagView: TagView
+    var tagView: AnyView
     var colorMix: [Color]?
     
     init(_ tag: Tag) {
         self.tag = tag
-        self.tagView = TagView(tag: tag)
+        if tag.isParent {
+            self.tagView = AnyView(ParentTagView(tag))
+        } else {
+            self.tagView = AnyView(TagView(tag))
+        }
         colorMix = randomColorMix()
     }
     

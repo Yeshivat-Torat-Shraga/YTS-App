@@ -11,7 +11,7 @@ struct TagView: View {
     @ObservedObject var model: TagModel
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
-    init(tag: Tag) {
+    init(_ tag: Tag) {
         self.model = TagModel(tag: tag)
     }
     
@@ -48,6 +48,7 @@ struct TagView: View {
                                 Spacer()
                             }
                             
+                            /*
                             if model.tag.isParent {
                                 ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
                                     LabeledDivider(title: subCategory.name)
@@ -65,8 +66,8 @@ struct TagView: View {
                                     }
                                 }
                             } else {
-                                if let category = sortables[model.tag] {
-                                    ForEach(category, id: \.self) { sortable in
+                                */
+                                    ForEach(sortables, id: \.self) { sortable in
                                         if let video = sortable.video {
                                             VideoCardView(video: video, showAuthor: true)
                                         } else if let audio = sortable.audio {
@@ -74,8 +75,7 @@ struct TagView: View {
                                         }
                                         
                                     }
-                                }
-                            }
+//                            }
                         } else {
                             VStack {
                                 Text("Sorry, no shiurim here yet.")
@@ -121,7 +121,7 @@ struct TagView: View {
 
 struct TagView_Previews: PreviewProvider {
     static var previews: some View {
-        TagView(tag: .sample)
+        TagView(.sample)
             .background(LinearGradient(gradient: Gradient(stops: [Gradient.Stop(color: Color(hue: 0.1625910379800452, saturation: 0.8462154434387943, brightness: 0.8311787341014449, opacity: 1.0), location: 0.5724087641789364), Gradient.Stop(color: Color(hue: 0.6322852444935995, saturation: 0.8108159720179547, brightness: 0.7733789007347751, opacity: 1.0), location: 0.572469740647536)]), startPoint: UnitPoint.leading, endPoint: UnitPoint.top))
     }
 }
