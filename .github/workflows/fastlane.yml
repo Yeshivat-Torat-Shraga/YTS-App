@@ -24,10 +24,10 @@ jobs:
    runs-on: macos-12
    steps:
      - uses: actions/checkout@v2
-     - uses: mikehardy/buildcache-action@v1.2.2
-       with:
-        upload_buildcache_log: 'true' # optional: 100% cache misses? Find out why
-        cache_key: 'new_cache'
+     #- uses: mikehardy/buildcache-action@v1.2.2
+      # with:
+      #  upload_buildcache_log: 'true' # optional: 100% cache misses? Find out why
+      #  cache_key: 'new_cache'
      - name: Set up ruby env
        uses: ruby/setup-ruby@v1.106.0
        with:
