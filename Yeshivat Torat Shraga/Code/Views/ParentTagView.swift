@@ -41,6 +41,19 @@ struct ParentTagView: View {
                         ProgressView()
                             .progressViewStyle(YTSProgressViewStyle())
                     } else {
+                        if model.noContentToShow {
+                            VStack {
+                                Text("Sorry, no shiurim here yet.")
+                                    .bold()
+                                    .font(.title2)
+                                
+                                Spacer().frame(height: 6)
+                                
+                                Text("Check again in a little bit.")
+                            }
+                            .multilineTextAlignment(.center)
+
+                        }
                         ForEach(model.content.keys.sorted(by: {$0.name < $1.name}), id: \.id) { child in
                             if let sortables = model.content[child]!.sortables {
                                 LabeledDivider(title: child.name)

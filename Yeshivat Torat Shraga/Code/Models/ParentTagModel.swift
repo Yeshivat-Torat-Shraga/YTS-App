@@ -17,6 +17,7 @@ class ParentTagModel: ObservableObject, ErrorShower {
     let tag: Tag
     @Published var content: [Tag: (sortables: [SortableYTSContent]?, metadata: Metadata)] = [:]
     @Published var runningInitialLoad: Bool = true
+    @Published var noContentToShow = false
     
     init(_ tag: Tag) {
         self.tag = tag
@@ -24,7 +25,7 @@ class ParentTagModel: ObservableObject, ErrorShower {
     
     func loadOnlyIfNeeded() {
         if runningInitialLoad {
-            load(next: 2)
+            load(next: 3)
         }
     }
     
@@ -91,6 +92,11 @@ class ParentTagModel: ObservableObject, ErrorShower {
         }
         group.notify(queue: .main) {
             withAnimation {
+                if self.content.keys.allSatisfy({ child in
+                    self.content[child]!.sortables?.isEmpty ?? true
+                }) {
+                    self.noContentToShow = true
+                }
                 self.runningInitialLoad = false
             }
         }
