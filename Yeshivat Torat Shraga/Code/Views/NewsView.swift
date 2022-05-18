@@ -9,6 +9,12 @@ import SwiftUI
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
+    var miniPlayerShowing: Binding<Bool>
+    @State var presentingSearchView = false
+    
+    init(miniPlayerShowing: Binding<Bool>) {
+        self.miniPlayerShowing = miniPlayerShowing
+    }
     
     var body: some View {
         NavigationView {
@@ -17,7 +23,7 @@ struct NewsView: View {
                     if let articles = model.articles {
                         if articles.count > 0 {
                             ForEach(articles) { article in
-                                NavigationLink(destination: NewsArticleView(article)) {
+                                NavigationLink(destination: NewsArticleView(article, miniPlayerShowing: miniPlayerShowing)) {
                                     NewsArticleCardView(article)
                                         .padding(.horizontal)
                                 }
@@ -59,10 +65,24 @@ struct NewsView: View {
                             .progressViewStyle(YTSProgressViewStyle())
                     }
                     
-                    Spacer().frame(height: UI.playerBarHeight)
+                    if miniPlayerShowing.wrappedValue {
+                        Spacer().frame(height: UI.playerBarHeight)
+                    }
                 }
             }
             .navigationTitle("Articles")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    LogoView(size: .small)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        self.presentingSearchView = true
+                    }) {
+                        Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+                    }.hidden()
+                }
+            }
         }
         .alert(isPresented: $model.showError, content: {
             Alert(
@@ -78,11 +98,17 @@ struct NewsView: View {
                         }
                     }))
         })
+        .sheet(isPresented: $presentingSearchView) {
+            NavigationView {
+                SearchView()
+                    .background(BackgroundClearView())
+            }
+        }
     }
 }
 
 struct NewsView_Previews: PreviewProvider {
     static var previews: some View {
-        NewsView()
+        NewsView(miniPlayerShowing: .constant(false))
     }
 }

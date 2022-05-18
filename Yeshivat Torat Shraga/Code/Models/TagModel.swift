@@ -9,11 +9,9 @@ import Foundation
 import SwiftUI
 
 class TagModel: ObservableObject, ErrorShower {
-    var showError: Bool = false
-    
-    var errorToShow: Error?
-    
-    var retry: (() -> Void)?
+    @Published var showError: Bool = false
+    internal var errorToShow: Error?
+    internal var retry: (() -> Void)?
     
     @Published var tag: Tag
     @Published var sortables: [SortableYTSContent]?
@@ -52,6 +50,11 @@ class TagModel: ObservableObject, ErrorShower {
                     self.sortables!.append(audio.sortable)
                 }
                 
+                self.sortables = sortedContent
+                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                    print("Sortables: \(self.sortables)")
+                    self.objectWillChange.send()
+                }
             }
         }
     }

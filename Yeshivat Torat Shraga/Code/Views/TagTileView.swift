@@ -13,7 +13,7 @@ struct TagTileView: View {
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var player: Player
     var tag: Tag
-    var tagView: AnyView
+    @State var tagView: AnyView
     var colorMix: [Color]?
     
     init(_ tag: Tag) {

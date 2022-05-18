@@ -1,5 +1,5 @@
 //
-//  PlayBar.swift
+//  MiniPlayer.swift
 //  Yeshivat Torat Shraga
 //
 //  Created by David Reese on 11/27/21.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PlayBar: View {
+struct MiniPlayer: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var player: Player
@@ -118,7 +118,7 @@ struct PlayBar_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        PlayBar()
+        MiniPlayer()
             .environmentObject(Favorites())
             .environmentObject(audioPlayerModel)
             .environmentObject(favoritesManager)

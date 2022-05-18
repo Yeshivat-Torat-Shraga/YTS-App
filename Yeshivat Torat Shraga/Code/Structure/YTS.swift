@@ -390,7 +390,7 @@ class Video: YTSContent, URLImageable {
 }
 
 // MARK: - Audio
-class Audio: YTSContent, Hashable {
+class Audio: YTSContent, Hashable, ObservableObject {
     var image: Image? = Image("AudioPlaceholder")
     var imageURL: URL?
     
@@ -559,7 +559,7 @@ class Tag: ObservableObject, Hashable {
         lhs.id == rhs.id
     }
     
-    static var sample = Tag("Halacha", id: "wE3Zc2EQ3Rresy1eP8Lw")
+    static var sample = Tag("Chagim", id: "FRnpc5twjUYhKfKzb0GT")
 }
 
 // MARK: - Category
