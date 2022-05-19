@@ -37,14 +37,14 @@ struct RootView: View {
                     if #available(iOS 15.0, *), model.newsView.model.hasUnreadArticles {
                         model.newsView
                             .tabItem {
-                                Label("Articles", systemImage: "newspaper.fill")
+                                Label("Text", systemImage: "newspaper.fill")
                             }
                             .tag(2)
                             .badge("!")
                     } else {
                         model.newsView
                             .tabItem {
-                                Label("Articles", systemImage: "newspaper.fill")
+                                Label("Text", systemImage: "newspaper.fill")
                             }
                             .tag(2)
                     }

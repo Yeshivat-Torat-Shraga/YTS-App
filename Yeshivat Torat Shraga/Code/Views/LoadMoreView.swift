@@ -29,12 +29,12 @@ struct LoadMoreView: View {
                     }
                 }, imageSystemName: "arrow.down", foregroundColor: .white, backgroundColor: Color("ShragaBlue"))
                     .padding()
-                    .onAppear {
-                        if !loadingContent && !showingError {
-                            loadMore()
-                            print("Calling 'loadMore' from LoadMoreView...")
-                        }
-                    }
+//                    .onAppear {
+//                        if !loadingContent && !showingError {
+//                            loadMore()
+//                            print("Calling 'loadMore' from LoadMoreView...")
+//                        }
+//                    }
             } else {
                 Spacer()
             }

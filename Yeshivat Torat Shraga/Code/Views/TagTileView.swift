@@ -12,14 +12,17 @@ struct TagTileView: View {
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var player: Player
+    @State private var colorMix: [Color] = [[.blue, .green], [.blue, .yellow], [.yellow, .green], [.red, .orange], [.orange, .yellow], [.yellow, .red], [.pink, .white], [.purple, .blue], [.white, .blue], [.white, .blue, .green], [.red, .orange, .yellow]].randomElement()!
     var tag: Tag
-    @State var tagView: TagView
-    var colorMix: [Color]?
+    @State var tagView: AnyView
     
     init(_ tag: Tag) {
         self.tag = tag
-        self.tagView = TagView(tag: tag)
-        colorMix = randomColorMix()
+        if tag.isParent {
+            self.tagView = AnyView(ParentTagView(tag))
+        } else {
+            self.tagView = AnyView(TagView(tag))
+        }
     }
     
     var body: some View {
@@ -56,7 +59,7 @@ struct TagTileView: View {
                 .frame(height: 110)
                 .frame(minWidth: 150)
                 .background(LinearGradient(
-                    colors: colorMix!,
+                    colors: colorMix,
                     startPoint: .bottomLeading,
                     endPoint: .topTrailing)
                                 .cornerRadius(UI.cornerRadius)
@@ -72,12 +75,6 @@ struct TagTileView: View {
                 .environmentObject(favoritesManager)
                 .environmentObject(player)
         }
-    }
-    
-    func randomColorMix() -> [Color] {
-        let mixes: [[Color]] = [[.blue, .green], [.blue, .yellow], [.yellow, .green], [.red, .orange], [.orange, .yellow], [.yellow, .red], [.pink, .white], [.purple, .blue], [.white, .blue], [.white, .blue, .green], [.red, .orange, .yellow]]
-        
-        return mixes.randomElement()!
     }
 }
 
