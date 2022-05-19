@@ -1000,26 +1000,34 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 				return [];
 			}
 
-			if (searchOptions[collectionName].limit > 30) {
-				searchOptions[collectionName].limit = 30;
-				errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
+			if (searchOptions[collectionName].limit > 15) {
+				searchOptions[collectionName].limit = 15;
+				errors.push(`Limit for ${collectionName} is greater than 15. Setting limit to 15.`);
 			}
 			// Get the collection
-			let query = db.collection(collectionName);
+			var query = db.collection(collectionName);
+
 			query = query.where('search_index', 'array-contains-any', searchArray) as any;
+
 			switch (collectionName) {
 				case 'content':
 					query = query.orderBy('date', 'desc') as any;
 					break;
 				case 'rebbeim':
-					query = query.orderBy('title', 'asc') as any;
+					query = query.orderBy('name', 'asc') as any;
 					break;
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
 			if (searchOptions[collectionName].startAfterDocumentID) {
-				query = query.startAfter(searchOptions[collectionName].startAfterDocumentID) as any;
-				log(`Starting collection '${collectionName}' after document ID: ${searchOptions[collectionName].startAfterDocumentID}`);
+				const startAfter = searchOptions[collectionName].startAfterDocumentID;
+				await db.collection(collectionName).doc(startAfter).get().then((snapshot) => {
+					query = query.startAfter(snapshot) as any;
+					log(`Starting collection '${collectionName}' after document ID: ${startAfter}`);
+				}).catch(reason => {
+					log(`Error starting collection '${collectionName}' after document ID: ${startAfter}`);
+					return null;
+				});
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
@@ -1118,7 +1126,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		rebbeim = null;
 	}
 
-	return {
+	const result = {
 		results: {
 			content: rawContent ? content : null,
 			rebbeim: rawRebbeim ? rebbeim : null,
@@ -1144,4 +1152,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			},
 		},
 	};
+
+	log(`Result: ${JSON.stringify(result)}`);
+	return result;
 });
