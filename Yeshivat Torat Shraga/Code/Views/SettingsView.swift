@@ -94,23 +94,23 @@ struct SettingsView: View {
                 }
                 
                 Section {
+                    NavigationLink("About") {
+                        AboutView(miniPlayerShowing: miniPlayerShowing)
+                    }.foregroundColor(Color("ShragaBlue"))
+                }
+                
+                Section {
                     Button {
                         showClearFavoritesConfirmation = true
                     } label: {
                         Text("Clear favorites")
                     }
-                    .foregroundColor(Color("ShragaBlue"))
+                    .foregroundColor(.red)
                     .alert(isPresented: self.$showClearFavoritesConfirmation, content: {
                         Alert(title: Text("Confirmation"), message: Text("Are you sure you want to clear all favorites? This action cannot be undone."), primaryButton: Alert.Button.cancel(), secondaryButton: Alert.Button.destructive(Text("Delete"), action: {
                             favorites.clearFavorites()
                         }))
                     })
-                }
-                
-                Section {
-                    NavigationLink("About") {
-                        AboutView(miniPlayerShowing: miniPlayerShowing)
-                    }.foregroundColor(Color("ShragaBlue"))
                 }
             }
             .navigationTitle("Settings")
