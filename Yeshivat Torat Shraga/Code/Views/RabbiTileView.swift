@@ -24,6 +24,8 @@ struct RabbiTileView: View {
     var rabbi: DetailedRabbi
     var size: TileSize
     
+    @State var displayRabbiView: DisplayRabbiView
+    
     private var frameSize: (width: CGFloat, height: CGFloat) {
         switch size {
         case .small:
@@ -54,9 +56,12 @@ struct RabbiTileView: View {
         if (self.rabbi.image == nil && self.rabbi.imageURL == nil) {
             self.rabbi.image = Image("AudioPlaceholder")
         }
+        
+        self.displayRabbiView = DisplayRabbiView(rabbi: rabbi)
     }
     
     var body: some View {
+        NavigationLink(destination: displayRabbiView) {
         DownloadableImage(object: rabbi)
             .aspectRatio(contentMode: .fill)
             .frame(width: frameSize.width, height: frameSize.height)
@@ -79,6 +84,7 @@ struct RabbiTileView: View {
             )
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
+        }
     }
 }
 

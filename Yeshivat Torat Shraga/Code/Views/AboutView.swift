@@ -24,6 +24,10 @@ struct AboutView: View {
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
     
+    let description: String = """
+                 This app was written by 2022 Torat Shraga alumni Benji Tusk and David Reese. Benji Tusk is now a student in Machon Lev, Jerusalem College of Technology, studying Computer Science, and is set to graduate in 2025. David Reese went to Yeshiva University to learn in the Mazer Yeshiva Program and to study science.
+                 """
+    
     init(miniPlayerShowing: Binding<Bool>) {
         self.developers = [
             Developer(name: "Benji Tusk",
@@ -41,11 +45,10 @@ struct AboutView: View {
         ScrollView {
             Group {
                 VStack {
-                    Text("""
-                 This app was written by Torat Shraga 2022 alumni Benji Tusk and David Reese. Benji Tusk is now a student in Machon Lev, Jerusalem College of Technology, studying Computer Science, and is set to graduate in 2025. David Reese going to be learning in Yeshiva University and studying computer science, set to graduate in 2026.
-                 """)
-                        .padding()
+                    Text(description)
                         .font(.body)
+                        .multilineTextAlignment(.center)
+                        .padding()
                         .foregroundColor(.primary)
                     
                     VStack {

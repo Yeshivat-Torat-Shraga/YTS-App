@@ -44,15 +44,22 @@ class SearchModel: ObservableObject, ErrorShower {
         search(self.searchQuery, contentLimit: 0)
     }
     
-    private func search(_ query: String, contentLimit: Int = 5, rebbeimLimit: Int = 5) {
+    private func search(_ query: String, contentLimit: Int = 6, rebbeimLimit: Int = 3) {
         if (query == "") {
             print("Query is empty, not searching.")
             return
         }
+        
         self.searchQuery = query
         
+        if contentLimit > 0 {
         loadingContent = true
+        }
+        
+        if rebbeimLimit > 0 {
         loadingRebbeim = true
+        }
+        
         FirebaseConnection.search(query: query,
                                   contentOptions: (limit: contentLimit,
                                                    includeThumbnailURLs: true,
