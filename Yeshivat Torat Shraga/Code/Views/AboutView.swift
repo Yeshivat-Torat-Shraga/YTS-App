@@ -232,7 +232,7 @@ struct AboutView: View {
                         Text("v\(version) (\(build))")
                             .font(.footnote)
                             .foregroundColor(.gray)
-                            .padding(.horizontal)
+                            .padding()
                             .onTapGesture(count: 5) {
                                 if secretCode != nil {
                                     showSecretMessage = true
