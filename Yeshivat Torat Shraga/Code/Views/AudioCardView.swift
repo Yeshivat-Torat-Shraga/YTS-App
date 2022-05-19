@@ -79,7 +79,6 @@ struct AudioCardView: View {
                             }
                         }
                         
-                        
                         Spacer()
                         
                         HStack {
@@ -148,7 +147,6 @@ struct AudioCardView: View {
                 Label("Play", systemImage: "play")
             }
         }
-        
         .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
             AudioPlayer()
