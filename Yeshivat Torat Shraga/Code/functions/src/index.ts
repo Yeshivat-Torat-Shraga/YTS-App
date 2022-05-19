@@ -946,6 +946,8 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	};
 
 	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
+
+	log(`Searching with options: ${JSON.stringify(searchOptions)}`);
 	
 	const errors: string[] = [];
 
@@ -992,10 +994,12 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			if (collectionName == 'skip') {
 				return null;
 			}
+
 			if (!Number.isInteger(searchOptions[collectionName].limit)) {
 				errors.push(`Limit for ${collectionName} is not an integer.`);
 				return [];
 			}
+
 			if (searchOptions[collectionName].limit > 30) {
 				searchOptions[collectionName].limit = 30;
 				errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
@@ -1013,9 +1017,9 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
-			if (searchOptions[collectionName].startFromDocumentID) {
-				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
-				log(`Starting collection '${collectionName}' from document ID: ${searchOptions[collectionName].startFromDocumentID}`);
+			if (searchOptions[collectionName].startAfterDocumentID) {
+				query = query.startAfter(searchOptions[collectionName].startAfterDocumentID) as any;
+				log(`Starting collection '${collectionName}' from document ID: ${searchOptions[collectionName].startAfterDocumentID}`);
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
