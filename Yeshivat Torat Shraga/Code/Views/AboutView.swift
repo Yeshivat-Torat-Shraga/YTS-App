@@ -17,8 +17,10 @@ struct Developer: Hashable {
 
 struct AboutView: View {
     @Environment(\.colorScheme) var colorScheme
+    @State var showSecretMessage: Bool = false
+
     let developers: [Developer]
-    
+    var secretCode: String? = nil
     var miniPlayerShowing: Binding<Bool>
     
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
@@ -39,16 +41,20 @@ struct AboutView: View {
         ]
         
         self.miniPlayerShowing = miniPlayerShowing
+        if let identifierForVendor = UIDevice.current.identifierForVendor {
+            self.secretCode = identifierForVendor.uuidString.substring(to: 6)
+        }
     }
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             Group {
                 VStack {
                     Text(description)
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .padding()
+                        .font(.body)
                         .foregroundColor(.primary)
                     
                     VStack {
@@ -66,7 +72,7 @@ struct AboutView: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 18, height: 18)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(.black)
                                 }
                                 .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                                 .shadow(radius: UI.shadowRadius)
@@ -105,56 +111,68 @@ struct AboutView: View {
             
             Group {
                 VStack {
-                    Button(action: {
-                        let link = URL(string: "https://toratshraga.com")!
-                        UIApplication.shared.open(link)
-                    }) {
-                        HStack {
-                            Spacer()
-                            Image(systemName: "safari")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                            Text("Visit the YTS Website")
-                                .font(.callout)
-                                .foregroundColor(Color(UIColor.gray))
-                            Spacer()
-                        }
+                    HStack {
+                        Spacer()
+                        Text("Visit Torat Shraga")
+                            .font(.callout)
+                            .foregroundColor(.white)
+                        Spacer()
                     }
-                    .buttonStyle(iOS14BorderedButtonStyle(color: .white))
-                    
-                    Button(action: {
-                        let link = URL(string: "https://www.facebook.com/toratshraga/")!
-                        UIApplication.shared.open(link)
-                    }) {
-                        HStack {
-                            Spacer()
-                            Image("facebook")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                            Text("See YTS on Facebook")
-                                .font(.callout)
-                                .foregroundColor(Color(UIColor.gray))
-                            Spacer()
+                    HStack {
+                        
+                        Spacer()
+                        Button(action: {
+                            let link = URL(string: "https://toratshraga.com")!
+                            UIApplication.shared.open(link)
+                        }) {
+                            HStack {
+                                Spacer()
+                                Image(systemName: "safari")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(.shragaBlue)
+                                Spacer()
+                            }
                         }
-                    }
-                    .buttonStyle(iOS14BorderedButtonStyle(color: .white))
-                    
-                    Button(action: {
-                        let link = URL(string: "https://www.instagram.com/toratshraga/")!
-                        UIApplication.shared.open(link)
-                    }) {
-                        HStack {
-                            Spacer()
-                            Image("instagram")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                            Text("See YTS on Instagram")
-                                .font(.callout)
-                                .foregroundColor(Color(UIColor.gray))
-                            Spacer()
+                        .buttonStyle(iOS14BorderedButtonStyle(color:.white))
+                        .shadow(radius: UI.shadowRadius)
+
+                        Spacer()
+                        Button(action: {
+                            let link = URL(string: "https://www.instagram.com/toratshraga/")!
+                            UIApplication.shared.open(link)
+                        }) {
+                            HStack {
+                                Spacer()
+                                Image("instagram")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                Spacer()
+                            }
                         }
+                        .buttonStyle(iOS14BorderedButtonStyle(color:.white))
+                        .shadow(radius: UI.shadowRadius)
+
+                        
+                        Spacer()
+                        Button(action: {
+                            let link = URL(string: "https://www.facebook.com/toratshraga/")!
+                            UIApplication.shared.open(link)
+                        }) {
+                            HStack {
+                                Spacer()
+                                Image("facebook")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(iOS14BorderedButtonStyle(color:.white))
+                        .shadow(radius: UI.shadowRadius)
+                        
+                        Spacer()
+
                     }
-                    .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                 }
                 .padding()
                 .background(UI.cardBlueGradient
@@ -163,6 +181,7 @@ struct AboutView: View {
                                                           : Color.black).opacity(0.2))
                 )
             }
+            .foregroundColor(.black)
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
             .padding(.bottom)
@@ -182,11 +201,14 @@ struct AboutView: View {
                                 .frame(width: 30, height: 30)
                             Text("YTS Source Code on Github")
                                 .font(.callout)
-                                .foregroundColor(Color(UIColor.gray))
                             Spacer()
                         }
                     }
-                    .buttonStyle(iOS14BorderedButtonStyle(color: .white))
+                    .buttonStyle(iOS14BorderedButtonStyle(color: colorScheme == .light
+                                                          ? .white
+                                                          : .shragaBlue))
+                    .shadow(radius: UI.shadowRadius)
+
                 }
                 .padding()
                 .background(UI.cardBlueGradient
@@ -194,7 +216,9 @@ struct AboutView: View {
                                                           ? Color.white
                                                           : Color.black).opacity(0.2))
                 )
+                .shadow(radius: UI.shadowRadius)
             }
+            .foregroundColor(.black)
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
             
@@ -202,14 +226,22 @@ struct AboutView: View {
                 Spacer()
                 
                 Group {
-                    Text("V\(version) (\(build))")
-                        .font(Font.footnote)
-                        .foregroundColor(Color.gray)
+                    HStack {
+                        Spacer()
+                        
+                        Text("v\(version) (\(build))")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                            .onTapGesture(count: 1) {
+                                if secretCode != nil {
+                                    showSecretMessage = true
+                                }
+                            }
+                    }
                 }
             }
-            
-            Spacer()
-            
+                        
             if miniPlayerShowing.wrappedValue {
                 Spacer().frame(height: UI.playerBarHeight)
             }
@@ -217,6 +249,13 @@ struct AboutView: View {
         .padding(.horizontal)
         .navigationTitle("About")
         .navigationBarItems(trailing: LogoView(size: .small))
+        .alert(isPresented: $showSecretMessage) {
+            Alert(title: Text("Hey! Don't touch my version number!"),
+                  message: Text(secretCode!),
+                  dismissButton: .cancel(Text("OK"))
+            )
+
+        }
     }
     
     func sendEmail(to address: String) {
@@ -241,7 +280,9 @@ struct AboutView: View {
 
 struct AboutView_Previews: PreviewProvider {
     static var previews: some View {
-        AboutView(miniPlayerShowing: .constant(false))
-            .preferredColorScheme(.dark)
+        NavigationView {
+            AboutView(miniPlayerShowing: .constant(false))
+                .preferredColorScheme(.dark)
+        }
     }
 }
