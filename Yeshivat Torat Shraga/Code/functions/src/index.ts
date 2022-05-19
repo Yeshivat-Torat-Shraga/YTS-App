@@ -947,16 +947,10 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
 	
-	const phrasesToRemove = ['rabbi', 'the'];
-	// remove phrases from the search query
-	const sq = callData.searchQuery.split(' ').filter((phrase) => {
-		return !phrasesToRemove.includes(phrase);
-	}).join(' ');
-
-	callData.searchQuery = sq;
-
 	const errors: string[] = [];
+
 	const db = admin.firestore();
+
 	if (!callData.searchQuery) {
 		return {
 			results: null,
@@ -967,6 +961,17 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	}
 	const searchQuery = callData.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
+
+	const phrasesToRemove = ['rabbi', 'the'];
+	// remove phrases from the search query
+	searchArray.forEach((phrase, index) => {
+		if (phrasesToRemove.includes(phrase)) {
+			searchArray.splice(index, 1);
+		}
+	});
+
+	log(`Searching for ${searchArray}`);
+
 	const documentsThatMeetSearchCriteria: QueryDocumentSnapshot[] = [];
 	// For each collection, run the following async function:
 
