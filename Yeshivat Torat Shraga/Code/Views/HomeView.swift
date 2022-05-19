@@ -9,9 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var model: HomeModel
-//    @EnvironmentObject var player: Player
-//    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
-//    @EnvironmentObject var favoritesManager: Favorites
+    @EnvironmentObject var player: Player
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
+    @EnvironmentObject var favoritesManager: Favorites
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     @State var searchView = SearchView()
@@ -200,9 +200,9 @@ struct HomeView: View {
         .sheet(isPresented: $presentingSearchView) {
             NavigationView {
                 searchView
-//                    .environmentObject(player)
-//                    .environmentObject(audioPlayerModel)
-//                    .environmentObject(favoritesManager)
+                    .environmentObject(player)
+                    .environmentObject(audioPlayerModel)
+                    .environmentObject(favoritesManager)
                 // .envObjs should be here
                     .background(BackgroundClearView())
             }
