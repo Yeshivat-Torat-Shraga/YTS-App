@@ -1012,14 +1012,14 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 					query = query.orderBy('date', 'desc') as any;
 					break;
 				case 'rebbeim':
-					query = query.orderBy('name', 'asc') as any;
+					query = query.orderBy('title', 'asc') as any;
 					break;
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
 			if (searchOptions[collectionName].startAfterDocumentID) {
 				query = query.startAfter(searchOptions[collectionName].startAfterDocumentID) as any;
-				log(`Starting collection '${collectionName}' from document ID: ${searchOptions[collectionName].startAfterDocumentID}`);
+				log(`Starting collection '${collectionName}' after document ID: ${searchOptions[collectionName].startAfterDocumentID}`);
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
