@@ -964,13 +964,13 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	const searchQuery = callData.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
 
-	const phrasesToRemove = ['rabbi', 'the'];
-	// remove phrases from the search query
-	searchArray.forEach((phrase, index) => {
-		if (phrasesToRemove.includes(phrase)) {
-			searchArray.splice(index, 1);
-		}
-	});
+	// const phrasesToRemove = ['rabbi', 'the'];
+	// // remove phrases from the search query
+	// searchArray.forEach((phrase, index) => {
+	// 	if (phrasesToRemove.includes(phrase)) {
+	// 		searchArray.splice(index, 1);
+	// 	}
+	// });
 
 	log(`Searching for ${searchArray}`);
 
