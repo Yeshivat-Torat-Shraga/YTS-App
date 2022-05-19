@@ -947,6 +947,14 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	};
 
 	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
+	
+	const phrasesToRemove = ['rabbi', 'the'];
+	// remove phrases from the search query
+	const sq = callData.searchQuery.split(' ').filter((phrase) => {
+		return !phrasesToRemove.includes(phrase);
+	}).join(' ');
+
+	callData.searchQuery = sq;
 
 	const errors: string[] = [];
 	const db = admin.firestore();
@@ -1003,6 +1011,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
 			if (searchOptions[collectionName].startFromDocumentID) {
 				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
+				log(`Starting collection '${collectionName}' from document ID: ${searchOptions[collectionName].startFromDocumentID}`);
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
