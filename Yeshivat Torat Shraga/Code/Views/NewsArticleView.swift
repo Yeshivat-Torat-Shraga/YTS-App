@@ -22,7 +22,7 @@ struct NewsArticleView: View {
                 Text(article.body)
                     .font(.body)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .padding(.horizontal)
                 Spacer()
             }

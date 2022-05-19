@@ -63,7 +63,7 @@ struct AboutView: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 18, height: 18)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.primary)
                                 }
                                 .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                                 .shadow(radius: UI.shadowRadius)
