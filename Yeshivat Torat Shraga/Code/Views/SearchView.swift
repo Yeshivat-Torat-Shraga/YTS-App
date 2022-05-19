@@ -67,6 +67,7 @@ struct SearchView: View {
                 LazyVStack {
                     if selectedResultTag == .rebbeim || selectedResultTag == .all, let rebbeim = model.rebbeim, !rebbeim.isEmpty {
                         VStack {
+                            Group {
                                 ForEach(rebbeim, id: \.self) { rabbi in
                                     if let detailedRabbi = rabbi as? DetailedRabbi {
                                         Spacer()
@@ -76,7 +77,8 @@ struct SearchView: View {
                                         Spacer()
                                     }
                                 }
-                            
+                            }
+                            .padding(.top, UI.shadowRadius)
                             if model.loadingRebbeim && !model.loadingContent {
                                 Spacer()
                                 ProgressView()
