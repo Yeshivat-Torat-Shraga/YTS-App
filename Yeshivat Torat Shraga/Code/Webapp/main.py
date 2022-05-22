@@ -244,6 +244,7 @@ def shiurim_upload():
         tag_dict = tag.to_dict()
         tag_dict["id"] = tag.id
         tags.append(tag_dict)
+    tags = sorted(tags, key=lambda x: x["displayName"])
     if request.method == "GET":
         rebbeim_docs = rebbeim_collection.list_documents()
         rabbis = []
@@ -252,6 +253,8 @@ def shiurim_upload():
             doc_dict = doc.to_dict()
             doc_dict["id"] = doc.id
             rabbis.append(doc_dict)
+        # sort by name
+        rabbis.sort(key=lambda x: x["name"])
         return render_template(
             "shiur_upload.html", rabbis=rabbis, type="Shiurim", tags=tags
         )
