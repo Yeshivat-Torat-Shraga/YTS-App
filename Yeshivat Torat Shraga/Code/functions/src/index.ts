@@ -36,9 +36,9 @@ const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	credential: admin.credential.cert(
-		require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json')
-	),
+	// credential: admin.credential.cert(
+	// 	require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
+	// ),
 });
 
 exports.createAlert = https.onCall(async (data, context) => {
