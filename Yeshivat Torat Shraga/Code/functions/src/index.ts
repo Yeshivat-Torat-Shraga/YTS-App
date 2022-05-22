@@ -36,9 +36,9 @@ const Storage = require('@google-cloud/storage').Storage;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	// credential: !ENABLEAPPCHECK
-	// 	? admin.credential.cert(require('/Users/benjitusk/Downloads/firebase.json'))
-	// 	: undefined,
+	credential: admin.credential.cert(
+		require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-0f53fdbfdafa.json')
+	),
 });
 
 exports.createAlert = https.onCall(async (data, context) => {
@@ -608,7 +608,9 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 			);
 		}
 	} else {
-		log(`Not filtering by search. queryOptions.search: ${queryOptions.search}`);
+		log(
+			`Not filtering by search, sorting by upload date queryOptions.search: ${queryOptions.search}`
+		);
 	}
 
 	if (queryOptions.previousDocID) {
@@ -620,7 +622,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	}
 
 	// Execute the query
-	const contentSnapshot = await query.limit(queryOptions.limit).get();
+	const contentSnapshot = await query.limit(queryOptions.limit).orderBy('date', 'desc').get();
 	// Get the documents returned from the query
 	const docs = contentSnapshot.docs;
 	// If null, return
