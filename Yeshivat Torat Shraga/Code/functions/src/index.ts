@@ -434,8 +434,12 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 		log(`Starting after document '${snapshot}'`);
 	}
 
+	if (queryOptions.limit > 0) {
+		query = query.limit(queryOptions.limit);
+	}
+
 	// Execute the query
-	const rebbeimSnapshot = await query.limit(queryOptions.limit).get();
+	const rebbeimSnapshot = await query.get();
 
 	// Get the documents returned from the query
 	const docs = rebbeimSnapshot.docs;
@@ -948,7 +952,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
 
 	log(`Searching with options: ${JSON.stringify(searchOptions)}`);
-	
+
 	const errors: string[] = [];
 
 	const db = admin.firestore();
@@ -1021,13 +1025,18 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
 			if (searchOptions[collectionName].startAfterDocumentID) {
 				const startAfter = searchOptions[collectionName].startAfterDocumentID;
-				await db.collection(collectionName).doc(startAfter).get().then((snapshot) => {
-					query = query.startAfter(snapshot) as any;
-					log(`Starting collection '${collectionName}' after document ID: ${startAfter}`);
-				}).catch(reason => {
-					log(`Error starting collection '${collectionName}' after document ID: ${startAfter}`);
-					return null;
-				});
+				await db
+					.collection(collectionName)
+					.doc(startAfter)
+					.get()
+					.then((snapshot) => {
+						query = query.startAfter(snapshot) as any;
+						log(`Starting collection '${collectionName}' after document ID: ${startAfter}`);
+					})
+					.catch((reason) => {
+						log(`Error starting collection '${collectionName}' after document ID: ${startAfter}`);
+						return null;
+					});
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
