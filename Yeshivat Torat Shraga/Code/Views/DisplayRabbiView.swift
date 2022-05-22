@@ -117,6 +117,19 @@ struct DisplayRabbiView: View {
                     .shadow(radius: UI.shadowRadius)
             }
         })
+        .alert(isPresented: $model.showError, content: {
+            Alert(
+                title: Text("Oops! Something went wrong."),
+                message: Text(model.errorToShow?.getUIDescription() ?? "We're not even sure what it is, but something is definitely not working. Sorry."),
+                dismissButton: Alert.Button.default(
+                    Text("Retry"), action: {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            self.model.retry?()
+                        }
+                    }))
+        })
+
+
     }
 }
 
