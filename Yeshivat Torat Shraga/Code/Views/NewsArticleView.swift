@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MarkdownUI
 
 struct NewsArticleView: View {
     var article: NewsArticle
@@ -19,7 +20,7 @@ struct NewsArticleView: View {
     var body: some View {
         ScrollView {
             HStack {
-                Text(article.body)
+                Markdown(article.body)
                     .font(.body)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(.primary)
