@@ -1196,47 +1196,47 @@ exports.reloadSearchIndices = https.onCall((data, context) => {
 	});
 });
 
-exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
-	if (ev.after.data != undefined) {
-		let data = ev.after.data();
-		let components = [];
-		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
-		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
-		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+// exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
+// 	if (ev.after.data != undefined) {
+// 		let data = ev.after.data();
+// 		let components = [];
+// 		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+// 		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+// 		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
 
-		components = components.concat(titleComponents);
-		components = components.concat(authorNameComponents);
-		components = components.concat(tagName);
+// 		components = components.concat(titleComponents);
+// 		components = components.concat(authorNameComponents);
+// 		components = components.concat(tagName);
 
-		log(`Components for ${data.title}: ${components}`);
+// 		log(`Components for ${data.title}: ${components}`);
 
-		var db = admin.firestore();
-		let doc = db.collection('content').doc(ev.after.id);
+// 		var db = admin.firestore();
+// 		let doc = db.collection('content').doc(ev.after.id);
 
-		doc.set({
-			search_index: components
-		}, {
-			merge: true
-		});
-	}
-});
+// 		doc.set({
+// 			search_index: components
+// 		}, {
+// 			merge: true
+// 		});
+// 	}
+// });
 
-exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
-	if (ev.after.data != undefined) {
-		let data = ev.after.data();
-		let components = [];
-		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+// exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
+// 	if (ev.after.data != undefined) {
+// 		let data = ev.after.data();
+// 		let components = [];
+// 		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
 
-		components = components.concat(nameComponents);
+// 		components = components.concat(nameComponents);
 
-		const db = admin.firestore();
-		let doc = db.collection('rebbeim').doc(ev.after.id);
+// 		const db = admin.firestore();
+// 		let doc = db.collection('rebbeim').doc(ev.after.id);
 
-		doc.set({
-			search_index: components,
-			reversed_name: nameComponents.reverse().join(' ')
-		}, {
-			merge: true
-		});
-	}
-});
+// 		doc.set({
+// 			search_index: components,
+// 			reversed_name: nameComponents.reverse().join(' ')
+// 		}, {
+// 			merge: true
+// 		});
+// 	}
+// });
