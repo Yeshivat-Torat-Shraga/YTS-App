@@ -33,6 +33,11 @@ import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 const Storage = require('@google-cloud/storage').Storage;
+const Firestore = require('@google-cloud/firestore');
+const firestore = new Firestore({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT,
+});
+const FieldValue = admin.firestore.FieldValue;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
@@ -1166,4 +1171,72 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 	log(`Result: ${JSON.stringify(result)}`);
 	return result;
+});
+
+exports.reloadSearchIndices = https.onCall((data, context) => {
+	let collectionName = data.collectionName;
+	var db = admin.firestore();
+	db.collection(collectionName).get().then(async (snapshot) => {
+		snapshot.forEach(async s => {
+			var doc = db.collection(collectionName).doc(s.id);
+			await doc.set({
+				temp: `temp`
+			}, {
+				merge: true
+			}).then(() => {
+				setTimeout(function () {
+					doc.set({
+						temp: FieldValue.delete()
+					}, {
+						merge: true
+					});
+				}, 10000);
+			});
+		});
+	});
+});
+
+exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
+	if (ev.after.data != undefined) {
+		let data = ev.after.data();
+		let components = [];
+		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+
+		components = components.concat(titleComponents);
+		components = components.concat(authorNameComponents);
+		components = components.concat(tagName);
+
+		log(`Components for ${data.title}: ${components}`);
+
+		var db = admin.firestore();
+		let doc = db.collection('content').doc(ev.after.id);
+
+		doc.set({
+			search_index: components
+		}, {
+			merge: true
+		});
+	}
+});
+
+exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
+	if (ev.after.data != undefined) {
+		let data = ev.after.data();
+		let components = [];
+		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+
+		components = components.concat(nameComponents);
+
+		const db = admin.firestore();
+		let doc = db.collection('rebbeim').doc(ev.after.id);
+
+		doc.set({
+			search_index: components,
+			reversed_name: nameComponents.reverse().join(' ')
+		}, {
+			merge: true
+		});
+	}
 });

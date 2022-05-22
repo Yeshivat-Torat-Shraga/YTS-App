@@ -20,7 +20,6 @@ struct AboutView: View {
     @State var showSecretMessage: Bool = false
 
     let developers: [Developer]
-    var secretCode: String? = nil
     var miniPlayerShowing: Binding<Bool>
     
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
@@ -41,9 +40,6 @@ struct AboutView: View {
         ]
         
         self.miniPlayerShowing = miniPlayerShowing
-        if let identifierForVendor = UIDevice.current.identifierForVendor {
-            self.secretCode = identifierForVendor.uuidString.substring(to: 6)
-        }
     }
     
     var body: some View {
@@ -222,26 +218,20 @@ struct AboutView: View {
             .cornerRadius(UI.cornerRadius)
             .shadow(radius: UI.shadowRadius)
             
+            
             if let version = self.version, let build = build {
-                Spacer()
-                
-                Group {
-                    HStack {
-                        Spacer()
-                        
-                        Text("v\(version) (\(build))")
-                            .font(.footnote)
-                            .foregroundColor(.gray)
-                            .padding()
-                            .onTapGesture(count: 5) {
-                                if secretCode != nil {
-                                    showSecretMessage = true
-                                }
-                            }
-                    }
+                HStack {
+                    Spacer()
+                    
+                    Text("v\(version) (\(build))")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                        .onTapGesture(count: 5) {
+                            showSecretMessage = true
+                        }
                 }
             }
-                        
+            
             if miniPlayerShowing.wrappedValue {
                 Spacer().frame(height: UI.playerBarHeight)
             }
@@ -251,7 +241,7 @@ struct AboutView: View {
         .navigationBarItems(trailing: LogoView(size: .small))
         .alert(isPresented: $showSecretMessage) {
             Alert(title: Text("Hey! Don't touch my version number!"),
-                  message: Text(secretCode!),
+                  message: Text("Be nice."),
                   dismissButton: .cancel(Text("OK"))
             )
 
