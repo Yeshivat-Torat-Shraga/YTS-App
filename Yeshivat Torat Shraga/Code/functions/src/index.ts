@@ -574,7 +574,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const COLLECTION = 'content';
 	const db = admin.firestore();
-	let query = db.collection(COLLECTION);
+	let query = db.collection(COLLECTION).orderBy('date', 'desc');
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
@@ -627,7 +627,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	}
 
 	// Execute the query
-	const contentSnapshot = await query.limit(queryOptions.limit).orderBy('date', 'desc').get();
+	const contentSnapshot = await query.limit(queryOptions.limit).get();
 	// Get the documents returned from the query
 	const docs = contentSnapshot.docs;
 	// If null, return
