@@ -24,6 +24,8 @@ struct YTSProgressViewStyle: ProgressViewStyle {
             progressCircleView(fractionCompleted: configuration.fractionCompleted ?? defaultProgress, isIndefinite: configuration.fractionCompleted == nil)
             configuration.currentValueLabel
         }
+        .frame(width: defaultSize, height: defaultSize)
+        .clipped()
     }
     
     private func progressCircleView(fractionCompleted: Double,
