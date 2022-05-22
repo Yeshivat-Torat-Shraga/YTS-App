@@ -33,11 +33,11 @@ import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 const Storage = require('@google-cloud/storage').Storage;
-const Firestore = require('@google-cloud/firestore');
-const firestore = new Firestore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT,
-});
-const FieldValue = admin.firestore.FieldValue;
+// const Firestore = require('@google-cloud/firestore');
+// const firestore = new Firestore({
+//   projectId: process.env.GOOGLE_CLOUD_PROJECT,
+// });
+// const FieldValue = admin.firestore.FieldValue;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
@@ -1173,28 +1173,28 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	return result;
 });
 
-exports.reloadSearchIndices = https.onCall((data, context) => {
-	let collectionName = data.collectionName;
-	var db = admin.firestore();
-	db.collection(collectionName).get().then(async (snapshot) => {
-		snapshot.forEach(async s => {
-			var doc = db.collection(collectionName).doc(s.id);
-			await doc.set({
-				temp: `temp`
-			}, {
-				merge: true
-			}).then(() => {
-				setTimeout(function () {
-					doc.set({
-						temp: FieldValue.delete()
-					}, {
-						merge: true
-					});
-				}, 10000);
-			});
-		});
-	});
-});
+// exports.reloadSearchIndices = https.onCall((data, context) => {
+// 	let collectionName = data.collectionName;
+// 	var db = admin.firestore();
+// 	db.collection(collectionName).get().then(async (snapshot) => {
+// 		snapshot.forEach(async s => {
+// 			var doc = db.collection(collectionName).doc(s.id);
+// 			await doc.set({
+// 				temp: `temp`
+// 			}, {
+// 				merge: true
+// 			}).then(() => {
+// 				setTimeout(function () {
+// 					doc.set({
+// 						temp: FieldValue.delete()
+// 					}, {
+// 						merge: true
+// 					});
+// 				}, 10000);
+// 			});
+// 		});
+// 	});
+// });
 
 // exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
 // 	if (ev.after.data != undefined) {
