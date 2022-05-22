@@ -54,18 +54,22 @@ struct RootView: View {
                         }
                         .tag(3)
                 }
-                .overlay(VStack(spacing: 0) {
-                    Spacer()
-                    MiniPlayer()
-                        .shadow(radius: UI.shadowRadius)
-                        .padding(3)
-                    Spacer().frame(height: UI.playerBarHeight)
-                })
                 .onChange(of: selectedView) { _ in
                     Haptics.shared.impact()
                 }
             }
         }
+        .fullScreenCover(isPresented: $model.showOnboarding) {
+            OnboardingView(dismiss: {model.showOnboarding = false})
+                .background(Color.white.ignoresSafeArea())
+        }
+        .overlay(VStack(spacing: 0) {
+            Spacer()
+            MiniPlayer()
+                .shadow(radius: UI.shadowRadius)
+                .padding(3)
+            Spacer().frame(height: UI.playerBarHeight)
+        })
         .alert(isPresented: $model.showError, content: {
             Alert(
                 title: Text("Oops! Something went wrong."),
@@ -77,10 +81,6 @@ struct RootView: View {
                         }
                     }))
         })
-        .fullScreenCover(isPresented: $model.showOnboarding) {
-            OnboardingView(dismiss: {model.showOnboarding = false})
-                .background(Color.white.ignoresSafeArea())
-        }
         .foregroundColor(Color("ShragaBlue"))
         .accentColor(Color("ShragaBlue"))
     }

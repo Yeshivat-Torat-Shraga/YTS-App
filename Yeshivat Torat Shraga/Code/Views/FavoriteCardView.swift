@@ -69,11 +69,10 @@ struct FavoritesCardView<Content: YTSContent>: View {
                             .font(.headline)
                             .bold()
                             .minimumScaleFactor(0.6)
-                            .foregroundColor(.black)
+                            .foregroundColor(colorScheme == .light
+                                             ? .shragaBlue
+                                             : .primary)
                             .multilineTextAlignment(.leading)
-                        //                    Text("")
-                        //                    Text(content.hashValue.description)
-                        //                    .foregroundColor(.black)
                         
                         Spacer()
                         
@@ -122,57 +121,58 @@ struct FavoritesCardView<Content: YTSContent>: View {
                     Spacer()
                 }
             )
+            .clipped()
         }
-//        .contextMenu {
-//            if let audio = self.content as? Audio {
-//                if let favoriteIDs = favoritesManager.favoriteIDs {
-//                    Button(action: {
-//                        if !isFavoritesBusy {
-//                            heartFillOverride = false
-//                            isFavoritesBusy = true
-//                            
-//                            if favoriteIDs.contains(content.firestoreID) {
-//                                self.favoritesManager.delete(audio) { favorites, error in
-//                                    isFavoritesBusy = false
-//                                }
-//                            } else {
-//                                heartFillOverride = true
-//                                self.favoritesManager.save(audio) { favorites, error in
-//                                    isFavoritesBusy = false
-//                                }
-//                            }
-//                        }
-//                    }) {
-//                        Label(isFavoritesBusy
-//                              ? heartFillOverride
-//                              ? "heart.fill"
-//                              : "heart"
-//                              
-//                              : favoriteIDs.contains(audio.firestoreID)
-//                              ? "Unfavorite"
-//                              : "Favorite",
-//                              
-//                              systemImage: isFavoritesBusy
-//                              ? heartFillOverride
-//                              ? "heart.fill"
-//                              : "heart"
-//                              
-//                              : favoriteIDs.contains(audio.firestoreID)
-//                              ? "heart.fill"
-//                              : "heart")
-//                    }
-//                }
-//                
-//                Button(action: {
-//                    audioPlayerModel.play(audio: audio)
-//                    isShowingPlayerSheet = true
-//                }) {
-//                    Label("Play", systemImage: "play")
-//                }
-//            } else {
-//                fatalError("Only accepting audios at this time.")
-//            }
-//        }
+        .contextMenu {
+            if let audio = self.content as? Audio {
+                if let favoriteIDs = favoritesManager.favoriteIDs {
+                    Button(action: {
+                        if !isFavoritesBusy {
+                            heartFillOverride = false
+                            isFavoritesBusy = true
+                            
+                            if favoriteIDs.contains(content.firestoreID) {
+                                self.favoritesManager.delete(audio) { favorites, error in
+                                    isFavoritesBusy = false
+                                }
+                            } else {
+                                heartFillOverride = true
+                                self.favoritesManager.save(audio) { favorites, error in
+                                    isFavoritesBusy = false
+                                }
+                            }
+                        }
+                    }) {
+                        Label(isFavoritesBusy
+                              ? heartFillOverride
+                              ? "heart.fill"
+                              : "heart"
+                              
+                              : favoriteIDs.contains(audio.firestoreID)
+                              ? "Unfavorite"
+                              : "Favorite",
+                              
+                              systemImage: isFavoritesBusy
+                              ? heartFillOverride
+                              ? "heart.fill"
+                              : "heart"
+                              
+                              : favoriteIDs.contains(audio.firestoreID)
+                              ? "heart.fill"
+                              : "heart")
+                    }
+                }
+                
+                Button(action: {
+                    audioPlayerModel.play(audio: audio)
+                    isShowingPlayerSheet = true
+                }) {
+                    Label("Play", systemImage: "play")
+                }
+            } else {
+                fatalError("Only accepting audios at this time.")
+            }
+        }
         .sheet(isPresented: $isShowingPlayerSheet) {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)

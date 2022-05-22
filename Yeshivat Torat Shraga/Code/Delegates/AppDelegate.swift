@@ -243,7 +243,7 @@ extension AppDelegate {
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(userActivity.webpageURL!) { dynamicLink, error in
             print("Opened with URL: \(dynamicLink?.url?.absoluteString ?? "null")")
-            print(dynamicLink?.url?.query?.components(separatedBy: "="))
+            print(dynamicLink?.url?.query?.components(separatedBy: "=") as Any)
 //            fatalError()
         }
         

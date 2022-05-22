@@ -45,7 +45,7 @@ class HomeModel: ObservableObject, ErrorShower {
             group.enter()
         }
         
-        FirebaseConnection.loadRebbeim() { results, error in
+        FirebaseConnection.loadRebbeim(options: (limit: -1, includePictureURLs: true, startAfterDocumentID: nil)) { results, error in
             if error?._code == -9 {
                 self.handleAppCheckError(error: error!)
                 return

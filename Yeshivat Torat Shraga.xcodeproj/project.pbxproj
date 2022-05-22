@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0827C1E4283A35CE00566B04 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0827C1E3283A35CE00566B04 /* MarkdownUI */; };
+		082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A22833EBE80002EB78 /* ParentTagView.swift */; };
+		082872A52833ED290002EB78 /* ParentTagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A42833ED290002EB78 /* ParentTagModel.swift */; };
 		083AE1032799A770003A36ED /* NewsArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083AE1022799A770003A36ED /* NewsArticleView.swift */; };
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
@@ -89,6 +92,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		082872A22833EBE80002EB78 /* ParentTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagView.swift; sourceTree = "<group>"; };
+		082872A42833ED290002EB78 /* ParentTagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagModel.swift; sourceTree = "<group>"; };
 		083AE1022799A770003A36ED /* NewsArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleView.swift; sourceTree = "<group>"; };
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
@@ -161,6 +166,7 @@
 				F25AEDFF27FECF8400DCB79F /* FirebaseMessaging in Frameworks */,
 				F25AEDF227FECCFD00DCB79F /* FirebaseAppCheck in Frameworks */,
 				F25AEDF627FECCFD00DCB79F /* FirebaseFirestore in Frameworks */,
+				0827C1E4283A35CE00566B04 /* MarkdownUI in Frameworks */,
 				F25AEDFD27FECEEB00DCB79F /* SwiftyGif in Frameworks */,
 				F25AEDF827FECCFD00DCB79F /* FirebaseFunctions in Frameworks */,
 				F25AEDF027FECCFD00DCB79F /* FirebaseAnalytics in Frameworks */,
@@ -225,9 +231,9 @@
 		B1BF5044273D37AE00CF18D6 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				B1BF5045273D37BD00CF18D6 /* UI.swift */,
 				F2235D4627661CA3005E6086 /* EllipseButton.swift */,
 				F25038A3274EA1EC006FF802 /* Helpers.swift */,
+				B1BF5045273D37BD00CF18D6 /* UI.swift */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -235,32 +241,33 @@
 		F230C4CB273B117D00F7ACCC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B12AB834273B103C00B17CC0 /* RootView.swift */,
-				F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */,
-				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
-				F29FFB2627529CD4005D6355 /* MiniPlayer.swift */,
-				F22C91392770A260007A9424 /* SearchView.swift */,
-				0847BA282784A22A0097910A /* RabbiCardView.swift */,
-				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
+				F2D6E2C0282BC685000917D2 /* AboutView.swift */,
+				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
+				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
-				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
-				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
-				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
+				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
 				085D438127B06C8C00F2F8FD /* FavoriteCardView.swift */,
+				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
+				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
+				08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */,
+				F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */,
+				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
+				B1ACF926274456F900079F9A /* LogoView.swift */,
+				F29FFB2627529CD4005D6355 /* MiniPlayer.swift */,
 				08469DE62762D878007EF981 /* NewsView.swift */,
 				083AE1022799A770003A36ED /* NewsArticleView.swift */,
 				084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */,
-				08756445275E6EC300D22856 /* SettingsView.swift */,
-				F2D6E2C0282BC685000917D2 /* AboutView.swift */,
-				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
-				B1ACF926274456F900079F9A /* LogoView.swift */,
-				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
-				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
-				087A5BF32761178100C077F6 /* VideoCardView.swift */,
-				08A05B2227653D4E00FEE15F /* TagView.swift */,
-				F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */,
 				08D3493C27CD26A000538697 /* OnboardingView.swift */,
-				08F2CCED2811B7240094DAED /* LoadMoreBarView.swift */,
+				082872A22833EBE80002EB78 /* ParentTagView.swift */,
+				0847BA282784A22A0097910A /* RabbiCardView.swift */,
+				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
+				B12AB834273B103C00B17CC0 /* RootView.swift */,
+				F22C91392770A260007A9424 /* SearchView.swift */,
+				08756445275E6EC300D22856 /* SettingsView.swift */,
+				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
+				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
+				08A05B2227653D4E00FEE15F /* TagView.swift */,
+				087A5BF32761178100C077F6 /* VideoCardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -268,18 +275,19 @@
 		F230C4CE273B119E00F7ACCC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F230C4C9273B110900F7ACCC /* RootModel.swift */,
-				B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */,
-				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
 				B1D0A2DA274BD24400F7F0A5 /* AudioCardModel.swift */,
-				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
-				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
-				08A05B2427653DAA00FEE15F /* TagModel.swift */,
-				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
-				084E99C22794760D00CCEED6 /* NewsModel.swift */,
-				08AF240D27A35315001331EA /* FavoritesModel.swift */,
-				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
 				08F2AE17282C227D00E09367 /* AudioPlayerModel.swift */,
+				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
+				08AF240D27A35315001331EA /* FavoritesModel.swift */,
+				B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */,
+				084E99C22794760D00CCEED6 /* NewsModel.swift */,
+				082872A42833ED290002EB78 /* ParentTagModel.swift */,
+				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
+				F230C4C9273B110900F7ACCC /* RootModel.swift */,
+				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
+				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
+				08A05B2427653DAA00FEE15F /* TagModel.swift */,
+				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -296,11 +304,11 @@
 		F230C4D1273BE57B00F7ACCC /* Structure */ = {
 			isa = PBXGroup;
 			children = (
-				F230C4D2273BE58B00F7ACCC /* YTS.swift */,
-				F230C4D4273BE81E00F7ACCC /* Errors.swift */,
-				F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */,
 				F2F69C4E277C3A790069DCAE /* AppValidation.swift */,
+				F230C4D4273BE81E00F7ACCC /* Errors.swift */,
 				F2D78B70278695EB003996A8 /* Favorites.swift */,
+				F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */,
+				F230C4D2273BE58B00F7ACCC /* YTS.swift */,
 			);
 			path = Structure;
 			sourceTree = "<group>";
@@ -337,9 +345,9 @@
 		F2F44C71274A6D0700F7D337 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
-				F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */,
 				F202FEE727538F8100A41DEB /* BackZStackButtonStyle.swift */,
 				F2D6E2C228328137000917D2 /* iOS14BorderedButtonStyle.swift */,
+				F2F44C74274A6D4100F7D337 /* YTSProgressViewStyle.swift */,
 			);
 			path = Styles;
 			sourceTree = "<group>";
@@ -370,6 +378,7 @@
 				F25AEDF927FECCFD00DCB79F /* FirebaseStorage */,
 				F25AEDFC27FECEEB00DCB79F /* SwiftyGif */,
 				F25AEDFE27FECF8400DCB79F /* FirebaseMessaging */,
+				0827C1E3283A35CE00566B04 /* MarkdownUI */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -401,6 +410,7 @@
 			packageReferences = (
 				F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F25AEDFB27FECEEB00DCB79F /* XCRemoteSwiftPackageReference "SwiftyGif" */,
+				0827C1E2283A35CE00566B04 /* XCRemoteSwiftPackageReference "MarkdownUI" */,
 			);
 			productRefGroup = B12AB82E273B103C00B17CC0 /* Products */;
 			projectDirPath = "";
@@ -441,6 +451,7 @@
 				0848BF58281AF15A0060BBDA /* SettingsModel.swift in Sources */,
 				087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
+				082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
 				084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */,
@@ -471,6 +482,7 @@
 				B1BF5046273D37BD00CF18D6 /* UI.swift in Sources */,
 				F2F69C4F277C3A790069DCAE /* AppValidation.swift in Sources */,
 				F2235D4727661CA3005E6086 /* EllipseButton.swift in Sources */,
+				082872A52833ED290002EB78 /* ParentTagModel.swift in Sources */,
 				B1D0A2DB274BD24400F7F0A5 /* AudioCardModel.swift in Sources */,
 				F29FFB2727529CD4005D6355 /* MiniPlayer.swift in Sources */,
 				F22C913A2770A260007A9424 /* SearchView.swift in Sources */,
@@ -796,6 +808,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0827C1E2283A35CE00566B04 /* XCRemoteSwiftPackageReference "MarkdownUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/MarkdownUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -815,6 +835,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0827C1E3283A35CE00566B04 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0827C1E2283A35CE00566B04 /* XCRemoteSwiftPackageReference "MarkdownUI" */;
+			productName = MarkdownUI;
+		};
 		F25AEDEF27FECCFD00DCB79F /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

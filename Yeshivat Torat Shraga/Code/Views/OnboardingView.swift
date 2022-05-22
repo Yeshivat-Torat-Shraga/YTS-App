@@ -35,6 +35,21 @@ struct OnboardingView: View {
                         .foregroundColor(.shragaGold)
                         .padding()
                         .padding(.horizontal)
+                        .overlay (
+                            LinearGradient(gradient: Gradient(stops: [Gradient.Stop(color: Color(hue: 0.101, saturation: 1.0, brightness: 0.834, opacity: 1.0), location: 0.0), Gradient.Stop(color: Color(hue: 0.152, saturation: 0.902, brightness: 0.903, opacity: 1.0), location: 1.0)]), startPoint: UnitPoint.topLeading, endPoint: UnitPoint.bottomTrailing)
+                            .mask(
+                                Text("Welcome to the YTS App.")
+                                    .font(.title)
+                                    .bold()
+                                    .multilineTextAlignment(.center)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.5)
+                                    .foregroundColor(.shragaGold)
+                                    .padding()
+                                    .padding(.horizontal)
+                                )
+                        )
+
                 }
                 // MARK: Favorites
                 VStack {

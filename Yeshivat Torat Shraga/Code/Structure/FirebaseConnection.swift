@@ -598,7 +598,9 @@ final class FirebaseConnection {
                 completion(nil, callError ?? YTSError.invalidDataReceived)
                 return
             } else if contentDocuments.isEmpty {
-                print("Empty set received.")
+//                print("Empty set received.")
+                completion((content: content, metadata: (newLastLoadedDocumentID: newLastLoadedDocumentID, finalCall: finalCall)), callError)
+                return
             }
             
             let group = DispatchGroup()

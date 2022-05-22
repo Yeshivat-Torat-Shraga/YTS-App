@@ -162,7 +162,7 @@ extension Error {
         case -1020:
             return "This app does not have Internet access. Please check your cellular settings and try again."
         case 9:
-            return "There was an authentication issue. Please try again."
+            return "There was an authentication issue. Please try again. If this issue persists, please reinstall the app."
         default:
             return "An unknown error has occured. (\(code))"
         }

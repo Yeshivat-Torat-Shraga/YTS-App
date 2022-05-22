@@ -70,7 +70,7 @@ struct NewsView: View {
                     }
                 }
             }
-            .navigationTitle("Articles")
+            .navigationTitle("Torah & News")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     LogoView(size: .small)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MarkdownUI
 
 struct NewsArticleCardView: View {
     var article: NewsArticle
@@ -47,11 +48,15 @@ struct NewsArticleCardView: View {
                         .font(.callout)
                         .foregroundColor(.gray)
                 } else {
-                    Text(article.body)
+                    Markdown(article.body)
+                        .markdownStyle(MarkdownStyle(foregroundColor: .gray))
+                        .onOpenMarkdownLink {_ in
+                            // Don't open links from the card preview
+                        }
                         .font(.callout)
-                        .foregroundColor(.gray)
                         .lineLimit(3)
                         .multilineTextAlignment(.leading)
+                        .accentColor(.gray) // hide the highlighting from any links
                     
                 }
                 Spacer()

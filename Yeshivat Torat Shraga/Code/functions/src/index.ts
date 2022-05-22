@@ -439,8 +439,12 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 		log(`Starting after document '${snapshot}'`);
 	}
 
+	if (queryOptions.limit > 0) {
+		query = query.limit(queryOptions.limit);
+	}
+
 	// Execute the query
-	const rebbeimSnapshot = await query.limit(queryOptions.limit).get();
+	const rebbeimSnapshot = await query.get();
 
 	// Get the documents returned from the query
 	const docs = rebbeimSnapshot.docs;
@@ -638,8 +642,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	// Set a variable to hold the ID of the last document returned from the query.
 	// This is so the client can use this ID to load the next page of documents.
 	const lastDocumentFromQueryID = docs[docs.length - 1].id;
-	console.log("Last document ID to be served: " + lastDocumentFromQueryID);
-
+	console.log('Last document ID to be served: ' + lastDocumentFromQueryID);
 
 	// Loop through the documents returned from the query.
 	// For each document, get the desired data and add it to the content array.
@@ -953,8 +956,12 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
 
+	log(`Searching with options: ${JSON.stringify(searchOptions)}`);
+
 	const errors: string[] = [];
+
 	const db = admin.firestore();
+
 	if (!callData.searchQuery) {
 		return {
 			results: null,
@@ -965,6 +972,17 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	}
 	const searchQuery = callData.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
+
+	// const phrasesToRemove = ['rabbi', 'the'];
+	// // remove phrases from the search query
+	// searchArray.forEach((phrase, index) => {
+	// 	if (phrasesToRemove.includes(phrase)) {
+	// 		searchArray.splice(index, 1);
+	// 	}
+	// });
+
+	log(`Searching for ${searchArray}`);
+
 	const documentsThatMeetSearchCriteria: QueryDocumentSnapshot[] = [];
 	// For each collection, run the following async function:
 
@@ -985,17 +1003,21 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			if (collectionName == 'skip') {
 				return null;
 			}
+
 			if (!Number.isInteger(searchOptions[collectionName].limit)) {
 				errors.push(`Limit for ${collectionName} is not an integer.`);
 				return [];
 			}
-			if (searchOptions[collectionName].limit > 30) {
-				searchOptions[collectionName].limit = 30;
-				errors.push(`Limit for ${collectionName} is greater than 30. Setting limit to 30.`);
+
+			if (searchOptions[collectionName].limit > 15) {
+				searchOptions[collectionName].limit = 15;
+				errors.push(`Limit for ${collectionName} is greater than 15. Setting limit to 15.`);
 			}
 			// Get the collection
-			let query = db.collection(collectionName);
+			var query = db.collection(collectionName);
+
 			query = query.where('search_index', 'array-contains-any', searchArray) as any;
+
 			switch (collectionName) {
 				case 'content':
 					query = query.orderBy('date', 'desc') as any;
@@ -1006,8 +1028,20 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			}
 
 			// query = query.orderBy(searchOptions.orderBy[collectionName].field, searchOptions.orderBy[collectionName].order);
-			if (searchOptions[collectionName].startFromDocumentID) {
-				query = query.startAt(searchOptions[collectionName].startFromDocumentID) as any;
+			if (searchOptions[collectionName].startAfterDocumentID) {
+				const startAfter = searchOptions[collectionName].startAfterDocumentID;
+				await db
+					.collection(collectionName)
+					.doc(startAfter)
+					.get()
+					.then((snapshot) => {
+						query = query.startAfter(snapshot) as any;
+						log(`Starting collection '${collectionName}' after document ID: ${startAfter}`);
+					})
+					.catch((reason) => {
+						log(`Error starting collection '${collectionName}' after document ID: ${startAfter}`);
+						return null;
+					});
 			}
 
 			query = query.limit(searchOptions[collectionName].limit) as any;
@@ -1106,7 +1140,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		rebbeim = null;
 	}
 
-	return {
+	const result = {
 		results: {
 			content: rawContent ? content : null,
 			rebbeim: rawRebbeim ? rebbeim : null,
@@ -1132,6 +1166,9 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			},
 		},
 	};
+
+	log(`Result: ${JSON.stringify(result)}`);
+	return result;
 });
 
 exports.reloadSearchIndices = https.onCall((data, context) => {
