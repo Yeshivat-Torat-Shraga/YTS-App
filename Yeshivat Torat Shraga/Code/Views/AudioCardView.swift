@@ -53,6 +53,7 @@ struct AudioCardView: View {
                             Text(model.audio.name)
                                 .font(.title3)
                                 .bold()
+                                .minimumScaleFactor(0.6)
                                 .foregroundColor(.primary)
                         }
                         
