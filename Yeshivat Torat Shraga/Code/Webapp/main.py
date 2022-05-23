@@ -160,10 +160,12 @@ def rabbiCreate():
 
         db = firestore.client()
         collection = db.collection("rebbeim")
+        name = request.form.get("name").strip()
         collection.add(
             {
-                "name": request.form.get("name"),
+                "name": name,
                 "profile_picture_filename": profile_picture_file.filename,
+                "search_index": [name for name in name.lower().split() if name != "rabbi"]
             }
         )
         flash("Rabbi added!")
