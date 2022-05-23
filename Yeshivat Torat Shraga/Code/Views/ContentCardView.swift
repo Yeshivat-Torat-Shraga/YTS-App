@@ -61,27 +61,23 @@ struct ContentCardView<Content: YTSContent>: View {
                 VStack {
                     HStack {
                         VStack {
-                            HStack {
-                                Text(content.title)
-                                    .font(.title3)
-                                    .bold()
-                                    .lineLimit(2)
-                                    .multilineTextAlignment(.leading)
-                                    .minimumScaleFactor(0.6)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer()
-                            }
-                            .padding(.bottom, 1)
-                            
-                            HStack {
-                                Text(content.author.name)
-                                    .font(.subheadline)
-                                Spacer()
-                            }
-                            
+                        HStack {
+                            Text(content.title)
+                                .font(.title3)
+                                .bold()
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                                .minimumScaleFactor(0.6)
+                                .fixedSize(horizontal: false, vertical: true)
                             Spacer()
                         }
+                            Spacer()
+                        }
+                        
                         if let detailedRabbi = content.author as? DetailedRabbi {
+                            Spacer()
+                            Spacer()
+                            
                             VStack {
                                 DownloadableImage(object: detailedRabbi)
                                     .aspectRatio(contentMode: .fill)
@@ -94,13 +90,26 @@ struct ContentCardView<Content: YTSContent>: View {
                             }
                         }
                     }
+//                    .frame(height: 200)
+                    
                     Spacer()
+                    
+                    HStack {
+                        Text(content.author.name)
+                            .font(.subheadline)
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                    
                     HStack {
                         if let month = Date.monthNameFor(content.date.get(.month)) {
                             let yearAsString = String(content.date.get(.year))
                             Text("\(month) \(content.date.get(.day)), \(yearAsString)")
                         }
+                        
                         Spacer()
+                        
                         if let duration = content.duration {
                             HStack(spacing: 4) {
                                 Image(systemName: isAudio
@@ -109,23 +118,20 @@ struct ContentCardView<Content: YTSContent>: View {
                                 Text(timeFormattedMini(totalSeconds: duration))
                             }
                         }
-                    }.font(.caption)
+                    }
+                    .font(.caption)
                 }
                 .padding()
                 .clipped()
-                
             }
             .foregroundColor(.primary)
             .frame(minWidth: 225)
             .frame(maxWidth: 350)
             .frame(height: 125)
             .clipped()
-            
-            
         }
         .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
-        .shadow(radius: UI.shadowRadius)
         .sheet(isPresented: $isShowingPlayerSheet) {
             AudioPlayer()
                 .environmentObject(audioPlayerModel)
@@ -176,6 +182,7 @@ struct ContentCardView<Content: YTSContent>: View {
                 }
             }
         }
+        .shadow(radius: UI.shadowRadius)
     }
 }
 

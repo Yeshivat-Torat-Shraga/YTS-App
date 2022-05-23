@@ -78,6 +78,7 @@ class AudioPlayerModel: ObservableObject {
                 return .commandFailed
             }
         }
+        
         commandCenter.pauseCommand.addTarget { event in
             if self.player.timeControlStatus == .playing {
                 self.pause()
@@ -86,16 +87,21 @@ class AudioPlayerModel: ObservableObject {
                 return .commandFailed
             }
         }
+        
         var nowPlayingInfo: [String: Any] = [:]
         nowPlayingInfo[MPMediaItemPropertyTitle] = audio?.title
         nowPlayingInfo[MPMediaItemPropertyArtist] = audio?.author.name
-        if let image = UIImage(named: "Logo") {
+        
+        let lightTrait = UITraitCollection(userInterfaceStyle: .light)
+        if let image = UIImage(named: "Logo", in: nil, compatibleWith: lightTrait) {
             nowPlayingInfo[MPMediaItemPropertyArtwork] =
             MPMediaItemArtwork(boundsSize: image.size) { size in
                 return image
             }
         }
+        
         commandCenter.changePlaybackPositionCommand.isEnabled = true
+        
         commandCenter.changePlaybackPositionCommand.addTarget { event in
             guard let event = event as? MPChangePlaybackPositionCommandEvent else {
                 return .commandFailed
@@ -104,6 +110,7 @@ class AudioPlayerModel: ObservableObject {
             self.player.avPlayer?.seek(to: time)
             return .success
         }
+        
         Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in
             nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = self.player.displayTime
             nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = self.player.itemDuration

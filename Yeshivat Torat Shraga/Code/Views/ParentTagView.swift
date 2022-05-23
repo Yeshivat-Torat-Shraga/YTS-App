@@ -64,7 +64,10 @@ struct ParentTagView: View {
                                         VideoCardView(video: video, showAuthor: true)
                                     }
                                 }
-                                LoadMoreView(
+                                
+                                Spacer()
+                                
+                                AutoLoadMoreBar(
                                     loadingContent: Binding(get: {
                                         model.content[child]!.metadata.isLoadingContent
                                     }, set: {
@@ -79,6 +82,9 @@ struct ParentTagView: View {
                                     loadMore: {
                                         model.loadIndividualChild(child: child, next: 7)
                                     })
+                                
+                                Spacer()
+                                Spacer()
                             }
                         }
                     }
