@@ -47,29 +47,6 @@ struct TagView: View {
                                     .bold()
                                 Spacer()
                             }
-                            
-                            /*
-                            if model.tag.isParent {
-                                ForEach(sortables.keys.sorted(by: {$0.name < $1.name}), id: \.self) { subCategory in
-                                    
-                                    if let contentGroup = sortables[subCategory] {
-                                        LabeledDivider(title: subCategory.name)
-                                        //                                    .padding(.top)
-                                        
-                                        ForEach(contentGroup, id: \.self) { sortable in
-                                            if let video = sortable.video {
-                                                VideoCardView(video: video, showAuthor: true)
-                                            } else if let audio = sortable.audio {
-                                                AudioCardView(audio: audio, showAuthor: true)
-                                            }
-                                            
-                                        }
-                                        
-                                        Spacer()
-                                    }
-                                }
-                            } else {
-                                */
                                     ForEach(sortables, id: \.self) { sortable in
                                         if let video = sortable.video {
                                             VideoCardView(video: video, showAuthor: true)

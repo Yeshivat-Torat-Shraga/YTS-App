@@ -34,7 +34,6 @@ struct HomeView: View {
         NavigationView {
             ScrollView(showsIndicators: false) {
                 VStack {
-                    
                     // MARK: - Recently Uploaded
                     VStack(spacing: 0.0) {
                         LabeledDivider(title: "Recently Uploaded")
@@ -46,7 +45,7 @@ struct HomeView: View {
                                     .padding()
                             } else {
                                 ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack {
+                                    LazyHStack {
                                         ForEach(sortables, id: \.self) { sortable in
                                             SortableContentCardView(content: sortable)
                                                 .padding(.vertical)
@@ -76,7 +75,7 @@ struct HomeView: View {
                                     .padding()
                             } else {
                                 ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack {
+                                    LazyHStack {
                                         ForEach(rebbeim, id: \.self) { rabbi in
                                                 RabbiTileView(rabbi: rabbi, size: .medium)
                                             .simultaneousGesture(
