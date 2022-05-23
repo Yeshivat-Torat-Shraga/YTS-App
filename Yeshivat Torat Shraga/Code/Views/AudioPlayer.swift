@@ -8,6 +8,7 @@
 import SwiftUI
 import AVKit
 import MediaPlayer
+import FirebaseAnalytics
 
 struct AudioPlayer: View {
     @EnvironmentObject var model: AudioPlayerModel
@@ -268,6 +269,12 @@ struct AudioPlayer: View {
                 Button(action: {
                     if model.audio?.storedShareURL != nil {
                         sharing = true
+                        Analytics.logEvent("tapped_share_content", parameters: [
+                            "content_creator": model.audio!.author.name,
+                            "content_title": model.audio!.title,
+                            "content_length": Int(model.audio!.duration ?? 0),
+                        ])
+
                     }
                 }, label: {
                     if model.audio?.storedShareURL == nil {

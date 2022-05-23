@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct AudioCardView: View {
     @EnvironmentObject var favoritesManager: Favorites
@@ -26,6 +27,12 @@ struct AudioCardView: View {
         Button {
             audioPlayerModel.play(audio: model.audio)
             isShowingPlayerSheet = true
+            Analytics.logEvent("opened_audio_card", parameters: [
+                "content_creator": model.audio.author.name,
+                "content_title": model.audio.title,
+                "content_length": Int(model.audio.duration ?? 0),
+            ])
+
         } label: {
             HStack {
                 Rectangle()

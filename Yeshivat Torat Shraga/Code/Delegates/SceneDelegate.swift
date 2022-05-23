@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import FirebaseDynamicLinks
+import FirebaseAnalytics
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @ObservedObject var favoritesManager = Favorites()
@@ -151,6 +152,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         group.notify(queue: .main) {
             if let audio = content?.audio {
+                Analytics.logEvent("opened_shared_link", parameters: [
+                    "content_creator": audio.author.name,
+                    "content_title": audio.title,
+                    "content_length": audio.duration,
+                ])
 
 
 //                let audioPlayerModel = self.audioPlayerModel

@@ -42,7 +42,7 @@ struct ContentCardView<Content: YTSContent>: View {
             Analytics.logEvent("tapped_recently_uploaded", parameters: [
                 "content_creator": content.author.name,
                 "content_title": content.title,
-                "content_length": content.description,
+                "content_length": Int(content.duration ?? 0),
             ])
             if isAudio {
                 audioPlayerModel.play(audio: content.sortable.audio!)

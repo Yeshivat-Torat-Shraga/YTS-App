@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import CoreData
+import FirebaseAnalytics
 
 
 class Favorites: ObservableObject {
@@ -72,6 +73,12 @@ class Favorites: ObservableObject {
     
     func save(_ videoToSave: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
+            Analytics.logEvent("favorited_content", parameters: [
+                "content_creator": videoToSave.author.name,
+                "content_title": videoToSave.title,
+                "content_length": Int(videoToSave.duration ?? 0),
+            ])
+
             let managedContext = self.delegate.persistentContainer.viewContext
             
             let entity = CDContent.entity()
@@ -99,7 +106,12 @@ class Favorites: ObservableObject {
     func save(_ audioToSave: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             
-            
+            Analytics.logEvent("favorited_content", parameters: [
+                "content_creator": audioToSave.author.name,
+                "content_title": audioToSave.title,
+                "content_length": Int(audioToSave.duration ?? 0),
+            ])
+
             
             let managedContext = self.delegate.persistentContainer.viewContext
             
