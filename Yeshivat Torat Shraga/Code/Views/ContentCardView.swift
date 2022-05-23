@@ -132,13 +132,8 @@ struct ContentCardView<Content: YTSContent>: View {
         }
         .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
-        .sheet(isPresented: $isShowingPlayerSheet) {
-            AudioPlayer()
-                .environmentObject(audioPlayerModel)
-                .environmentObject(favoritesManager)
-                .environmentObject(player)
-        }
         .contextMenu {
+            if #available(iOS 15.0, *) {
             if let audio = content.sortable.audio, let favoriteIDs = favoritesManager.favoriteIDs {
                 Button(action: {
                     if !isFavoritesBusy {
@@ -181,8 +176,15 @@ struct ContentCardView<Content: YTSContent>: View {
                     Label("Play", systemImage: "play")
                 }
             }
+            }
         }
         .shadow(radius: UI.shadowRadius)
+        .sheet(isPresented: $isShowingPlayerSheet) {
+            AudioPlayer()
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
+                .environmentObject(player)
+        }
     }
 }
 
