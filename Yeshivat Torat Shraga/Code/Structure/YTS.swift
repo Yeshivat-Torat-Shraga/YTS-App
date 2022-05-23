@@ -225,7 +225,7 @@ class Video: YTSContent, URLImageable {
     ///   - duration: The duration of the content in seconds
     ///   - tag: `Tag` reference to this object's topics
     ///   - thumbnail: The thumbnail associated with this content
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, thumbnail: Image, favoritedAt: Date? = nil) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, thumbnail: Image) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -251,7 +251,7 @@ class Video: YTSContent, URLImageable {
     ///   - duration: The duration of the content in seconds
     ///   - tag: `Tag` reference to this object's topics
     ///   - thumbnailURL: The `URL` associated with this content's thumbnail image
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, thumbnailURL: URL, favoritedAt: Date? = nil) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, thumbnailURL: URL) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
@@ -385,8 +385,7 @@ class Video: YTSContent, URLImageable {
                               date: .distantPast,
                               duration: 100,
                               tag: .sample,
-                              thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!,
-                              favoritedAt: nil)
+                              thumbnailURL: URL(string: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFcgVculbjt02kuQlNQW0ybihHYvUA7invbw&usqp=CAU")!)
 }
 
 // MARK: - Audio
@@ -421,7 +420,7 @@ class Audio: YTSContent, Hashable, ObservableObject {
     ///   - date: The time that this content was uploaded to the server
     ///   - duration: The duration of the content in seconds
     ///   - tags: `Tag` references to this object's topics
-    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag, favoritedAt: Date? = nil) {
+    init(id firestoreID: FirestoreID, fileID: FileID? = nil, sourceURL: URL, title: String, author: Rabbi, description: String, date: Date, duration: TimeInterval?, tag: Tag) {
         self.firestoreID = firestoreID
         self.fileID = fileID
         self.sourceURL = sourceURL
