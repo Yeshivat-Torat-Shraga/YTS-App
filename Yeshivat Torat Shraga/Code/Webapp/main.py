@@ -101,7 +101,7 @@ def rabbis():
         url = blob.generate_signed_url(timedelta(seconds=300))
         rabbi["imgURL"] = url
         collection.append(rabbi)
-    rabbis = sorted(collection, key=lambda x: x["name"])
+    collection = sorted(collection, key=lambda x: x["name"])
 
     return render_template("rabbis.html", data=collection, type="Rebbi")
 
