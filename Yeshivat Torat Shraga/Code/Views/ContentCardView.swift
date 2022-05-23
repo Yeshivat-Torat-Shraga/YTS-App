@@ -75,6 +75,7 @@ struct ContentCardView<Content: YTSContent>: View {
                                 .fixedSize(horizontal: false, vertical: true)
                             Spacer()
                         }
+                        .padding(.top, 5)
                             Spacer()
                         }
                         
@@ -110,6 +111,7 @@ struct ContentCardView<Content: YTSContent>: View {
                         if let month = Date.monthNameFor(content.date.get(.month)) {
                             let yearAsString = String(content.date.get(.year))
                             Text("\(month) \(content.date.get(.day)), \(yearAsString)")
+                                .italic()
                         }
                         
                         Spacer()
@@ -131,7 +133,7 @@ struct ContentCardView<Content: YTSContent>: View {
             .foregroundColor(.primary)
             .frame(minWidth: 225)
             .frame(maxWidth: 350)
-            .frame(height: 125)
+            .frame(height: 115)
             .clipped()
         }
         .buttonStyle(BackZStackButtonStyle())
