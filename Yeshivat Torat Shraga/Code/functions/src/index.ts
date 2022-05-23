@@ -939,6 +939,27 @@ exports.loadCategories = https.onCall(async (callData, context): Promise<LoadDat
 	};
 });
 
+exports.incrementViewCount = https.onCall(async (callData, context): Promise<void> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
+	// This function will increase the view count for the content with the given ID.
+	// This function will only work if the user is authenticated.
+	if (typeof callData.documentID !== 'string') return;
+	let documentID = callData.documentID as string;
+	const COLLECTION = 'content';
+	const db = admin.firestore();
+	let query = db.collection(COLLECTION).doc(documentID);
+	let querySnapshot = await query.get();
+	if (querySnapshot.exists) {
+		let data = new ContentFirebaseDocument(querySnapshot.data()!);
+		if (!data.viewCount) data.viewCount = 0;
+		let newData = {
+			viewCount: data.viewCount + 1,
+		};
+		await query.set(newData, { merge: true });
+	}
+});
+
 exports.search = https.onCall(async (callData, context): Promise<any> => {
 	// === APP CHECK ===
 	verifyAppCheck(context);

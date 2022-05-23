@@ -939,6 +939,13 @@ final class FirebaseConnection {
             return
         }
     }
+    
+    static func increaseViewCountForContentByID(_ id: FirestoreID) {
+        let data: [String: String] = ["documentID": id]
+        let httpsCallable = functions.httpsCallable("incrementViewCount")
+        httpsCallable.call(data) { _, _ in}
+        
+    }
 
 }
 

@@ -164,6 +164,7 @@ export class ContentFirebaseDocument {
 	};
 	title: string;
 	type: string;
+	viewCount?: number;
 
 	constructor(data: FirebaseFirestore.DocumentData) {
 		if (
@@ -191,6 +192,7 @@ export class ContentFirebaseDocument {
 			this.tagData = data.tagData;
 			this.title = data.title;
 			this.type = data.type;
+			this.viewCount = data.viewCount;
 		} else initFailure(data);
 	}
 }

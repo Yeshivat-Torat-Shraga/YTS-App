@@ -39,6 +39,8 @@ class AudioPlayerModel: ObservableObject {
             self.player.set(avPlayer: player)
             // Generate the share link
             self.audio?.shareURL()
+            // Increase the view count
+            FirebaseConnection.increaseViewCountForContentByID(audio.firestoreID)
         } else {
             print("Audio sourceURL is nil, couldn't set audio.")
         }
