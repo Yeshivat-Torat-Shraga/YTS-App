@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct SortableContentCardView<Content: SortableYTSContent>: View {
     let content: Content
@@ -38,6 +39,11 @@ struct ContentCardView<Content: YTSContent>: View {
     
     var body: some View {
         Button(action: {
+            Analytics.logEvent("tapped_recently_uploaded", parameters: [
+                "content_creator": content.author.name,
+                "content_title": content.title,
+                "content_length": content.description,
+            ])
             if isAudio {
                 audioPlayerModel.play(audio: content.sortable.audio!)
                 isShowingPlayerSheet = true
