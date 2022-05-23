@@ -69,11 +69,9 @@ struct ContentCardView<Content: YTSContent>: View {
                         VStack {
                         HStack {
                             Text(content.title)
-                                .font(.title3)
-                                .bold()
+                                .font(.headline)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
-                                .minimumScaleFactor(0.6)
                                 .fixedSize(horizontal: false, vertical: true)
                             Spacer()
                         }
