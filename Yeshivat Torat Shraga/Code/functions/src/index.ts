@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
+// import * as functions from 'firebase-functions';
 
 import os from 'os';
 import {
@@ -33,11 +34,8 @@ import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 const Storage = require('@google-cloud/storage').Storage;
-// const Firestore = require('@google-cloud/firestore');
-// const firestore = new Firestore({
-//   projectId: process.env.GOOGLE_CLOUD_PROJECT,
-// });
-// const FieldValue = admin.firestore.FieldValue;
+const functions = require("firebase-functions")
+const FieldValue = admin.firestore.FieldValue;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
@@ -1194,53 +1192,54 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	return result;
 });
 
-// exports.reloadSearchIndices = https.onCall((data, context) => {
-// 	let collectionName = data.collectionName;
-// 	var db = admin.firestore();
-// 	db.collection(collectionName).get().then(async (snapshot) => {
-// 		snapshot.forEach(async s => {
-// 			var doc = db.collection(collectionName).doc(s.id);
-// 			await doc.set({
-// 				temp: `temp`
-// 			}, {
-// 				merge: true
-// 			}).then(() => {
-// 				setTimeout(function () {
-// 					doc.set({
-// 						temp: FieldValue.delete()
-// 					}, {
-// 						merge: true
-// 					});
-// 				}, 10000);
-// 			});
-// 		});
-// 	});
-// });
+exports.reloadDocuments = https.onCall((data, context) => {
+	let collectionName = data.collectionName;
+	var db = admin.firestore();
+	db.collection(collectionName).get().then(async (snapshot) => {
+		snapshot.forEach(async s => {
+			var doc = db.collection(collectionName).doc(s.id);
+			await doc.set({
+				temp: `temp`
+			}, {
+				merge: true
+			}).then(() => {
+				setTimeout(function () {
+					doc.set({
+						temp: FieldValue.delete()
+					}, {
+						merge: true
+					});
+				}, 10000);
+			});
+		});
+	});
+});
 
-// exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
-// 	if (ev.after.data != undefined) {
-// 		let data = ev.after.data();
-// 		let components = [];
-// 		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
-// 		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
-// 		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+exports.updateContentData = functions.firestore.document(`content/{contentID}`).onWrite(async ev => {
+	if (ev.after.data != undefined) {
+		let data = ev.after.data();
+		let components = [];
+		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
 
-// 		components = components.concat(titleComponents);
-// 		components = components.concat(authorNameComponents);
-// 		components = components.concat(tagName);
+		components = components.concat(titleComponents);
+		components = components.concat(authorNameComponents);
+		components = components.concat(tagName);
 
-// 		log(`Components for ${data.title}: ${components}`);
+		log(`Components for ${data.title}: ${components}`);
 
-// 		var db = admin.firestore();
-// 		let doc = db.collection('content').doc(ev.after.id);
+		var db = admin.firestore();
+		let doc = db.collection('content').doc(ev.after.id);
 
-// 		doc.set({
-// 			search_index: components
-// 		}, {
-// 			merge: true
-// 		});
-// 	}
-// });
+		doc.set({
+			search_index: components,
+			title: titleFormat(data.title),
+		}, {
+			merge: true
+		});
+	}
+});
 
 // exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
 // 	if (ev.after.data != undefined) {
@@ -1261,3 +1260,30 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 // 		});
 // 	}
 // });
+
+const lowercase = [
+	'the',
+	'and',
+	'of',
+	'a',
+	'an',
+	'in',
+	'for',
+	'is',
+	'zt"l',
+	'zt\'l',
+];
+
+function titleFormat(s) { 
+	const titleComponents = s.split(' ');
+	const title = titleComponents.map(x => {
+		if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) == -1)) {
+			return x.replace(/\w\S*/g, function(t) { 
+				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
+			}); 
+		} else {
+			return x;
+		}
+	});
+	return title.join(' ');
+}
