@@ -67,15 +67,15 @@ struct ContentCardView<Content: YTSContent>: View {
                 VStack {
                     HStack {
                         VStack {
-                        HStack {
-                            Text(content.title)
-                                .font(.headline)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                        }
-                        .padding(.top, 5)
+                            HStack {
+                                Text(content.title)
+                                    .font(.headline)
+                                    .minimumScaleFactor(0.8)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Spacer()
+                            }
                             Spacer()
                         }
                         
@@ -95,7 +95,7 @@ struct ContentCardView<Content: YTSContent>: View {
                             }
                         }
                     }
-//                    .frame(height: 200)
+                    //                    .frame(height: 200)
                     
                     Spacer()
                     
@@ -111,7 +111,6 @@ struct ContentCardView<Content: YTSContent>: View {
                         if let month = Date.monthNameFor(content.date.get(.month)) {
                             let yearAsString = String(content.date.get(.year))
                             Text("\(month) \(content.date.get(.day)), \(yearAsString)")
-                                .italic()
                         }
                         
                         Spacer()
@@ -131,57 +130,57 @@ struct ContentCardView<Content: YTSContent>: View {
                 .clipped()
             }
             .foregroundColor(.primary)
-            .frame(minWidth: 225)
-            .frame(maxWidth: 350)
-            .frame(height: 115)
-            .clipped()
         }
+        .frame(minWidth: 225)
+        .frame(maxWidth: 350)
+        .frame(height: 125)
+        .clipped()
         .buttonStyle(BackZStackButtonStyle())
         .cornerRadius(UI.cornerRadius)
         .contextMenu {
             if #available(iOS 15.0, *) {
-            if let audio = content.sortable.audio, let favoriteIDs = favoritesManager.favoriteIDs {
-                Button(action: {
-                    if !isFavoritesBusy {
-                        heartFillOverride = false
-                        isFavoritesBusy = true
-                        if favoriteIDs.contains(audio.firestoreID) {
-                            self.favoritesManager.delete(audio) { favorites, error in
-                                isFavoritesBusy = false
-                            }
-                        } else {
-                            heartFillOverride = true
-                            self.favoritesManager.save(audio) { favorites, error in
-                                isFavoritesBusy = false
+                if let audio = content.sortable.audio, let favoriteIDs = favoritesManager.favoriteIDs {
+                    Button(action: {
+                        if !isFavoritesBusy {
+                            heartFillOverride = false
+                            isFavoritesBusy = true
+                            if favoriteIDs.contains(audio.firestoreID) {
+                                self.favoritesManager.delete(audio) { favorites, error in
+                                    isFavoritesBusy = false
+                                }
+                            } else {
+                                heartFillOverride = true
+                                self.favoritesManager.save(audio) { favorites, error in
+                                    isFavoritesBusy = false
+                                }
                             }
                         }
-                    }
-                }) {
-                    Label(isFavoritesBusy
-                          ? heartFillOverride
+                    }) {
+                        Label(isFavoritesBusy
+                              ? heartFillOverride
                               ? "heart.fill"
                               : "heart"
-
-                          : favoriteIDs.contains(audio.firestoreID)
+                              
+                              : favoriteIDs.contains(audio.firestoreID)
                               ? "Unfavorite"
                               : "Favorite",
-                          
-                          systemImage: isFavoritesBusy
-                          ? heartFillOverride
+                              
+                              systemImage: isFavoritesBusy
+                              ? heartFillOverride
                               ? "heart.fill"
                               : "heart"
-                      
-                          : favoriteIDs.contains(audio.firestoreID)
+                              
+                              : favoriteIDs.contains(audio.firestoreID)
                               ? "heart.fill"
                               : "heart")
+                    }
+                    Button(action: {
+                        audioPlayerModel.play(audio: audio)
+                        isShowingPlayerSheet = true
+                    }) {
+                        Label("Play", systemImage: "play")
+                    }
                 }
-                Button(action: {
-                    audioPlayerModel.play(audio: audio)
-                    isShowingPlayerSheet = true
-                }) {
-                    Label("Play", systemImage: "play")
-                }
-            }
             }
         }
         .shadow(radius: UI.shadowRadius)
