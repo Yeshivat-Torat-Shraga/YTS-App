@@ -58,9 +58,8 @@ struct AudioCardView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(model.audio.name)
-                                .font(.title3)
-                                .bold()
-                                .minimumScaleFactor(0.6)
+                                .font(.headline)
+                                .minimumScaleFactor(0.8)
                                 .foregroundColor(.primary)
                         }
                         

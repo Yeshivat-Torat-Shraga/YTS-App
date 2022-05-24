@@ -108,7 +108,6 @@ struct HomeView: View {
                                 LazyHStack {
                                     ForEach(tags, id: \.name) { tag in
                                         TagTileView(tag)
-                                            .padding(.vertical)
                                             .simultaneousGesture(
                                                 TapGesture()
                                                     .onEnded {
@@ -116,7 +115,7 @@ struct HomeView: View {
                                                     })
                                         
                                     }
-                                }.padding(.horizontal)
+                                }.padding()
                             }
                         } else {
                             HStack {

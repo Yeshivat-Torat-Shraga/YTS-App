@@ -70,6 +70,7 @@ struct ContentCardView<Content: YTSContent>: View {
                             HStack {
                                 Text(content.title)
                                     .font(.headline)
+                                    .bold()
                                     .minimumScaleFactor(0.8)
                                     .lineLimit(2)
                                     .multilineTextAlignment(.leading)
