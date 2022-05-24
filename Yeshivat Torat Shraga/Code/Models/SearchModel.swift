@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 class SearchModel: ObservableObject, ErrorShower {
     @Published var content: AVContent?
@@ -45,10 +46,15 @@ class SearchModel: ObservableObject, ErrorShower {
     }
     
     private func search(_ query: String, contentLimit: Int = 6, rebbeimLimit: Int = 3) {
-        if (query == "") {
+        if (query.trimmingCharacters(in: .whitespacesAndNewlines) == "") {
             print("Query is empty, not searching.")
             return
         }
+        
+        Analytics.logEvent("content_search", parameters: [
+            "search_query": query,
+        ])
+
         
         self.searchQuery = query
         

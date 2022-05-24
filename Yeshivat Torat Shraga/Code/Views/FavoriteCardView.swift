@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct SortableFavoriteCardView<Content: SortableYTSContent>: View {
     let content: Content
@@ -38,9 +39,17 @@ struct FavoritesCardView<Content: YTSContent>: View {
     var body: some View {
         Group {
             Button(action: {
-                if isAudio {
-                    audioPlayerModel.play(audio: content.sortable.audio!)
+                if let audio = content.sortable.audio {
+                    audioPlayerModel.play(audio: audio)
                     isShowingPlayerSheet = true
+                    Analytics.logEvent("opened_content_card", parameters: [
+                        "type": "audio",
+                        "source": "favorites_card",
+                        "content_creator": audio.author.name,
+                        "content_title": audio.title,
+                        "content_length": Int(audio.duration ?? 0),
+                    ])
+
                 } else {
                     //                 Video Player goes here
                 }

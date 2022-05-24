@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MessageUI
+import FirebaseAnalytics
 
 struct Developer: Hashable {
     let name: String
@@ -62,6 +63,9 @@ struct AboutView: View {
                                     .foregroundColor(.white)
                                 Spacer()
                                 Button(action: {
+                                    Analytics.logEvent("developer_email_button", parameters: [
+                                        "developer": developer.name
+                                    ])
                                     sendEmail(to: developer.emailAddress)
                                 }) {
                                     Image(systemName: "envelope")
@@ -74,6 +78,9 @@ struct AboutView: View {
                                 .shadow(radius: UI.shadowRadius)
                                 
                                 Button(action: {
+                                    Analytics.logEvent("developer_github_button", parameters: [
+                                        "developer": developer.name
+                                    ])
                                     let link = URL(string: developer.githubURL)!
                                     UIApplication.shared.open(link)
                                 }) {
@@ -118,6 +125,9 @@ struct AboutView: View {
                         
                         Spacer()
                         Button(action: {
+                            Analytics.logEvent("opened_shraga_webpresence", parameters: [
+                                "destination": "website",
+                            ])
                             let link = URL(string: "https://toratshraga.com")!
                             UIApplication.shared.open(link)
                         }) {
@@ -135,6 +145,10 @@ struct AboutView: View {
 
                         Spacer()
                         Button(action: {
+                            Analytics.logEvent("opened_shraga_webpresence", parameters: [
+                                "destination": "instagram",
+                            ])
+
                             let link = URL(string: "https://www.instagram.com/toratshraga/")!
                             UIApplication.shared.open(link)
                         }) {
@@ -152,6 +166,9 @@ struct AboutView: View {
                         
                         Spacer()
                         Button(action: {
+                            Analytics.logEvent("opened_shraga_webpresence", parameters: [
+                                "destination": "facebook",
+                            ])
                             let link = URL(string: "https://www.facebook.com/toratshraga/")!
                             UIApplication.shared.open(link)
                         }) {
@@ -187,6 +204,7 @@ struct AboutView: View {
             Group {
                 VStack {
                     Button(action: {
+                        Analytics.logEvent("opened_shraga_github", parameters: [:])
                         let link = URL(string: "https://github.com/Yeshivat-Torat-Shraga/YTS-App")!
                         UIApplication.shared.open(link)
                     }) {
@@ -200,9 +218,7 @@ struct AboutView: View {
                             Spacer()
                         }
                     }
-                    .buttonStyle(iOS14BorderedButtonStyle(color: colorScheme == .light
-                                                          ? .white
-                                                          : .shragaBlue))
+                    .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                     .shadow(radius: UI.shadowRadius)
 
                 }
@@ -228,6 +244,9 @@ struct AboutView: View {
                         .foregroundColor(.gray)
                         .onTapGesture(count: 5) {
                             showSecretMessage = true
+                            Analytics.logEvent("triggered_versionnumber_alert", parameters: [
+                                "version_number": "v\(version) (\(build))"
+                            ])
                         }
                 }
             }
@@ -235,6 +254,11 @@ struct AboutView: View {
             if miniPlayerShowing.wrappedValue {
                 Spacer().frame(height: UI.playerBarHeight)
             }
+        }
+        .onAppear {
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "about"
+            ])
         }
         .padding(.horizontal)
         .navigationTitle("About")

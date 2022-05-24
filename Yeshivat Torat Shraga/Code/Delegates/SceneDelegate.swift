@@ -155,7 +155,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 Analytics.logEvent("opened_shared_link", parameters: [
                     "content_creator": audio.author.name,
                     "content_title": audio.title,
-                    "content_length": audio.duration,
+                    "content_length": Int(audio.duration ?? 0),
                 ])
 
 

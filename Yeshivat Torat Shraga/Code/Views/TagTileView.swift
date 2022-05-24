@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct TagTileView: View {
     @State var isShowingSheet = false
@@ -26,7 +27,13 @@ struct TagTileView: View {
     }
     
     var body: some View {
-        Button(action: {isShowingSheet = true}) {
+        Button(action: {
+            isShowingSheet = true
+            Analytics.logEvent("opened_category", parameters: [
+                "category_name": tag.name,
+            ])
+
+        }) {
             if let category = tag as? Category {
                 ZStack {
                     category.icon
