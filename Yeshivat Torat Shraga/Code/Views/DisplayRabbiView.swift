@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct DisplayRabbiView: View {
     @ObservedObject var model: DisplayRabbiModel
@@ -102,6 +103,14 @@ struct DisplayRabbiView: View {
         .onAppear {
             model.favoritesManager = favoritesManager
             model.initialLoad()
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "DisplayRabbi"
+            ])
+            Analytics.logEvent("opened_rabbi_page", parameters: [
+                "name": model.rabbi.name
+            ])
+
+
         }
         
         .navigationTitle(model.rabbi.name)

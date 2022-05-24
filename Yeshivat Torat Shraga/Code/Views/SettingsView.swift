@@ -129,6 +129,11 @@ struct SettingsView: View {
             }, secondaryButton: .cancel())
         }
         .foregroundColor(.blue)
+        .onAppear {
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "Settings"
+            ])
+        }
     }
 }
 

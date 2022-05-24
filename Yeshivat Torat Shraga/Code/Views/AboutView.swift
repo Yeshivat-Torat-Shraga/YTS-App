@@ -257,7 +257,7 @@ struct AboutView: View {
         }
         .onAppear {
             Analytics.logEvent("opened_view", parameters: [
-                "page_name": "about"
+                "page_name": "About"
             ])
         }
         .padding(.horizontal)

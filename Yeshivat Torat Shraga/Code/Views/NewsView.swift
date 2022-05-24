@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct NewsView: View {
     @ObservedObject var model = NewsModel()
@@ -83,6 +84,11 @@ struct NewsView: View {
                     }.hidden()
                 }
             }
+        }
+        .onAppear {
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "News"
+            ])
         }
         .alert(isPresented: $model.showError, content: {
             Alert(

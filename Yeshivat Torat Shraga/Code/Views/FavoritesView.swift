@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct FavoritesView: View {
     @ObservedObject var model = FavoritesModel()
@@ -102,6 +103,9 @@ struct FavoritesView: View {
             }
             .onAppear {
                 model.initialLoad(favorites: favorites)
+                Analytics.logEvent("opened_view", parameters: [
+                    "page_name": "Favorites"
+                ])
             }
             .onChange(of: self.favorites.favoriteIDs) { _ in
                 model.load(favorites: favorites)
