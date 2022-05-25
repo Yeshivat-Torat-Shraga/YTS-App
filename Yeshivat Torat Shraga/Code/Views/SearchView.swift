@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct SearchView: View {
     @ObservedObject var model = SearchModel()
@@ -144,6 +145,11 @@ struct SearchView: View {
         .background(
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
         )
+        .onAppear {
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "Search"
+            ])
+        }
     }
     
     enum SearchOptions: String {

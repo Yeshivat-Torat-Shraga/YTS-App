@@ -39,7 +39,9 @@ struct ContentCardView<Content: YTSContent>: View {
     
     var body: some View {
         Button(action: {
-            Analytics.logEvent("tapped_recently_uploaded", parameters: [
+            Analytics.logEvent("opened_content_card", parameters: [
+                "type": isAudio ? "audio" : "other",
+                "source": "recently_uploaded_card",
                 "content_creator": content.author.name,
                 "content_title": content.title,
                 "content_length": Int(content.duration ?? 0),

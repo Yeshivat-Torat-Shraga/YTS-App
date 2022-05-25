@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MarkdownUI
+import FirebaseAnalytics
 
 struct NewsArticleView: View {
     var article: NewsArticle
@@ -43,6 +44,13 @@ struct NewsArticleView: View {
             if miniPlayerShowing.wrappedValue {
                 Spacer().frame(height: UI.playerBarHeight)
             }
+        }
+        .onAppear {
+            Analytics.logEvent("opened_news_article", parameters: [
+                "title": article.title,
+                "author": article.author
+            ])
+
         }
         .navigationTitle(article.title)
         .toolbar(content: {

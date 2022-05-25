@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseMessaging
+import FirebaseAnalytics
 
 struct SettingsView: View {
     @ObservedObject var model = SettingsModel()
@@ -129,6 +130,11 @@ struct SettingsView: View {
             }, secondaryButton: .cancel())
         }
         .foregroundColor(.blue)
+        .onAppear {
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "Settings"
+            ])
+        }
     }
 }
 
