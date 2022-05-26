@@ -8,6 +8,7 @@ import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 from blake3 import blake3
 from google.cloud.exceptions import NotFound
+import hashlib
 
 PRODUCTION = os.getenv("PRODUCTION")
 
@@ -288,10 +289,9 @@ def shiurim_upload():
         if not os.path.exists("tmp"):
             os.makedirs("tmp")
         file.save("tmp/" + file.filename)
-        # Calculate the blake3 hash of the file
-        with open("tmp/" + file.filename, "rb") as f:
-            file_hash = blake3(f.read()).hexdigest()
-
+        # Calculate the MD5 hash of the file
+        file_hash = hashlib.md5(
+            open("tmp/" + file.filename, "rb").read()).hexdigest()
         duration = ffmpeg.probe("tmp/" + file.filename)["format"]["duration"]
         duration = int(float(duration))
 
