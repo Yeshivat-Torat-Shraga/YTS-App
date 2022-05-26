@@ -177,7 +177,7 @@ def rabbiCreate():
 def shiurim():
     db = firestore.client()
     collection = []
-    for shiur in db.collection("content").get():
+    for shiur in db.collection('content').order_by("date", direction="DESCENDING").get():
         id = shiur.id
         shiur = shiur.to_dict()
         shiur["id"] = id
