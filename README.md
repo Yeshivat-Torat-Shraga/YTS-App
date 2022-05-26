@@ -8,6 +8,9 @@ Official repository for the Yeshivat Torat Shraga app.
 ## What is this repository?
 This is where all code written for the Torat Shraga iOS app and Firebase Uploader WebUI is kept.
 
+## Why is this repository archived?
+An archived repository is read only, meaning that its contents cannot be modified. This is to signify that this is a finished project and will not be updated.
+
 ## What does this app do?
 The app is targeted towards Torat Shraga alumni, as a way for students to keep in touch with the Yeshiva.
 Pictures, news, and recorded _shiurim_ are all available here, allowing students to stay in the loop.
@@ -35,7 +38,7 @@ Here is a non-exhaustive list of the frameworks we used while working on this pr
 - AWS Lightsail
 
 ## When will the iOS app be available?
-This is a tough question to answer, as we haven't perfected our fortune telling abilities, but our ETA is June 2022.
+The app was released to the AppStore on May 22, 2022. You can download it [here](https://apps.apple.com/app/yeshivat-torat-shraga/id1598556472).
 
 ## Are you going to make an Android version?
 Due to the nature of such a project, we currently cannot afford the time to do so. However, we are
