@@ -44,7 +44,7 @@ class HomeModel: ObservableObject, ErrorShower {
         isLoading = true
         
         let group = DispatchGroup()
-
+        
         for _ in 1...thingsToLoad {
             group.enter()
         }
@@ -74,23 +74,23 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
-
+            
             self.recentlyUploadedContent = content
-
+            
             var sortables: [SortableYTSContent] = []
-
+            
             for video in content.videos {
                 sortables.append(video.sortable)
             }
-
+            
             for audio in content.audios {
                 sortables.append(audio.sortable)
             }
-
+            
             self.sortables = sortables.sorted(by: { lhs, rhs in
                 return lhs.date! > rhs.date!
             })
-
+            
             group.leave()
         }
         
@@ -102,7 +102,7 @@ class HomeModel: ObservableObject, ErrorShower {
             self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
                 lhs.uploaded > rhs.uploaded
             })
-
+            
             group.leave()
         }
         
@@ -138,9 +138,9 @@ class HomeModel: ObservableObject, ErrorShower {
         
         group.notify(queue: .main) {
             withAnimation {
-            self.isLoading = false
-            self.hideLoadingScreen?()
-            self.objectWillChange.send()
+                self.isLoading = false
+                self.hideLoadingScreen?()
+                self.objectWillChange.send()
             }
         }
     }

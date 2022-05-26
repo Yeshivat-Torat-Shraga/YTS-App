@@ -1244,7 +1244,7 @@ exports.updateContentData = functions.firestore.document(`content/{contentID}`).
 		var db = admin.firestore();
 		let doc = db.collection('content').doc(ev.after.id);
 
-		doc.set({
+		await doc.set({
 			search_index: components,
 			title: titleFormat(data.title),
 		}, {
@@ -1264,9 +1264,9 @@ exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWr
 		log(`Components for ${data.name}: ${components}`);
 
 		var db = admin.firestore();
-		let doc = db.collection('content').doc(ev.after.id);
+		let doc = db.collection('rebbeim').doc(ev.after.id);
 
-		doc.set({
+		await doc.set({
 			search_index: components,
 			name: nameFormat(data.name),
 		}, {
