@@ -1215,11 +1215,23 @@ exports.reloadDocuments = https.onCall((data, context) => {
 	});
 });
 
+const ignoreWords = [
+	'the',
+	'and',
+	'of',
+	'a',
+	'an',
+	'in',
+	'for',
+	'is',
+	"rabbi"
+];
+
 exports.updateContentData = functions.firestore.document(`content/{contentID}`).onWrite(async ev => {
 	if (ev.after.data != undefined) {
 		let data = ev.after.data();
 		let components = [];
-		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => !ignoreWords.includes(x));
 		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
 		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
 
@@ -1235,6 +1247,28 @@ exports.updateContentData = functions.firestore.document(`content/{contentID}`).
 		doc.set({
 			search_index: components,
 			title: titleFormat(data.title),
+		}, {
+			merge: true
+		});
+	}
+});
+
+exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
+	if (ev.after.data != undefined) {
+		let data = ev.after.data();
+		let components = [];
+		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+
+		components = components.concat(nameComponents);
+
+		log(`Components for ${data.name}: ${components}`);
+
+		var db = admin.firestore();
+		let doc = db.collection('content').doc(ev.after.id);
+
+		doc.set({
+			search_index: components,
+			name: nameFormat(data.name),
 		}, {
 			merge: true
 		});
@@ -1277,10 +1311,28 @@ const lowercase = [
 function titleFormat(s) { 
 	const titleComponents = s.split(' ');
 	const title = titleComponents.map(x => {
-		if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) == -1)) {
+		if (x.length > 1 && (lowercase.indexOf(x.toLowerCase()) == -1)) {
 			return x.replace(/\w\S*/g, function(t) { 
 				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
 			}); 
+		} else if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) != -1)) {
+			return x.toLowerCase();
+		} else {
+			return x;
+		}
+	});
+	return title.join(' ');
+}
+
+function nameFormat(s) { 
+	const titleComponents = s.split(' ');
+	const title = titleComponents.map(x => {
+		if (x.length > 1 && (lowercase.indexOf(x.toLowerCase()) == -1)) {
+			return x.replace(/\w\S*/g, function(t) { 
+				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
+			}); 
+		} else if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) != -1)) {
+			return x.toLowerCase();
 		} else {
 			return x;
 		}
