@@ -10,20 +10,23 @@ import SwiftUI
 class HomeModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     @Published var showAlert: Bool = false
-    var errorToShow: Error?
-    var retry: (() -> Void)?
-    var rootModel: RootModel?
-    var hideLoadingScreen: (() -> Void)?
+    internal var errorToShow: Error?
+    internal var retry: (() -> Void)?
     var showErrorOnRoot: ((Error, (() -> Void)?) -> Void)?
+    
+    var hideLoadingScreen: (() -> Void)?
     var homePageAlertToShow: HomePageAlert? = nil
     private var shouldRetryOnAppCheckFailure = true
-    private let thingsToLoad = ["Rebbeim", "Sortables", "Slideshow images", "Tags"]
     private var appCheckRetryCount = 0
+    @Published internal var isLoading = false
+    
     @Published var recentlyUploadedContent: AVContent?
     @Published var sortables: [SortableYTSContent]?
     @Published var rebbeim: [DetailedRabbi]?
     @Published var slideshowImages: [SlideshowImage]?
     @Published var tags: [Tag]?
+    
+    let thingsToLoad = 4
     
     init() {
         load()
@@ -38,10 +41,11 @@ class HomeModel: ObservableObject, ErrorShower {
     }
     
     func load() {
+        isLoading = true
         
         let group = DispatchGroup()
-
-        for _ in thingsToLoad {
+        
+        for _ in 1...thingsToLoad {
             group.enter()
         }
         
@@ -50,13 +54,15 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.handleAppCheckError(error: error!)
                 return
             }
+            
             guard let rebbeim = results?.rebbeim as? [DetailedRabbi] else {
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
+            
             self.rebbeim = rebbeim
+            
             group.leave()
-
         }
         
         FirebaseConnection.loadContent(options: (limit: 15, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
@@ -68,23 +74,23 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
-
+            
             self.recentlyUploadedContent = content
-
+            
             var sortables: [SortableYTSContent] = []
-
+            
             for video in content.videos {
                 sortables.append(video.sortable)
             }
-
+            
             for audio in content.audios {
                 sortables.append(audio.sortable)
             }
-
+            
             self.sortables = sortables.sorted(by: { lhs, rhs in
                 return lhs.date! > rhs.date!
             })
-
+            
             group.leave()
         }
         
@@ -96,7 +102,7 @@ class HomeModel: ObservableObject, ErrorShower {
             self.slideshowImages = results?.images.sorted(by: { lhs, rhs in
                 lhs.uploaded > rhs.uploaded
             })
-
+            
             group.leave()
         }
         
@@ -120,22 +126,35 @@ class HomeModel: ObservableObject, ErrorShower {
                 self.handleAppCheckError(error: error!)
                 return
             }
+            
             guard let tags = tags else {
                 self.showErrorOnRoot?(error ?? YTSError.unknownError, self.load)
                 return
             }
+            
             self.tags = tags
             group.leave()
         }
         
         group.notify(queue: .main) {
-            self.hideLoadingScreen?()
+            withAnimation {
+                self.isLoading = false
+                self.hideLoadingScreen?()
+                self.objectWillChange.send()
+            }
+        }
+    }
+    
+    func reload() {
+        withAnimation {
+            self.isLoading = true
+            load()
         }
     }
     
     private func handleAppCheckError(error: Error) {
-        if self.appCheckRetryCount > self.thingsToLoad.count * 5 ||
-            self.appCheckRetryCount % (self.thingsToLoad.count + 1) == 0 {
+        if self.appCheckRetryCount > self.thingsToLoad * 5 ||
+            self.appCheckRetryCount % (self.thingsToLoad + 1) == 0 {
             self.showErrorOnRoot?(error , self.load)
             return
         }
