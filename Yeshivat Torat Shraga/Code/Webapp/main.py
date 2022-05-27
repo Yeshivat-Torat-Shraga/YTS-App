@@ -290,7 +290,7 @@ def shiurim_upload():
             os.makedirs("tmp")
         file.save("tmp/" + file.filename)
         # Calculate the MD5 hash of the file
-        file_hash = hashlib.md5(
+        file_hash = hashlib.sha256(
             open("tmp/" + file.filename, "rb").read()).hexdigest()
         duration = ffmpeg.probe("tmp/" + file.filename)["format"]["duration"]
         duration = int(float(duration))
