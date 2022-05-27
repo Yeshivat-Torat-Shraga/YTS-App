@@ -15,7 +15,9 @@ struct LogoView: View {
         case large
         case huge
     }
+    
     var size: logoSize
+    
     var frameSize: (width: CGFloat, height: CGFloat) {
         switch size {
         case .tiny:
@@ -30,6 +32,7 @@ struct LogoView: View {
             return (500, 500)
         }
     }
+    
     var body: some View {
         Image("Logo")
             .resizable()
