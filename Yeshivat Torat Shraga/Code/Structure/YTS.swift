@@ -107,7 +107,7 @@ class DetailedRabbi: Rabbi, URLImageable {
     }
     
     static public var sample: DetailedRabbi =
-        DetailedRabbi(id: "8h33fFYYSIn5V4crue8f", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!)
+        DetailedRabbi(id: "TEST_ID", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!)
     
     /*
     init?(name: String, profileImageURL: URL) throws {
@@ -376,7 +376,7 @@ class Video: YTSContent, URLImageable {
         }
     }
     
-    static let sample = Video(id: "7g5JY4X1bYURqv8votbB",
+    static let sample = Video(id: "TEST_ID",
                               fileID: "testvideo",
                               sourceURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/HLSStreams/video/SSStest.mp4/test.mp4.m3u8")!,
                               title: "Test Video",
@@ -520,7 +520,7 @@ class Audio: YTSContent, Hashable, ObservableObject {
     }
     
     static let sample = Audio(
-        id: "PD9DX0Hf8v1dJPmGMk97",
+        id: "TEST_ID",
         fileID: "RabbiDavid",
         sourceURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/kol-hatorah-kulah.appspot.com/o/content%2FFFF1636709091A637.mp4?alt=media&token=2e9e1526-56f8-404d-8107-c90d69c7a760")!,
         title: "really really really long sample title that should force the card to expand horizontally",
@@ -558,7 +558,7 @@ class Tag: ObservableObject, Hashable {
         lhs.id == rhs.id
     }
     
-    static var sample = Tag("Chagim", id: "FRnpc5twjUYhKfKzb0GT")
+    static var sample = Tag("Chagim", id: "TEST_ID")
 }
 
 // MARK: - Category
