@@ -34,17 +34,14 @@ import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 // import { bucket } from 'firebase-functions/v1/storage';
 const Storage = require('@google-cloud/storage').Storage;
-const Firestore = require('@google-cloud/firestore');
-const firestore = new Firestore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT,
-});
+const functions = require('firebase-functions');
 const FieldValue = admin.firestore.FieldValue;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	// credential: admin.credential.cert(
-	// 	require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
-	// ),
+	credential: admin.credential.cert(
+		require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
+	),
 });
 
 exports.createAlert = https.onCall(async (data, context) => {
@@ -860,32 +857,11 @@ exports.generateThumbnail = storage
 	});
 
 exports.loadCategories = https.onCall(async (callData, context): Promise<LoadData> => {
-	/*
-
-	[{
-		name: "cat1",
-		displayName: "Category 1",
-		subCategories: [{
-			name: "subcat1",
-			displayName: "Subcategory 1"
-		}, {
-			name: "subcat2",
-			displayName: "Subcategory 2"
-		}]
-	}, {
-		name: "cat2",
-		displayName: "Category 2",
-		subCategories: []
-	}, {
-		name: "cat3",
-		displayName: "Category 3",
-		subCategories: []
-	}]
-	 */
-
 	// === APP CHECK ===
 	verifyAppCheck(context);
-	// Right now, there are no options to configure.
+	const queryOptions = {
+		flatList: callData.flatList as boolean,
+	};
 	// This function will load all tags documents from the database and return them in JSON format.
 	const COLLECTION = 'tags';
 	const db = admin.firestore();
@@ -928,8 +904,16 @@ exports.loadCategories = https.onCall(async (callData, context): Promise<LoadDat
 				.filter((subCategory) => subCategory !== null) as TagDocument[];
 		}
 		// Add the category to the list if
-		// it does not have a parentID
-		if (!data.parentID) categories.push(category);
+		// it does not have a parentID OR
+		// we are loading the flat list
+		if (!data.parentID || queryOptions.flatList) categories.push(category);
+		if (queryOptions.flatList) categories = categories.filter((category) => !category.isParent);
+		// Sort alphabetically
+		categories.sort((a, b) => {
+			if (a.displayName < b.displayName) return -1;
+			if (a.displayName > b.displayName) return 1;
+			return 0;
+		});
 	});
 	return {
 		metadata: {
@@ -1198,24 +1182,34 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 exports.reloadDocuments = https.onCall((data, context) => {
 	let collectionName = data.collectionName;
 	var db = admin.firestore();
-	db.collection(collectionName).get().then(async (snapshot) => {
-		snapshot.forEach(async s => {
-			var doc = db.collection(collectionName).doc(s.id);
-			await doc.set({
-				temp: `temp`
-			}, {
-				merge: true
-			}).then(() => {
-				setTimeout(function () {
-					doc.set({
-						temp: FieldValue.delete()
-					}, {
-						merge: true
+	db.collection(collectionName)
+		.get()
+		.then(async (snapshot) => {
+			snapshot.forEach(async (s) => {
+				var doc = db.collection(collectionName).doc(s.id);
+				await doc
+					.set(
+						{
+							temp: `temp`,
+						},
+						{
+							merge: true,
+						}
+					)
+					.then(() => {
+						setTimeout(function () {
+							doc.set(
+								{
+									temp: FieldValue.delete(),
+								},
+								{
+									merge: true,
+								}
+							);
+						}, 10000);
 					});
-				}, 10000);
 			});
 		});
-	});
 });
 
 /*
@@ -1276,43 +1270,49 @@ exports.submitShiur = https.onCall(async (data, context) => {
 });
 */
 
-const ignoreWords = [
-	'the',
-	'and',
-	'of',
-	'a',
-	'an',
-	'in',
-	'for',
-	'is',
-	"rabbi"
-];
+const ignoreWords = ['the', 'and', 'of', 'a', 'an', 'in', 'for', 'is', 'rabbi'];
 
-exports.updateContentData = functions.firestore.document(`content/{contentID}`).onWrite(async ev => {
-	if (ev.after.data != undefined) {
-		let data = ev.after.data();
-		let components = [];
-		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => !ignoreWords.includes(x));
-		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
-		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+exports.updateContentData = functions.firestore
+	.document(`content/{contentID}`)
+	.onWrite(async (ev) => {
+		if (ev.after.data != undefined) {
+			let data = ev.after.data();
+			let components = [];
+			let titleComponents = data.title
+				.replace(/[^a-z\d\s]+/gi, '')
+				.toLowerCase()
+				.split(' ')
+				.filter((x) => !ignoreWords.includes(x));
+			let authorNameComponents = data.author
+				.replace(/[^a-z\d\s]+/gi, '')
+				.toLowerCase()
+				.split(' ')
+				.filter((x) => x != 'rabbi');
+			let tagName = data.tagData.displayName
+				.replace(/[^a-z\d\s]+/gi, '')
+				.toLowerCase()
+				.split(' ');
 
-		components = components.concat(titleComponents);
-		components = components.concat(authorNameComponents);
-		components = components.concat(tagName);
+			components = components.concat(titleComponents);
+			components = components.concat(authorNameComponents);
+			components = components.concat(tagName);
 
-		log(`Components for ${data.title}: ${components}`);
+			log(`Components for ${data.title}: ${components}`);
 
-		var db = admin.firestore();
-		let doc = db.collection('content').doc(ev.after.id);
+			var db = admin.firestore();
+			let doc = db.collection('content').doc(ev.after.id);
 
-		await doc.set({
-			search_index: components,
-			title: titleFormat(data.title),
-		}, {
-			merge: true
-		});
-	}
-});
+			await doc.set(
+				{
+					search_index: components,
+					title: titleFormat(data.title),
+				},
+				{
+					merge: true,
+				}
+			);
+		}
+	});
 
 // exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
 // 	if (ev.after.data != undefined) {
@@ -1359,27 +1359,20 @@ exports.updateContentData = functions.firestore.document(`content/{contentID}`).
 // 	}
 // });
 
-const lowercase = [
-	'the',
-	'and',
-	'of',
-	'a',
-	'an',
-	'in',
-	'for',
-	'is',
-	'zt"l',
-	'zt\'l',
-];
+const lowercase = ['the', 'and', 'of', 'a', 'an', 'in', 'for', 'is', 'zt"l', "zt'l"];
 
-function titleFormat(s) { 
+function titleFormat(s) {
 	const titleComponents = s.split(' ');
-	const title = titleComponents.map(x => {
-		if (x.length > 1 && (lowercase.indexOf(x.toLowerCase()) == -1)) {
-			return x.replace(/\w\S*/g, function(t) { 
-				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
-			}); 
-		} else if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) != -1)) {
+	const title = titleComponents.map((x) => {
+		if (x.length > 1 && lowercase.indexOf(x.toLowerCase()) == -1) {
+			return x.replace(/\w\S*/g, function (t) {
+				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
+			});
+		} else if (
+			x.length > 1 &&
+			titleComponents.indexOf(x) != 0 &&
+			lowercase.indexOf(x.toLowerCase()) != -1
+		) {
 			return x.toLowerCase();
 		} else {
 			return x;
@@ -1388,18 +1381,22 @@ function titleFormat(s) {
 	return title.join(' ');
 }
 
-function nameFormat(s) { 
-	const titleComponents = s.split(' ');
-	const title = titleComponents.map(x => {
-		if (x.length > 1 && (lowercase.indexOf(x.toLowerCase()) == -1)) {
-			return x.replace(/\w\S*/g, function(t) { 
-				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
-			}); 
-		} else if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) != -1)) {
-			return x.toLowerCase();
-		} else {
-			return x;
-		}
-	});
-	return title.join(' ');
-}
+// function nameFormat(s) {
+// 	const titleComponents = s.split(' ');
+// 	const title = titleComponents.map((x) => {
+// 		if (x.length > 1 && lowercase.indexOf(x.toLowerCase()) == -1) {
+// 			return x.replace(/\w\S*/g, function (t) {
+// 				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
+// 			});
+// 		} else if (
+// 			x.length > 1 &&
+// 			titleComponents.indexOf(x) != 0 &&
+// 			lowercase.indexOf(x.toLowerCase()) != -1
+// 		) {
+// 			return x.toLowerCase();
+// 		} else {
+// 			return x;
+// 		}
+// 	});
+// 	return title.join(' ');
+// }
