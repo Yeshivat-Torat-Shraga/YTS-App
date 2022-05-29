@@ -1200,16 +1200,17 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	verifyAppCheck(context);
 
 	log(`Submitting shiur: ${JSON.stringify(data)}`);
-	const filename = data.filename;
+	const submissionData = data.submission;
+	const filename = submissionData.filename;
 
 	const submission: SubmittedContentDocument = {
-		attributionID: data.attributionID,
-		title: data.title,
-		description: data.description,
-		duration: data.duration,
-		date: data.date,
-		type: data.type,
-		tagID: data.tagID
+		attributionID: submissionData.attributionID,
+		title: submissionData.title,
+		description: submissionData.description,
+		duration: submissionData.duration,
+		date: submissionData.date,
+		type: submissionData.type,
+		tagID: submissionData.tagID
 	};
 
 	// check that there is a attributionID
