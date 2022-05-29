@@ -1,4 +1,4 @@
-import admin, { auth } from 'firebase-admin';
+import admin from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
@@ -1277,7 +1277,11 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 			name: tag.name,
 			displayName: tag.displayName,
 		},
-		pending: true
+		upload_data: {
+			pending: true,
+			uid: context.auth.uid,
+			timestamp: FirebaseFirestore.Timestamp.now(),
+		},
 	};
 
 	log(`Shiur passed auto-inspection. Uploading to Firebase...`);
@@ -1287,7 +1291,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	const db = admin.firestore();
 
 	try {
-	await db.collection("content").doc().set(prospectiveContent);
+		await db.collection("content").doc().set(prospectiveContent);
 		log(`Shiur uploaded to Firebase.`);
 	} catch (err) {
 		log(`Error uploading to Firebase: ${err}`);
