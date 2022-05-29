@@ -68,12 +68,11 @@ export interface ProspectiveContentDocument {
 		name: string;
 		displayName: string;
 	};
-	pending: boolean;
 	upload_data: {
 		pending: boolean;
 		uid: string;
 		timestamp: FirebaseFirestore.Timestamp;
-	}
+	};
 }
 
 export interface ContentDocument {
