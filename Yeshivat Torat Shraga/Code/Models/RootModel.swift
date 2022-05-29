@@ -21,7 +21,8 @@ class RootModel: ObservableObject, ErrorShower {
     @Published var favoritesView: FavoritesView
     @Published var newsView: NewsView
     @Published var settingsView: SettingsView
-
+    @Published var submitContentView = SubmitContentView()
+    
     @Published var alert: Alert?
     
 //    @EnvironmentObject var audioPlayerModel: AudioPlayerModel

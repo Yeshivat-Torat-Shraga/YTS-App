@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08173F0228400ADB004FC42F /* SubmitContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08173F0128400ADB004FC42F /* SubmitContentView.swift */; };
+		08173F072840ACB9004FC42F /* SubmitContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08173F062840ACB9004FC42F /* SubmitContentModel.swift */; };
+		08173F0B2840B7C7004FC42F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 08173F0A2840B7C7004FC42F /* FirebaseAuth */; };
 		0827C1E4283A35CE00566B04 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0827C1E3283A35CE00566B04 /* MarkdownUI */; };
 		082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A22833EBE80002EB78 /* ParentTagView.swift */; };
 		082872A52833ED290002EB78 /* ParentTagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A42833ED290002EB78 /* ParentTagModel.swift */; };
@@ -93,6 +96,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		08173F0128400ADB004FC42F /* SubmitContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitContentView.swift; sourceTree = "<group>"; };
+		08173F062840ACB9004FC42F /* SubmitContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitContentModel.swift; sourceTree = "<group>"; };
 		082872A22833EBE80002EB78 /* ParentTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagView.swift; sourceTree = "<group>"; };
 		082872A42833ED290002EB78 /* ParentTagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagModel.swift; sourceTree = "<group>"; };
 		083AE1022799A770003A36ED /* NewsArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleView.swift; sourceTree = "<group>"; };
@@ -166,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F25AEDFF27FECF8400DCB79F /* FirebaseMessaging in Frameworks */,
+				08173F0B2840B7C7004FC42F /* FirebaseAuth in Frameworks */,
 				F25AEDF227FECCFD00DCB79F /* FirebaseAppCheck in Frameworks */,
 				F25AEDF627FECCFD00DCB79F /* FirebaseFirestore in Frameworks */,
 				0827C1E4283A35CE00566B04 /* MarkdownUI in Frameworks */,
@@ -268,6 +274,7 @@
 				F22C91392770A260007A9424 /* SearchView.swift */,
 				08756445275E6EC300D22856 /* SettingsView.swift */,
 				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
+				08173F0128400ADB004FC42F /* SubmitContentView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
@@ -291,6 +298,7 @@
 				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
 				08A05B2427653DAA00FEE15F /* TagModel.swift */,
 				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
+				08173F062840ACB9004FC42F /* SubmitContentModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -382,6 +390,7 @@
 				F25AEDFC27FECEEB00DCB79F /* SwiftyGif */,
 				F25AEDFE27FECF8400DCB79F /* FirebaseMessaging */,
 				0827C1E3283A35CE00566B04 /* MarkdownUI */,
+				08173F0A2840B7C7004FC42F /* FirebaseAuth */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -463,6 +472,7 @@
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */,
 				F2D78B71278695EB003996A8 /* Favorites.swift in Sources */,
+				08173F0228400ADB004FC42F /* SubmitContentView.swift in Sources */,
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				F29B6875283B8E0000ECA1A6 /* AutoLoadMoreBarView.swift in Sources */,
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
@@ -499,6 +509,7 @@
 				08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */,
 				F2D6E2C328328137000917D2 /* iOS14BorderedButtonStyle.swift in Sources */,
 				08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */,
+				08173F072840ACB9004FC42F /* SubmitContentModel.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -842,6 +853,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		08173F0A2840B7C7004FC42F /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
 		0827C1E3283A35CE00566B04 /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0827C1E2283A35CE00566B04 /* XCRemoteSwiftPackageReference "MarkdownUI" */;
