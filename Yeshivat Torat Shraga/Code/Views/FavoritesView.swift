@@ -9,14 +9,17 @@ import SwiftUI
 import FirebaseAnalytics
 
 struct FavoritesView: View {
-    @ObservedObject var model = FavoritesModel()
     @EnvironmentObject var favorites: Favorites
+    @ObservedObject var model: FavoritesModel
     @State var presentingSearchView = false
+    
+    @State var searchView = SearchView()
     
     var miniPlayerShowing: Binding<Bool>
     
     init(miniPlayerShowing: Binding<Bool>) {
         self.miniPlayerShowing = miniPlayerShowing
+        self.model = FavoritesModel()
     }
     
     var body: some View {
@@ -102,7 +105,7 @@ struct FavoritesView: View {
                 }
             }
             .onAppear {
-                model.initialLoad(favorites: favorites)
+                model.load(favorites: favorites)
                 Analytics.logEvent("opened_view", parameters: [
                     "page_name": "Favorites"
                 ])
@@ -112,10 +115,8 @@ struct FavoritesView: View {
             }
         }
         .sheet(isPresented: $presentingSearchView) {
-            NavigationView {
-                SearchView()
+                searchView
                     .background(BackgroundClearView())
-            }
         }
     }
 }

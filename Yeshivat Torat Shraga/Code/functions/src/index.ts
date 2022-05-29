@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
+// import * as functions from 'firebase-functions';
 
 import os from 'os';
 import {
@@ -34,10 +35,7 @@ import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 // import { bucket } from 'firebase-functions/v1/storage';
 const Storage = require('@google-cloud/storage').Storage;
-const Firestore = require('@google-cloud/firestore');
-const firestore = new Firestore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT,
-});
+const functions = require("firebase-functions")
 const FieldValue = admin.firestore.FieldValue;
 
 admin.initializeApp({
@@ -1218,64 +1216,6 @@ exports.reloadDocuments = https.onCall((data, context) => {
 	});
 });
 
-/*
-exports.submitShiur = https.onCall(async (data, context) => {
-	// verifyAppCheck(context);
-
-	const filename = data.filename.replace(/\s/g, '_');
-	const file = data.file;
-
-	log(`Submitting file ${filename}`);
-
-	const storage = new Storage({
-        keyFilename: "yeshivat-torat-shraga-1358031cf751.json",
-      });
-	const bucket = storage.bucket("default-bucket");
-	log('Using bucket: ' + bucket.name);
-
-	await bucket.upload(file, {
-		destination: `content/${filename}`,
-		metadata: {
-			'Cache-Control': 'public,max-age=3600',
-		}
-	});
-	log(`Uploaded file ${filename} to storage`);
-
-
-
-
-	// const db = admin.firestore();
-	// const contentCollection = db.collection('content');
-
-	// const contentDocument: ContentDocument = {
-	// 	id: data.id,
-	// 	fileID: data.fileID,
-	// 	attributionID: data.attributionID,
-	// 	title: data.title,
-	// 	description: data.description,
-	// 	duration: data.duration,
-	// 	date: data.date,
-	// 	type: data.type,
-	// 	source_url: data.source_url,
-	// 	author: data.author,
-	// 	tagData: data.tagData
-	// }
-
-	// const rebbeimDocument = {
-	// 	name: await getNameFor(attributionID),
-	// 	profile_picture_filename: await getProfilePictureFor(attributionID),
-	// };
-
-	// const contentDocRef = await contentCollection.add(contentDocument);
-	// const rebbeimDocRef = await rebbeimCollection.add(rebbeimDocument);
-
-	// return {
-	// 	contentDocRef,
-	// 	rebbeimDocRef,
-	// };
-});
-*/
-
 const ignoreWords = [
 	'the',
 	'and',
@@ -1314,30 +1254,27 @@ exports.updateContentData = functions.firestore.document(`content/{contentID}`).
 	}
 });
 
-// exports.updateContentData = firestore.document(`content/{contentID}`).onWrite(async ev => {
-// 	if (ev.after.data != undefined) {
-// 		let data = ev.after.data();
-// 		let components = [];
-// 		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
-// 		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
-// 		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
+	if (ev.after.data != undefined) {
+		let data = ev.after.data();
+		let components = [];
+		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
 
-// 		components = components.concat(titleComponents);
-// 		components = components.concat(authorNameComponents);
-// 		components = components.concat(tagName);
+		components = components.concat(nameComponents);
 
-// 		log(`Components for ${data.title}: ${components}`);
+		log(`Components for ${data.name}: ${components}`);
 
-// 		var db = admin.firestore();
-// 		let doc = db.collection('content').doc(ev.after.id);
+		var db = admin.firestore();
+		let doc = db.collection('rebbeim').doc(ev.after.id);
 
-// 		doc.set({
-// 			search_index: components
-// 		}, {
-// 			merge: true
-// 		});
-// 	}
-// });
+		await doc.set({
+			search_index: components,
+			name: nameFormat(data.name),
+		}, {
+			merge: true
+		});
+	}
+});
 
 // exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
 // 	if (ev.after.data != undefined) {
