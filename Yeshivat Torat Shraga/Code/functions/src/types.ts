@@ -43,6 +43,34 @@ export interface RebbeimDocument {
 	profile_picture_url: string;
 }
 
+export interface SubmittedContentDocument {
+	attributionID: string;
+	title: string;
+	description: string;
+	duration: number;
+	date: FirebaseFirestore.Timestamp;
+	type: string;
+	tagID: string;
+}
+
+export interface ProspectiveContentDocument {
+	fileID: string;
+	attributionID: string;
+	title: string;
+	description: string;
+	duration: number;
+	date: FirebaseFirestore.Timestamp;
+	type: string;
+	source_url: string;
+	author: Author
+	tagData: {
+		id: string;
+		name: string;
+		displayName: string;
+	};
+	pending: boolean;
+}
+
 export interface ContentDocument {
 	id: string;
 	fileID: string;

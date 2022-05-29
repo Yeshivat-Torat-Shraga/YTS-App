@@ -1,4 +1,4 @@
-import admin from 'firebase-admin';
+import admin, { auth } from 'firebase-admin';
 import { https, storage, logger } from 'firebase-functions';
 import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import childProcessPromise from 'child-process-promise';
@@ -14,10 +14,12 @@ import {
 	LoadData,
 	NewsDocument,
 	NewsFirebaseDocument,
+	ProspectiveContentDocument,
 	RebbeimDocument,
 	RebbeimFirebaseDocument,
 	SlideshowImageDocument,
 	SlideshowImageFirebaseDocument,
+	SubmittedContentDocument,
 	TagDocument,
 	TagFirebaseDocument,
 } from './types';
@@ -28,6 +30,7 @@ import {
 	strippedFilename,
 	supplyDefaultParameters,
 	verifyAppCheck,
+	getTagFor,
 	// ENABLEAPPCHECK,
 } from './helpers';
 import path from 'path';
@@ -1193,6 +1196,109 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	return result;
 });
 
+exports.submitShiur = functions.https.onCall(async (data, context) => {
+	verifyAppCheck(context);
+
+	log(`Submitting shiur: ${JSON.stringify(data)}`);
+	const filename = data.filename;
+
+	const submission: SubmittedContentDocument = {
+		attributionID: data.attributionID,
+		title: data.title,
+		description: data.description,
+		duration: data.duration,
+		date: data.date,
+		type: data.type,
+		tagID: data.tagID
+	};
+
+	// check that there is a attributionID
+	if (!submission.attributionID || submission.attributionID.length === 0) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+
+	// find author for attributionID
+	const author = await getRabbiFor(submission.attributionID, false);
+	if (!author) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+	
+
+	// check that there is a title
+	if (!submission.title || submission.title.length === 0) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+
+	// check that there is a description
+	if (!submission.description) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+
+	// check that there is a duration
+	if (!submission.duration || submission.duration < 60) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+
+	// check that there is a date
+	if (!submission.date) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+	
+	//  only allow type audio
+	if (submission.type != 'audio') {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+
+	// check that there is a tagID
+	if (!submission.tagID || submission.tagID.length === 0) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+	// find tag for tagID
+	const tag = await getTagFor(submission.tagID);
+	if (!tag) {
+		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	}
+
+	const fileID = generateFileID(filename);
+
+	//  create a prospective content document
+	const prospectiveContent: ProspectiveContentDocument = {
+		fileID: fileID,
+		attributionID: submission.attributionID,
+		title: submission.title,
+		description: submission.description,
+		duration: submission.duration,
+		date: submission.date,
+		type: submission.type,
+		source_url: `HLSStreams/${submission.type}/${fileID}.m3u8`,
+		author: author,
+		tagData: {
+			id: tag.id,
+			name: tag.name,
+			displayName: tag.displayName,
+		},
+		pending: true
+	};
+
+	log(`Shiur passed auto-inspection. Uploading to Firebase...`);
+
+	// upload to firebase
+
+	const db = admin.firestore();
+
+	try {
+	await db.collection("content").doc().set(prospectiveContent);
+		log(`Shiur uploaded to Firebase.`);
+	} catch (err) {
+		log(`Error uploading to Firebase: ${err}`);
+		throw new functions.https.HttpsError('internal', 'error uploading');
+	}
+});
+
+function generateFileID(filename: string): string {
+	return strippedFilename(filename);
+}
+
 exports.reloadDocuments = https.onCall((data, context) => {
 	let collectionName = data.collectionName;
 	var db = admin.firestore();
@@ -1275,26 +1381,6 @@ exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWr
 		});
 	}
 });
-
-// exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
-// 	if (ev.after.data != undefined) {
-// 		let data = ev.after.data();
-// 		let components = [];
-// 		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
-
-// 		components = components.concat(nameComponents);
-
-// 		const db = admin.firestore();
-// 		let doc = db.collection('rebbeim').doc(ev.after.id);
-
-// 		doc.set({
-// 			search_index: components,
-// 			reversed_name: nameComponents.reverse().join(' ')
-// 		}, {
-// 			merge: true
-// 		});
-// 	}
-// });
 
 const lowercase = [
 	'the',
