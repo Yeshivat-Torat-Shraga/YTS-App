@@ -1,0 +1,101 @@
+{% extends 'base.html' %} {% block content %}
+<link rel="stylesheet" href="/static/bootstrap-datetimepicker.min.css">
+<script src="/static/bootstrap-datetimepicker.min.js"></script>
+<style>
+  td i.fa {
+    color: lightskyblue
+  }
+</style>
+<form action="#" method="post">
+  <div class="form-group">
+    <label for="title">Title<span>Use title case to get a better result</span></label>
+    <input type="text" name="title" id="title" class="form-control"
+      placeholder="The title that will show up in the Shraga App" value="{{ shiur.title }}" required />
+  </div>
+
+  <!-- <div class="form-group">
+    <label for="description">
+      Description
+      <span>Small bite-size discription of the shiur</span>
+    </label>
+    <input type="text" name="description" id="description" class="form-control"
+      placeholder="An optional description that will be displayed in the app" />
+  </div> -->
+
+  <div class="form-group">
+    <label for="author">
+      Author
+      <span>Pick the Rebbi this shiur will be attributed to</span>
+    </label>
+    <select name="author" id="rabbi" class="form-control" required>
+      {% for rabbi in rabbis %}
+      <option value="{{ rabbi.id }}~{{ rabbi.name }}" {% if rabbi.id == shiur.attributionID %} selected {% endif %}
+        {{ rabbi.name }}>{{ rabbi.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="tags">
+      Category
+      <span>Select a category to be associated with this Shiur.</span>
+    </label>
+
+    <select name="tag" id="tags" class="form-control" required>
+      {% for tag in tags %}
+      {% if not tag.isParent %}
+      <option value="{{ tag.id }}" {% if tag.id == shiur.tagID %} selected {% endif %}>{{ tag.displayName }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group" style="display:none;">
+    <label for="type">
+      File Type<span>Choose the type of file you are uploading</span>
+    </label>
+    <select name="type" id="type" class="form-control" required>
+      <option selected value="audio">Audio recording</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="date">
+      Date<span>Select the time and date of the recording. Default is now.</span>
+    </label>
+    <input type="text" name="date" id="datePicker" class="form-control"
+      style="background-color:rgba(255, 255, 255, 0.2)" readonly required>
+  </div>
+
+  <!-- Show an audio element with an HLS source. the source is from shiur.contentLink -->
+
+  <div class="form-group file-area">
+    <label for="file">
+      Audio<span>There are known issues playing audio with Google Chrome.</span>
+      <span>Do <strong>not</strong> approve shiurim without reviewing the audio.</span>
+    </label>
+    <audio controls>
+      <source src="{{ shiur.contentLink }}" type="application/x-mpegURL">
+    </audio>
+  </div>
+
+  <br />
+</form>
+
+<form action="/shiurim/pending/{{shiur.id}}" method="post">
+  <!-- show two buttons: Approve, and Delete. Send a form response accordingly -->
+  <div class="form-group">
+    <button type="submit" class="btn btn-success" name="approval_status" value="approved">Approve</button>
+    <button type="submit" class="btn btn-danger" name="approval_status" value="denied">Delete</button>
+  </div>
+</form>
+
+<script>
+  $('#datePicker').datetimepicker({
+    format: 'YYYY-MM-DD HH:mm:ss',
+    defaultDate: new Date('{{shiur.date}}'),
+    sideBySide: true,
+    ignoreReadonly: true,
+  });
+</script>
+{% endblock content %}
