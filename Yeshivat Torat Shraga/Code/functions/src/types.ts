@@ -61,8 +61,8 @@ export interface ProspectiveContentDocument {
 	duration: number;
 	date: FirebaseFirestore.Timestamp;
 	type: string;
-	source_url: string;
-	author: Author
+	source_path: string;
+	author: string;
 	tagData: {
 		id: string;
 		name: string;
