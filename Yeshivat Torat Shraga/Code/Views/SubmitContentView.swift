@@ -80,7 +80,7 @@ struct SubmitContentView: View {
                     
                 }
                 .fileImporter(isPresented: $showingDocumentSelectSheet,
-                              allowedContentTypes: [.audio, .audiovisualContent, .data]) { result in
+                              allowedContentTypes: [.audio, .audiovisualContent]) { result in
                     guard let url = try? result.get() else {
                         // Show an error alert or something
                         return
