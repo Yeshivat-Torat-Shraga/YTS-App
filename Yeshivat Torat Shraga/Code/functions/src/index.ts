@@ -56,14 +56,17 @@ exports.createAlert = https.onCall(async (data, context) => {
 	if (!data.body || typeof data.body !== 'string') return 'Body is required';
 	if (!data.dateIssued || typeof data.dateIssued !== 'string') return 'Invalid dateIssued';
 	if (!data.dateExpired || typeof data.dateExpired !== 'string') return 'Invalid dateExpired';
+
 	const db = admin.firestore();
 	const COLLECTION = 'alerts';
+
 	const doc = await db.collection(COLLECTION).add({
 		title: data.title,
 		body: data.body,
 		dateIssued: new Date(data.dateIssued),
 		dateExpired: new Date(data.dateExpired),
 	});
+	
 	return 'Created an alert with ID: ' + doc.id;
 });
 
@@ -74,6 +77,7 @@ exports.createNotification = https.onCall(async (data, context): Promise<string>
 		title: data.title,
 		body: data.body,
 	};
+	
 	// Make sure title and body are non-empty strings
 	if (
 		typeof payload.title !== 'string' ||
@@ -85,20 +89,18 @@ exports.createNotification = https.onCall(async (data, context): Promise<string>
 		return 'Invalid notification payload';
 	}
 
-	return await admin
-		.messaging()
-		.send({
+	try {
+		let res = await admin.messaging().send({
 			notification: payload,
 			topic: 'all',
-		})
-		.then((response) => {
-			logger.info('Successfully sent message:', response);
-			return `Successfully sent message: ${response}`;
-		})
-		.catch((error) => {
-			logger.error('Error sending message:', error);
-			return `Error sending message: ${error}`;
 		});
+
+		log('Successfully sent notification: ' + JSON.stringify(res));
+		return `Successfully sent message: ${res}`;
+	} catch (err) {
+		log('Error sending notification: ' + err);
+		return 'Error sending notification: ' + err;
+	}
 });
 
 exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
@@ -367,12 +369,17 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 	let unfilteredContentDocs: (ContentDocument | null)[] = await Promise.all(
 		documentIDs.map(async (docID) => {
 			// Fetch the document with the specified ID from Firestore.
-			const snapshot = await db.collection(COLLECTION).doc(docID).get();
-			// If the document does not exist, return null
-			if (!snapshot.exists) return null;
+			const snapshot = await db.collection(COLLECTION)
+			.doc(docID)
+			.get();
+
+			const rawData = snapshot.data();
+			if (!rawData) return null;
+			if (rawData!.pending == true) return null;
+
 			// Get the document data
 			try {
-				var data = new ContentFirebaseDocument(snapshot.data()!);
+				var data = new ContentFirebaseDocument(rawData!);
 			} catch {
 				return null;
 			}
@@ -396,7 +403,8 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 					type: data.type,
 					source_url: sourcePath,
 					author: author,
-					tagData,
+					tagData: tagData,
+					pending: data.pending,
 				};
 			} catch (err) {
 				log(`Error getting data for docID: '${docID}': ${err}`, true);
@@ -576,7 +584,9 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const COLLECTION = 'content';
 	const db = admin.firestore();
-	let query = db.collection(COLLECTION).orderBy('date', 'desc');
+	let query = db.collection(COLLECTION)
+	.where('pending', '==', false)
+	.orderBy('date', 'desc');
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
@@ -685,7 +695,8 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					type: data.type,
 					source_url: sourcePath,
 					author: author,
-					tagData,
+					tagData: tagData,
+					pending: data.pending,
 				};
 			} catch (err) {
 				log(`Error getting data for docID: '${doc.id}': ${err}`, true);
@@ -1045,6 +1056,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 			switch (collectionName) {
 				case 'content':
+					query = query.where('pending', '==', false) as any;
 					query = query.orderBy('date', 'desc') as any;
 					break;
 				case 'rebbeim':
@@ -1119,7 +1131,8 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 						type: data.type,
 						source_url: sourcePath,
 						author: author,
-						tagData,
+						tagData: tagData,
+						pending: data.pending,
 					};
 				} catch (err) {
 					errors.push(err as string);
@@ -1278,8 +1291,8 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 			name: tag.name,
 			displayName: tag.displayName,
 		},
+		pending: true,
 		upload_data: {
-			pending: true,
 			uid: context.auth.uid,
 			timestamp: FirebaseFirestore.Timestamp.now(),
 		},
@@ -1292,7 +1305,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	const db = admin.firestore();
 
 	try {
-		await db.collection("content").doc().set(prospectiveContent);
+		await db.collection("content").add(prospectiveContent);
 		log(`Shiur uploaded to Firebase.`);
 	} catch (err) {
 		log(`Error uploading to Firebase: ${err}`);
@@ -1358,7 +1371,7 @@ exports.updateContentData = functions.firestore.document(`content/{contentID}`).
 
 		await doc.set({
 			search_index: components,
-			title: titleFormat(data.title),
+			title: titleFormat(data.title)
 		}, {
 			merge: true
 		});

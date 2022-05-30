@@ -68,8 +68,8 @@ export interface ProspectiveContentDocument {
 		name: string;
 		displayName: string;
 	};
+	pending: boolean;
 	upload_data: {
-		pending: boolean;
 		uid: string;
 		timestamp: FirebaseFirestore.Timestamp;
 	};
@@ -91,6 +91,7 @@ export interface ContentDocument {
 		name: string;
 		displayName: string;
 	};
+	pending: boolean;
 }
 
 export interface TagDocument {
@@ -196,6 +197,7 @@ export class ContentFirebaseDocument {
 	};
 	title: string;
 	type: string;
+	pending: boolean;
 	viewCount?: number;
 
 	constructor(data: FirebaseFirestore.DocumentData) {
@@ -212,7 +214,8 @@ export class ContentFirebaseDocument {
 			isString(data.tagData.name) &&
 			isString(data.tagData.displayName) &&
 			isString(data.title) &&
-			isString(data.type)
+			isString(data.type) &&
+			typeof data.pending === 'boolean'
 		) {
 			this.attributionID = data.attributionID;
 			this.author = data.author;
@@ -224,6 +227,7 @@ export class ContentFirebaseDocument {
 			this.tagData = data.tagData;
 			this.title = data.title;
 			this.type = data.type;
+			this.pending = data.pending;
 			this.viewCount = data.viewCount;
 		} else initFailure(data);
 	}
