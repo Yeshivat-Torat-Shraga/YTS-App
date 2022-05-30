@@ -1221,7 +1221,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		title: submissionData.title,
 		description: submissionData.description,
 		duration: submissionData.duration,
-		date: submissionData.date,
+		date: submissionData.date || new Date(),
 		type: submissionData.type,
 		tagID: submissionData.tagID
 	};
@@ -1250,11 +1250,6 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	// check that there is a duration
 	if (!submission.duration || submission.duration < 60) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
-	}
-
-	// check that there is a date
-	if (!submission.date) {
 		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
 	}
 	
