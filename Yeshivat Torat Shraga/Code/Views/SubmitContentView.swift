@@ -7,10 +7,10 @@
 
 import SwiftUI
 import FirebaseStorage
+import AVFoundation
 
 struct SubmitContentView: View {
     @State private var showingDocumentSelectSheet = false
-    @State private var fileDisplayName: String? = nil
     @State private var url = URL(string: "")
     @ObservedObject private var model = SubmitContentModel()
     var body: some View {
@@ -41,7 +41,7 @@ struct SubmitContentView: View {
                         // Picker or navlink for author selection
                         // Picker or navlink for category selection
                         Button(action: {showingDocumentSelectSheet = true}) {
-                            if let fileDisplayName = fileDisplayName {
+                            if let fileDisplayName = model.fileDisplayName {
                                 Text(fileDisplayName)
                             } else {
                                 Text("Select a file to upload")
@@ -56,10 +56,7 @@ struct SubmitContentView: View {
                                     model.author.firestoreID != DetailedRabbi.sample.firestoreID &&
                                     model.category.id != Tag.sample.id &&
                                     model.contentURL != nil) {
-                                    model.submitContent(title: model.title,
-                                                        author: model.author,
-                                                        contentURL: model.contentURL!,
-                                                        category: model.category)
+                                    model.submitContent()
                                 }
                             }) {
                                 Text("Submit shiur")
@@ -86,8 +83,10 @@ struct SubmitContentView: View {
                         return
                     }
                     model.contentURL = url
-                    fileDisplayName = url.pathComponents.last!
-                    //                    model.updateSubmissionStatus()
+                    var asset = AVAsset(url: url) as AVAsset?
+                    model.contentDuration = Int(asset!.duration.seconds)
+                    asset = nil
+                    model.fileDisplayName = url.pathComponents.last!
                 }
             }
             .navigationTitle("New Shiur")
