@@ -1196,58 +1196,82 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	verifyAppCheck(context);
 
 	log(`Submitting shiur: ${JSON.stringify(data)}`);
-	const submissionData = data.submission;
-	const filename = submissionData.filename;
+	const filename = data.filename;
 
 	const submission: SubmittedContentDocument = {
-		attributionID: submissionData.attributionID,
-		title: submissionData.title,
-		description: submissionData.description,
-		duration: submissionData.duration,
-		date: submissionData.date || new Date(),
-		type: submissionData.type,
-		tagID: submissionData.tagID,
+		attributionID: data.attributionID,
+		title: data.title,
+		description: data.description,
+		duration: data.duration,
+		date: data.date || new Date(),
+		type: data.type,
+		tagID: data.tagID,
 	};
 
 	// check that there is a attributionID
 	if (!submission.attributionID || submission.attributionID.length === 0) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
 	}
 
 	// find author for attributionID
 	const author = await getRabbiFor(submission.attributionID, false);
 	if (!author) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
 	}
 
 	// check that there is a title
 	if (!submission.title || submission.title.length === 0) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
 	}
 
 	// check that there is a description
 	if (!submission.description) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		submission.description = '';
+		// return {
+		// 	status: 'denied',
+		// 	message: 'Insufficient data',
+		// };
 	}
 
 	// check that there is a duration
 	if (!submission.duration || submission.duration < 60) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
 	}
 
 	//  only allow type audio
-	if (submission.type != 'audio') {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+	if (submission.type != 'audio' && submission.type != 'video') {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
 	}
 
 	// check that there is a tagID
 	if (!submission.tagID || submission.tagID.length === 0) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
 	}
 	// find tag for tagID
 	const tag = await getTagFor(submission.tagID);
 	if (!tag) {
-		throw new functions.https.HttpsError('invalid-argument', 'invalid or insufficient data');
+		return {
+			status: 'denied',
+			message: 'Bad data',
+		};
 	}
 
 	const fileID = generateFileID(filename);
@@ -1261,8 +1285,8 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		duration: submission.duration,
 		date: submission.date,
 		type: submission.type,
-		source_url: `HLSStreams/${submission.type}/${fileID}.m3u8`,
-		author: author,
+		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
+		author: author.name,
 		tagData: {
 			id: tag.id,
 			name: tag.name,
@@ -1270,8 +1294,9 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		},
 		pending: true,
 		upload_data: {
+			// Note: Clients are authenticated via anonyomous auth
 			uid: context.auth.uid,
-			timestamp: FirebaseFirestore.Timestamp.now(),
+			timestamp: admin.firestore.Timestamp.now(),
 		},
 	};
 
@@ -1284,9 +1309,16 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	try {
 		await db.collection('content').add(prospectiveContent);
 		log(`Shiur uploaded to Firebase.`);
+		return {
+			status: 'success',
+			message: 'Shiur submitted',
+		};
 	} catch (err) {
 		log(`Error uploading to Firebase: ${err}`);
-		throw new functions.https.HttpsError('internal', 'error uploading');
+		return {
+			status: 'denied',
+			message: 'Internal error',
+		};
 	}
 });
 
