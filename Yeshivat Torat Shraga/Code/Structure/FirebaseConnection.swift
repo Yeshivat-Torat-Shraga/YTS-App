@@ -19,14 +19,31 @@ final class FirebaseConnection {
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
     // MARK: - SubmitContent()
-    static func submitContent(title: String, contentHash: String, author: Rabbi, category: Tag, completion: @escaping (_ metadata: Any?, _ error: Error?) -> Void) {
+    static func submitContent(title: String, contentHash: String, author: Rabbi, category: Tag, duration: Int, completion: @escaping (_ metadata: [String: String]?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
             "title": title,
-            "hash": contentHash,
-            "authorID": author.firestoreID,
-            "categoryID": category.id
+            "filename": contentHash,
+            "attributionID": author.firestoreID,
+            "tagID": category.id,
+            "duration": duration,
+            "type": "audio"
         ]
-        functions.httpsCallable("submitContent").call(data) { callResult, callError in
+        functions.httpsCallable("submitShiur").call(data) { callResult, callError in
+            guard let result = callResult?.data as? [String: Any] else {
+                print("no data received")
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            guard let status = result["status"] as? String,
+                  let message = result["message"] as? String
+            else {
+                completion(nil, YTSError.invalidDataReceived)
+                return
+            }
+            completion([
+                "status": status,
+                "message": message
+            ], nil)
             
         }
     }
