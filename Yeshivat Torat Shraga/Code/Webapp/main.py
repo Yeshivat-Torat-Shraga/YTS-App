@@ -32,31 +32,36 @@ cached_rebbeim = []
 cached_tags = []
 
 
+@app.route("/refresh_cache")
 def refresh_cache():
     print("Refreshing cache")
     global cached_rebbeim
     global cached_tags
     cached_rebbeim = []
     cached_tags = []
-    for collection in ['rebbeim', 'tags']:
-        for element in db.collection(collection).get():
-            id = element.id
-            element = element.to_dict()
-            element["id"] = id
-            if collection == "rebbeim":
-                cached_rebbeim.append(element)
-            else:
-                cached_tags.append(element)
+    for rabbi in db.collection("rebbeim").get():
+        id = rabbi.id
+        rabbi = rabbi.to_dict()
+        rabbi["id"] = id
+        blob = bucket.get_blob(
+            f"profile-pictures/{rabbi['profile_picture_filename']}")
+        url = blob.generate_signed_url(timedelta(seconds=60 * 60))
+        rabbi["imgURL"] = url
+        cached_rebbeim.append(rabbi)
+    for tag in db.collection("tags").get():
+        id = tag.id
+        tag = tag.to_dict()
+        tag["id"] = id
+        cached_tags.append(tag)
     cached_rebbeim.sort(key=lambda x: x["name"])
     cached_tags.sort(key=lambda x: x["displayName"])
-    print("Cache refreshed")
+    return redirect(url_for("index"))
 
 
 @app.route("/")
 def index():
     if len(cached_rebbeim) == 0:
         refresh_cache()
-    refresh_cache()
     return render_template("home.html")
 
 
@@ -124,19 +129,7 @@ def notifications():
 def rabbis():
     if len(cached_rebbeim) == 0:
         refresh_cache()
-    collection = []
-    for rabbi in db.collection("rebbeim").get():
-        id = rabbi.id
-        rabbi = rabbi.to_dict()
-        rabbi["id"] = id
-        blob = bucket.get_blob(
-            f"profile-pictures/{rabbi['profile_picture_filename']}")
-        url = blob.generate_signed_url(timedelta(seconds=300))
-        rabbi["imgURL"] = url
-        collection.append(rabbi)
-    collection = sorted(collection, key=lambda x: x["name"])
-
-    return render_template("rabbis.html", data=collection, type="Rebbi")
+    return render_template("rabbis.html", data=cached_rebbeim, type="Rebbi")
 
 
 @app.route("/rabbis/<ID>", methods=["GET", "POST"])
