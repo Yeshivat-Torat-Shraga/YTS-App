@@ -166,8 +166,7 @@ def rabbiCreate():
         collection.add(
             {
                 "name": name,
-                "profile_picture_filename": profile_picture_file.filename,
-                "search_index": [name for name in name.lower().split() if name != "rabbi"]
+                "profile_picture_filename": profile_picture_file.filename
             }
         )
         flash("Rabbi added!")
@@ -317,11 +316,11 @@ def shiurim_upload():
 
         # Search Index:
         #   Decide on a formulae for creating the search indices
-        search_index = [word.lower() for word in title.split(" ")]
-        search_index.extend([word.lower()
-                            for word in selected_tag["displayName"].split(" ")])
-        search_index.extend([word.lower()
-                            for word in author.split(" ") if word != "rabbi"])
+#        search_index = [word.lower() for word in title.split(" ")]
+#        search_index.extend([word.lower()
+#                            for word in selected_tag["displayName"].split(" ")])
+#        search_index.extend([word.lower()
+#                            for word in author.split(" ") if word != "rabbi"])
 
         new_content_document = {
             "attributionID": attributionID,
@@ -329,12 +328,13 @@ def shiurim_upload():
             "date": date,
             "description": description,
             "duration": duration,
-            "search_index": search_index,
             "source_path": source_path,
             "tagData": tag_data,
             "title": title,
             "type": content_type,
+            "pending": True
         }
+        
         content_collection = db.collection("content")
         content_collection.add(new_content_document)
         bucket = storage.bucket()
