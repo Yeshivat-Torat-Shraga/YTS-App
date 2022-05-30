@@ -31,141 +31,155 @@ struct HomeView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ScrollView(showsIndicators: false) {
-                VStack {
-                    // MARK: - Recently Uploaded
-                    VStack(spacing: 0.0) {
-                        LabeledDivider(title: "Recently Uploaded")
-                            .padding(.horizontal)
-                        
-                        if let sortables = model.sortables {
-                            if sortables.count < 1 {
-                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
-                                    .padding()
-                            } else {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    LazyHStack {
-                                        ForEach(sortables, id: \.self) { sortable in
-                                            SortableContentCardView(content: sortable)
-                                                .padding(.vertical)
+        ZStack {
+            NavigationView {
+                ScrollView(showsIndicators: false) {
+                    VStack {
+                        // MARK: - Recently Uploaded
+                        VStack(spacing: 0.0) {
+                            LabeledDivider(title: "Recently Uploaded")
+                                .padding(.horizontal)
+                            
+                            if let sortables = model.sortables {
+                                if sortables.count < 1 {
+                                    Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                        .padding()
+                                } else {
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        LazyHStack {
+                                            ForEach(sortables, id: \.self) { sortable in
+                                                SortableContentCardView(content: sortable)
+                                                    .padding(.vertical)
+                                            }
                                         }
+                                        .padding(.horizontal)
                                     }
-                                    .padding(.horizontal)
                                 }
-                            }
-                        } else {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(YTSProgressViewStyle())
-                                Spacer()
-                            }.padding()
-                        }
-                    }
-                    
-                    
-                    // MARK: - Rebbeim
-                    VStack(spacing: 0) {
-                        LabeledDivider(title: "Rebbeim")
-                            .padding(.horizontal)
-                        if let rebbeim = model.rebbeim {
-                            if rebbeim.count < 1 {
-                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
-                                    .padding()
                             } else {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    LazyHStack {
-                                        ForEach(rebbeim, id: \.self) { rabbi in
-                                                RabbiTileView(rabbi: rabbi, size: .medium)
-                                            .simultaneousGesture(
-                                                TapGesture()
-                                                    .onEnded {
-                                                        Haptics.shared.play(UI.Haptics.navLink)
-                                                    })
-                                            .padding(.vertical)
-                                        }
-                                    }.padding(.horizontal)
-                                }
-                            }
-                        } else {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(YTSProgressViewStyle())
-                                Spacer()
-                            }.padding()
-                        }
-                    }
-                    
-                    // MARK: - CATEGORIES
-                    VStack(spacing: 0) {
-                        LabeledDivider(title: "Categories")
-                            .padding(.horizontal)
-                        
-                        if let tags = model.tags {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack {
-                                    ForEach(tags, id: \.name) { tag in
-                                        TagTileView(tag)
-                                            .simultaneousGesture(
-                                                TapGesture()
-                                                    .onEnded {
-                                                        Haptics.shared.play(UI.Haptics.navLink)
-                                                    })
-                                        
-                                    }
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(YTSProgressViewStyle())
+                                    Spacer()
                                 }.padding()
                             }
-                        } else {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(YTSProgressViewStyle())
-                                Spacer()
-                            }.padding()
                         }
-                    }
-
-                    
-                    // MARK: - SLIDESHOW
-                    VStack(spacing: 0) {
-                        LabeledDivider(title: "Featured Photos")
-                            .padding(.horizontal)
-                        if let slideshowImages = model.slideshowImages {
-                            if slideshowImages.count < 1 {
-                                Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
-                                    .padding()
+                        
+                        
+                        // MARK: - Rebbeim
+                        VStack(spacing: 0) {
+                            LabeledDivider(title: "Rebbeim")
+                                .padding(.horizontal)
+                            if let rebbeim = model.rebbeim {
+                                if rebbeim.count < 1 {
+                                    Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                        .padding()
+                                } else {
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        LazyHStack {
+                                            ForEach(rebbeim, id: \.self) { rabbi in
+                                                RabbiTileView(rabbi: rabbi, size: .medium)
+                                                    .simultaneousGesture(
+                                                        TapGesture()
+                                                            .onEnded {
+                                                                Haptics.shared.play(UI.Haptics.navLink)
+                                                            })
+                                                    .padding(.vertical)
+                                            }
+                                        }.padding(.horizontal)
+                                    }
+                                }
                             } else {
-                                SlideshowView(slideshowImages)
-                                    .frame(height: 250)
-                                    .clipped()
-                                    .cornerRadius(UI.cornerRadius)
-                                    .shadow(radius: UI.shadowRadius)
-                                    .padding()
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(YTSProgressViewStyle())
+                                    Spacer()
+                                }.padding()
                             }
-                        } else {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(YTSProgressViewStyle())
-                                Spacer()
-                            }.padding()
+                        }
+                        
+                        // MARK: - CATEGORIES
+                        VStack(spacing: 0) {
+                            LabeledDivider(title: "Categories")
+                                .padding(.horizontal)
+                            
+                            if let tags = model.tags {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    LazyHStack {
+                                        ForEach(tags, id: \.name) { tag in
+                                            TagTileView(tag)
+                                                .simultaneousGesture(
+                                                    TapGesture()
+                                                        .onEnded {
+                                                            Haptics.shared.play(UI.Haptics.navLink)
+                                                        })
+                                            
+                                        }
+                                    }.padding()
+                                }
+                            } else {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(YTSProgressViewStyle())
+                                    Spacer()
+                                }.padding()
+                            }
+                        }
+                        
+                        
+                        // MARK: - SLIDESHOW
+                        VStack(spacing: 0) {
+                            LabeledDivider(title: "Featured Photos")
+                                .padding(.horizontal)
+                            if let slideshowImages = model.slideshowImages {
+                                if slideshowImages.count < 1 {
+                                    Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
+                                        .padding()
+                                } else {
+                                    SlideshowView(slideshowImages)
+                                        .frame(height: 250)
+                                        .clipped()
+                                        .cornerRadius(UI.cornerRadius)
+                                        .shadow(radius: UI.shadowRadius)
+                                        .padding()
+                                }
+                            } else {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(YTSProgressViewStyle())
+                                    Spacer()
+                                }.padding()
+                            }
+                        }
+                        
+                        if miniPlayerShowing.wrappedValue {
+                            Spacer().frame(height: UI.playerBarHeight)
                         }
                     }
-                    
-                    if miniPlayerShowing.wrappedValue {
-                        Spacer().frame(height: UI.playerBarHeight)
-                    }
-                }
-                .navigationTitle("Home")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        LogoView(size: .small)
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {self.presentingSearchView = true}) {
-                            Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+                    .navigationTitle("Home")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            HStack {
+                                Button {
+                                    model.reload()
+                                } label: {
+                                    if !model.isLoading {
+                                        LogoView(size: .small)
+                                    } else {
+                                        ProgressView()
+                                            .progressViewStyle(YTSProgressViewStyle())
+                                    }
+                                }.disabled(model.isLoading)
+                                Spacer()
+                            }
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: {self.presentingSearchView = true}) {
+                                Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+                            }
                         }
                     }
                 }
@@ -188,6 +202,22 @@ struct HomeView: View {
                         Haptics.shared.notify(.error)
                     }
                 }
+            
+            /*
+            if model.isLoading {
+//                Rectangle()
+//                    .frame(width: 150, height: 150)
+//                    .background(Blur())
+//                    .cornerRadius(UI.cornerRadius)
+//                    .overlay(
+//                        ProgressView()
+//                            .progressViewStyle(YTSProgressViewStyle()))
+                
+                Blur()
+                ProgressView()
+                                            .progressViewStyle(YTSProgressViewStyle())
+            }
+            */
         }
         .alert(isPresented: $model.showAlert) {
             Alert(title: Text(model.homePageAlertToShow!.title), message: Text(model.homePageAlertToShow!.body),
@@ -196,14 +226,12 @@ struct HomeView: View {
             })
         }
         .sheet(isPresented: $presentingSearchView) {
-            NavigationView {
-                searchView
-                    .environmentObject(player)
-                    .environmentObject(audioPlayerModel)
-                    .environmentObject(favoritesManager)
-                // .envObjs should be here
-                    .background(BackgroundClearView())
-            }
+            searchView
+                .environmentObject(player)
+                .environmentObject(audioPlayerModel)
+                .environmentObject(favoritesManager)
+            // .envObjs should be here
+                .background(BackgroundClearView())
         }
     }
 }

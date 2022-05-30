@@ -9,14 +9,12 @@ import SwiftUI
 
 class FavoritesModel: ObservableObject {
     @Published var sortables: [DetailedRabbi: [SortableYTSContent]]?
-    private var didRunInitialLoad = false
-    init() {}
     
-    func initialLoad(favorites: Favorites) {
-        if !didRunInitialLoad {
-            didRunInitialLoad = true
-            load(favorites: favorites)
-        }
+    init(){
+    }
+    
+    func reload(favorites: Favorites) {
+        load(favorites: favorites)
     }
     
     func load(favorites: Favorites) {
@@ -42,6 +40,7 @@ class FavoritesModel: ObservableObject {
                 }
             }
         }
+        
         if self.sortables != nil {
             withAnimation {
                 self.sortables = sortables

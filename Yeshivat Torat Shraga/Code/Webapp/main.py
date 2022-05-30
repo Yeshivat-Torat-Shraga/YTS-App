@@ -8,6 +8,7 @@ import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 from blake3 import blake3
 from google.cloud.exceptions import NotFound
+import hashlib
 
 PRODUCTION = os.getenv("PRODUCTION")
 
@@ -165,8 +166,7 @@ def rabbiCreate():
         collection.add(
             {
                 "name": name,
-                "profile_picture_filename": profile_picture_file.filename,
-                "search_index": [name for name in name.lower().split() if name != "rabbi"]
+                "profile_picture_filename": profile_picture_file.filename
             }
         )
         flash("Rabbi added!")
@@ -177,7 +177,7 @@ def rabbiCreate():
 def shiurim():
     db = firestore.client()
     collection = []
-    for shiur in db.collection("content").get():
+    for shiur in db.collection('content').order_by("date", direction="DESCENDING").get():
         id = shiur.id
         shiur = shiur.to_dict()
         shiur["id"] = id
@@ -288,10 +288,9 @@ def shiurim_upload():
         if not os.path.exists("tmp"):
             os.makedirs("tmp")
         file.save("tmp/" + file.filename)
-        # Calculate the blake3 hash of the file
-        with open("tmp/" + file.filename, "rb") as f:
-            file_hash = blake3(f.read()).hexdigest()
-
+        # Calculate the MD5 hash of the file
+        file_hash = hashlib.sha256(
+            open("tmp/" + file.filename, "rb").read()).hexdigest()
         duration = ffmpeg.probe("tmp/" + file.filename)["format"]["duration"]
         duration = int(float(duration))
 
@@ -317,11 +316,11 @@ def shiurim_upload():
 
         # Search Index:
         #   Decide on a formulae for creating the search indices
-        search_index = [word.lower() for word in title.split(" ")]
-        search_index.extend([word.lower()
-                            for word in selected_tag["displayName"].split(" ")])
-        search_index.extend([word.lower()
-                            for word in author.split(" ") if word != "rabbi"])
+#        search_index = [word.lower() for word in title.split(" ")]
+#        search_index.extend([word.lower()
+#                            for word in selected_tag["displayName"].split(" ")])
+#        search_index.extend([word.lower()
+#                            for word in author.split(" ") if word != "rabbi"])
 
         new_content_document = {
             "attributionID": attributionID,
@@ -329,12 +328,13 @@ def shiurim_upload():
             "date": date,
             "description": description,
             "duration": duration,
-            "search_index": search_index,
             "source_path": source_path,
             "tagData": tag_data,
             "title": title,
             "type": content_type,
+            "pending": True
         }
+        
         content_collection = db.collection("content")
         content_collection.add(new_content_document)
         bucket = storage.bucket()
