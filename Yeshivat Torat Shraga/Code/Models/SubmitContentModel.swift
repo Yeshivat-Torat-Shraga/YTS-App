@@ -22,6 +22,8 @@ class SubmitContentModel: ObservableObject {
     @Published var uploadProgress: Double = 0
     @Published var enableSubmission = false
     @Published var isUploading = false
+    @Published var fileDisplayName: String? = nil
+    var contentDuration: Int? = nil
     
     
     func updateSubmissionStatus() {
@@ -31,55 +33,73 @@ class SubmitContentModel: ObservableObject {
                             contentURL != nil)
     }
     
-    func submitContent(title: String, author: Rabbi, contentURL: URL, category: Tag) {
-        self.isUploading = true
-        guard let hash = SHA256.hash(ofFile: contentURL) else {
-            self.alertTitle = "An error occurred"
-            self.alertBody = "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur."
-            self.showAlert = true
-            self.isUploading = false
-            // This will fail if the file is inacessable
-            // Make this class conform to ErrorShower
+    func submitContent() {
+        guard let contentURL = contentURL else {
+            self.showAlert(title: "An error occurred",
+                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
             return
         }
-        FirebaseConnection.submitContent(title: title, contentHash: hash, author: author, category: category) { metadata, error in
-            // handle response here
+        
+        guard let contentDuration = contentDuration else {
+            showAlert(title: "An error occured", body: "There was an issue getting the duration of the selected file. Try again with a different file.")
+            return
         }
-        let storageRef = Storage.storage().reference()
-        let contentDestinationRef = storageRef.child("userSubmissions/\(hash)")
-        let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
-            guard metadata != nil else {
-                self.alertTitle = "An error occurred"
-                self.alertBody = "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section."
-                self.showAlert = true
+
+
+        guard let hash = SHA256.hash(ofFile: contentURL) else {
+            self.showAlert(title: "An error occurred",
+                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+            return
+        }
+        FirebaseConnection.submitContent(title: title, contentHash: hash, author: author, category: category, duration: contentDuration) { metadata, error in
+            // handle response here
+            guard let metadata = metadata else {
+                self.showAlert(title: "An error occurred",
+                               body: "There was an issue checking if this device is authorized to upload shiurim. If this is the first time you're seeing this, try again. Otherwise, try again later.")
                 return
             }
-        }
-        uploadTask.observe(.progress) { snapshot in
-            withAnimation {
-                self.uploadProgress = Double(snapshot.progress!.completedUnitCount)
-                / Double(snapshot.progress!.totalUnitCount)
+            
+            guard metadata["status"]! == "success" else {
+                self.showAlert(title: "An error occurred",
+                               body: "Your submission was rejected. Check to make sure you filled out all the required fields. If this issue persists, your device may have been blocked from uploading shiurim.")
+                return
+            }
+
+            self.isUploading = true
+            let storageRef = Storage.storage().reference()
+            let contentDestinationRef = storageRef.child("userSubmissions/\(hash)")
+            let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
+                guard metadata != nil else {
+                    self.showAlert(title: "An error occurred",
+                                   body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
+                    self.isUploading = false
+                    return
+                }
+            }
+            uploadTask.observe(.progress) { snapshot in
+                withAnimation {
+                    self.uploadProgress = Double(snapshot.progress!.completedUnitCount)
+                    / Double(snapshot.progress!.totalUnitCount)
+                }
+            }
+            uploadTask.observe(.success) { snapshot in
+                self.isUploading = false
+                self.showAlert(title: "Thank you!",
+                               body: "Your submission was successful, and is waiting for review. It will be available for everyone once it is approved.")
+                self.resetForm()
+            }
+            uploadTask.observe(.failure) { snapshot in
+                self.isUploading = false
+                self.showAlert(title: "An error occured",
+                               body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
+                if let error = snapshot.error as? NSError {
+                    print(error.localizedDescription)
+                }
+                self.showAlert(title: "An error occurred",
+                               body: "There was an issue uploading your file. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur, or come back later.")
+                self.resetForm()
             }
         }
-        uploadTask.observe(.success) { snapshot in
-            self.alertTitle = "Thank you!"
-            self.alertBody = "Your submission was successful, and is waiting for review. It will be available for everyone once it is approved."
-            self.showAlert = true
-            self.isUploading = false
-        }
-        uploadTask.observe(.failure) { snapshot in
-            self.isUploading = false
-            self.alertTitle = "An error occurred"
-            self.alertBody = "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section."
-            if let error = snapshot.error as? NSError {
-                self.alertBody += " (\(error.code))"
-                print(error.localizedDescription)
-            }
-            self.showAlert = true
-            // Show alert here
-        }
-        
-        
     }
     
     func loadOnlyIfNeeded() {
@@ -95,7 +115,7 @@ class SubmitContentModel: ObservableObject {
         group.enter()
         FirebaseConnection.loadRebbeim(options: (limit: -1, includePictureURLs: false, startAfterDocumentID: nil)) { result, error in
             guard let rebbeim = result?.rebbeim else {
-                // Show alert here
+                self.showAlert(title: "An error occured", body: "There was an issue contacting the server. Please try again later.")
                 return
             }
             self.rabbis = rebbeim
@@ -107,7 +127,7 @@ class SubmitContentModel: ObservableObject {
         group.enter()
         FirebaseConnection.loadCategories(flatList: true) { tags, error in
             guard let tags = tags else {
-                // Show alert here
+                self.showAlert(title: "An error occured", body: "There was an issue contacting the server. Please try again later.")
                 return
             }
             self.tags = tags
@@ -116,5 +136,21 @@ class SubmitContentModel: ObservableObject {
         group.notify(queue: .main) {
             print("done!")
         }
+    }
+    
+    func resetForm() {
+        title = ""
+        author = DetailedRabbi.sample
+        category = .sample
+        contentURL = nil
+        fileDisplayName = nil
+        uploadProgress = 0
+    }
+    
+    func showAlert(title: String, body: String) {
+        self.alertTitle = title
+        self.alertBody = body
+        self.showAlert = true
+
     }
 }
