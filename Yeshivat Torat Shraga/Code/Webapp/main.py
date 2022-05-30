@@ -224,6 +224,8 @@ def shiurim_pending_list():
         shiur = shiur.to_dict()
         shiur["id"] = id
         collection.append(shiur)
+    if len(collection) == 0:
+        flash("There are no pending shiurim")
     # Sort collection by date
     collection.sort(key=lambda x: x["date"], reverse=True)
     return render_template("pending_shiurim.html", data=collection, type="Shiurim")
