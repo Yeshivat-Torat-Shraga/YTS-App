@@ -11,38 +11,61 @@ struct RabbiCardView: View {
     var rabbi: Rabbi
     
     var body: some View {
-        VStack {
-            HStack {
-                Text(rabbi.name)
-                    .fontWeight(.bold)
-                    .font(.title2)
-//                    .bold()
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
-                    .foregroundColor(Color("ShragaBlue"))
-                    .padding(.trailing)
-                Spacer()
-                if let detailedRabbi = rabbi as? DetailedRabbi {
-                    DownloadableImage(object: detailedRabbi)
-                        .aspectRatio(contentMode: .fill)
-                        .clipShape(Circle())
-                        .frame(width: 65, height: 65)
-                        .clipped()
+        if let detailedRabbi = rabbi as? DetailedRabbi {
+            NavigationLink(destination: DisplayRabbiView(rabbi: detailedRabbi)) {
+                VStack {
+                    HStack {
+                        Text(rabbi.name)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        //                    .bold()
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.leading)
+                            .foregroundColor(Color("ShragaBlue"))
+                            .padding(.trailing)
+                        Spacer()
+                        DownloadableImage(object: detailedRabbi)
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(Circle())
+                            .frame(width: 65, height: 65)
+                            .clipped()
+                    }
                 }
             }
+            .padding()
+            .background(
+                Rectangle()
+                    .fill(Color.cardViewBG)
+            )
+            //        .buttonStyle(BackZStackButtonStyle())
+            .cornerRadius(UI.cornerRadius)
+            .shadow(radius: UI.shadowRadius)
+            
+        } else {
+            VStack {
+                HStack {
+                    Text(rabbi.name)
+                        .fontWeight(.bold)
+                        .font(.title2)
+                    //                    .bold()
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(Color("ShragaBlue"))
+                        .padding(.trailing)
+                    Spacer()
+                }
+            }
+            .padding()
+            .background(
+                Rectangle()
+                    .fill(Color.cardViewBG)
+            )
+            //        .buttonStyle(BackZStackButtonStyle())
+            .cornerRadius(UI.cornerRadius)
+            .shadow(radius: UI.shadowRadius)
         }
-        .padding()
-        .background(
-            Rectangle()
-                .fill(Color.cardViewBG)
-        )
-//        .buttonStyle(BackZStackButtonStyle())
-        .cornerRadius(UI.cornerRadius)
-        .shadow(radius: UI.shadowRadius)
-//        .frame(height: 150)
-//        .frame(maxWidth: 350)
-//        .padding()
     }
 }
 
