@@ -8,7 +8,7 @@
 import Foundation
 import UserNotifications
 
-class SettingsModel: ObservableObject {
+class MoreModel: ObservableObject {
     @Published var settingsToggleEnabled: Bool = false
     @Published var disabledReason: String? = nil
     init() {

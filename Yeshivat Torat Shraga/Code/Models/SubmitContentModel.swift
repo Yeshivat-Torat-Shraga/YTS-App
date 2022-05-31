@@ -13,21 +13,22 @@ class SubmitContentModel: ObservableObject {
     @Published var showAlert = false
     @Published var alertTitle: String = ""
     @Published var alertBody: String = ""
+    
     @Published var rabbis: [Rabbi]? = nil
     @Published var tags: [Tag]? = nil
+    
     @Published var title = ""
     @Published var author: Rabbi = DetailedRabbi.sample
     @Published var category: Tag = .sample
     @Published var contentURL: URL? = nil
-    @Published var uploadProgress: Double = 0
+    @Published var uploadProgress: Double = 0.0
     @Published var enableSubmission = false
     @Published var isUploading = false
     @Published var fileDisplayName: String? = nil
     var contentDuration: Int? = nil
     
-    
     func updateSubmissionStatus() {
-        enableSubmission = (title.count > 5  &&
+        enableSubmission = (title.count > 5 &&
                             author.firestoreID != DetailedRabbi.sample.firestoreID &&
                             category.id != Tag.sample.id &&
                             contentURL != nil)
@@ -51,6 +52,20 @@ class SubmitContentModel: ObservableObject {
                            body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
             return
         }
+        
+        
+        guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]), let fileSize = resources.fileSize else {
+            self.showAlert(title: "An error occurred",
+                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+            return
+        }
+        
+        guard fileSize > 524288000 else {
+            self.showAlert(title: "An error occurred",
+                           body: "Please make sure the audio file is smaller than 500MB.")
+            return
+        }
+        
         FirebaseConnection.submitContent(title: title, contentHash: hash, author: author, category: category, duration: contentDuration) { metadata, error in
             // handle response here
             guard let metadata = metadata else {
@@ -67,7 +82,7 @@ class SubmitContentModel: ObservableObject {
 
             self.isUploading = true
             let storageRef = Storage.storage().reference()
-            let contentDestinationRef = storageRef.child("userSubmissions/\(hash)")
+            let contentDestinationRef = storageRef.child("user-submissions/\(hash)")
             let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
                 guard metadata != nil else {
                     self.showAlert(title: "An error occurred",
@@ -92,11 +107,14 @@ class SubmitContentModel: ObservableObject {
                 self.isUploading = false
                 self.showAlert(title: "An error occured",
                                body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
-                if let error = snapshot.error as? NSError {
+                
+                if let error = snapshot.error as NSError? {
                     print(error.localizedDescription)
                 }
+                
                 self.showAlert(title: "An error occurred",
                                body: "There was an issue uploading your file. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur, or come back later.")
+                
                 self.resetForm()
             }
         }
@@ -151,6 +169,5 @@ class SubmitContentModel: ObservableObject {
         self.alertTitle = title
         self.alertBody = body
         self.showAlert = true
-
     }
 }
