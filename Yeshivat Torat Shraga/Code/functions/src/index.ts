@@ -1295,7 +1295,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		type: submission.type,
 		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
 		source_url: `HLSStreams/${submission.type}/${fileID}.m3u8`,
-		author: author,
+		author: author.name,
 		tagData: {
 			id: tag.id,
 			name: tag.name,

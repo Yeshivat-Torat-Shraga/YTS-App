@@ -63,7 +63,7 @@ export interface ProspectiveContentDocument {
 	type: string;
 	source_path: string;
 	source_url: string;
-	author: Author;
+	author: string;
 	tagData: {
 		id: string;
 		name: string;
