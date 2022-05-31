@@ -35,7 +35,9 @@ class SubmitContentModel: ObservableObject {
     }
     
     func submitContent() {
-        guard let contentURL = contentURL else {
+        guard let contentURL = contentURL,
+              let hash = SHA256.hash(ofFile: contentURL)
+        else {
             self.showAlert(title: "An error occurred",
                            body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
             return
@@ -45,24 +47,18 @@ class SubmitContentModel: ObservableObject {
             showAlert(title: "An error occured", body: "There was an issue getting the duration of the selected file. Try again with a different file.")
             return
         }
-
-
-        guard let hash = SHA256.hash(ofFile: contentURL) else {
+        
+        guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]),
+              let fileSize = resources.fileSize
+        else {
             self.showAlert(title: "An error occurred",
                            body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
             return
         }
         
-        
-        guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]), let fileSize = resources.fileSize else {
+        guard fileSize < 524_288_000 else {
             self.showAlert(title: "An error occurred",
-                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
-            return
-        }
-        
-        guard fileSize > 524288000 else {
-            self.showAlert(title: "An error occurred",
-                           body: "Please make sure the audio file is smaller than 500MB.")
+                           body: "Please select a file smaller than 500MB.")
             return
         }
         
