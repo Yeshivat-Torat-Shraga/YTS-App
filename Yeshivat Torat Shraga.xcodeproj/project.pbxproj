@@ -290,15 +290,15 @@
 				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
 				08AF240D27A35315001331EA /* FavoritesModel.swift */,
 				B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */,
+				0848BF57281AF15A0060BBDA /* MoreModel.swift */,
 				084E99C22794760D00CCEED6 /* NewsModel.swift */,
 				082872A42833ED290002EB78 /* ParentTagModel.swift */,
 				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
 				F230C4C9273B110900F7ACCC /* RootModel.swift */,
 				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
-				0848BF57281AF15A0060BBDA /* MoreModel.swift */,
+				08173F062840ACB9004FC42F /* SubmitContentModel.swift */,
 				08A05B2427653DAA00FEE15F /* TagModel.swift */,
 				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
-				08173F062840ACB9004FC42F /* SubmitContentModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
