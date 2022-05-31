@@ -177,7 +177,9 @@ struct HomeView: View {
                             }
                         }
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {self.presentingSearchView = true}) {
+                            Button(action: {
+                                self.presentingSearchView = true
+                            }) {
                                 Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
                             }
                         }

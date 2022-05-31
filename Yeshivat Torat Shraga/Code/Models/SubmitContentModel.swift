@@ -64,7 +64,7 @@ class SubmitContentModel: ObservableObject {
             return
         }
         
-        guard fileSize < 524288000 else {
+        guard fileSize < 262144000 else {
             self.isUploading = false
             self.showAlert(title: "An error occurred",
                            body: "Please make sure the audio file is smaller than 150MB.")
@@ -160,8 +160,8 @@ class SubmitContentModel: ObservableObject {
             self.tags = tags
             group.leave()
         }
+        
         group.notify(queue: .main) {
-            print("done!")
         }
     }
     
