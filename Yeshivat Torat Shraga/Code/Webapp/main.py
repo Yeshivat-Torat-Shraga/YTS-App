@@ -159,6 +159,7 @@ def rabbiDetail(ID):
         rabbi = db.collection("rebbeim").document(ID)
         rabbi.update(updated_document)
         flash("Rabbi updated!")
+        refresh_cache()
         return redirect(url_for("rabbis"))
 
 
@@ -168,6 +169,8 @@ def rabbiDelete(ID):
         refresh_cache()
     rabbi = db.collection("rebbeim").document(ID)
     rabbi.delete()
+    flash("Rabbi deleted!")
+    refresh_cache()
     return redirect(url_for("rabbis"))
 
 
@@ -196,6 +199,7 @@ def rabbiCreate():
             }
         )
         flash("Rabbi added!")
+        refresh_cache()
         return redirect(url_for("rabbis"))
 
 
@@ -248,8 +252,46 @@ def shiur_review(ID):
         approval_status = request.form.get(
             "approval_status", "denied", type=str)
         if approval_status == "approved":
+
+            rabbi = request.form.get("author").split("~")
+            date = datetime.strptime(
+                request.form.get(
+                    "date", datetime.strftime(
+                        datetime.now(), "%Y-%m-%d %H:%M:%S")
+                ),
+                "%Y-%m-%d %H:%M:%S",
+            )
+            attributionID = rabbi[0]
+            author = rabbi[1]
+
+            # create tmp folder if it doesn't exist
+            # Title:
+            title = request.form.get("title", "")
+
+            # Tags:
+            # Default to MISC.
+            selected_tag_ID = request.form.get("tag", "NKwXl5QXmOe6rlQ9J3kW")
+
+            # Get the tag document from the tag ID.
+            selected_tag = [tag for tag in cached_tags if tag["id"]
+                            == selected_tag_ID][0]
+            tag_data = {
+                "name": selected_tag["name"],
+                "displayName": selected_tag["displayName"],
+                "id": selected_tag["id"],
+            }
+
+            updated_document = {
+                "attributionID": attributionID,
+                "author": author,
+                "date": date,
+                "tagData": tag_data,
+                "title": title,
+                "pending": False
+            }
+
             shiur = db.collection('content').document(ID)
-            shiur.update({"pending": False})
+            shiur.update(updated_document)
             flash("Shiur approved!")
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
@@ -398,7 +440,7 @@ def shiurim_upload():
             "tagData": tag_data,
             "title": title,
             "type": content_type,
-            "pending": True
+            "pending": False
         }
 
         content_collection = db.collection("content")
