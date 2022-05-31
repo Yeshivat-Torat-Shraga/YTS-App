@@ -43,9 +43,9 @@ const FieldValue = admin.firestore.FieldValue;
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
-	credential: admin.credential.cert(
-		require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
-	),
+	// credential: admin.credential.cert(
+	// 	require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
+	// ),
 });
 
 exports.createAlert = https.onCall(async (data, context) => {
@@ -399,6 +399,7 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 					duration: data.duration,
 					date: data.date,
 					type: data.type,
+					source_path: sourcePath,
 					source_url: sourcePath,
 					author: author,
 					tagData: tagData,
@@ -689,6 +690,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					duration: data.duration,
 					date: data.date,
 					type: data.type,
+					source_path: sourcePath,
 					source_url: sourcePath,
 					author: author,
 					tagData: tagData,
@@ -724,6 +726,7 @@ exports.generateHLSStream = storage
 		if (!object.name!.startsWith('content/')) {
 			return log(`File ${object.name} is not in the content folder. Exiting...`);
 		}
+		
 		const storageObj = new Storage();
 		const bucket = storageObj.bucket(object.bucket);
 
@@ -1112,6 +1115,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 						duration: data.duration,
 						date: data.date,
 						type: data.type,
+						source_path: sourcePath,
 						source_url: sourcePath,
 						author: author,
 						tagData: tagData,
@@ -1286,7 +1290,8 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		date: submission.date,
 		type: submission.type,
 		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
-		author: author.name,
+		source_url: `HLSStreams/${submission.type}/${fileID}.m3u8`,
+		author: author,
 		tagData: {
 			id: tag.id,
 			name: tag.name,
