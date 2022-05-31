@@ -162,19 +162,18 @@ struct HomeView: View {
                     .navigationTitle("Home")
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            if !model.isLoading {
+                            HStack {
                                 Button {
                                     model.reload()
                                 } label: {
-                                    LogoView(size: .small)
-                                }
-                            } else {
-                                HStack {
-                                    Spacer()
-                                    ProgressView()
-                                        .progressViewStyle(YTSProgressViewStyle())
-                                    Spacer()
-                                }
+                                    if !model.isLoading {
+                                        LogoView(size: .small)
+                                    } else {
+                                        ProgressView()
+                                            .progressViewStyle(YTSProgressViewStyle())
+                                    }
+                                }.disabled(model.isLoading)
+                                Spacer()
                             }
                         }
                         ToolbarItem(placement: .navigationBarTrailing) {
