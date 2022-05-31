@@ -9,8 +9,8 @@ import SwiftUI
 import FirebaseMessaging
 import FirebaseAnalytics
 
-struct SettingsView: View {
-    @ObservedObject var model = SettingsModel()
+struct MoreView: View {
+    @ObservedObject var model = MoreModel()
     @EnvironmentObject var favorites: Favorites
     @State var showClearFavoritesConfirmation = false
     @State var showNotificationsAlert = false
@@ -92,15 +92,7 @@ struct SettingsView: View {
                     
                     Toggle("Slideshow Autoscroll", isOn: $enableTimer)
                         .foregroundColor(Color("ShragaBlue"))
-                }
-                
-                Section {
-                    NavigationLink("About") {
-                        AboutView(miniPlayerShowing: miniPlayerShowing)
-                    }.foregroundColor(Color("ShragaBlue"))
-                }
-                
-                Section {
+                    
                     Button {
                         showClearFavoritesConfirmation = true
                     } label: {
@@ -113,13 +105,28 @@ struct SettingsView: View {
                         }))
                     })
                 }
+                
+                Section {
+                    NavigationLink("Submit Content", destination: SubmitContentView(miniPlayerShowing: miniPlayerShowing))
+                } header: {
+                    Text("Contribute")
+                }
+                
+                
+                Section {
+                    NavigationLink("About") {
+                        AboutView(miniPlayerShowing: miniPlayerShowing)
+                    }.foregroundColor(Color("ShragaBlue"))
+                } header: {
+                    Text("YTS")
+                }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("More")
             .listStyle(InsetGroupedListStyle())
             
-//            if audioPlayerModel.audio != nil {
-//                Spacer().frame(height: UI.playerBarHeight)
-//            }
+            if miniPlayerShowing.wrappedValue {
+                Spacer().frame(height: UI.playerBarHeight)
+            }
         }
         .alert(isPresented: $showNotificationsAlert) {
             Alert(title: Text("Uh oh"), message: Text("You'll need to enable notification permission for this app first."),
@@ -129,7 +136,7 @@ struct SettingsView: View {
                 }
             }, secondaryButton: .cancel())
         }
-        .foregroundColor(.blue)
+        //        .foregroundColor(.blue)
         .onAppear {
             Analytics.logEvent("opened_view", parameters: [
                 "page_name": "Settings"
@@ -140,7 +147,7 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(miniPlayerShowing: .constant(false))
+        MoreView(miniPlayerShowing: .constant(false))
             .environmentObject(Favorites())
     }
 }

@@ -48,16 +48,11 @@ struct RootView: View {
                             }
                             .tag(2)
                     }
-                    model.settingsView
+                    model.moreView
                         .tabItem {
-                            Label("Settings", systemImage: "gearshape")
+                            Label("More", systemImage: "ellipsis.circle.fill")
                         }
                         .tag(3)
-                    model.submitContentView
-                        .tabItem {
-                            Label("Submit", systemImage: "tray.and.arrow.up")
-                        }
-                        .tag(4)
                 }
                 .onChange(of: selectedView) { _ in
                     Haptics.shared.impact()

@@ -16,6 +16,7 @@ struct SearchView: View {
     @State var alertTitle = ""
     
     var body: some View {
+        NavigationView {
         VStack {
             VStack {
                 SearchBar(search: model.newSearch)
@@ -40,14 +41,14 @@ struct SearchView: View {
             .padding(.horizontal)
             
             if model.sortables == nil && (!model.loadingContent && !model.loadingRebbeim) {
-                    Text("Search for content on the app")
-                        .font(.title2)
-                        .bold()
-                        .padding(.horizontal)
-                    Spacer()
-                    Text("Try using one or two words that are unique to what you're searching for.")
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                Text("Search for content on the app")
+                    .font(.title2)
+                    .bold()
+                    .padding(.horizontal)
+                Spacer()
+                Text("Try using one or two words that are unique to what you're searching for.")
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
                 Spacer()
             } else if (!model.loadingContent && !model.loadingRebbeim) && ((model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false && model.rebbeim?.isEmpty ?? false) || (selectedResultTag == .shiurim && model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false) || (selectedResultTag == .rebbeim && model.rebbeim?.isEmpty ?? false)) {
                 Text("Sorry, no results were found.")
@@ -72,9 +73,7 @@ struct SearchView: View {
                                 ForEach(rebbeim, id: \.self) { rabbi in
                                     if let detailedRabbi = rabbi as? DetailedRabbi {
                                         Spacer()
-                                        NavigationLink(destination: DisplayRabbiView(rabbi: detailedRabbi)) {
-                                            RabbiCardView(rabbi: rabbi)
-                                        }
+                                        RabbiCardView(rabbi: detailedRabbi)
                                         Spacer()
                                     }
                                 }
@@ -93,25 +92,25 @@ struct SearchView: View {
                                 })
                             }
                             
-//                            if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
-//                                Divider()
-//                            }
+                            //                            if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
+                            //                                Divider()
+                            //                            }
                         }
                         .padding(.bottom)
                     }
                     
                     if selectedResultTag == .shiurim || selectedResultTag == .all, let sortables = model.sortables, !sortables.isEmpty {
                         VStack {
-                                ForEach(sortables, id: \.self) { sortable in
-                                    if let video = sortable.video {
-                                        Spacer()
-                                        VideoCardView(video: video)
-                                        Spacer()
-                                    } else if let audio = sortable.audio {
-                                        Spacer()
-                                        AudioCardView(audio: audio)
-                                        Spacer()
-                                    }
+                            ForEach(sortables, id: \.self) { sortable in
+                                if let video = sortable.video {
+                                    Spacer()
+                                    VideoCardView(video: video)
+                                    Spacer()
+                                } else if let audio = sortable.audio {
+                                    Spacer()
+                                    AudioCardView(audio: audio)
+                                    Spacer()
+                                }
                             }
                             
                             if model.loadingContent && !model.loadingRebbeim {
@@ -127,9 +126,9 @@ struct SearchView: View {
                                 })
                             }
                             
-//                            if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
-//                                Divider()
-//                            }
+                            //                            if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
+                            //                                Divider()
+                            //                            }
                         }
                         .padding(.bottom)
                     }
@@ -140,6 +139,7 @@ struct SearchView: View {
                 })
                 .navigationBarHidden(true)
             }
+        }
         }
         .animation(.default, value: selectedResultTag)
         .background(
@@ -177,9 +177,9 @@ struct SearchView: View {
                     TextField("", text: $searchText, onCommit: {
                         search(searchText)
                     })
-                    .placeholder(when: searchText.isEmpty) {
-                        Text("Search")
-                    }
+                        .placeholder(when: searchText.isEmpty) {
+                            Text("Search")
+                        }
                     
                 }
                 .padding(.leading, 13)
