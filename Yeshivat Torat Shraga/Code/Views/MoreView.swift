@@ -10,7 +10,7 @@ import FirebaseMessaging
 import FirebaseAnalytics
 
 struct MoreView: View {
-    @ObservedObject var model = MoreModel()
+    @ObservedObject var model: MoreModel
     @EnvironmentObject var favorites: Favorites
     @State var showClearFavoritesConfirmation = false
     @State var showNotificationsAlert = false
@@ -20,6 +20,7 @@ struct MoreView: View {
     
     init(miniPlayerShowing: Binding<Bool>) {
         self.miniPlayerShowing = miniPlayerShowing
+        self.model = MoreModel(miniPlayerShowing: miniPlayerShowing)
     }
     
     var body: some View {
@@ -107,7 +108,7 @@ struct MoreView: View {
                 }
                 
                 Section {
-                    NavigationLink("Submit Content", destination: SubmitContentView(miniPlayerShowing: miniPlayerShowing))
+                    NavigationLink("Submit Content", destination: model.submitContentView)
                 } header: {
                     Text("Contribute")
                 }
