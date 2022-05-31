@@ -41,6 +41,9 @@ const Storage = require('@google-cloud/storage').Storage;
 const functions = require('firebase-functions');
 const FieldValue = admin.firestore.FieldValue;
 
+const crypto = require('crypto');
+const fs = require('fs');
+
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
 	// credential: admin.credential.cert(
@@ -388,7 +391,7 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 				displayName: data.tagData.displayName,
 			};
 			try {
-				const sourcePath = await getURLFor(`${data.source_path}`);
+				const sourceURL = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(data.attributionID, true);
 				return {
 					id: docID,
@@ -399,8 +402,7 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 					duration: data.duration,
 					date: data.date,
 					type: data.type,
-					source_path: sourcePath,
-					source_url: sourcePath,
+					source_url: sourceURL,
 					author: author,
 					tagData: tagData,
 					pending: data.pending,
@@ -679,7 +681,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 				displayName: data.tagData.displayName,
 			};
 			try {
-				const sourcePath = await getURLFor(`${data.source_path}`);
+				const sourceURL = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(data.attributionID, queryOptions.includeAllAuthorData);
 				return {
 					id: doc.id,
@@ -690,8 +692,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					duration: data.duration,
 					date: data.date,
 					type: data.type,
-					source_path: sourcePath,
-					source_url: sourcePath,
+					source_url: sourceURL,
 					author: author,
 					tagData: tagData,
 					pending: data.pending,
@@ -722,8 +723,10 @@ exports.generateHLSStream = storage
 	.bucket()
 	.object()
 	.onFinalize(async (object) => {
+		// check if file is user uploaded
+		const userUpload = object.name!.startsWith('user-submissions/');
 		// Exit if this is triggered on a file that is not uplaoded to the content folder.
-		if (!object.name!.startsWith('content/')) {
+		if (!object.name!.startsWith('content/') && !userUpload) {
 			return log(`File ${object.name} is not in the content folder. Exiting...`);
 		}
 
@@ -734,11 +737,51 @@ exports.generateHLSStream = storage
 		const filename = strippedFilename(filepath);
 		const tempFilePath = path.join(os.tmpdir(), filename);
 
+		// limit file size to 250 mb
+		if (parseInt(object.size) > 262144000) {
+			return log(`File ${object.name} is too large. Exiting...`);
+		}
+
 		// Download file from bucket.
 		await bucket.file(filepath).download({
 			destination: tempFilePath,
 			validation: false,
 		});
+
+		if (userUpload) {
+			log('Detected user upload, running checks...');
+			// sha256 hash the file
+			const fileBuffer = fs.readFileSync(tempFilePath);
+			const hashSum = crypto.createHash('sha256');
+			hashSum.update(fileBuffer);
+			const hex = hashSum.digest('hex');
+			log(`File named ${filename} has hash: ${hex}`);
+
+			// check that filename == hash
+			if (filename != hex) {
+				log(`Filename ${filename} does not match hash of content file ${hex}`);
+				log(`Deleting file at ${object.name}`);
+				await bucket.file(object.name!).delete();
+				return 'Failed to authenticate file';
+			} else {
+				log(`Filename ${filename} matches hash of content file ${hex}`);
+				// check if database has matching document
+				const db = admin.firestore();
+				var doc = await db.collection('content')
+					.where('fileID', '==', hex).get();
+
+				if (doc.empty) {
+					// no matching document, delete file
+					log(`No matching firebase document for file at ${object.name}`);
+					log(`Deleting file at ${object.name}`);
+					await bucket.file(filepath).delete();
+					return 'Failed to authenticate file';
+				} else {
+					// NOTE: Doesn't check for multiple matches
+					log(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
+				}
+			}
+		}
 
 		const inputPath = tempFilePath;
 		const outputDir = path.join(os.tmpdir(), 'HLSStreams');
@@ -1104,7 +1147,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 				};
 
 				try {
-					const sourcePath = await getURLFor(`${data.source_path}`);
+					const sourceURL = await getURLFor(`${data.source_path}`);
 					const author = await getRabbiFor(
 						data.attributionID,
 						searchOptions.content.includeDetailedAuthorInfo
@@ -1119,8 +1162,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 						duration: data.duration,
 						date: data.date,
 						type: data.type,
-						source_path: sourcePath,
-						source_url: sourcePath,
+						source_url: sourceURL,
 						author: author,
 						tagData: tagData,
 						pending: data.pending,
@@ -1284,6 +1326,9 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	const fileID = generateFileID(filename);
 
+	// get uid if exists
+	const uid = context.auth?.uid;
+
 	//  create a prospective content document
 	const prospectiveContent: ProspectiveContentDocument = {
 		fileID: fileID,
@@ -1294,7 +1339,6 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		date: submission.date,
 		type: submission.type,
 		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
-		source_url: `HLSStreams/${submission.type}/${fileID}.m3u8`,
 		author: author,
 		tagData: {
 			id: tag.id,
@@ -1304,7 +1348,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		pending: true,
 		upload_data: {
 			// Note: Clients are authenticated via anonyomous auth
-			uid: context.auth.uid,
+			uid: uid || null,
 			timestamp: admin.firestore.Timestamp.now(),
 		},
 	};

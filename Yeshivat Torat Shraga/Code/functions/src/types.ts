@@ -62,7 +62,6 @@ export interface ProspectiveContentDocument {
 	date: FirebaseFirestore.Timestamp;
 	type: string;
 	source_path: string;
-	source_url: string;
 	author: Author;
 	tagData: {
 		id: string;
@@ -71,7 +70,7 @@ export interface ProspectiveContentDocument {
 	};
 	pending: boolean;
 	upload_data: {
-		uid: string;
+		uid: string | null;
 		timestamp: FirebaseFirestore.Timestamp;
 	};
 }
@@ -85,7 +84,6 @@ export interface ContentDocument {
 	duration: number;
 	date: FirebaseFirestore.Timestamp;
 	type: string;
-	source_path: string;
 	source_url: string;
 	author: Author;
 	tagData: {

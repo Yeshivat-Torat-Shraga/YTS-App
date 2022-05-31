@@ -4,10 +4,12 @@ import { Author, TagDocument, TagFirebaseDocument } from './types';
 
 export const ENABLEAPPCHECK = true;
 
-export function log(data: any, structured = false) {
+export function log(data: any, structured = false): string {
 	logger.info(data, {
 		structuredData: structured,
 	});
+
+	return JSON.stringify(data);
 }
 
 export function verifyAppCheck(context: https.CallableContext): void {
