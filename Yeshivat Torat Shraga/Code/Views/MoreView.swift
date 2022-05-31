@@ -123,6 +123,7 @@ struct MoreView: View {
                 }
             }
             .navigationTitle("More")
+            .navigationBarItems(trailing: LogoView(size: .small))
             .listStyle(InsetGroupedListStyle())
             
             if miniPlayerShowing.wrappedValue {
