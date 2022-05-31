@@ -726,7 +726,7 @@ exports.generateHLSStream = storage
 		if (!object.name!.startsWith('content/')) {
 			return log(`File ${object.name} is not in the content folder. Exiting...`);
 		}
-		
+
 		const storageObj = new Storage();
 		const bucket = storageObj.bucket(object.bucket);
 
@@ -873,8 +873,12 @@ exports.generateThumbnail = storage
 exports.loadCategories = https.onCall(async (callData, context): Promise<LoadData> => {
 	// === APP CHECK ===
 	verifyAppCheck(context);
+	if (callData == null) {
+		// This will happen if the function is called from outdated clients (<= v1.1.3 (2))
+		callData = {};
+	}
 	const queryOptions = {
-		flatList: callData.flatList as boolean,
+		flatList: callData.flatList || (false as boolean),
 	};
 	// This function will load all tags documents from the database and return them in JSON format.
 	const COLLECTION = 'tags';
