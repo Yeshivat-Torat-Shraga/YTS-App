@@ -73,6 +73,7 @@ struct AudioCardView: View {
                             HStack {
                                 Image(systemName: "person.fill")
                                 Text("\(model.audio.author.name)")
+                                    .truncationMode(.head)
                                     .foregroundColor(Color("Gray"))
                             }
                         } else {
