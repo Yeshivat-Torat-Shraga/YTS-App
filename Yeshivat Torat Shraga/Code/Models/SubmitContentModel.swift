@@ -110,7 +110,7 @@ class SubmitContentModel: ObservableObject {
             uploadTask.observe(.success) { snapshot in
                 self.isUploading = false
                 self.showAlert(title: "Thank You!",
-                               body: "Your submission went through and is waiting for review. It will be publicly available once it is approved.")
+                               body: "Your submission was successfully uploaded and is waiting for review. It will be publicly available once it is approved.")
                 self.resetForm()
             }
             uploadTask.observe(.failure) { snapshot in
