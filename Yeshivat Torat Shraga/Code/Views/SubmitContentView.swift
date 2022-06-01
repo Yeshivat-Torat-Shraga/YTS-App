@@ -8,6 +8,7 @@
 import SwiftUI
 import FirebaseStorage
 import AVFoundation
+import FirebaseAnalytics
 
 struct SubmitContentView: View {
     @State private var showingDocumentSelectSheet = false
@@ -103,6 +104,9 @@ struct SubmitContentView: View {
         .navigationBarItems(trailing: LogoView(size: .small))
         .onAppear {
             model.loadOnlyIfNeeded()
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "Submit"
+            ])
         }
         .alert(isPresented: $model.showAlert) {
             Alert(title: Text(model.alertTitle), message: Text(model.alertBody), dismissButton: Alert.Button.cancel(Text("OK")))

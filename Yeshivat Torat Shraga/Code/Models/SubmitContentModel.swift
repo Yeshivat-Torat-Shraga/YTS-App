@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseStorage
+import FirebaseAnalytics
 
 
 class SubmitContentModel: ObservableObject {
@@ -37,27 +38,33 @@ class SubmitContentModel: ObservableObject {
         self.objectWillChange.send()
         
         guard let contentURL = contentURL,
-              let hash = SHA256.hash(ofFile: contentURL) else {
-                  self.isUploading = false
-                  self.showAlert(title: "Uploading Error",
-                                 body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
-                  return
-              }
+              let hash = SHA256.hash(ofFile: contentURL)
+        else {
+            Analytics.logEvent("upload_failure", parameters: ["reason": "hash calculation failure"])
+            self.isUploading = false
+            self.showAlert(title: "Uploading Error",
+                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+            return
+        }
         
         guard let contentDuration = contentDuration else {
+            Analytics.logEvent("upload_failure", parameters: ["reason": "hash calculation failure"])
             self.isUploading = false
             showAlert(title: "Uploading Error", body: "There was an issue getting the duration of the selected file. Try again with a different file.")
             return
         }
         
         guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]),
-              let fileSize = resources.fileSize else {
-                  self.showAlert(title: "Uploading Error",
-                                 body: "There was an issue handling your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
-                  return
-              }
+              let fileSize = resources.fileSize
+        else {
+            Analytics.logEvent("upload_failure", parameters: ["reason": "filesize evaluation failure"])
+            self.showAlert(title: "Uploading Error",
+                           body: "There was an issue handling your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+            return
+        }
         
         guard fileSize < 262_144_000 else {
+            Analytics.logEvent("upload_failure", parameters: ["reason": "file too large", "filesize": fileSize])
             self.isUploading = false
             self.showAlert(title: "Uploading Error",
                            body: "Please make sure the audio file is smaller than 250MB.")
@@ -67,6 +74,7 @@ class SubmitContentModel: ObservableObject {
         FirebaseConnection.submitContent(title: title, contentHash: hash, author: author, category: category, duration: contentDuration) { metadata, error in
             // handle response here
             guard let metadata = metadata else {
+                Analytics.logEvent("upload_failure", parameters: ["reason": "nil response from submitContent GCF"])
                 self.isUploading = false
                 self.showAlert(title: "Uploading Error",
                                body: "There was an issue checking if this device is authorized to upload shiurim. If this is the first time you're seeing this, try again. Otherwise, try again later.")
@@ -74,6 +82,7 @@ class SubmitContentModel: ObservableObject {
             }
             
             guard metadata["status"]! == "success" else {
+                Analytics.logEvent("upload_failure", parameters: ["reason": "rejected by GCF"])
                 self.isUploading = false
                 self.showAlert(title: "Uploading Error",
                                body: "Your submission failed. Check to make sure you filled out all the required fields. If this issue persists, your device may have been blocked from uploading shiurim.")
@@ -84,6 +93,7 @@ class SubmitContentModel: ObservableObject {
             let contentDestinationRef = storageRef.child("user-submissions/\(hash)")
             let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
                 guard metadata != nil else {
+                    Analytics.logEvent("upload_failure", parameters: ["reason": "nil metadata while uploading to storage"])
                     self.isUploading = false
                     self.showAlert(title: "Uploading Error",
                                    body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
@@ -100,6 +110,7 @@ class SubmitContentModel: ObservableObject {
             }
             
             uploadTask.observe(.success) { snapshot in
+                Analytics.logEvent("upload_success", parameters: nil)
                 self.isUploading = false
                 self.showAlert(title: "Thank You!",
                                body: "Your submission was successfully uploaded and is waiting for review. It will be publicly available once it is approved.")
@@ -111,6 +122,7 @@ class SubmitContentModel: ObservableObject {
                                body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
                 
                 if let error = snapshot.error as NSError? {
+                    Analytics.logEvent("upload_failure", parameters: ["reason": error.localizedFailureReason ?? "no reason provided", "error": error.localizedDescription])
                     print(error.localizedDescription)
                 }
                 

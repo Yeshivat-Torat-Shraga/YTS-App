@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAnalytics
 
 struct HomeView: View {
     @ObservedObject var model: HomeModel
@@ -204,22 +205,6 @@ struct HomeView: View {
                         Haptics.shared.notify(.error)
                     }
                 }
-            
-            /*
-            if model.isLoading {
-//                Rectangle()
-//                    .frame(width: 150, height: 150)
-//                    .background(Blur())
-//                    .cornerRadius(UI.cornerRadius)
-//                    .overlay(
-//                        ProgressView()
-//                            .progressViewStyle(YTSProgressViewStyle()))
-                
-                Blur()
-                ProgressView()
-                                            .progressViewStyle(YTSProgressViewStyle())
-            }
-            */
         }
         .alert(isPresented: $model.showAlert) {
             Alert(title: Text(model.homePageAlertToShow!.title), message: Text(model.homePageAlertToShow!.body),
@@ -234,6 +219,11 @@ struct HomeView: View {
                 .environmentObject(favoritesManager)
             // .envObjs should be here
                 .background(BackgroundClearView())
+        }
+        .onAppear {
+            Analytics.logEvent("opened_view", parameters: [
+                "page_name": "Home"
+            ])
         }
     }
 }

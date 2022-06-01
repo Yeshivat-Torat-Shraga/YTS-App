@@ -48,7 +48,8 @@ struct NewsArticleView: View {
         .onAppear {
             Analytics.logEvent("opened_news_article", parameters: [
                 "title": article.title,
-                "author": article.author
+                "author": article.author,
+                "id": article.id
             ])
 
         }
