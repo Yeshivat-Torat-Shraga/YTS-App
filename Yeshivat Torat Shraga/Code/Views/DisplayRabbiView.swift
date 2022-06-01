@@ -128,7 +128,7 @@ struct DisplayRabbiView: View {
         })
         .alert(isPresented: $model.showError, content: {
             Alert(
-                title: Text("Oops! Something went wrong."),
+                title: Text("Error"),
                 message: Text(model.errorToShow?.getUIDescription() ?? "We're not even sure what it is, but something is definitely not working. Sorry."),
                 dismissButton: Alert.Button.default(
                     Text("Retry"), action: {

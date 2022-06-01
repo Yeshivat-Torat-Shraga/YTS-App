@@ -1,3 +1,48 @@
+<!-- 
+  
+  
+  
+  
+  
+  
+  
+  
+
+                                        TODO: If the auditor makes edits to the shiur,
+                                        they need to be sent with the form. The server
+                                        also needs to take that data and update the
+                                        document when approving it.
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% extends 'base.html' %} {% block content %}
 <link rel="stylesheet" href="/static/bootstrap-datetimepicker.min.css">
 <script src="/static/bootstrap-datetimepicker.min.js"></script>
@@ -6,7 +51,7 @@
     color: lightskyblue
   }
 </style>
-<form action="#" method="post">
+<form action="/shiurim/pending/{{shiur.id}}" method="post">
   <div class="form-group">
     <label for="title">Title<span>Use title case to get a better result</span></label>
     <input type="text" name="title" id="title" class="form-control"
@@ -80,9 +125,7 @@
   </div>
 
   <br />
-</form>
 
-<form action="/shiurim/pending/{{shiur.id}}" method="post">
   <!-- show two buttons: Approve, and Delete. Send a form response accordingly -->
   <div class="form-group">
     <button type="submit" class="btn btn-success" name="approval_status" value="approved">Approve</button>

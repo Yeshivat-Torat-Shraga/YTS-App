@@ -35,39 +35,40 @@ class SubmitContentModel: ObservableObject {
     func submitContent() {
         self.isUploading = true
         self.objectWillChange.send()
-        guard let contentURL = contentURL else {
-            self.isUploading = false
-            self.showAlert(title: "An error occurred",
-                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
-            return
-        }
+        
+        guard let contentURL = contentURL,
+              let hash = SHA256.hash(ofFile: contentURL) else {
+                  self.isUploading = false
+                  self.showAlert(title: "Uploading Error",
+                                 body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+                  return
+              }
         
         guard let contentDuration = contentDuration else {
             self.isUploading = false
-            showAlert(title: "An error occured", body: "There was an issue getting the duration of the selected file. Try again with a different file.")
+            showAlert(title: "Uploading Error", body: "There was an issue getting the duration of the selected file. Try again with a different file.")
             return
         }
-
-
+        
+        
         guard let hash = SHA256.hash(ofFile: contentURL) else {
             self.isUploading = false
-            self.showAlert(title: "An error occurred",
-                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+            self.showAlert(title: "Uploading Error",
+                           body: "There was an issue handling your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
             return
         }
         
-        
-        guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]), let fileSize = resources.fileSize else {
-            self.isUploading = false
-            self.showAlert(title: "An error occurred",
-                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
-            return
-        }
+        guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]),
+              let fileSize = resources.fileSize else {
+                  self.showAlert(title: "Uploading Error",
+                                 body: "There was an issue handling your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+                  return
+              }
         
         guard fileSize < 262144000 else {
             self.isUploading = false
-            self.showAlert(title: "An error occurred",
-                           body: "Please make sure the audio file is smaller than 150MB.")
+            self.showAlert(title: "Uploading Error",
+                           body: "Please make sure the audio file is smaller than 250MB.")
             return
         }
         
@@ -75,24 +76,24 @@ class SubmitContentModel: ObservableObject {
             // handle response here
             guard let metadata = metadata else {
                 self.isUploading = false
-                self.showAlert(title: "An error occurred",
+                self.showAlert(title: "Uploading Error",
                                body: "There was an issue checking if this device is authorized to upload shiurim. If this is the first time you're seeing this, try again. Otherwise, try again later.")
                 return
             }
             
             guard metadata["status"]! == "success" else {
                 self.isUploading = false
-                self.showAlert(title: "An error occurred",
+                self.showAlert(title: "Uploading Error",
                                body: "Your submission failed. Check to make sure you filled out all the required fields. If this issue persists, your device may have been blocked from uploading shiurim.")
                 return
             }
-
+            
             let storageRef = Storage.storage().reference()
             let contentDestinationRef = storageRef.child("user-submissions/\(hash)")
             let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
                 guard metadata != nil else {
                     self.isUploading = false
-                    self.showAlert(title: "An error occurred",
+                    self.showAlert(title: "Uploading Error",
                                    body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
                     self.isUploading = false
                     return
@@ -108,20 +109,20 @@ class SubmitContentModel: ObservableObject {
             
             uploadTask.observe(.success) { snapshot in
                 self.isUploading = false
-                self.showAlert(title: "Thank you!",
-                               body: "Your submission was successful, and is waiting for review. It will be publicly available once it is approved.")
+                self.showAlert(title: "Success",
+                               body: "Your submission went through and is waiting for review. It will be publicly available once it is approved.")
                 self.resetForm()
             }
             uploadTask.observe(.failure) { snapshot in
                 self.isUploading = false
-                self.showAlert(title: "An error occured",
+                self.showAlert(title: "Uploading Error",
                                body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
                 
                 if let error = snapshot.error as NSError? {
                     print(error.localizedDescription)
                 }
                 
-                self.showAlert(title: "An error occurred",
+                self.showAlert(title: "Uploading Error",
                                body: "There was an issue uploading your file. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur, or come back later.")
                 
                 self.resetForm()
@@ -129,11 +130,6 @@ class SubmitContentModel: ObservableObject {
         }
     }
     
-    func loadOnlyIfNeeded() {
-        if self.tags == nil && self.rabbis == nil {
-            self.load()
-        }
-    }
     
     func load() {
         let group = DispatchGroup()
@@ -142,7 +138,7 @@ class SubmitContentModel: ObservableObject {
         group.enter()
         FirebaseConnection.loadRebbeim(options: (limit: -1, includePictureURLs: false, startAfterDocumentID: nil)) { result, error in
             guard let rebbeim = result?.rebbeim else {
-                self.showAlert(title: "An error occured", body: "There was an issue contacting the server. Please try again later.")
+                self.showAlert(title: "Error", body: "There was an issue contacting the server. Please try again later.")
                 return
             }
             self.rabbis = rebbeim
@@ -154,7 +150,7 @@ class SubmitContentModel: ObservableObject {
         group.enter()
         FirebaseConnection.loadCategories(flatList: true) { tags, error in
             guard let tags = tags else {
-                self.showAlert(title: "An error occured", body: "There was an issue contacting the server. Please try again later.")
+                self.showAlert(title: "Error", body: "There was an issue contacting the server. Please try again later.")
                 return
             }
             self.tags = tags
@@ -162,6 +158,12 @@ class SubmitContentModel: ObservableObject {
         }
         
         group.notify(queue: .main) {
+        }
+    }
+    
+    func loadOnlyIfNeeded() {
+        if self.tags == nil && self.rabbis == nil {
+            self.load()
         }
     }
     
@@ -180,3 +182,4 @@ class SubmitContentModel: ObservableObject {
         self.showAlert = true
     }
 }
+

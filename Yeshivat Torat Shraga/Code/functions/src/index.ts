@@ -749,6 +749,20 @@ exports.generateHLSStream = storage
 		});
 
 		if (userUpload) {
+// count number of pending firebase documents
+			const db = admin.firestore();
+			const pendingCount = await db
+				.collection('content')
+				.where('pending', '==', true)
+				.get()
+
+			if (pendingCount.size > 400) {
+				// delete file and return
+				log(`Too many pending documents. Deleting file at ${object.name}`);
+				return bucket.file(filepath).delete();
+			}
+
+
 			log('Detected user upload, running checks...');
 			// sha256 hash the file
 			const fileBuffer = fs.readFileSync(tempFilePath);
@@ -766,7 +780,6 @@ exports.generateHLSStream = storage
 			} else {
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
-				const db = admin.firestore();
 				var doc = await db.collection('content')
 					.where('fileID', '==', hex).get();
 
@@ -1326,6 +1339,16 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	const fileID = generateFileID(filename);
 
+	// ensure number of pending documents is not greater than 400
+	const db = admin.firestore();
+	const pendingDocs = await db.collection('content').where('pending', '==', true).get();
+	if (pendingDocs.size > 400) {
+		return {
+			status: 'denied',
+			message: 'Submissions not being accepted at this time',
+		};
+	}
+
 	// get uid if exists
 	const uid = context.auth?.uid;
 
@@ -1339,7 +1362,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		date: submission.date,
 		type: submission.type,
 		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
-		author: author,
+		author: author.name,
 		tagData: {
 			id: tag.id,
 			name: tag.name,
@@ -1356,8 +1379,6 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	log(`Shiur passed auto-inspection. Uploading to Firebase...`);
 
 	// upload to firebase
-
-	const db = admin.firestore();
 
 	try {
 		await db.collection('content').add(prospectiveContent);

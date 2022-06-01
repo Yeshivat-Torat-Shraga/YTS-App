@@ -171,7 +171,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 //                                    let vc = UIHostingController(rootView: Text("Detected unsupported video content"))
                 //                                    self.window?.rootViewController?.present(vc, animated: true)
             } else {
-                let alert = UIAlertController(title: "An error occured", message: "The linked content could not be loaded", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Error", message: "The linked content could not be loaded.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                 self.window?.rootViewController?.present(alert, animated: true)
                 return
