@@ -1547,3 +1547,31 @@ function nameFormat(s) {
 	});
 	return title.join(' ');
 }
+
+exports.cleanStorage = https.onCall(async (data, context) => {
+	const bucket = admin.storage().bucket('gs://yeshivat-torat-shraga.appspot.com/');
+	const files = await bucket.getFiles();
+	const filenames = files.map((file) => file.name);
+	const filesToDelete = filenames.filter((file) => file.startsWith('content/') || file.startsWith('thumbnails/'));
+	await filesToDelete.map((file) => bucket.file(file).delete());
+	log(`Deleted ${filesToDelete.length} files in content/ and thumbnails/`);
+
+	const hlsFilenames = filenames.filter((file) => file.startsWith('HLSStreams/'));
+	// check each file if it has a corresponding firebase document
+	const db = admin.firestore();
+	const hlsFilesToDelete = await hlsFilenames.filter(async (file) => {
+		const doc = await db.collection('content')
+		.where('fileID', '==', strippedFilename(file))
+		.get();
+		
+		if (doc.empty) {
+			return file;
+		} else {
+			return null;
+		}
+	});
+
+	await hlsFilesToDelete.map((file) => bucket.file(file).delete());
+	log(`Deleted ${hlsFilesToDelete.length} files in HLSStreams/`);
+	return;
+});

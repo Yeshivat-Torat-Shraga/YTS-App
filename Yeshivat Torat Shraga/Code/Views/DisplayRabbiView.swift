@@ -32,7 +32,7 @@ struct DisplayRabbiView: View {
                             }
                         }
                     }
-//                    Divider()
+                    //                    Divider()
                     
                     
                     Spacer()
@@ -41,7 +41,7 @@ struct DisplayRabbiView: View {
                 }
             }
             .padding(.horizontal)
-        
+            
             Group {
                 LazyVStack {
                     if let sortables = model.sortables {
@@ -51,30 +51,30 @@ struct DisplayRabbiView: View {
                             ForEach(sortables, id: \.self) { sortable in
                                 if let video = sortable.video {
                                     VideoCardView(video: video)
-//                                        .contextMenu {
-//                                            Button("Play") {}
-//                                        }
+                                    //                                        .contextMenu {
+                                    //                                            Button("Play") {}
+                                    //                                        }
                                 } else if let audio = sortable.audio {
                                     AudioCardView(audio: audio)
-//                                        .contextMenu {
-//                                            Button("Play") {}
-//                                        }
+                                    //                                        .contextMenu {
+                                    //                                            Button("Play") {}
+                                    //                                        }
                                 }
                             }
                         } else {
                             HStack {
                                 Spacer()
-                            VStack {
-                                Text("Sorry, no shiurim here yet.")
-                                    .bold()
-                                    .font(.title3)
-                                
-                                Spacer()
-                                
-                                Text("Check again in a little bit.")
-                            }
-                            .multilineTextAlignment(.center)
-                            .padding()
+                                VStack {
+                                    Text("Sorry, no shiurim here yet.")
+                                        .bold()
+                                        .font(.title3)
+                                    
+                                    Spacer()
+                                    
+                                    Text("Check again in a little bit.")
+                                }
+                                .multilineTextAlignment(.center)
+                                .padding()
                                 Spacer()
                             }
                             .background(Color(UIColor.systemGray4))
@@ -109,8 +109,8 @@ struct DisplayRabbiView: View {
             Analytics.logEvent("opened_rabbi_page", parameters: [
                 "name": model.rabbi.name
             ])
-
-
+            
+            
         }
         
         .navigationTitle(model.rabbi.name)
@@ -137,8 +137,8 @@ struct DisplayRabbiView: View {
                         }
                     }))
         })
-
-
+        
+        
     }
 }
 
