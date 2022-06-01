@@ -7,11 +7,17 @@
 
 import Foundation
 import UserNotifications
+import SwiftUI
 
-class SettingsModel: ObservableObject {
+class MoreModel: ObservableObject {
     @Published var settingsToggleEnabled: Bool = false
     @Published var disabledReason: String? = nil
-    init() {
+    
+    @Published var submitContentView: SubmitContentView
+    
+    init(miniPlayerShowing: Binding<Bool>) {
+        self.submitContentView = SubmitContentView(miniPlayerShowing: miniPlayerShowing)
+        
         let currentNotifications = UNUserNotificationCenter.current()
         let acceptableNotificationStatuses: [UNAuthorizationStatus] = [.authorized, .ephemeral, .provisional]
         currentNotifications.getNotificationSettings { settings in

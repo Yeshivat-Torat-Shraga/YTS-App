@@ -14,10 +14,12 @@ import {
 	LoadData,
 	NewsDocument,
 	NewsFirebaseDocument,
+	ProspectiveContentDocument,
 	RebbeimDocument,
 	RebbeimFirebaseDocument,
 	SlideshowImageDocument,
 	SlideshowImageFirebaseDocument,
+	SubmittedContentDocument,
 	TagDocument,
 	TagFirebaseDocument,
 } from './types';
@@ -28,14 +30,19 @@ import {
 	strippedFilename,
 	supplyDefaultParameters,
 	verifyAppCheck,
+	getTagFor,
 	// ENABLEAPPCHECK,
 } from './helpers';
 import path from 'path';
 import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
+// import { bucket } from 'firebase-functions/v1/storage';
 const Storage = require('@google-cloud/storage').Storage;
-const functions = require("firebase-functions")
+const functions = require('firebase-functions');
 const FieldValue = admin.firestore.FieldValue;
+
+const crypto = require('crypto');
+const fs = require('fs');
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
@@ -52,14 +59,17 @@ exports.createAlert = https.onCall(async (data, context) => {
 	if (!data.body || typeof data.body !== 'string') return 'Body is required';
 	if (!data.dateIssued || typeof data.dateIssued !== 'string') return 'Invalid dateIssued';
 	if (!data.dateExpired || typeof data.dateExpired !== 'string') return 'Invalid dateExpired';
+
 	const db = admin.firestore();
 	const COLLECTION = 'alerts';
+
 	const doc = await db.collection(COLLECTION).add({
 		title: data.title,
 		body: data.body,
 		dateIssued: new Date(data.dateIssued),
 		dateExpired: new Date(data.dateExpired),
 	});
+
 	return 'Created an alert with ID: ' + doc.id;
 });
 
@@ -70,6 +80,7 @@ exports.createNotification = https.onCall(async (data, context): Promise<string>
 		title: data.title,
 		body: data.body,
 	};
+
 	// Make sure title and body are non-empty strings
 	if (
 		typeof payload.title !== 'string' ||
@@ -81,20 +92,18 @@ exports.createNotification = https.onCall(async (data, context): Promise<string>
 		return 'Invalid notification payload';
 	}
 
-	return await admin
-		.messaging()
-		.send({
+	try {
+		let res = await admin.messaging().send({
 			notification: payload,
 			topic: 'all',
-		})
-		.then((response) => {
-			logger.info('Successfully sent message:', response);
-			return `Successfully sent message: ${response}`;
-		})
-		.catch((error) => {
-			logger.error('Error sending message:', error);
-			return `Error sending message: ${error}`;
 		});
+
+		log('Successfully sent notification: ' + JSON.stringify(res));
+		return `Successfully sent message: ${res}`;
+	} catch (err) {
+		log('Error sending notification: ' + err);
+		return 'Error sending notification: ' + err;
+	}
 });
 
 exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
@@ -364,11 +373,14 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 		documentIDs.map(async (docID) => {
 			// Fetch the document with the specified ID from Firestore.
 			const snapshot = await db.collection(COLLECTION).doc(docID).get();
-			// If the document does not exist, return null
-			if (!snapshot.exists) return null;
+
+			const rawData = snapshot.data();
+			if (!rawData) return null;
+			if (rawData!.pending == true) return null;
+
 			// Get the document data
 			try {
-				var data = new ContentFirebaseDocument(snapshot.data()!);
+				var data = new ContentFirebaseDocument(rawData!);
 			} catch {
 				return null;
 			}
@@ -379,7 +391,7 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 				displayName: data.tagData.displayName,
 			};
 			try {
-				const sourcePath = await getURLFor(`${data.source_path}`);
+				const sourceURL = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(data.attributionID, true);
 				return {
 					id: docID,
@@ -390,9 +402,10 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 					duration: data.duration,
 					date: data.date,
 					type: data.type,
-					source_url: sourcePath,
+					source_url: sourceURL,
 					author: author,
-					tagData,
+					tagData: tagData,
+					pending: data.pending,
 				};
 			} catch (err) {
 				log(`Error getting data for docID: '${docID}': ${err}`, true);
@@ -572,7 +585,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const COLLECTION = 'content';
 	const db = admin.firestore();
-	let query = db.collection(COLLECTION).orderBy('date', 'desc');
+	let query = db.collection(COLLECTION).where('pending', '==', false).orderBy('date', 'desc');
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
@@ -668,7 +681,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 				displayName: data.tagData.displayName,
 			};
 			try {
-				const sourcePath = await getURLFor(`${data.source_path}`);
+				const sourceURL = await getURLFor(`${data.source_path}`);
 				const author = await getRabbiFor(data.attributionID, queryOptions.includeAllAuthorData);
 				return {
 					id: doc.id,
@@ -679,9 +692,10 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					duration: data.duration,
 					date: data.date,
 					type: data.type,
-					source_url: sourcePath,
+					source_url: sourceURL,
 					author: author,
-					tagData,
+					tagData: tagData,
+					pending: data.pending,
 				};
 			} catch (err) {
 				log(`Error getting data for docID: '${doc.id}': ${err}`, true);
@@ -709,10 +723,13 @@ exports.generateHLSStream = storage
 	.bucket()
 	.object()
 	.onFinalize(async (object) => {
+		// check if file is user uploaded
+		const userUpload = object.name!.startsWith('user-submissions/');
 		// Exit if this is triggered on a file that is not uplaoded to the content folder.
-		if (!object.name!.startsWith('content/')) {
+		if (!object.name!.startsWith('content/') && !userUpload) {
 			return log(`File ${object.name} is not in the content folder. Exiting...`);
 		}
+
 		const storageObj = new Storage();
 		const bucket = storageObj.bucket(object.bucket);
 
@@ -720,11 +737,64 @@ exports.generateHLSStream = storage
 		const filename = strippedFilename(filepath);
 		const tempFilePath = path.join(os.tmpdir(), filename);
 
+		// limit file size to 250 mb
+		if (parseInt(object.size) > 262144000) {
+			return log(`File ${object.name} is too large. Exiting...`);
+		}
+
 		// Download file from bucket.
 		await bucket.file(filepath).download({
 			destination: tempFilePath,
 			validation: false,
 		});
+
+		if (userUpload) {
+// count number of pending firebase documents
+			const db = admin.firestore();
+			const pendingCount = await db
+				.collection('content')
+				.where('pending', '==', true)
+				.get()
+
+			if (pendingCount.size > 400) {
+				// delete file and return
+				log(`Too many pending documents. Deleting file at ${object.name}`);
+				return bucket.file(filepath).delete();
+			}
+
+
+			log('Detected user upload, running checks...');
+			// sha256 hash the file
+			const fileBuffer = fs.readFileSync(tempFilePath);
+			const hashSum = crypto.createHash('sha256');
+			hashSum.update(fileBuffer);
+			const hex = hashSum.digest('hex');
+			log(`File named ${filename} has hash: ${hex}`);
+
+			// check that filename == hash
+			if (filename != hex) {
+				log(`Filename ${filename} does not match hash of content file ${hex}`);
+				log(`Deleting file at ${object.name}`);
+				await bucket.file(object.name!).delete();
+				return 'Failed to authenticate file';
+			} else {
+				log(`Filename ${filename} matches hash of content file ${hex}`);
+				// check if database has matching document
+				var doc = await db.collection('content')
+					.where('fileID', '==', hex).get();
+
+				if (doc.empty) {
+					// no matching document, delete file
+					log(`No matching firebase document for file at ${object.name}`);
+					log(`Deleting file at ${object.name}`);
+					await bucket.file(filepath).delete();
+					return 'Failed to authenticate file';
+				} else {
+					// NOTE: Doesn't check for multiple matches
+					log(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
+				}
+			}
+		}
 
 		const inputPath = tempFilePath;
 		const outputDir = path.join(os.tmpdir(), 'HLSStreams');
@@ -857,32 +927,15 @@ exports.generateThumbnail = storage
 	});
 
 exports.loadCategories = https.onCall(async (callData, context): Promise<LoadData> => {
-	/*
-
-	[{
-		name: "cat1",
-		displayName: "Category 1",
-		subCategories: [{
-			name: "subcat1",
-			displayName: "Subcategory 1"
-		}, {
-			name: "subcat2",
-			displayName: "Subcategory 2"
-		}]
-	}, {
-		name: "cat2",
-		displayName: "Category 2",
-		subCategories: []
-	}, {
-		name: "cat3",
-		displayName: "Category 3",
-		subCategories: []
-	}]
-	 */
-
 	// === APP CHECK ===
 	verifyAppCheck(context);
-	// Right now, there are no options to configure.
+	if (callData == null) {
+		// This will happen if the function is called from outdated clients (<= v1.1.3 (2))
+		callData = {};
+	}
+	const queryOptions = {
+		flatList: callData.flatList || (false as boolean),
+	};
 	// This function will load all tags documents from the database and return them in JSON format.
 	const COLLECTION = 'tags';
 	const db = admin.firestore();
@@ -925,8 +978,16 @@ exports.loadCategories = https.onCall(async (callData, context): Promise<LoadDat
 				.filter((subCategory) => subCategory !== null) as TagDocument[];
 		}
 		// Add the category to the list if
-		// it does not have a parentID
-		if (!data.parentID) categories.push(category);
+		// it does not have a parentID OR
+		// we are loading the flat list
+		if (!data.parentID || queryOptions.flatList) categories.push(category);
+		if (queryOptions.flatList) categories = categories.filter((category) => !category.isParent);
+		// Sort alphabetically
+		categories.sort((a, b) => {
+			if (a.displayName < b.displayName) return -1;
+			if (a.displayName > b.displayName) return 1;
+			return 0;
+		});
 	});
 	return {
 		metadata: {
@@ -1041,6 +1102,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 			switch (collectionName) {
 				case 'content':
+					query = query.where('pending', '==', false) as any;
 					query = query.orderBy('date', 'desc') as any;
 					break;
 				case 'rebbeim':
@@ -1098,7 +1160,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 				};
 
 				try {
-					const sourcePath = await getURLFor(`${data.source_path}`);
+					const sourceURL = await getURLFor(`${data.source_path}`);
 					const author = await getRabbiFor(
 						data.attributionID,
 						searchOptions.content.includeDetailedAuthorInfo
@@ -1113,9 +1175,10 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 						duration: data.duration,
 						date: data.date,
 						type: data.type,
-						source_url: sourcePath,
+						source_url: sourceURL,
 						author: author,
-						tagData,
+						tagData: tagData,
+						pending: data.pending,
 					};
 				} catch (err) {
 					errors.push(err as string);
@@ -1192,72 +1255,237 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	return result;
 });
 
-exports.reloadDocuments = https.onCall((data, context) => {
-	let collectionName = data.collectionName;
-	var db = admin.firestore();
-	db.collection(collectionName).get().then(async (snapshot) => {
-		snapshot.forEach(async s => {
-			var doc = db.collection(collectionName).doc(s.id);
-			await doc.set({
-				temp: `temp`
-			}, {
-				merge: true
-			}).then(() => {
-				setTimeout(function () {
-					doc.set({
-						temp: FieldValue.delete()
-					}, {
-						merge: true
-					});
-				}, 10000);
-			});
-		});
-	});
-});
+exports.submitShiur = functions.https.onCall(async (data, context) => {
+	verifyAppCheck(context);
 
-const ignoreWords = [
-	'the',
-	'and',
-	'of',
-	'a',
-	'an',
-	'in',
-	'for',
-	'is',
-	"rabbi"
-];
+	log(`Submitting shiur: ${JSON.stringify(data)}`);
+	const filename = data.filename;
 
-exports.updateContentData = functions.firestore.document(`content/{contentID}`).onWrite(async ev => {
-	if (ev.after.data != undefined) {
-		let data = ev.after.data();
-		let components = [];
-		let titleComponents = data.title.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => !ignoreWords.includes(x));
-		let authorNameComponents = data.author.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
-		let tagName = data.tagData.displayName.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ');
+	const submission: SubmittedContentDocument = {
+		attributionID: data.attributionID,
+		title: data.title,
+		description: data.description,
+		duration: data.duration,
+		date: data.date || new Date(),
+		type: data.type,
+		tagID: data.tagID,
+	};
 
-		components = components.concat(titleComponents);
-		components = components.concat(authorNameComponents);
-		components = components.concat(tagName);
+	// check that there is a attributionID
+	if (!submission.attributionID || submission.attributionID.length === 0) {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
+	}
 
-		log(`Components for ${data.title}: ${components}`);
+	// find author for attributionID
+	const author = await getRabbiFor(submission.attributionID, false);
+	if (!author) {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
+	}
 
-		var db = admin.firestore();
-		let doc = db.collection('content').doc(ev.after.id);
+	// check that there is a title
+	if (!submission.title || submission.title.length === 0) {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
+	}
 
-		await doc.set({
-			search_index: components,
-			title: titleFormat(data.title),
-		}, {
-			merge: true
-		});
+	// check that there is a description
+	if (!submission.description) {
+		submission.description = '';
+		// return {
+		// 	status: 'denied',
+		// 	message: 'Insufficient data',
+		// };
+	}
+
+	// check that there is a duration
+	if (!submission.duration || submission.duration < 60) {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
+	}
+
+	//  only allow type audio
+	if (submission.type != 'audio' && submission.type != 'video') {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
+	}
+
+	// check that there is a tagID
+	if (!submission.tagID || submission.tagID.length === 0) {
+		return {
+			status: 'denied',
+			message: 'Insufficient data',
+		};
+	}
+	// find tag for tagID
+	const tag = await getTagFor(submission.tagID);
+	if (!tag) {
+		return {
+			status: 'denied',
+			message: 'Bad data',
+		};
+	}
+
+	const fileID = generateFileID(filename);
+
+	// ensure number of pending documents is not greater than 400
+	const db = admin.firestore();
+	const pendingDocs = await db.collection('content').where('pending', '==', true).get();
+	if (pendingDocs.size > 400) {
+		return {
+			status: 'denied',
+			message: 'Submissions not being accepted at this time',
+		};
+	}
+
+	// get uid if exists
+	const uid = context.auth?.uid;
+
+	//  create a prospective content document
+	const prospectiveContent: ProspectiveContentDocument = {
+		fileID: fileID,
+		attributionID: submission.attributionID,
+		title: submission.title,
+		description: submission.description,
+		duration: submission.duration,
+		date: submission.date,
+		type: submission.type,
+		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
+		author: author.name,
+		tagData: {
+			id: tag.id,
+			name: tag.name,
+			displayName: tag.displayName,
+		},
+		pending: true,
+		upload_data: {
+			// Note: Clients are authenticated via anonyomous auth
+			uid: uid || null,
+			timestamp: admin.firestore.Timestamp.now(),
+		},
+	};
+
+	log(`Shiur passed auto-inspection. Uploading to Firebase...`);
+
+	// upload to firebase
+
+	try {
+		await db.collection('content').add(prospectiveContent);
+		log(`Shiur uploaded to Firebase.`);
+		return {
+			status: 'success',
+			message: 'Shiur submitted',
+		};
+	} catch (err) {
+		log(`Error uploading to Firebase: ${err}`);
+		return {
+			status: 'denied',
+			message: 'Internal error',
+		};
 	}
 });
 
-exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
+function generateFileID(filename: string): string {
+	return strippedFilename(filename);
+}
+
+exports.reloadDocuments = https.onCall((data, context) => {
+	let collectionName = data.collectionName;
+	var db = admin.firestore();
+	db.collection(collectionName)
+		.get()
+		.then(async (snapshot) => {
+			snapshot.forEach(async (s) => {
+				var doc = db.collection(collectionName).doc(s.id);
+				await doc
+					.set(
+						{
+							temp: `temp`,
+						},
+						{
+							merge: true,
+						}
+					)
+					.then(() => {
+						setTimeout(function () {
+							doc.set(
+								{
+									temp: FieldValue.delete(),
+								},
+								{
+									merge: true,
+								}
+							);
+						}, 10000);
+					});
+			});
+		});
+});
+
+const ignoreWords = ['the', 'and', 'of', 'a', 'an', 'in', 'for', 'is', 'rabbi'];
+
+exports.updateContentData = functions.firestore
+	.document(`content/{contentID}`)
+	.onWrite(async (ev) => {
+		if (ev.after.data != undefined) {
+			let data = ev.after.data();
+			let components = [];
+			let titleComponents = data.title
+				.replace(/[^a-z\d\s]+/gi, '')
+				.toLowerCase()
+				.split(' ')
+				.filter((x) => !ignoreWords.includes(x));
+			let authorNameComponents = data.author
+				.replace(/[^a-z\d\s]+/gi, '')
+				.toLowerCase()
+				.split(' ')
+				.filter((x) => x != 'rabbi');
+			let tagName = data.tagData.displayName
+				.replace(/[^a-z\d\s]+/gi, '')
+				.toLowerCase()
+				.split(' ');
+
+			components = components.concat(titleComponents);
+			components = components.concat(authorNameComponents);
+			components = components.concat(tagName);
+
+			log(`Components for ${data.title}: ${components}`);
+
+			var db = admin.firestore();
+			let doc = db.collection('content').doc(ev.after.id);
+
+			await doc.set(
+				{
+					search_index: components,
+					title: titleFormat(data.title),
+				},
+				{
+					merge: true,
+				}
+			);
+		}
+	});
+
+exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async (ev) => {
 	if (ev.after.data != undefined) {
 		let data = ev.after.data();
 		let components = [];
-		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+		let nameComponents = data.name
+			.replace(/[^a-z\d\s]+/gi, '')
+			.toLowerCase()
+			.split(' ')
+			.filter((x) => x != 'rabbi');
 
 		components = components.concat(nameComponents);
 
@@ -1266,56 +1494,32 @@ exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWr
 		var db = admin.firestore();
 		let doc = db.collection('rebbeim').doc(ev.after.id);
 
-		await doc.set({
-			search_index: components,
-			name: nameFormat(data.name),
-		}, {
-			merge: true
-		});
+		await doc.set(
+			{
+				search_index: components,
+				name: nameFormat(data.name),
+			},
+			{
+				merge: true,
+			}
+		);
 	}
 });
 
-// exports.updatePeopleData = firestore.document(`rebbeim/{rabbiID}`).onWrite(async ev => {
-// 	if (ev.after.data != undefined) {
-// 		let data = ev.after.data();
-// 		let components = [];
-// 		let nameComponents = data.name.replace(/[^a-z\d\s]+/gi, "").toLowerCase().split(' ').filter(x => x != 'rabbi');
+const lowercase = ['the', 'and', 'of', 'a', 'an', 'in', 'for', 'is', 'zt"l', "zt'l"];
 
-// 		components = components.concat(nameComponents);
-
-// 		const db = admin.firestore();
-// 		let doc = db.collection('rebbeim').doc(ev.after.id);
-
-// 		doc.set({
-// 			search_index: components,
-// 			reversed_name: nameComponents.reverse().join(' ')
-// 		}, {
-// 			merge: true
-// 		});
-// 	}
-// });
-
-const lowercase = [
-	'the',
-	'and',
-	'of',
-	'a',
-	'an',
-	'in',
-	'for',
-	'is',
-	'zt"l',
-	'zt\'l',
-];
-
-function titleFormat(s) { 
+function titleFormat(s) {
 	const titleComponents = s.split(' ');
-	const title = titleComponents.map(x => {
-		if (x.length > 1 && (lowercase.indexOf(x.toLowerCase()) == -1)) {
-			return x.replace(/\w\S*/g, function(t) { 
-				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
-			}); 
-		} else if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) != -1)) {
+	const title = titleComponents.map((x) => {
+		if (x.length > 1 && lowercase.indexOf(x.toLowerCase()) == -1) {
+			return x.replace(/\w\S*/g, function (t) {
+				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
+			});
+		} else if (
+			x.length > 1 &&
+			titleComponents.indexOf(x) != 0 &&
+			lowercase.indexOf(x.toLowerCase()) != -1
+		) {
 			return x.toLowerCase();
 		} else {
 			return x;
@@ -1324,14 +1528,18 @@ function titleFormat(s) {
 	return title.join(' ');
 }
 
-function nameFormat(s) { 
+function nameFormat(s) {
 	const titleComponents = s.split(' ');
-	const title = titleComponents.map(x => {
-		if (x.length > 1 && (lowercase.indexOf(x.toLowerCase()) == -1)) {
-			return x.replace(/\w\S*/g, function(t) { 
-				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); 
-			}); 
-		} else if (x.length > 1 && (titleComponents.indexOf(x) != 0 && lowercase.indexOf(x.toLowerCase()) != -1)) {
+	const title = titleComponents.map((x) => {
+		if (x.length > 1 && lowercase.indexOf(x.toLowerCase()) == -1) {
+			return x.replace(/\w\S*/g, function (t) {
+				return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
+			});
+		} else if (
+			x.length > 1 &&
+			titleComponents.indexOf(x) != 0 &&
+			lowercase.indexOf(x.toLowerCase()) != -1
+		) {
 			return x.toLowerCase();
 		} else {
 			return x;

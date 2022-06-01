@@ -20,8 +20,8 @@ class RootModel: ObservableObject, ErrorShower {
     @Published var homeView: HomeView?
     @Published var favoritesView: FavoritesView
     @Published var newsView: NewsView
-    @Published var settingsView: SettingsView
-
+    @Published var moreView: MoreView
+    
     @Published var alert: Alert?
     
 //    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
@@ -40,7 +40,7 @@ class RootModel: ObservableObject, ErrorShower {
         
         self.newsView = NewsView(miniPlayerShowing: miniPlayerShowing)
         
-        self.settingsView = SettingsView(miniPlayerShowing: miniPlayerShowing)
+        self.moreView = MoreView(miniPlayerShowing: miniPlayerShowing)
         
         self.homeView = HomeView(hideLoadingScreen: {
             self.showLoadingScreen = false

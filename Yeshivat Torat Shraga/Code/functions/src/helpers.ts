@@ -1,13 +1,15 @@
 import { https, logger } from 'firebase-functions';
 import admin from 'firebase-admin';
-import { Author } from './types';
+import { Author, TagDocument, TagFirebaseDocument } from './types';
 
 export const ENABLEAPPCHECK = true;
 
-export function log(data: any, structured = false) {
+export function log(data: any, structured = false): string {
 	logger.info(data, {
 		structuredData: structured,
 	});
+
+	return JSON.stringify(data);
 }
 
 export function verifyAppCheck(context: https.CallableContext): void {
@@ -21,7 +23,7 @@ export function verifyAppCheck(context: https.CallableContext): void {
 	} else log('App Check verification passed.');
 }
 
-export function getRabbiFor(id: string, includeAllAuthorData: boolean): Promise<Author> {
+export async function getRabbiFor(id: string, includeAllAuthorData: boolean): Promise<Author> {
 	return new Promise(async (resolve, reject) => {
 		const db = admin.firestore();
 		db.collection('rebbeim')
@@ -67,6 +69,34 @@ export function getRabbiFor(id: string, includeAllAuthorData: boolean): Promise<
 			});
 	});
 }
+
+export async function getTagFor(id: string): Promise<TagDocument> {
+	return new Promise(async (resolve, reject) => {
+		const db = admin.firestore();
+		try {
+			const tagDoc = await db.collection('tags').doc(id).get();
+
+			const data = tagDoc.data();
+			if (data) {
+				const fd = new TagFirebaseDocument(data);
+
+				const document: TagDocument = {
+					id: tagDoc.id,
+					name: fd.name,
+					displayName: fd.displayName,
+					isParent: fd.isParent || false,
+				};
+
+				resolve(document);
+			} else {
+				reject('Tag undefined');
+			}
+		} catch (reason) {
+			reject(reason);
+		}
+	});
+}
+
 
 export async function getURLFor(path: string): Promise<string> {
 	return new Promise((resolve, reject) => {

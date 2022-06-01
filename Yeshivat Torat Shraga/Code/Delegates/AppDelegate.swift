@@ -13,6 +13,7 @@ import FirebaseMessaging
 import AVKit
 import FirebaseAppCheck
 import UserNotifications
+import FirebaseAuth
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -33,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         FirebaseApp.configure()
         
+        Auth.auth().signInAnonymously()
         
         FirebaseConfiguration.shared.setLoggerLevel(.min)
 #if EMULATORS

@@ -18,6 +18,36 @@ final class FirebaseConnection {
     
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
+    // MARK: - SubmitContent()
+    static func submitContent(title: String, contentHash: String, author: Rabbi, category: Tag, duration: Int, completion: @escaping (_ metadata: [String: String]?, _ error: Error?) -> Void) {
+        let data: [String: Any] = [
+            "title": title,
+            "filename": contentHash,
+            "attributionID": author.firestoreID,
+            "tagID": category.id,
+            "duration": duration,
+            "type": "audio"
+        ]
+        functions.httpsCallable("submitShiur").call(data) { callResult, callError in
+            guard let result = callResult?.data as? [String: Any] else {
+                print("no data received")
+                completion(nil, callError ?? YTSError.noDataReceived)
+                return
+            }
+            guard let status = result["status"] as? String,
+                  let message = result["message"] as? String
+            else {
+                completion(nil, YTSError.invalidDataReceived)
+                return
+            }
+            completion([
+                "status": status,
+                "message": message
+            ], nil)
+            
+        }
+    }
+    
     // MARK: - LoadAlert()
     static func loadAlert(completion: @escaping (_ result: HomePageAlert?, _ error: Error?) -> Void) {
         functions.httpsCallable("loadAlert").call() { callResult, callError in
@@ -811,11 +841,13 @@ final class FirebaseConnection {
     }
     
     // MARK: - LoadCategories
-    static func loadCategories(completion: @escaping (_ results: [Tag]?, _ error: Error?) -> Void) {
+    static func loadCategories(flatList: Bool = false, completion: @escaping (_ results: [Tag]?, _ error: Error?) -> Void) {
         
-        let httpsCallable = functions.httpsCallable("loadCategories")
+        let data: [String: Any] = [
+            "flatList": flatList
+        ]
         
-        httpsCallable.call() { callResult, callError in
+        functions.httpsCallable("loadCategories").call(data) { callResult, callError in
             guard let response = callResult?.data as? [String: Any] else {
                 completion(nil, callError ?? YTSError.noDataReceived)
                 return

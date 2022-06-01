@@ -42,7 +42,7 @@
 {% if rabbi is not none %}
 <form action="{{ url_for('rabbiDelete', ID=rabbi.id) }}" method="post">
 	<div class="form-group">
-		<button style="color:red;" type="submit">Delete Rabbi</button>
+		<button style="color:red;" name="submit" type="submit">Delete Rabbi</button>
 	</div>
 </form>
 {% endif %}

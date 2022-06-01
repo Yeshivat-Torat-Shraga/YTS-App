@@ -43,6 +43,38 @@ export interface RebbeimDocument {
 	profile_picture_url: string;
 }
 
+export interface SubmittedContentDocument {
+	attributionID: string;
+	title: string;
+	description: string;
+	duration: number;
+	date: FirebaseFirestore.Timestamp;
+	type: string;
+	tagID: string;
+}
+
+export interface ProspectiveContentDocument {
+	fileID: string;
+	attributionID: string;
+	title: string;
+	description: string;
+	duration: number;
+	date: FirebaseFirestore.Timestamp;
+	type: string;
+	source_path: string;
+	author: string;
+	tagData: {
+		id: string;
+		name: string;
+		displayName: string;
+	};
+	pending: boolean;
+	upload_data: {
+		uid: string | null;
+		timestamp: FirebaseFirestore.Timestamp;
+	};
+}
+
 export interface ContentDocument {
 	id: string;
 	fileID: string;
@@ -59,6 +91,7 @@ export interface ContentDocument {
 		name: string;
 		displayName: string;
 	};
+	pending: boolean;
 }
 
 export interface TagDocument {
@@ -164,6 +197,7 @@ export class ContentFirebaseDocument {
 	};
 	title: string;
 	type: string;
+	pending: boolean;
 	viewCount?: number;
 
 	constructor(data: FirebaseFirestore.DocumentData) {
@@ -180,7 +214,8 @@ export class ContentFirebaseDocument {
 			isString(data.tagData.name) &&
 			isString(data.tagData.displayName) &&
 			isString(data.title) &&
-			isString(data.type)
+			isString(data.type) &&
+			typeof data.pending === 'boolean'
 		) {
 			this.attributionID = data.attributionID;
 			this.author = data.author;
@@ -192,6 +227,7 @@ export class ContentFirebaseDocument {
 			this.tagData = data.tagData;
 			this.title = data.title;
 			this.type = data.type;
+			this.pending = data.pending;
 			this.viewCount = data.viewCount;
 		} else initFailure(data);
 	}

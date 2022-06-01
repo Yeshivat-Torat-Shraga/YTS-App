@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08173F0228400ADB004FC42F /* SubmitContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08173F0128400ADB004FC42F /* SubmitContentView.swift */; };
+		08173F072840ACB9004FC42F /* SubmitContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08173F062840ACB9004FC42F /* SubmitContentModel.swift */; };
+		08173F0B2840B7C7004FC42F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 08173F0A2840B7C7004FC42F /* FirebaseAuth */; };
 		0827C1E4283A35CE00566B04 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0827C1E3283A35CE00566B04 /* MarkdownUI */; };
 		082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A22833EBE80002EB78 /* ParentTagView.swift */; };
 		082872A52833ED290002EB78 /* ParentTagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082872A42833ED290002EB78 /* ParentTagModel.swift */; };
@@ -14,11 +17,11 @@
 		08469DE52762D7D9007EF981 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE42762D7D9007EF981 /* FavoritesView.swift */; };
 		08469DE72762D878007EF981 /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08469DE62762D878007EF981 /* NewsView.swift */; };
 		0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0847BA282784A22A0097910A /* RabbiCardView.swift */; };
-		0848BF58281AF15A0060BBDA /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0848BF57281AF15A0060BBDA /* SettingsModel.swift */; };
+		0848BF58281AF15A0060BBDA /* MoreModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0848BF57281AF15A0060BBDA /* MoreModel.swift */; };
 		084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C22794760D00CCEED6 /* NewsModel.swift */; };
 		084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */; };
 		085D438227B06C8C00F2F8FD /* FavoriteCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085D438127B06C8C00F2F8FD /* FavoriteCardView.swift */; };
-		08756446275E6EC300D22856 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* SettingsView.swift */; };
+		08756446275E6EC300D22856 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08756445275E6EC300D22856 /* MoreView.swift */; };
 		087A5BF42761178100C077F6 /* VideoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF32761178100C077F6 /* VideoCardView.swift */; };
 		087A5BF62761179000C077F6 /* VideoCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087A5BF52761179000C077F6 /* VideoCardModel.swift */; };
 		087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087B985427ABD5CB00B09A90 /* ContentCardView.swift */; };
@@ -93,17 +96,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		08173F0128400ADB004FC42F /* SubmitContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitContentView.swift; sourceTree = "<group>"; };
+		08173F062840ACB9004FC42F /* SubmitContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitContentModel.swift; sourceTree = "<group>"; };
 		082872A22833EBE80002EB78 /* ParentTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagView.swift; sourceTree = "<group>"; };
 		082872A42833ED290002EB78 /* ParentTagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTagModel.swift; sourceTree = "<group>"; };
 		083AE1022799A770003A36ED /* NewsArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleView.swift; sourceTree = "<group>"; };
 		08469DE42762D7D9007EF981 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		08469DE62762D878007EF981 /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
 		0847BA282784A22A0097910A /* RabbiCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RabbiCardView.swift; sourceTree = "<group>"; };
-		0848BF57281AF15A0060BBDA /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
+		0848BF57281AF15A0060BBDA /* MoreModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreModel.swift; sourceTree = "<group>"; };
 		084E99C22794760D00CCEED6 /* NewsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsModel.swift; sourceTree = "<group>"; };
 		084E99C42794808F00CCEED6 /* NewsArticleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsArticleCardView.swift; sourceTree = "<group>"; };
 		085D438127B06C8C00F2F8FD /* FavoriteCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteCardView.swift; sourceTree = "<group>"; };
-		08756445275E6EC300D22856 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		08756445275E6EC300D22856 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		087A5BF32761178100C077F6 /* VideoCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardView.swift; sourceTree = "<group>"; };
 		087A5BF52761179000C077F6 /* VideoCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCardModel.swift; sourceTree = "<group>"; };
 		087B985427ABD5CB00B09A90 /* ContentCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentCardView.swift; sourceTree = "<group>"; };
@@ -166,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F25AEDFF27FECF8400DCB79F /* FirebaseMessaging in Frameworks */,
+				08173F0B2840B7C7004FC42F /* FirebaseAuth in Frameworks */,
 				F25AEDF227FECCFD00DCB79F /* FirebaseAppCheck in Frameworks */,
 				F25AEDF627FECCFD00DCB79F /* FirebaseFirestore in Frameworks */,
 				0827C1E4283A35CE00566B04 /* MarkdownUI in Frameworks */,
@@ -246,8 +252,8 @@
 				F2D6E2C0282BC685000917D2 /* AboutView.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
-				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
 				B1ACF92027443FB000079F9A /* DisplayRabbiView.swift */,
+				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
 				085D438127B06C8C00F2F8FD /* FavoriteCardView.swift */,
 				08469DE42762D7D9007EF981 /* FavoritesView.swift */,
 				B1BF503C273C868B00CF18D6 /* HomeView.swift */,
@@ -266,8 +272,9 @@
 				B1BF5042273D2A2200CF18D6 /* RabbiTileView.swift */,
 				B12AB834273B103C00B17CC0 /* RootView.swift */,
 				F22C91392770A260007A9424 /* SearchView.swift */,
-				08756445275E6EC300D22856 /* SettingsView.swift */,
+				08756445275E6EC300D22856 /* MoreView.swift */,
 				08B7A8442790358000B0EBC3 /* SlideshowView.swift */,
+				08173F0128400ADB004FC42F /* SubmitContentView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
@@ -283,12 +290,13 @@
 				B1ACF9232744497E00079F9A /* DisplayRabbiModel.swift */,
 				08AF240D27A35315001331EA /* FavoritesModel.swift */,
 				B1BF503E273D1C9A00CF18D6 /* HomeModel.swift */,
+				0848BF57281AF15A0060BBDA /* MoreModel.swift */,
 				084E99C22794760D00CCEED6 /* NewsModel.swift */,
 				082872A42833ED290002EB78 /* ParentTagModel.swift */,
 				F2BB3176274BCDAB008B9DE0 /* Player.swift */,
 				F230C4C9273B110900F7ACCC /* RootModel.swift */,
 				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
-				0848BF57281AF15A0060BBDA /* SettingsModel.swift */,
+				08173F062840ACB9004FC42F /* SubmitContentModel.swift */,
 				08A05B2427653DAA00FEE15F /* TagModel.swift */,
 				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
 			);
@@ -382,6 +390,7 @@
 				F25AEDFC27FECEEB00DCB79F /* SwiftyGif */,
 				F25AEDFE27FECF8400DCB79F /* FirebaseMessaging */,
 				0827C1E3283A35CE00566B04 /* MarkdownUI */,
+				08173F0A2840B7C7004FC42F /* FirebaseAuth */,
 			);
 			productName = "Yeshivat Torat Shraga";
 			productReference = B12AB82D273B103C00B17CC0 /* Yeshivat Torat Shraga.app */;
@@ -451,7 +460,7 @@
 				08469DE72762D878007EF981 /* NewsView.swift in Sources */,
 				B1BF503F273D1C9A00CF18D6 /* HomeModel.swift in Sources */,
 				F202FEE827538F8100A41DEB /* BackZStackButtonStyle.swift in Sources */,
-				0848BF58281AF15A0060BBDA /* SettingsModel.swift in Sources */,
+				0848BF58281AF15A0060BBDA /* MoreModel.swift in Sources */,
 				087B985527ABD5CB00B09A90 /* ContentCardView.swift in Sources */,
 				B12AB838273B103C00B17CC0 /* Yeshivat_Torat_Shraga.xcdatamodeld in Sources */,
 				082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */,
@@ -463,6 +472,7 @@
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */,
 				F2D78B71278695EB003996A8 /* Favorites.swift in Sources */,
+				08173F0228400ADB004FC42F /* SubmitContentView.swift in Sources */,
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
 				F29B6875283B8E0000ECA1A6 /* AutoLoadMoreBarView.swift in Sources */,
 				0847BA292784A22A0097910A /* RabbiCardView.swift in Sources */,
@@ -495,10 +505,11 @@
 				B1ACF92127443FB000079F9A /* DisplayRabbiView.swift in Sources */,
 				08A05B2527653DAA00FEE15F /* TagModel.swift in Sources */,
 				F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */,
-				08756446275E6EC300D22856 /* SettingsView.swift in Sources */,
+				08756446275E6EC300D22856 /* MoreView.swift in Sources */,
 				08D3493D27CD26A000538697 /* OnboardingView.swift in Sources */,
 				F2D6E2C328328137000917D2 /* iOS14BorderedButtonStyle.swift in Sources */,
 				08B7A8452790358000B0EBC3 /* SlideshowView.swift in Sources */,
+				08173F072840ACB9004FC42F /* SubmitContentModel.swift in Sources */,
 				08A05B2327653D4E00FEE15F /* TagView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -842,6 +853,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		08173F0A2840B7C7004FC42F /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F25AEDEE27FECCFD00DCB79F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
 		0827C1E3283A35CE00566B04 /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0827C1E2283A35CE00566B04 /* XCRemoteSwiftPackageReference "MarkdownUI" */;
