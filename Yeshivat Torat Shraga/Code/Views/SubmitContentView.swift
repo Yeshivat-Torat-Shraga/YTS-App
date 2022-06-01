@@ -23,8 +23,8 @@ struct SubmitContentView: View {
     var body: some View {
         VStack {
             Form {
-                Section(footer: Text("Titles must be at least four characters. To add a new rabbi or tag name, contact an app administrator.").foregroundColor(.gray)) {
-                    TextField("Title", text: $model.title, onCommit: {model.objectWillChange.send()})
+                Section(footer: Text("Make sure you add a descriptive title.").foregroundColor(.gray)) {
+                    TextField("Title", text: $model.title)
                     Picker(selection: $model.author, label: Text("Select an author")) {
                         if let rabbis = model.rabbis {
                             ForEach(rabbis, id: \.firestoreID) { rabbi in
@@ -48,7 +48,7 @@ struct SubmitContentView: View {
                     }
                 }
                 
-                Section(footer: Text("Files must be below 150MB in size.").foregroundColor(.gray)) {
+                Section(footer: Text("Your file must be smaller than 250MB.").foregroundColor(.gray)) {
                     Button(action: {showingDocumentSelectSheet = true}) {
                         if let fileDisplayName = model.fileDisplayName {
                             Text(fileDisplayName)
@@ -68,11 +68,11 @@ struct SubmitContentView: View {
                         }) {
                             Text("Submit")
                         }
-                        .foregroundColor((model.title.count > 3 &&
+                        .foregroundColor((model.title.count > 8 &&
                                           model.author.firestoreID != DetailedRabbi.sample.firestoreID &&
                                           model.category.id != Tag.sample.id &&
                                           model.contentURL != nil) ? .shragaBlue : .gray)
-                        .disabled(!(model.title.count > 3 &&
+                        .disabled(!(model.title.count > 8 &&
                                     model.author.firestoreID != DetailedRabbi.sample.firestoreID &&
                                     model.category.id != Tag.sample.id &&
                                     model.contentURL != nil))
