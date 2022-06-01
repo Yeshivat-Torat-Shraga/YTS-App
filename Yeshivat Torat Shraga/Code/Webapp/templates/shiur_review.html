@@ -1,48 +1,3 @@
-<!-- 
-  
-  
-  
-  
-  
-  
-  
-  
-
-                                        TODO: If the auditor makes edits to the shiur,
-                                        they need to be sent with the form. The server
-                                        also needs to take that data and update the
-                                        document when approving it.
-
-  
-  
-  
-  
-
-  
-  
-  
-  
-
- -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {% extends 'base.html' %} {% block content %}
 <link rel="stylesheet" href="/static/bootstrap-datetimepicker.min.css">
 <script src="/static/bootstrap-datetimepicker.min.js"></script>
@@ -89,7 +44,8 @@
     <select name="tag" id="tags" class="form-control" required>
       {% for tag in tags %}
       {% if not tag.isParent %}
-      <option value="{{ tag.id }}" {% if tag.id == shiur.tagID %} selected {% endif %}>{{ tag.displayName }}</option>
+      <option value="{{ tag.id }}" {% if tag.id == shiur.tagData.id %} selected {% endif %}>{{ tag.displayName }}
+      </option>
       {% endif %}
       {% endfor %}
     </select>

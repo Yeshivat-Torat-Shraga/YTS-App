@@ -23,7 +23,7 @@ class SubmitContentModel: ObservableObject {
     @Published var contentURL: URL? = nil
     @Published var uploadProgress: Double = 0.0
     var enableSubmission: Bool {
-        return (title.count > 3 &&
+        return (title.count > 8 &&
                 author.firestoreID != DetailedRabbi.sample.firestoreID &&
                 category.id != Tag.sample.id &&
                 contentURL != nil)
@@ -50,14 +50,6 @@ class SubmitContentModel: ObservableObject {
             return
         }
         
-        
-        guard let hash = SHA256.hash(ofFile: contentURL) else {
-            self.isUploading = false
-            self.showAlert(title: "Uploading Error",
-                           body: "There was an issue handling your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
-            return
-        }
-        
         guard let resources = try? contentURL.resourceValues(forKeys:[.fileSizeKey]),
               let fileSize = resources.fileSize else {
                   self.showAlert(title: "Uploading Error",
@@ -65,7 +57,7 @@ class SubmitContentModel: ObservableObject {
                   return
               }
         
-        guard fileSize < 262144000 else {
+        guard fileSize < 262_144_000 else {
             self.isUploading = false
             self.showAlert(title: "Uploading Error",
                            body: "Please make sure the audio file is smaller than 250MB.")

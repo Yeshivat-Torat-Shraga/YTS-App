@@ -112,10 +112,10 @@ struct MoreView: View {
                         NavigationLink("Submit Content", destination: model.submitContentView)
                     }
                 } else {
-                Section(header: Text("Contribute"), footer: Text("Upgrade to iOS 15 or above to use this feature.")) {
-                    NavigationLink("Submit Content", destination: model.submitContentView)
-                        .disabled(true)
-                }
+                    Section(header: Text("Contribute"), footer: Text("Upgrade to iOS 15 or above to use this feature.")) {
+                        NavigationLink("Submit Content", destination: model.submitContentView)
+                            .disabled(true)
+                    }
                 }
                 
                 
