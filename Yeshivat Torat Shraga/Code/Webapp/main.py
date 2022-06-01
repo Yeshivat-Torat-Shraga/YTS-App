@@ -9,6 +9,7 @@ from firebase_admin import credentials, initialize_app, storage, firestore, mess
 from blake3 import blake3
 from google.cloud.exceptions import NotFound
 import hashlib
+from uuid import uuid4
 
 PRODUCTION = os.getenv("PRODUCTION")
 
@@ -373,6 +374,8 @@ def shiurim_upload():
         if "audio" not in file.content_type and "video" not in file.content_type:
             flash("You must upload an audio or video file.")
             return redirect(url_for("shiurim_upload"))
+        # set the filename to a UUID for security
+        secure_random_filename = str(uuid4())
         # try:
         rabbi = request.form.get("author").split("~")
         date = datetime.strptime(
@@ -380,11 +383,6 @@ def shiurim_upload():
                 "date", datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
             ),
             "%Y-%m-%d %H:%M:%S",
-        )
-        file.filename = (
-            datetime.strftime(datetime.now(), "%d%m%Y%H%M%S%f")
-            + "."
-            + file.filename.split(".")[-1]
         )
 
         attributionID = rabbi[0]
@@ -394,11 +392,13 @@ def shiurim_upload():
         # create tmp folder if it doesn't exist
         if not os.path.exists("tmp"):
             os.makedirs("tmp")
-        file.save("tmp/" + file.filename)
+
+        file.save("tmp/" + secure_random_filename)
         # Calculate the MD5 hash of the file
         file_hash = hashlib.sha256(
-            open("tmp/" + file.filename, "rb").read()).hexdigest()
-        duration = ffmpeg.probe("tmp/" + file.filename)["format"]["duration"]
+            open("tmp/" + secure_random_filename, "rb").read()).hexdigest()
+        duration = ffmpeg.probe(
+            "tmp/" + secure_random_filename)["format"]["duration"]
         duration = int(float(duration))
 
         # Title:
@@ -446,7 +446,7 @@ def shiurim_upload():
         content_collection = db.collection("content")
         content_collection.add(new_content_document)
         blob = bucket.blob(f"content/{file_hash}")
-        blob.upload_from_filename("tmp/" + file.filename)
+        blob.upload_from_filename("tmp/" + secure_random_filename)
         # delete everything in tmp folder
         for tmpfile in os.listdir("tmp"):
             os.remove("tmp/" + tmpfile)
