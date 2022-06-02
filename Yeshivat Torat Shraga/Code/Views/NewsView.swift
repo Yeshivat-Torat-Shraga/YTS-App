@@ -76,13 +76,13 @@ struct NewsView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     LogoView(size: .small)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        self.presentingSearchView = true
-                    }) {
-                        Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
-                    }.hidden()
-                }
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button(action: {
+//                        self.presentingSearchView = true
+//                    }) {
+//                        Image(systemName: "magnifyingglass").foregroundColor(.shragaBlue)
+//                    }
+//                }
             }
         }
         .onAppear {
@@ -105,10 +105,8 @@ struct NewsView: View {
                     }))
         })
         .sheet(isPresented: $presentingSearchView) {
-            NavigationView {
-                SearchView()
-                    .background(BackgroundClearView())
-            }
+            SearchView()
+                .background(BackgroundClearView())
         }
     }
 }

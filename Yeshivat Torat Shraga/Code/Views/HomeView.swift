@@ -214,10 +214,6 @@ struct HomeView: View {
         }
         .sheet(isPresented: $presentingSearchView) {
             searchView
-                .environmentObject(player)
-                .environmentObject(audioPlayerModel)
-                .environmentObject(favoritesManager)
-            // .envObjs should be here
                 .background(BackgroundClearView())
         }
         .onAppear {
