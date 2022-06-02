@@ -27,6 +27,7 @@ jobs:
       - name: Inject Secrets
         run: |
           cd Yeshivat\ Torat\ Shraga/Code/Webapp
+          # The firebase credentials should be formatted as a stringified JSON object (I think)
           echo -E '${{ secrets.FIREBASE_CREDENTIALS }}' > cred.json
           echo username = \'${{ secrets.WEB_USERNAME }}\' >> settings.py
           echo password = \'${{ secrets.WEB_PASSWORD }}\' >> settings.py
