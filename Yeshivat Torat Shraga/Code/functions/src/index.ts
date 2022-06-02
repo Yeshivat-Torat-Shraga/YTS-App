@@ -749,19 +749,15 @@ exports.generateHLSStream = storage
 		});
 
 		if (userUpload) {
-// count number of pending firebase documents
+			// count number of pending firebase documents
 			const db = admin.firestore();
-			const pendingCount = await db
-				.collection('content')
-				.where('pending', '==', true)
-				.get()
+			const pendingCount = await db.collection('content').where('pending', '==', true).get();
 
 			if (pendingCount.size > 400) {
 				// delete file and return
 				log(`Too many pending documents. Deleting file at ${object.name}`);
 				return bucket.file(filepath).delete();
 			}
-
 
 			log('Detected user upload, running checks...');
 			// sha256 hash the file
@@ -780,8 +776,7 @@ exports.generateHLSStream = storage
 			} else {
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
-				var doc = await db.collection('content')
-					.where('fileID', '==', hex).get();
+				var doc = await db.collection('content').where('fileID', '==', hex).get();
 
 				if (doc.empty) {
 					// no matching document, delete file
@@ -1361,7 +1356,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		duration: submission.duration,
 		date: submission.date,
 		type: submission.type,
-		source_path: `HLSStreams/${submission.type}/${fileID}.m3u8`,
+		source_path: `HLSStreams/${submission.type}/${fileID}/${fileID}.m3u8`,
 		author: author.name,
 		tagData: {
 			id: tag.id,
@@ -1552,7 +1547,9 @@ exports.cleanStorage = https.onCall(async (data, context) => {
 	const bucket = admin.storage().bucket('gs://yeshivat-torat-shraga.appspot.com/');
 	const files = await bucket.getFiles();
 	const filenames = files.map((file) => file.name);
-	const filesToDelete = filenames.filter((file) => file.startsWith('content/') || file.startsWith('thumbnails/'));
+	const filesToDelete = filenames.filter(
+		(file) => file.startsWith('content/') || file.startsWith('thumbnails/')
+	);
 	await filesToDelete.map((file) => bucket.file(file).delete());
 	log(`Deleted ${filesToDelete.length} files in content/ and thumbnails/`);
 
@@ -1560,10 +1557,8 @@ exports.cleanStorage = https.onCall(async (data, context) => {
 	// check each file if it has a corresponding firebase document
 	const db = admin.firestore();
 	const hlsFilesToDelete = await hlsFilenames.filter(async (file) => {
-		const doc = await db.collection('content')
-		.where('fileID', '==', strippedFilename(file))
-		.get();
-		
+		const doc = await db.collection('content').where('fileID', '==', strippedFilename(file)).get();
+
 		if (doc.empty) {
 			return file;
 		} else {
