@@ -20,7 +20,7 @@ class SubmitContentModel: ObservableObject {
     
     @Published var title = ""
     @Published var author: Rabbi = DetailedRabbi.sample
-    @Published var category: Tag = .sample
+    @Published var category: Tag = .miscellaneous
     @Published var contentURL: URL? = nil
     @Published var uploadProgress: Double = 0.0
     @Published var isUploading = false
@@ -30,7 +30,6 @@ class SubmitContentModel: ObservableObject {
     var enableSubmission: Bool {
         return (title.count > 3 &&
                 author.firestoreID != DetailedRabbi.sample.firestoreID &&
-                category.id != Tag.sample.id &&
                 contentURL != nil)
     }
     
@@ -47,6 +46,8 @@ class SubmitContentModel: ObservableObject {
         }
         
         print("Content URL: \(contentURL)")
+        
+        print("Unlocked resource: \(contentURL.startAccessingSecurityScopedResource())")
         
         guard let hash = SHA256.hash(ofFile: contentURL) else {
             Analytics.logEvent("upload_failure", parameters: ["reason": "hash calculation failure"])
@@ -94,7 +95,7 @@ class SubmitContentModel: ObservableObject {
                 Analytics.logEvent("upload_failure", parameters: ["reason": "rejected by GCF"])
                 self.isUploading = false
                 self.showAlert(title: "Uploading Error",
-                               body: "Your submission failed. Check to make sure you filled out all the required fields. If this issue persists, your device may have been blocked from uploading shiurim.")
+                               body: "Your submission failed. Check to make sure you filled out all the required fields. If this issue persists, contact us.")
                 return
             }
             

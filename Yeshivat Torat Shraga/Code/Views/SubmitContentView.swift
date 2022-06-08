@@ -85,6 +85,8 @@ struct SubmitContentView: View {
                     return
                 }
                 
+                url.startAccessingSecurityScopedResource()
+                
                 guard let asset = AVAsset(url: url) as AVAsset? else {
                     model.showAlert(title: "File Error", body: "There is an issue with the file chosen. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
                     return

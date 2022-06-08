@@ -559,6 +559,8 @@ class Tag: ObservableObject, Hashable {
     }
     
     static var sample = Tag("Chagim", id: "TEST_ID")
+    
+    static var miscellaneous = Tag("Misc.", id: "NKwXl5QXmOe6rlQ9J3kW")
 }
 
 // MARK: - Category

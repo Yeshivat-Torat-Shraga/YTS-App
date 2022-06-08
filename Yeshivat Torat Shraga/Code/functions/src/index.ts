@@ -1268,6 +1268,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	// check that there is a attributionID
 	if (!submission.attributionID || submission.attributionID.length === 0) {
+		log(`No attributionID provided`);
 		return {
 			status: 'denied',
 			message: 'Insufficient data',
@@ -1277,6 +1278,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	// find author for attributionID
 	const author = await getRabbiFor(submission.attributionID, false);
 	if (!author) {
+		log(`No author found for attributionID: ${submission.attributionID}`);
 		return {
 			status: 'denied',
 			message: 'Insufficient data',
@@ -1285,6 +1287,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	// check that there is a title
 	if (!submission.title || submission.title.length === 0) {
+		log(`No title provided`);
 		return {
 			status: 'denied',
 			message: 'Insufficient data',
@@ -1302,6 +1305,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	// check that there is a duration
 	if (!submission.duration || submission.duration < 60) {
+		log(`No duration provided`);
 		return {
 			status: 'denied',
 			message: 'Insufficient data',
@@ -1310,6 +1314,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	//  only allow type audio
 	if (submission.type != 'audio' && submission.type != 'video') {
+		log(`Invalid type: ${submission.type}`);
 		return {
 			status: 'denied',
 			message: 'Insufficient data',
@@ -1318,6 +1323,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	// check that there is a tagID
 	if (!submission.tagID || submission.tagID.length === 0) {
+		log(`No tagID provided`);
 		return {
 			status: 'denied',
 			message: 'Insufficient data',
@@ -1326,6 +1332,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	// find tag for tagID
 	const tag = await getTagFor(submission.tagID);
 	if (!tag) {
+		log(`No tag found for tagID: ${submission.tagID}`);
 		return {
 			status: 'denied',
 			message: 'Bad data',
