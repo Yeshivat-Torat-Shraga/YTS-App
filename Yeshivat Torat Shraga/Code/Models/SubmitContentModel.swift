@@ -134,6 +134,7 @@ class SubmitContentModel: ObservableObject {
                                body: "Your submission was successfully uploaded and is waiting for review. It will be publicly available once it is approved.")
                 self.resetForm()
             }
+            
             uploadTask.observe(.failure) { snapshot in
                 self.isUploading = false
                 self.showAlert(title: "Uploading Error",
@@ -147,7 +148,7 @@ class SubmitContentModel: ObservableObject {
                 self.showAlert(title: "Uploading Error",
                                body: "There was an issue uploading your file. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur, or come back later.")
                 
-                self.resetForm()
+//                self.resetForm()
             }
         }
     }
@@ -192,13 +193,14 @@ class SubmitContentModel: ObservableObject {
     func resetForm() {
         title = ""
         author = DetailedRabbi.sample
-        category = .sample
+        category = .miscellaneous
         contentURL = nil
         fileDisplayName = nil
         uploadProgress = 0
     }
     
     func showAlert(title: String, body: String) {
+        self.uploadProgress = 0.0
         self.alertTitle = title
         self.alertBody = body
         self.showAlert = true
