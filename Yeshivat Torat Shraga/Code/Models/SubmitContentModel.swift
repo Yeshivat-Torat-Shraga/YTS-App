@@ -102,13 +102,20 @@ class SubmitContentModel: ObservableObject {
             let storageRef = Storage.storage().reference()
             let contentDestinationRef = storageRef.child("user-submissions/\(hash)")
             contentURL.startAccessingSecurityScopedResource()
-            let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
+            
+            guard let data = try? Data(contentsOf: contentURL) else {
+                self.isUploading = false
+                self.showAlert(title: "Uploading Error",
+                               body: "Something went wrong and your shiur couldn't be read. If this is the first time you're seeing this, try again. Otherwise, try a different shiur.")
+                return
+            }
+            
+            let uploadTask = contentDestinationRef.putData(data, metadata: nil) { metadata, error in
                 guard metadata != nil else {
                     Analytics.logEvent("upload_failure", parameters: ["reason": "nil metadata while uploading to storage"])
                     self.isUploading = false
                     self.showAlert(title: "Uploading Error",
-                                   body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, send us an email from the about section.")
-                    self.isUploading = false
+                                   body: "Something went wrong and your shiur wasn't submitted. If this is the first time you're seeing this, try again. Otherwise, come back later. If this issue persists, contact us.")
                     return
                 }
             }
