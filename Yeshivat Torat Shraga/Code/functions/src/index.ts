@@ -748,6 +748,8 @@ exports.generateHLSStream = storage
 			validation: false,
 		});
 
+		const newFolderPath = `HLSStreams/${object.contentType!.split('/')[0]}/${filename}`;
+
 		if (userUpload) {
 			// count number of pending firebase documents
 			const db = admin.firestore();
@@ -776,7 +778,7 @@ exports.generateHLSStream = storage
 			} else {
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
-				var doc = await db.collection('content').where('fileID', '==', hex).get();
+				var doc = await db.collection('content').where('source_path', '==', newFolderPath).get();
 
 				if (doc.empty) {
 					// no matching document, delete file
@@ -840,7 +842,7 @@ exports.generateHLSStream = storage
 				const fp = path.join(outputDir, filePart);
 				log(`Uploading ${fp}...`);
 				return bucket.upload(fp, {
-					destination: `HLSStreams/${object.contentType!.split('/')[0]}/${filename}/${filePart}`,
+					destination: `${newFolderPath}/${filePart}`,
 					metadata: {
 						'Cache-Control': 'public,max-age=3600',
 					},

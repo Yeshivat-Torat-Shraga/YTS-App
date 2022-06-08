@@ -110,7 +110,10 @@ class SubmitContentModel: ObservableObject {
                 return
             }
             
-            let uploadTask = contentDestinationRef.putData(data, metadata: nil) { metadata, error in
+            let sm = StorageMetadata()
+            sm.contentType = "audio/\(contentURL.pathExtension)"
+            
+            let uploadTask = contentDestinationRef.putData(data, metadata: sm) { metadata, error in
                 guard metadata != nil else {
                     Analytics.logEvent("upload_failure", parameters: ["reason": "nil metadata while uploading to storage"])
                     self.isUploading = false
