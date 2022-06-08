@@ -69,14 +69,8 @@ struct SubmitContentView: View {
                         }) {
                             Text("Submit")
                         }
-                        .foregroundColor((model.title.count > 8 &&
-                                          model.author.firestoreID != DetailedRabbi.sample.firestoreID &&
-                                          model.category.id != Tag.sample.id &&
-                                          model.contentURL != nil) ? .shragaBlue : .gray)
-                        .disabled(!(model.title.count > 8 &&
-                                    model.author.firestoreID != DetailedRabbi.sample.firestoreID &&
-                                    model.category.id != Tag.sample.id &&
-                                    model.contentURL != nil))
+                        .foregroundColor(model.enableSubmission ? .shragaBlue : .gray)
+                        .disabled(!model.enableSubmission)
                         
                     } else {
                         ProgressView(value: model.uploadProgress)

@@ -23,23 +23,30 @@ class SubmitContentModel: ObservableObject {
     @Published var category: Tag = .sample
     @Published var contentURL: URL? = nil
     @Published var uploadProgress: Double = 0.0
+    @Published var isUploading = false
+    @Published var fileDisplayName: String? = nil
+    var contentDuration: Int? = nil
+    
     var enableSubmission: Bool {
-        return (title.count > 8 &&
+        return (title.count > 3 &&
                 author.firestoreID != DetailedRabbi.sample.firestoreID &&
                 category.id != Tag.sample.id &&
                 contentURL != nil)
     }
-    @Published var isUploading = false
-    @Published var fileDisplayName: String? = nil
-    var contentDuration: Int? = nil
     
     func submitContent() {
         self.isUploading = true
         self.objectWillChange.send()
         
-        guard let contentURL = contentURL,
-              let hash = SHA256.hash(ofFile: contentURL)
-        else {
+        guard let contentURL = contentURL else {
+            Analytics.logEvent("upload_failure", parameters: ["reason": "url nil"])
+            self.isUploading = false
+            self.showAlert(title: "Uploading Error",
+                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+            return
+        }
+        
+        guard let hash = SHA256.hash(ofFile: contentURL) else {
             Analytics.logEvent("upload_failure", parameters: ["reason": "hash calculation failure"])
             self.isUploading = false
             self.showAlert(title: "Uploading Error",

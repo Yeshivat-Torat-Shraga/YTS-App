@@ -8,6 +8,7 @@
 import SwiftUI
 import LinkPresentation
 import CommonCrypto
+import Promises
 
 func timeFormatted(totalSeconds: TimeInterval) -> String {
     let seconds: Int = Int((totalSeconds).truncatingRemainder(dividingBy: 60))
@@ -243,43 +244,79 @@ protocol SequentialLoader: ObservableObject {
 
 struct SHA256 {
     static func hash(ofFile url: URL) -> String? {
-        let bufferSize = 1024 * 1024
-        
         do {
-            // Open file for reading:
-            let file = try FileHandle(forReadingFrom: url)
-            defer {
-                file.closeFile()
-            }
+            let data = Data(contentsOf: url)
             
-            // Create and initialize SHA256 context:
-            var context = CC_SHA256_CTX()
-            CC_SHA256_Init(&context)
-            
-            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
-            while autoreleasepool(invoking: {
-                let data = file.readData(ofLength: bufferSize)
-                if data.count > 0 {
-                    data.withUnsafeBytes {
-                        _ = CC_SHA256_Update(&context, $0.baseAddress, numericCast(data.count))
-                    }
-                    return true // Continue
-                } else {
-                    return false // End of file
-                }
-            }) { }
-            
-            // Compute the SHA256 digest:
-            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-            _ = CC_SHA256_Final(&digest, &context)
-            
-            let hexDigest = Data(digest).map { String(format: "%02hhx", $0) }.joined()
-            return hexDigest
-            
+            return data.sha256()
         } catch {
-            print("Cannot open file:", error.localizedDescription)
+            print("Cannot get file data:", error.localizedDescription)
             return nil
         }
+    }
+    
+//    static func hash(ofFile url: URL) -> String? {
+//        let bufferSize = 1024 * 1024
+//
+//        do {
+//            // Open file for reading:
+//            let file = try FileHandle(forReadingFrom: url)
+//            defer {
+//                file.closeFile()
+//            }
+//
+//            // Create and initialize SHA256 context:
+//            var context = CC_SHA256_CTX()
+//            CC_SHA256_Init(&context)
+//
+//            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
+//            while autoreleasepool(invoking: {
+//                let data = file.readData(ofLength: bufferSize)
+//                if data.count > 0 {
+//                    data.withUnsafeBytes {
+//                        _ = CC_SHA256_Update(&context, $0.baseAddress, numericCast(data.count))
+//                    }
+//                    return true // Continue
+//                } else {
+//                    return false // End of file
+//                }
+//            }) { }
+//
+//            // Compute the SHA256 digest:
+//            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+//            _ = CC_SHA256_Final(&digest, &context)
+//
+//            let hexDigest = Data(digest).map { String(format: "%02hhx", $0) }.joined()
+//            return hexDigest
+//
+//        } catch {
+//            print("Cannot open file:", error.localizedDescription)
+//            return nil
+//        }
+//    }
+}
+
+extension Data {
+    public func sha256() -> String {
+        return hexStringFromData(input: digest(input: self as NSData))
+    }
+    
+    private func digest(input : NSData) -> NSData {
+        let digestLength = Int(CC_SHA256_DIGEST_LENGTH)
+        var hash = [UInt8](repeating: 0, count: digestLength)
+        CC_SHA256(input.bytes, UInt32(input.length), &hash)
+        return NSData(bytes: hash, length: digestLength)
+    }
+    
+    private  func hexStringFromData(input: NSData) -> String {
+        var bytes = [UInt8](repeating: 0, count: input.length)
+        input.getBytes(&bytes, length: input.length)
+        
+        var hexString = ""
+        for byte in bytes {
+            hexString += String(format:"%02x", UInt8(byte))
+        }
+        
+        return hexString
     }
 }
 
