@@ -611,6 +611,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reesedevelopment.YTS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -760,6 +761,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reesedevelopment.YTS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -790,6 +792,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reesedevelopment.YTS;
 				PRODUCT_NAME = "$(TARGET_NAME)";

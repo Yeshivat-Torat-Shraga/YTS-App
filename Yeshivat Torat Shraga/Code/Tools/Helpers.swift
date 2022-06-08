@@ -8,7 +8,7 @@
 import SwiftUI
 import LinkPresentation
 import CommonCrypto
-import Promises
+//import Promises
 
 func timeFormatted(totalSeconds: TimeInterval) -> String {
     let seconds: Int = Int((totalSeconds).truncatingRemainder(dividingBy: 60))
@@ -245,7 +245,7 @@ protocol SequentialLoader: ObservableObject {
 struct SHA256 {
     static func hash(ofFile url: URL) -> String? {
         do {
-            let data = Data(contentsOf: url)
+            let data = try Data(contentsOf: url)
             
             return data.sha256()
         } catch {
