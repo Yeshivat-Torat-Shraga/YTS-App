@@ -42,9 +42,11 @@ class SubmitContentModel: ObservableObject {
             Analytics.logEvent("upload_failure", parameters: ["reason": "url nil"])
             self.isUploading = false
             self.showAlert(title: "Uploading Error",
-                           body: "There was an issue opening your file for upload. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+                           body: "There was an issue locating your file. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
             return
         }
+        
+        print("Content URL: \(contentURL)")
         
         guard let hash = SHA256.hash(ofFile: contentURL) else {
             Analytics.logEvent("upload_failure", parameters: ["reason": "hash calculation failure"])

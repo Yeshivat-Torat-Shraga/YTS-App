@@ -243,56 +243,55 @@ protocol SequentialLoader: ObservableObject {
 
 
 struct SHA256 {
-    static func hash(ofFile url: URL) -> String? {
-        do {
-            let data = try Data(contentsOf: url)
-            
-            return data.sha256()
-        } catch {
-            print("Cannot get file data:", error.localizedDescription)
-            return nil
-        }
-    }
-    
 //    static func hash(ofFile url: URL) -> String? {
-//        let bufferSize = 1024 * 1024
-//
 //        do {
-//            // Open file for reading:
-//            let file = try FileHandle(forReadingFrom: url)
-//            defer {
-//                file.closeFile()
-//            }
-//
-//            // Create and initialize SHA256 context:
-//            var context = CC_SHA256_CTX()
-//            CC_SHA256_Init(&context)
-//
-//            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
-//            while autoreleasepool(invoking: {
-//                let data = file.readData(ofLength: bufferSize)
-//                if data.count > 0 {
-//                    data.withUnsafeBytes {
-//                        _ = CC_SHA256_Update(&context, $0.baseAddress, numericCast(data.count))
-//                    }
-//                    return true // Continue
-//                } else {
-//                    return false // End of file
-//                }
-//            }) { }
-//
-//            // Compute the SHA256 digest:
-//            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
-//            _ = CC_SHA256_Final(&digest, &context)
-//
-//            let hexDigest = Data(digest).map { String(format: "%02hhx", $0) }.joined()
-//            return hexDigest
-//
+//            let data = try Data(contentsOf: url)
+//            return data.sha256()
 //        } catch {
-//            print("Cannot open file:", error.localizedDescription)
+//            print("Cannot get file data:", error.localizedDescription)
 //            return nil
 //        }
 //    }
+    
+    static func hash(ofFile url: URL) -> String? {
+        let bufferSize = 1024 * 1024
+
+        do {
+            // Open file for reading:
+            let file = try FileHandle(forReadingFrom: url)
+            defer {
+                file.closeFile()
+            }
+
+            // Create and initialize SHA256 context:
+            var context = CC_SHA256_CTX()
+            CC_SHA256_Init(&context)
+
+            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
+            while autoreleasepool(invoking: {
+                let data = file.readData(ofLength: bufferSize)
+                if data.count > 0 {
+                    data.withUnsafeBytes {
+                        _ = CC_SHA256_Update(&context, $0.baseAddress, numericCast(data.count))
+                    }
+                    return true // Continue
+                } else {
+                    return false // End of file
+                }
+            }) { }
+
+            // Compute the SHA256 digest:
+            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+            _ = CC_SHA256_Final(&digest, &context)
+
+            let hexDigest = Data(digest).map { String(format: "%02hhx", $0) }.joined()
+            return hexDigest
+
+        } catch {
+            print("Cannot open file:", error.localizedDescription)
+            return nil
+        }
+    }
 }
 
 extension Data {

@@ -81,11 +81,17 @@ struct SubmitContentView: View {
                           allowedContentTypes: [.audio, .audiovisualContent]) { result in
                 guard let url = try? result.get() else {
                     // Show an error alert or something
+                    model.showAlert(title: "File Error", body: "There was an issue locating the file. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
                     return
                 }
+                
+                guard let asset = AVAsset(url: url) as AVAsset? else {
+                    model.showAlert(title: "File Error", body: "There is an issue with the file chosen. If this is the first time you're seeing this, try again. Otherwise, try uploading a different shiur.")
+                    return
+                }
+                
                 model.contentURL = url
-                let asset = AVAsset(url: url) as AVAsset?
-                model.contentDuration = Int(asset!.duration.seconds)
+                model.contentDuration = Int(asset.duration.seconds)
                 model.fileDisplayName = url.pathComponents.last!
                 model.objectWillChange.send()
             }
