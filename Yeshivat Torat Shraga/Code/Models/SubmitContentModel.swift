@@ -101,6 +101,7 @@ class SubmitContentModel: ObservableObject {
             
             let storageRef = Storage.storage().reference()
             let contentDestinationRef = storageRef.child("user-submissions/\(hash)")
+            contentURL.startAccessingSecurityScopedResource()
             let uploadTask = contentDestinationRef.putFile(from: contentURL, metadata: nil) { metadata, error in
                 guard metadata != nil else {
                     Analytics.logEvent("upload_failure", parameters: ["reason": "nil metadata while uploading to storage"])
