@@ -748,7 +748,7 @@ exports.generateHLSStream = storage
 			validation: false,
 		});
 
-		const newFolderPath = `HLSStreams/${object.contentType!.split('/')[0]}/${filename}`;
+		let newFolderPrefix = `HLSStreams/${object.contentType!.split('/')[0]}`;
 
 		if (userUpload) {
 			// count number of pending firebase documents
@@ -778,11 +778,12 @@ exports.generateHLSStream = storage
 			} else {
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
-				var doc = await db.collection('content').where('source_path', '==', newFolderPath).get();
+				var newFolderPath = newFolderPrefix + '/' + hex;
+				const doc = await db.collection('content').where('source_path', '==', newFolderPath).get();
 
 				if (doc.empty) {
 					// no matching document, delete file
-					log(`No matching firebase document for file at ${object.name}`);
+					log(`No matching firebase document for file to be placed at ${newFolderPath}`);
 					log(`Deleting file at ${object.name}`);
 					await bucket.file(filepath).delete();
 					return 'Failed to authenticate file';
@@ -791,6 +792,8 @@ exports.generateHLSStream = storage
 					log(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
 				}
 			}
+		} else {
+			var newFolderPath = newFolderPrefix + '/' + filename;
 		}
 
 		const inputPath = tempFilePath;
