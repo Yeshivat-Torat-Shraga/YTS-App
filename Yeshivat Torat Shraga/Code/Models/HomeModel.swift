@@ -65,7 +65,7 @@ class HomeModel: ObservableObject, ErrorShower {
             group.leave()
         }
         
-        FirebaseConnection.loadContent(options: (limit: 15, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
+        FirebaseConnection.loadContent(options: (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: true, startAfterDocumentID: nil)) { results, error in
             guard let content = results?.content else {
                 if error?._code == -9 {
                     self.handleAppCheckError(error: error!)

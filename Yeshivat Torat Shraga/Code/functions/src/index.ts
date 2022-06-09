@@ -779,7 +779,7 @@ exports.generateHLSStream = storage
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
 				var newFolderPath = newFolderPrefix + '/' + hex;
-				const doc = await db.collection('content').where('source_path', '==', newFolderPath).get();
+				const doc = await db.collection('content').where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8').get();
 
 				if (doc.empty) {
 					// no matching document, delete file
