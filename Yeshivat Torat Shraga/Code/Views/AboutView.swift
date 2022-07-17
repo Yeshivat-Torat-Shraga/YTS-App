@@ -8,6 +8,7 @@
 import SwiftUI
 import MessageUI
 import FirebaseAnalytics
+import FirebaseMessaging
 
 struct Developer: Hashable {
     let name: String
@@ -19,7 +20,10 @@ struct Developer: Hashable {
 struct AboutView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var showSecretMessage: Bool = false
-
+    @AppStorage("showDeveloperSettings") private var showDevSettings = false
+    @AppStorage("enableDevNotifications") var devNotificationsEnabled: Bool = false
+    
+    
     let developers: [Developer]
     var miniPlayerShowing: Binding<Bool>
     
@@ -103,9 +107,9 @@ struct AboutView: View {
                 }
                 .padding()
                 .background(UI.cardBlueGradient
-                                .overlay(Rectangle().fill(colorScheme == .light
-                                                          ? Color.white
-                                                          : Color.black).opacity(0.2))
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
                 )
             }
             .cornerRadius(UI.cornerRadius)
@@ -142,13 +146,13 @@ struct AboutView: View {
                         }
                         .buttonStyle(iOS14BorderedButtonStyle(color:.white))
                         .shadow(radius: UI.shadowRadius)
-
+                        
                         Spacer()
                         Button(action: {
                             Analytics.logEvent("opened_shraga_webpresence", parameters: [
                                 "destination": "instagram",
                             ])
-
+                            
                             let link = URL(string: "https://www.instagram.com/toratshraga/")!
                             UIApplication.shared.open(link)
                         }) {
@@ -162,7 +166,7 @@ struct AboutView: View {
                         }
                         .buttonStyle(iOS14BorderedButtonStyle(color:.white))
                         .shadow(radius: UI.shadowRadius)
-
+                        
                         
                         Spacer()
                         Button(action: {
@@ -184,14 +188,14 @@ struct AboutView: View {
                         .shadow(radius: UI.shadowRadius)
                         
                         Spacer()
-
+                        
                     }
                 }
                 .padding()
                 .background(UI.cardBlueGradient
-                                .overlay(Rectangle().fill(colorScheme == .light
-                                                          ? Color.white
-                                                          : Color.black).opacity(0.2))
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
                 )
             }
             .foregroundColor(.black)
@@ -220,13 +224,13 @@ struct AboutView: View {
                     }
                     .buttonStyle(iOS14BorderedButtonStyle(color: .white))
                     .shadow(radius: UI.shadowRadius)
-
+                    
                 }
                 .padding()
                 .background(UI.cardBlueGradient
-                                .overlay(Rectangle().fill(colorScheme == .light
-                                                          ? Color.white
-                                                          : Color.black).opacity(0.2))
+                    .overlay(Rectangle().fill(colorScheme == .light
+                                              ? Color.white
+                                              : Color.black).opacity(0.2))
                 )
                 .shadow(radius: UI.shadowRadius)
             }
@@ -238,16 +242,24 @@ struct AboutView: View {
             if let version = self.version, let build = build {
                 HStack {
                     Spacer()
-                    
-                    Text("v\(version) (\(build))")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                        .onTapGesture(count: 5) {
-                            showSecretMessage = true
-                            Analytics.logEvent("triggered_versionnumber_alert", parameters: [
-                                "version_number": "v\(version) (\(build))"
-                            ])
+                    Group {
+                        if showDevSettings {
+                            Text("v\(version) (\(build))")
+                                .bold()
+                                .foregroundLinearGradient(colors: colorScheme == .light ? [.blue, .shragaBlue] : [.yellow, .shragaGold], startPoint: .leading, endPoint: .trailing)
+                        } else {
+                            Text("v\(version) (\(build))")
+                                .foregroundColor(.gray)
+                            
                         }
+                    }
+                    .font(.footnote)
+                    .onTapGesture(count: 5) {
+                        showSecretMessage = true
+                        Analytics.logEvent("triggered_versionnumber_alert", parameters: [
+                            "version_number": "v\(version) (\(build))"
+                        ])
+                    }
                 }
             }
             
@@ -264,21 +276,26 @@ struct AboutView: View {
         .navigationTitle("About")
         .navigationBarItems(trailing: LogoView(size: .small))
         .alert(isPresented: $showSecretMessage) {
-            Alert(title: Text("Hey! Don't touch my version number!"),
-                  message: Text("Be nice."),
-                  dismissButton: .cancel(Text("OK"))
+            Alert(title: Text("Developer Settings"),
+                  message: Text("Are you sure you want to \(showDevSettings == false ? "enable" : "disable") developer settings?"),
+                  primaryButton: .cancel(Text("No, thanks")),
+                  secondaryButton: .destructive(Text("\(showDevSettings == false ? "Enable" : "Disable") developer settings")) {
+                showDevSettings.toggle()
+                if showDevSettings == false {
+                    Messaging.messaging().unsubscribe(fromTopic: "debug")
+                    devNotificationsEnabled = false
+                    
+                }
+            }
+                  
             )
-
+            
         }
     }
     
     func sendEmail(to address: String) {
         if let url = URL(string: "mailto:\(address)") {
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url)
-            } else {
-                UIApplication.shared.openURL(url)
-            }
+            UIApplication.shared.open(url)
         }
         //        if MFMailComposeViewController.canSendMail() {
         //                let mail = MFMailComposeViewController()
@@ -298,5 +315,26 @@ struct AboutView_Previews: PreviewProvider {
             AboutView(miniPlayerShowing: .constant(false))
                 .preferredColorScheme(.dark)
         }
+    }
+}
+
+extension Text {
+    public func foregroundLinearGradient(
+        colors: [Color],
+        startPoint: UnitPoint,
+        endPoint: UnitPoint) -> some View
+    {
+        self.overlay (
+            
+            LinearGradient(
+                colors: colors,
+                startPoint: startPoint,
+                endPoint: endPoint
+            )
+            .mask(
+                self
+                
+            )
+        )
     }
 }
