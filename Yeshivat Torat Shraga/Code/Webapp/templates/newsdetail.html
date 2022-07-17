@@ -28,6 +28,13 @@
   <br>
 
 
+  <!-- Make a checkbox if the article is not None -->
+  <div class="form-group">
+    <label for="send_badge">Badge app icon</label>
+    <input type="checkbox" name="send_badge" id="send_badge" {% if article is none %}checked{% endif %} />
+  </div>
+
+
   <div class="form-group">
     <button type="submit">Submit changes to Firebase</button>
   </div>

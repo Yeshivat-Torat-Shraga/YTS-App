@@ -26,6 +26,7 @@ struct SubmitContentView: View {
             Form {
                 Section(footer: Text("Make sure you add a descriptive title.").foregroundColor(.gray)) {
                     TextField("Title", text: $model.title)
+                    // TODO: Show a spinner while the model is loading the list
                     Picker(selection: $model.author, label: Text("Select an author")) {
                         if let rabbis = model.rabbis {
                             ForEach(rabbis, id: \.firestoreID) { rabbi in

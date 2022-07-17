@@ -516,8 +516,11 @@ def news_detail(ID):
         updated_document["body"] = body
         updated_document["date"] = datetime.now()
 
-        document = db.collection("news").document(ID)
-        document.update(updated_document)
+        # document = db.collection("news").document(ID)
+        # document.update(updated_document)
+        should_badge_app = (request.form.get("send_badge", "off") == "on")
+        if should_badge_app:
+            silent_badge_increment()
         return redirect(url_for("news"))
 
 
@@ -549,6 +552,7 @@ def news_create():
             "imageURLs": [""],
         }
         db.collection("news").add(new_document)
+        silent_badge_increment()
         return redirect(url_for("news"))
 
 
