@@ -36,6 +36,45 @@ cached_rebbeim = []
 cached_tags = []
 
 
+def push_notification(title, body, badge):
+    if title is None and body is None and badge is None:
+        print("No notification sent")
+        return
+    if title is None and body is None:
+        message = messaging.Message(
+            apns=messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        content_available=True,
+                    )
+                ),
+            ),
+            data={"badge": str(badge)},
+        )
+    else:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body,
+            ),
+            apns=messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        mutable_content=True,
+                        badge=badge
+                    )
+                )
+            )
+        )
+    message.topic = notification_topic
+    messaging.send(message)
+    flash("Notification sent")
+
+
+def silent_badge_increment(badge=1):
+    push_notification(None, None, badge)
+
+
 @app.route("/refresh_cache")
 def refresh_cache():
     print("Refreshing cache")
@@ -71,8 +110,6 @@ def index():
 
 @app.route('/favicon.ico')
 def favicon():
-    if len(cached_rebbeim) == 0:
-        refresh_cache()
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
@@ -100,25 +137,9 @@ def alert_notification():
 
 @app.route("/notifications/push", methods=["POST"])
 def push_notification():
-    if len(cached_rebbeim) == 0:
-        refresh_cache()
-    message = messaging.Message(
-        notification=messaging.Notification(
-            title=request.form.get("push-title"),
-            body=request.form.get("push-body"),
-        ),
-        apns=messaging.APNSConfig(
-            payload=messaging.APNSPayload(
-                aps=messaging.Aps(
-                    # badge=int(request.form.get("badge-count", 0))
-                ),
-            ),
-        ),
-        topic="all",
-    )
-
-    messaging.send(message)
-    flash("Notification sent!")
+    title = request.form.get("push-title")
+    body = request.form.get("push-body")
+    push_notification(title, body, 1)
     return redirect(url_for("notifications"))
 
 
@@ -297,6 +318,8 @@ def shiur_review(ID):
             shiur = db.collection('content').document(ID)
             shiur.update(updated_document)
             flash("Shiur approved!")
+            # Send a APNS notification that badges the app
+            silent_badge_increment()
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
             shiur = db.collection('content').document(ID)
@@ -454,6 +477,7 @@ def shiurim_upload():
         for tmpfile in os.listdir("tmp"):
             os.remove("tmp/" + tmpfile)
         os.rmdir("tmp")
+        silent_badge_increment()
         return redirect(url_for("shiurim"))
 
 
