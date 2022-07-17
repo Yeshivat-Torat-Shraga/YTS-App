@@ -18,8 +18,6 @@ import FirebaseAuth
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
-    let gcmMessageIDKey = "gcm.message_id"
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         let providerFactory: AppCheckProviderFactory
@@ -107,33 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Use this method to select a configuration to create the new scene with.
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
-    
-    /*
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        let sendingAppID = options[.sourceApplication]
-        print("source application = \(sendingAppID ?? "Unknown")")
-        
-        // Process the URL.
-        guard let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true), // components
-              let _ = components.path, // albumPath
-              let _ = components.queryItems // params
-        else {
-            print("Invalid URL or album path missing")
-            return false
-        }
-        
-        print(url)
-        return false
-        //            if let photoIndex = params.first(where: { $0.name == "index" })?.value {
-        //                print("albumPath = \(albumPath)")
-        //                print("photoIndex = \(photoIndex)")
-        //                return true
-        //            } else {
-        //                print("Photo index missing")
-        //                return false
-        //            }
-    }
-     */
     
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
         // Called when the user discards a scene session.
