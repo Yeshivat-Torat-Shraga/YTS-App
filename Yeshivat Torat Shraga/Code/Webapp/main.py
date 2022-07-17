@@ -36,7 +36,7 @@ cached_rebbeim = []
 cached_tags = []
 
 
-def push_notification(title, body, badge):
+def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:
         print("No notification sent")
         return
@@ -72,7 +72,7 @@ def push_notification(title, body, badge):
 
 
 def silent_badge_increment(badge=1):
-    push_notification(None, None, badge)
+    send_push_notification(None, None, badge)
 
 
 @app.route("/refresh_cache")
@@ -139,7 +139,7 @@ def alert_notification():
 def push_notification():
     title = request.form.get("push-title")
     body = request.form.get("push-body")
-    push_notification(title, body, 1)
+    send_push_notification(title, body, 1)
     return redirect(url_for("notifications"))
 
 
