@@ -779,7 +779,10 @@ exports.generateHLSStream = storage
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
 				var newFolderPath = newFolderPrefix + '/' + hex;
-				const doc = await db.collection('content').where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8').get();
+				const doc = await db
+					.collection('content')
+					.where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8')
+					.get();
 
 				if (doc.empty) {
 					// no matching document, delete file
@@ -1269,6 +1272,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 		date: data.date || new Date(),
 		type: data.type,
 		tagID: data.tagID,
+		fcmToken: data.fcmToken,
 	};
 
 	// check that there is a attributionID
@@ -1380,6 +1384,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 			// Note: Clients are authenticated via anonyomous auth
 			uid: uid || null,
 			timestamp: admin.firestore.Timestamp.now(),
+			fcmToken: submission.fcmToken,
 		},
 	};
 

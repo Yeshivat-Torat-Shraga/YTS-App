@@ -51,6 +51,7 @@ export interface SubmittedContentDocument {
 	date: FirebaseFirestore.Timestamp;
 	type: string;
 	tagID: string;
+	fcmToken: string | null;
 }
 
 export interface ProspectiveContentDocument {
@@ -72,6 +73,7 @@ export interface ProspectiveContentDocument {
 	upload_data: {
 		uid: string | null;
 		timestamp: FirebaseFirestore.Timestamp;
+		fcmToken: string | null;
 	};
 }
 
