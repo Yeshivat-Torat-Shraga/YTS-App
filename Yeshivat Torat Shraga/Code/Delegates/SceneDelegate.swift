@@ -95,6 +95,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
+        
+        // Clear the notification count when opening the app
+        UserDefaults(suiteName: "group.com.reesedevelopment.YTS")!.set(0, forKey: "count")
+        UIApplication.shared.applicationIconBadgeNumber = 0
+
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
