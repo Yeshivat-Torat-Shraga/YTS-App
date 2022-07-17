@@ -19,10 +19,13 @@ password = settings.password
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
+notification_topic = "debug"
 
 app = Flask(__name__)
 if PRODUCTION:
     basic_auth = BasicAuth(app)
+    notification_topic = "all"
+
 
 app.config["BASIC_AUTH_USERNAME"] = settings.username
 app.config["BASIC_AUTH_PASSWORD"] = settings.password
