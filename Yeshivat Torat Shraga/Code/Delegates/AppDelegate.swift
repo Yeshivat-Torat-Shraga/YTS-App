@@ -67,6 +67,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
+        let defaults = UserDefaults(suiteName: "group.com.reesedevelopment.YTS")
+        var count = defaults?.value(forKey: "count") as! Int
+        guard let badgeString = userInfo["badge"] as? String,
+              let badgeNumber = Int(badgeString)
+        else {
+            print("count is not an Int (A1)")
+            return
+        }
+        count += badgeNumber
+        application.applicationIconBadgeNumber = count
+        defaults?.set(count, forKey: "count")
         // If you are receiving a notification message while your app is in the background,
         // this callback will not be fired till the user taps on the notification launching the application.
         // TODO: Handle data of notification
