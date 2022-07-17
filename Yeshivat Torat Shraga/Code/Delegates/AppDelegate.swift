@@ -243,7 +243,7 @@ extension AppDelegate {
                      annotation: Any) -> Bool {
         if let dynamicLink = DynamicLinks.dynamicLinks().dynamicLink(fromCustomSchemeURL: url) {
             print("Opened with URL: \(dynamicLink.url?.absoluteString ?? "null")")
-            print(dynamicLink.url?.query?.components(separatedBy: "="))
+            print(dynamicLink.url?.query?.components(separatedBy: "=") as Any)
 //            fatalError()
             return true
         }
