@@ -39,8 +39,7 @@ platform :ios do
       # The api key can be found in the App Store Connect API UI
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
-      # key_content: ENV["ASC_KEY"],
-      key_filepath: "~/Downloads/AuthKey_SMKHR2LRSD.p8",
+      key_content: ENV["ASC_KEY"],
       in_house: false # detecting this via ASC private key not currently supported
     )
   end
@@ -163,8 +162,8 @@ platform :ios do
     # set_xcode_version
     load_asc_api_key
     prepare_signing
-    # fetch_and_increment_build_number
-    # build_release
+    fetch_and_increment_build_number
+    build_release
     upload_release
   end
 
