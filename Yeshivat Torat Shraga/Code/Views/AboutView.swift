@@ -278,8 +278,8 @@ struct AboutView: View {
         .alert(isPresented: $showSecretMessage) {
             Alert(title: Text("Developer Settings"),
                   message: Text("Are you sure you want to \(showDevSettings == false ? "enable" : "disable") developer settings?"),
-                  primaryButton: .cancel(Text("No, thanks")),
-                  secondaryButton: .destructive(Text("\(showDevSettings == false ? "Enable" : "Disable") developer settings")) {
+                  primaryButton: .cancel(Text("Cancel")),
+                  secondaryButton: .destructive(Text("\(showDevSettings == false ? "Enable" : "Disable") Developer Settings")) {
                 showDevSettings.toggle()
                 if showDevSettings == false {
                     Messaging.messaging().unsubscribe(fromTopic: "debug")
