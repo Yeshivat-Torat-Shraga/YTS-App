@@ -33,13 +33,6 @@ struct MoreView: View {
                         }
                         .foregroundColor(Color("ShragaBlue"))
                     
-                    if showDevSettings {
-                        Toggle("Developer Notifications", isOn: $model.devNotificationsEnabled)
-                            .onChange(of: model.devNotificationsEnabled) { newToggleValue in
-                                model.setSubscriptionToNotificationGroup($model.devNotificationsEnabled, group: "debug", shouldReceiveNotificationsFromGroup: newToggleValue)
-                            }
-                    }
-                    
                     Toggle("Slideshow Autoscroll", isOn: $enableTimer)
                         .foregroundColor(Color("ShragaBlue"))
                     
@@ -75,6 +68,15 @@ struct MoreView: View {
                 } header: {
                     Text("YTS")
                 }
+                
+                if showDevSettings {
+                    Section(header: Text("Developer")) {
+                    Toggle("Developer Notifications", isOn: $model.devNotificationsEnabled)
+                        .onChange(of: model.devNotificationsEnabled) { newToggleValue in
+                            model.setSubscriptionToNotificationGroup($model.devNotificationsEnabled, group: "debug", shouldReceiveNotificationsFromGroup: newToggleValue)
+                        }
+                    }
+                }
             }
             .navigationTitle("More")
             .navigationBarItems(trailing: LogoView(size: .small))
@@ -85,7 +87,7 @@ struct MoreView: View {
             }
         }
         .alert(isPresented: $model.showNotificationsAlert) {
-            Alert(title: Text("Uh oh"), message: Text("You'll need to enable notification permission for this app first."),
+            Alert(title: Text("Uh oh"), message: Text("You'll need to enable notification permissions for this app first."),
                   primaryButton: .default(Text("Open Settings")) {
                 if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
                     UIApplication.shared.open(appSettings)
