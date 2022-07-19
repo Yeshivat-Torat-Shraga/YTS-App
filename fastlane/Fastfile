@@ -79,25 +79,25 @@ platform :ios do
         lock_when_sleeps: false
     )
 
-    # produce(
-    #   app_identifier: app_id,
-    #   app_name: "Yeshivat Torat Shraga",
-    #   skip_itc: true,
-    #   enable_services: {
-    #     "associated_domains": "on",
-    #     "app_group": "on",
-    #     "app_attest": "on",
-    #     "push_notification": "on",
-    #   }
-    # )
-    # produce(
-    #   app_identifier: app_id + ".NotificationService",
-    #   app_name: "Yeshivat Torat Shraga Notification Service",
-    #   skip_itc: true,
-    #   enable_services: {
-    #     "app_group": "on",
-    #   }
-    # )
+    produce(
+      app_identifier: app_id,
+      app_name: "Yeshivat Torat Shraga",
+      skip_itc: true,
+      enable_services: {
+        "associated_domains": "on",
+        "app_group": "on",
+        "app_attest": "on",
+        "push_notification": "on",
+      }
+    )
+    produce(
+      app_identifier: app_id + ".NotificationService",
+      app_name: "Yeshivat Torat Shraga Notification Service",
+      skip_itc: true,
+      enable_services: {
+        "app_group": "on",
+      }
+    )
 
     match(
       type: "appstore",
