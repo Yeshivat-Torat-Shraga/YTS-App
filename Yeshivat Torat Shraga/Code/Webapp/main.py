@@ -75,6 +75,25 @@ def silent_badge_increment(badge=1):
     send_push_notification(None, None, badge)
 
 
+def send_personal_notification(fcmToken, title, body, should_increment_badge=True):
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=title,
+            body=body,
+        ),
+        apns=messaging.APNSConfig(
+            payload=messaging.APNSPayload(
+                aps=messaging.Aps(
+                    mutable_content=True,
+                    badge=1 if should_increment_badge else None
+                )
+            )
+        ),
+        token=fcmToken
+    )
+    messaging.send(message)
+
+
 @app.route("/refresh_cache")
 def refresh_cache():
     print("Refreshing cache")
@@ -316,10 +335,14 @@ def shiur_review(ID):
             }
 
             shiur = db.collection('content').document(ID)
-            shiur.update(updated_document)
+            shiur_data = shiur.get().to_dict()
+            send_personal_notification(shiur_data["upload_data"]["fcmToken"], f"Your shiur has been approved",
+                                       f"\"{title}\", by {author} has been approved, and is now available for listening on the app.", False)
+            # shiur.update(updated_document)
             flash("Shiur approved!")
             # Send a APNS notification that badges the app
             silent_badge_increment()
+
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
             shiur = db.collection('content').document(ID)
@@ -332,6 +355,8 @@ def shiur_review(ID):
                 bucket.delete_blob(f"{content_type}/{file_hash}")
             except NotFound:
                 pass
+            send_personal_notification(shiur_data["upload_data"]["fcmToken"], f"Your shiur was not approved",
+                                       f"\"{title}\" by {author} was not approved by YTS staff, and will not be available for listening on the app.")
             flash("Shiur denied and deleted!")
             return redirect(url_for("shiurim_pending_list"))
 
