@@ -79,6 +79,26 @@ platform :ios do
         lock_when_sleeps: false
     )
 
+    produce(
+      app_identifier: app_id,
+      app_name: "Yeshivat Torat Shraga",
+      skip_itc: true,
+      enable_services: {
+        "associated_domains": "on",
+        "app_group": "on",
+        "app_attest": "on",
+        "push_notification": "on",
+      }
+    )
+    produce(
+      app_identifier: app_id + ".NotificationService",
+      app_name: "Yeshivat Torat Shraga Notification Service",
+      skip_itc: true,
+      enable_services: {
+        "app_group": "on",
+      }
+    )
+
     match(
       type: "appstore",
       app_identifier: [app_id, app_id + ".NotificationService"],
@@ -92,8 +112,7 @@ platform :ios do
  
   desc "Build the iOS app for release"
   lane :build_release do |options|
-    app_identifier = [CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
-    CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier) + ".NotificationService"]
+    app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     # app_profile_name = "match AppStore " + app_identifier
     # profile_name = "App Provisioning Profile" # the name of the profile to use for the build
     output_name = "YTS" # specify the name of the .ipa file to generate
@@ -128,9 +147,10 @@ platform :ios do
       xcargs: settings_to_override,
       export_options: {
         method: export_method,
-        # provisioningProfiles: {
-        #   app_identifier => app_profile_name
-        # },
+        provisioningProfiles: {
+          app_id => ENV["sigh_com.reesedevelopment.YTS_appstore_profile-name"],
+          app_id + ".NotificationService" => ENV["sigh_com.reesedevelopment.YTS.NotificationService_appstore_profile-name"]
+        },
         compileBitcode: compile_bitcode
       }
     )
