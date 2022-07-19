@@ -81,6 +81,7 @@ platform :ios do
 
     match(
       type: "appstore",
+      app_identifier: [app_id, app_id + ".NotificationService"],
       # MATCH_GIT_BASIC_AUTHORIZATION should be formatted as follows:
       # plaintext_username:plaintext_auth_token
       git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION"]),
