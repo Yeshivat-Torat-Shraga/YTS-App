@@ -66,6 +66,10 @@ platform :ios do
   desc "Run produce methods"
   lane :produce_profiles do
     app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+    # If this lane fails due to authentication issues,
+    # try resetting the FASTLANE_SESSION environment
+    # variable via the following command:
+    # bundle exec fastlane spaceauth
     produce(
       app_identifier: app_id,
       app_name: "Yeshivat Torat Shraga",
@@ -109,6 +113,7 @@ platform :ios do
 
     match(
       type: "appstore",
+      api_key: api_key,
       app_identifier: [app_id, app_id + ".NotificationService"],
       # MATCH_GIT_BASIC_AUTHORIZATION should be formatted as follows:
       # plaintext_username:plaintext_auth_token
@@ -153,12 +158,9 @@ platform :ios do
       output_name: output_name,
       configuration: "Release",
       xcargs: settings_to_override,
+      silent: true,
       export_options: {
         method: export_method,
-        provisioningProfiles: {
-          app_id => ENV["sigh_com.reesedevelopment.YTS_appstore_profile-name"],
-          app_id + ".NotificationService" => ENV["sigh_com.reesedevelopment.YTS.NotificationService_appstore_profile-name"]
-        },
         compileBitcode: compile_bitcode
       }
     )
