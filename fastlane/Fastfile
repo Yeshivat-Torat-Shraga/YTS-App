@@ -159,8 +159,10 @@ platform :ios do
       configuration: "Release",
       xcargs: settings_to_override,
       silent: true,
+      skip_profile_detection: true,
       export_options: {
         method: export_method,
+        signing_style: "manual",
         compileBitcode: compile_bitcode
       }
     )
