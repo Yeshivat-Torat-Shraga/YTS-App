@@ -103,9 +103,9 @@ platform :ios do
         lock_when_sleeps: false
     )
 
-    if not is_ci
+    # if not is_ci
       produce_profiles
-    end
+    # end
 
     match(
       type: "appstore",
