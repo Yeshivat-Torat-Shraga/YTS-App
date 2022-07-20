@@ -35,8 +35,6 @@ jobs:
        with:
          ruby-version: 2.7.2
          bundler-cache: true
-     - name: run spaceauth
-       run: bundle exec spaceauth -u ${{ secrets.SPACEAUTH_USERNAME }}
      - name: Build & upload iOS binary
        run: bundle exec fastlane build_upload_testflight
        env:
@@ -47,6 +45,7 @@ jobs:
          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
          KEYCHAIN_PATH: ~/Library/Keychains/signing_temp.keychain-db
          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+         FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
      - name: Upload app-store ipa and dsyms to artifacts
        uses: actions/upload-artifact@v2
