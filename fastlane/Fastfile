@@ -62,23 +62,10 @@ platform :ios do
       build_number: (latest_build_number.to_f + 1),
     )
   end
- 
-  desc "Check certs and profiles"
-  lane :prepare_signing do |options|
+
+  desc "Run produce methods"
+  lane :produce_profiles do
     app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
- 
-    # profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
-
-    create_keychain(
-        name: "actiontest_keychain",
-        password: "meow",
-        default_keychain: false,
-        unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: false
-    )
-
     produce(
       app_identifier: app_id,
       app_name: "Yeshivat Torat Shraga",
@@ -98,6 +85,27 @@ platform :ios do
         "app_group": "on",
       }
     )
+  end
+ 
+  desc "Check certs and profiles"
+  lane :prepare_signing do |options|
+    app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+ 
+    # profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
+
+    create_keychain(
+        name: "actiontest_keychain",
+        password: "meow",
+        default_keychain: false,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false
+    )
+
+    if not is_ci
+      produce_profiles
+    end
 
     match(
       type: "appstore",

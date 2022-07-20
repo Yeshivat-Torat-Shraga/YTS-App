@@ -39,6 +39,14 @@ Load ASC API Key information to use in subsequent lanes
 
 Bump build number based on most recent TestFlight build number
 
+### ios produce_profiles
+
+```sh
+[bundle exec] fastlane ios produce_profiles
+```
+
+Run produce methods
+
 ### ios prepare_signing
 
 ```sh
