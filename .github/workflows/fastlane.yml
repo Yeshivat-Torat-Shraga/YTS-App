@@ -35,6 +35,8 @@ jobs:
        with:
          ruby-version: 2.7.2
          bundler-cache: true
+     - name: run spaceauth
+       run: bundle exec spaceauth -u ${{ secrets.SPACEAUTH_USERNAME }}
      - name: Build & upload iOS binary
        run: bundle exec fastlane build_upload_testflight
        env:
