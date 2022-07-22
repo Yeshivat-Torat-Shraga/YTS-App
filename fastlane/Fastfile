@@ -1,32 +1,6 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
 
 platform :ios do
-
-  # desc "upload beta"
-  # lane :beta do
-  #   build_app(scheme: "Yeshivat Torat Shraga")
-  #   upload
-  # end
-
-  # desc "upload release"
-  # lane :upload do
-  #   upload_to_testflight(username: "benjitusk1@gmail.com", skip_waiting_for_build_processing: true)
-  # end
 
   desc "Set the Xcode version to be used"
   lane :set_xcode_version do
@@ -35,13 +9,19 @@ platform :ios do
 
   desc "Load ASC API Key information to use in subsequent lanes"
   lane :load_asc_api_key do
-    app_store_connect_api_key(
-      # The api key can be found in the App Store Connect API UI
-      key_id: ENV["ASC_KEY_ID"],
-      issuer_id: ENV["ASC_ISSUER_ID"],
-      key_content: ENV["ASC_KEY"],
-      in_house: false # detecting this via ASC private key not currently supported
-    )
+    if is_ci
+      app_store_connect_api_key(
+        issuer_id: ENV["ASC_ISSUER_ID"],
+        key_content: ENV["ASC_KEY"],
+        key_id: ENV["ASC_KEY_ID"],
+      )
+    else
+      app_store_connect_api_key(
+        issuer_id: ENV["ASC_ISSUER_ID"],
+        key_filepath: "~/Downloads/asc-key.p8",
+        key_id: ENV["ASC_KEY_ID"],
+      )
+    end
   end
 
   desc "Bump build number based on most recent TestFlight build number"
@@ -50,17 +30,13 @@ platform :ios do
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
-    current_version = get_version_number(
-      target: "Yeshivat Torat Shraga" # replace with your main target, required if you have more than one non-test target
-    )
+    current_version = get_version_number(target: "Yeshivat Torat Shraga")
     latest_build_number = latest_testflight_build_number(
       api_key: api_key,
+      app_identifier: app_identifier,
       version: current_version,
-      app_identifier: app_identifier
     )
-    increment_build_number(
-      build_number: (latest_build_number.to_f + 1),
-    )
+    increment_build_number(build_number: (latest_build_number.to_f + 1))
   end
 
   desc "Run produce methods"
@@ -99,72 +75,54 @@ platform :ios do
     # profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
 
     create_keychain(
-        name: "actiontest_keychain",
+        name: "fastlane_keychain",
         password: "meow",
-        default_keychain: false,
         unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: false
     )
 
-    if not is_ci
-      produce_profiles
-    end
+    # if not is_ci
+    #   produce_profiles
+    # end
 
     match(
-      type: "appstore",
       api_key: api_key,
       app_identifier: [app_id, app_id + ".NotificationService"],
-      # MATCH_GIT_BASIC_AUTHORIZATION should be formatted as follows:
-      # plaintext_username:plaintext_auth_token
-      git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION"]),
-      keychain_name: "actiontest_keychain",
+      keychain_name: "fastlane_keychain",
       keychain_password: "meow",
+      type: "appstore",
     )
   end
  
   desc "Build the iOS app for release"
   lane :build_release do |options|
     app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    # app_profile_name = "match AppStore " + app_identifier
-    # profile_name = "App Provisioning Profile" # the name of the profile to use for the build
-    output_name = "YTS" # specify the name of the .ipa file to generate
-    export_method = "app-store" # specify the export method
-    compile_bitcode = true # specify whether to enable bitcode
  
-    # turn off automatic signing during build so correct code signing identity is guaranteed to be used
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      targets: ["Yeshivat Torat Shraga", "NotificationModifier"], # specify which targets to update code signing settings for
-      code_sign_identity: "Apple Distribution", # replace with name of code signing identity if different
-      # bundle_identifier: app_identifier,
-      build_configurations: ["Release"] # only toggle code signing settings for Release configurations
-    )
+    if is_ci
+      update_code_signing_settings(
+        build_configurations: ["Release"],
+        use_automatic_signing: false,
+      )
+    end
 
-    settings_to_override = {
-      # :BUNDLE_IDENTIFIER => "com.reesedevelopment.YTS", # Might need to be removed
-      # :PROVISIONING_PROFILE_SPECIFIER => app_profile_name,
-      # Use BUILDCACHE override compiler paths to ensure that the correct compiler paths are used.
-      :CC => "clang",
-      :CPLUSPLUS => "clang++",
-      :LD => "clang",
-      :LDPLUSPLUS => "clang++",
-    }
-
- 
     # build the app
     gym(
-      scheme: "Yeshivat Torat Shraga", # replace with name of your project's scheme
-      output_name: output_name,
-      configuration: "Release",
-      xcargs: settings_to_override,
+      export_options: {
+        method: "app-store",
+        provisioning_profiles: SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING,
+        signing_style: "manual",
+      },
+      output_name: "YTS",
+      scheme: "Yeshivat Torat Shraga",
       silent: true,
       skip_profile_detection: true,
-      export_options: {
-        method: export_method,
-        signing_style: "manual",
-        compileBitcode: compile_bitcode
-      }
+      xcargs: {
+        # Use BUILDCACHE override compiler paths to
+        # ensure that the correct compiler paths are used.
+        :CC => "clang",
+        :CPLUSPLUS => "clang++",
+        :LD => "clang",
+        :LDPLUSPLUS => "clang++",
+      },
     )
   end
  
@@ -174,11 +132,10 @@ platform :ios do
     
     deliver(
         api_key: api_key,
-        skip_screenshots: true,
-        skip_metadata: true,
+        force: true,
         skip_app_version_update: true,
-        force: true, # skips verification of HTML preview file (since this will be run from a CI machine)
-        run_precheck_before_submit: false # not supported through ASC API yet
+        skip_metadata: true,
+        skip_screenshots: true,
     )
   end
 
@@ -187,7 +144,9 @@ platform :ios do
     # set_xcode_version
     load_asc_api_key
     prepare_signing
-    fetch_and_increment_build_number
+    if is_ci
+      fetch_and_increment_build_number
+    end
     build_release
     upload_release
   end
