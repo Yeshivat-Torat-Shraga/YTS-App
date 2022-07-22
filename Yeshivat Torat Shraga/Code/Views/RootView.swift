@@ -69,7 +69,7 @@ struct RootView: View {
                 .shadow(radius: UI.shadowRadius)
                 .padding(3)
             Spacer().frame(height: UI.playerBarHeight)
-        })
+        }.ignoresSafeArea(.keyboard))
         .alert(isPresented: $model.showError, content: {
             Alert(
                 title: Text("Error"),

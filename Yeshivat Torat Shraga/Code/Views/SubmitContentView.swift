@@ -14,6 +14,7 @@ struct SubmitContentView: View {
     @State private var showingDocumentSelectSheet = false
     @State private var url = URL(string: "")
     @ObservedObject private var model = SubmitContentModel()
+    @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     
     var miniPlayerShowing: Binding<Bool>
     
@@ -61,7 +62,7 @@ struct SubmitContentView: View {
                     }
                 }
                 
-                Section(footer: Text("Once you submit a shiur, you cannot edit it or delete it. All content will be reviewed by YTS staff.").foregroundColor(.gray)) {
+                Section(footer: Text("Once you submit a shiur, you cannot edit it or delete it. All content will be reviewed by YTS staff and false submissions will be banned.").foregroundColor(.gray)) {
                     if !model.isUploading {
                         Button(action: {
                             if (model.enableSubmission) {
@@ -99,9 +100,9 @@ struct SubmitContentView: View {
                 model.objectWillChange.send()
             }
             
-//            if miniPlayerShowing.wrappedValue {
-//                Spacer().frame(height: UI.playerBarHeight)
-//            }
+            //            if miniPlayerShowing.wrappedValue {
+            //                Spacer().frame(height: UI.playerBarHeight)
+            //            }
         }
         .navigationTitle("New Shiur")
         .navigationBarItems(trailing: LogoView(size: .small))
@@ -116,6 +117,8 @@ struct SubmitContentView: View {
         }
     }
 }
+
+
 
 struct SubmitContentView_Previews: PreviewProvider {
     static var previews: some View {

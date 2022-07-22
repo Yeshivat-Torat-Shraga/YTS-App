@@ -353,3 +353,4 @@ class MyActivityItemSource: NSObject, UIActivityItemSource {
     }
 
 }
+
