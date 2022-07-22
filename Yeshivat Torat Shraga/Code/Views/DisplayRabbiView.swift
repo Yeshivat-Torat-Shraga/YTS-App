@@ -86,7 +86,7 @@ struct DisplayRabbiView: View {
                     LoadMoreView(loadingContent: $model.loadingContent,
                                  showingError: $model.showError,
                                  retreivedAllContent: $model.retreivedAllContent,
-                                 loadMore: { model.load(next: 5) }
+                                 loadMore: { model.load() }
                     )
                 }
             }

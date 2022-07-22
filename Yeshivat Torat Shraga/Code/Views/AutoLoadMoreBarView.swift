@@ -1,5 +1,5 @@
 //
-//  AutoLoadMoreBarView.swift
+//  LoadMoreBar.swift
 //  Yeshivat Torat Shraga
 //
 //  Created by David Reese on 5/23/22.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AutoLoadMoreBar: View {
+struct LoadMoreBar: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Binding var loadingContent: Bool
     @Binding var showingError: Bool
@@ -49,8 +49,8 @@ struct AutoLoadMoreBar: View {
     }
 }
 
-struct AutoLoadMoreBar_Previews: PreviewProvider {
+struct LoadMoreBar_Previews: PreviewProvider {
     static var previews: some View {
-        AutoLoadMoreBar(loadingContent: .constant(false), showingError: .constant(false), retreivedAllContent: .constant(false), loadMore: {})
+        LoadMoreBar(loadingContent: .constant(false), showingError: .constant(false), retreivedAllContent: .constant(false), loadMore: {})
     }
 }

@@ -39,14 +39,25 @@ struct NewsView: View {
                                             }
                                         })
                             }
-                            if !model.loadingArticles && !model.loadedAllArticles {
-                                LoadMoreBar(action: {
-                                    withAnimation {
-                                        model.load()
-                                    }
+                            LoadMoreBar(
+                                loadingContent: Binding(get: {
+                                    model.loadingArticles
+                                }, set: {
+                                    model.loadingArticles = $0
+                                }),
+                                showingError: Binding(get: {
+                                    model.showError
+                                }, set: {
+                                    model.showError = $0
+                                }),
+                                retreivedAllContent: Binding(get: {
+                                    model.loadedAllArticles
+                                }, set: {
+                                    model.loadedAllArticles = $0
+                                }),
+                                loadMore: {
+                                    model.load()
                                 })
-                                    .padding()
-                            }
                         } else {
                             VStack {
                                 Text("No news articles have been posted yet.")

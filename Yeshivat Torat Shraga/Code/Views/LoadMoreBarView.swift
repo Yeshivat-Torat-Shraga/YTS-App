@@ -1,3 +1,4 @@
+/*
 //
 //  LoadMoreBarView.swift
 //  Yeshivat Torat Shraga
@@ -41,3 +42,4 @@ struct LoadMoreBar_Previews: PreviewProvider {
         LoadMoreBar()
     }
 }
+*/

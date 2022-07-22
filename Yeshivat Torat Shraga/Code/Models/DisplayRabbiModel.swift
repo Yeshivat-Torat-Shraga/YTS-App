@@ -96,7 +96,7 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
         }
         
         group.notify(queue: .main) {
-            withAnimation {
+            Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { t in
                 self.loadingContent = false
                 self.reloadingContent = false
             }
@@ -128,7 +128,6 @@ class DisplayRabbiModel: ObservableObject, ErrorShower, SequentialLoader {
     }
     
     func initialLoad() {
-        
         loadFavorites()
         
         if !calledInitialLoad {

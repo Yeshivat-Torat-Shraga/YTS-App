@@ -19,7 +19,7 @@ final class FirebaseConnection {
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
     // MARK: - SubmitContent()
-    static func submitContent(title: String, contentHash: String, author: Rabbi, category: Tag = .miscellaneous, duration: Int, completion: @escaping (_ metadata: [String: String]?, _ error: Error?) -> Void) {
+    static func submitContent(title: String, author: Rabbi, category: Tag = .miscellaneous, duration: Int, contentHash: String, completion: @escaping (_ metadata: [String: String]?, _ error: Error?) -> Void) {
         let data: [String: Any] = [
             "title": title,
             "filename": contentHash,

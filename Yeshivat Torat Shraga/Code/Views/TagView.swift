@@ -55,6 +55,27 @@ struct TagView: View {
                                         }
                                         
                                     }
+                            Spacer()
+                            
+                            LoadMoreView(
+                                loadingContent: Binding(get: {
+                                    model.loadingContent
+                                }, set: {
+                                    model.loadingContent = $0
+                                }),
+                                showingError: Binding(get: {
+                                    model.showError
+                                }, set: {
+                                    model.showError = $0
+                                }),
+                                retreivedAllContent: Binding(get: {
+                                    model.retreivedAllContent
+                                }, set: {
+                                    model.retreivedAllContent = $0
+                                }),
+                                loadMore: {
+                                    model.load()
+                                })
 //                            }
                         } else {
                             VStack {
@@ -80,7 +101,7 @@ struct TagView: View {
             Blur(style: .systemThinMaterial).edgesIgnoringSafeArea(.vertical)
         )
         .onAppear {
-            self.model.loadOnlyIfNeeded()
+            self.model.initialLoad()
         }
         .alert(isPresented: $model.showError, content: {
             Alert(

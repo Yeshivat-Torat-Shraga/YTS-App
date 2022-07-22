@@ -81,7 +81,7 @@ class SubmitContentModel: ObservableObject {
             return
         }
         
-        FirebaseConnection.submitContent(title: title, contentHash: hash, author: author, category: category, duration: contentDuration) { metadata, error in
+        FirebaseConnection.submitContent(title: title, author: author, category: category, duration: contentDuration, contentHash: hash) { metadata, error in
             // handle response here
             guard let metadata = metadata else {
                 Analytics.logEvent("upload_failure", parameters: ["reason": "nil response from submitContent GCF"])

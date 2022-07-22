@@ -79,22 +79,26 @@ struct SearchView: View {
                                 }
                             }
                             .padding(.top, UI.shadowRadius)
-                            if model.loadingRebbeim && !model.loadingContent {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(YTSProgressViewStyle())
-                            } else if !model.loadingRebbeim && model.calledInitialLoad && !model.retreivedAllRebbeim {
-                                Spacer()
-                                LoadMoreBar(action: {
-                                    withAnimation {
-                                        model.searchForMoreRebbeim()
-                                    }
-                                })
-                            }
                             
-                            //                            if !model.loadingRebbeim && !model.retreivedAllRebbeim && !(model.rebbeim?.isEmpty ?? true) {
-                            //                                Divider()
-                            //                            }
+                            LoadMoreBar(
+                                loadingContent: Binding(get: {
+                                    model.loadingRebbeim
+                                }, set: {
+                                    model.loadingRebbeim = $0
+                                }),
+                                showingError: Binding(get: {
+                                    model.showError
+                                }, set: {
+                                    model.showError = $0
+                                }),
+                                retreivedAllContent: Binding(get: {
+                                    model.retreivedAllRebbeim
+                                }, set: {
+                                    model.retreivedAllRebbeim = $0
+                                }),
+                                loadMore: {
+                                    model.searchForMoreRebbeim()
+                                })
                         }
                         .padding(.bottom)
                     }
@@ -113,18 +117,25 @@ struct SearchView: View {
                                 }
                             }
                             
-                            if model.loadingContent && !model.loadingRebbeim {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(YTSProgressViewStyle())
-                            } else if !model.loadingContent && model.calledInitialLoad && !model.retreivedAllContent {
-                                Spacer()
-                                LoadMoreBar(action: {
-                                    withAnimation {
-                                        model.searchForMoreContent()
-                                    }
+                            LoadMoreBar(
+                                loadingContent: Binding(get: {
+                                    model.loadingContent
+                                }, set: {
+                                    model.loadingContent = $0
+                                }),
+                                showingError: Binding(get: {
+                                    model.showError
+                                }, set: {
+                                    model.showError = $0
+                                }),
+                                retreivedAllContent: Binding(get: {
+                                    model.retreivedAllContent
+                                }, set: {
+                                    model.retreivedAllContent = $0
+                                }),
+                                loadMore: {
+                                    model.searchForMoreContent()
                                 })
-                            }
                             
                             //                            if !model.loadingContent && model.retreivedAllContent && !(model.contentIsEmpty) {
                             //                                Divider()

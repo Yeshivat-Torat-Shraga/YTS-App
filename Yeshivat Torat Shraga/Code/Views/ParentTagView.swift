@@ -67,7 +67,7 @@ struct ParentTagView: View {
                                 
                                 Spacer()
                                 
-                                AutoLoadMoreBar(
+                                LoadMoreBar(
                                     loadingContent: Binding(get: {
                                         model.content[child]!.metadata.isLoadingContent
                                     }, set: {
