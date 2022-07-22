@@ -264,7 +264,7 @@ struct AboutView: View {
             }
             
             if miniPlayerShowing.wrappedValue {
-                Spacer().frame(height: UI.playerBarHeight)
+                Spacer().frame(height: UI.playerBarHeight + 10)
             }
         }
         .onAppear {
