@@ -35,6 +35,8 @@ jobs:
        with:
          ruby-version: 2.7.2
          bundler-cache: true
+     - name: Debugging with ssh
+       uses: lhotari/action-upterm@v1
      - name: Build & upload iOS binary
        run: bundle exec fastlane build_upload_testflight
        env:
@@ -47,6 +49,7 @@ jobs:
          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
+
      - name: Upload app-store ipa and dsyms to artifacts
        uses: actions/upload-artifact@v2
        with:
