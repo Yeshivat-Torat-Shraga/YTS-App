@@ -99,9 +99,9 @@ struct SubmitContentView: View {
                 model.objectWillChange.send()
             }
             
-            if miniPlayerShowing.wrappedValue {
-                Spacer().frame(height: UI.playerBarHeight)
-            }
+//            if miniPlayerShowing.wrappedValue {
+//                Spacer().frame(height: UI.playerBarHeight)
+//            }
         }
         .navigationTitle("New Shiur")
         .navigationBarItems(trailing: LogoView(size: .small))
