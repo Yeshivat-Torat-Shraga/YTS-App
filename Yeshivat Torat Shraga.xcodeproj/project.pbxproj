@@ -77,6 +77,8 @@
 		F29FFB2727529CD4005D6355 /* MiniPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29FFB2627529CD4005D6355 /* MiniPlayer.swift */; };
 		F2BB3175274BCC97008B9DE0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */; };
 		F2BB3177274BCDAB008B9DE0 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BB3176274BCDAB008B9DE0 /* Player.swift */; };
+		F2BE2D5F288AD9BC0007A353 /* PendingShiurimView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BE2D5E288AD9BC0007A353 /* PendingShiurimView.swift */; };
+		F2BE2D61288ADA0C0007A353 /* PendingShiurimModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BE2D60288ADA0C0007A353 /* PendingShiurimModel.swift */; };
 		F2D6E2C1282BC685000917D2 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D6E2C0282BC685000917D2 /* AboutView.swift */; };
 		F2D6E2C328328137000917D2 /* iOS14BorderedButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D6E2C228328137000917D2 /* iOS14BorderedButtonStyle.swift */; };
 		F2D78B71278695EB003996A8 /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2D78B70278695EB003996A8 /* Favorites.swift */; };
@@ -175,6 +177,8 @@
 		F29FFB2627529CD4005D6355 /* MiniPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayer.swift; sourceTree = "<group>"; };
 		F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		F2BB3176274BCDAB008B9DE0 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		F2BE2D5E288AD9BC0007A353 /* PendingShiurimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingShiurimView.swift; sourceTree = "<group>"; };
+		F2BE2D60288ADA0C0007A353 /* PendingShiurimModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingShiurimModel.swift; sourceTree = "<group>"; };
 		F2D6E2C0282BC685000917D2 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		F2D6E2C228328137000917D2 /* iOS14BorderedButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS14BorderedButtonStyle.swift; sourceTree = "<group>"; };
 		F2D78B70278695EB003996A8 /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
@@ -312,6 +316,7 @@
 				08173F0128400ADB004FC42F /* SubmitContentView.swift */,
 				F28E293A2758E2FB00D9F4AF /* TagTileView.swift */,
 				08A05B2227653D4E00FEE15F /* TagView.swift */,
+				F2BE2D5E288AD9BC0007A353 /* PendingShiurimView.swift */,
 				087A5BF32761178100C077F6 /* VideoCardView.swift */,
 			);
 			path = Views;
@@ -332,6 +337,7 @@
 				F230C4C9273B110900F7ACCC /* RootModel.swift */,
 				08FA96C8277B2ED1006CC195 /* SearchModel.swift */,
 				08173F062840ACB9004FC42F /* SubmitContentModel.swift */,
+				F2BE2D60288ADA0C0007A353 /* PendingShiurimModel.swift */,
 				08A05B2427653DAA00FEE15F /* TagModel.swift */,
 				087A5BF52761179000C077F6 /* VideoCardModel.swift */,
 			);
@@ -536,6 +542,7 @@
 				08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */,
 				B12AB833273B103C00B17CC0 /* SceneDelegate.swift in Sources */,
 				084E99C52794808F00CCEED6 /* NewsArticleCardView.swift in Sources */,
+				F2BE2D61288ADA0C0007A353 /* PendingShiurimModel.swift in Sources */,
 				F2D78B71278695EB003996A8 /* Favorites.swift in Sources */,
 				08173F0228400ADB004FC42F /* SubmitContentView.swift in Sources */,
 				F2F44C75274A6D4100F7D337 /* YTSProgressViewStyle.swift in Sources */,
@@ -545,6 +552,7 @@
 				B12AB835273B103C00B17CC0 /* RootView.swift in Sources */,
 				08AF240E27A35315001331EA /* FavoritesModel.swift in Sources */,
 				08F2AE18282C227D00E09367 /* AudioPlayerModel.swift in Sources */,
+				F2BE2D5F288AD9BC0007A353 /* PendingShiurimView.swift in Sources */,
 				B1BF5043273D2A2200CF18D6 /* RabbiTileView.swift in Sources */,
 				B1BF503D273C868C00CF18D6 /* HomeView.swift in Sources */,
 				F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */,

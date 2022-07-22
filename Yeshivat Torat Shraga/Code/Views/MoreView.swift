@@ -60,7 +60,6 @@ struct MoreView: View {
                     }
                 }
                 
-                
                 Section {
                     NavigationLink("About") {
                         AboutView(miniPlayerShowing: miniPlayerShowing)
@@ -75,6 +74,10 @@ struct MoreView: View {
                         .onChange(of: model.devNotificationsEnabled) { newToggleValue in
                             model.setSubscriptionToNotificationGroup($model.devNotificationsEnabled, group: "debug", shouldReceiveNotificationsFromGroup: newToggleValue)
                         }
+                    
+                    NavigationLink("Pending Shiurim") {
+                        PendingShiurimView(miniPlayerShowing: miniPlayerShowing)
+                    }
                     }
                 }
             }

@@ -780,7 +780,24 @@ final class FirebaseConnection {
         var data: [String: Any] = [
             "limit": options.limit,
             "includeThumbnailURLs": options.includeThumbnailURLs,
-            "includeAllAuthorData": options.includeDetailedAuthors
+            "includeAllAuthorData": options.includeDetailedAuthors,
+            "pending": false
+        ]
+        if let startAfterDocumentID = options.startAfterDocumentID {
+            data["lastLoadedDocID"] = startAfterDocumentID
+        }
+        
+        let httpsCallable = functions.httpsCallable("loadContent")
+        
+        httpsCallable.call(data, completion: contentClosure(options: options, completion: completion))
+    }
+    
+    static func loadPendingContent(options: ContentOptions = (limit: 10, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), completion: @escaping (_ results: (content: AVContent, metadata: Metadata)?, _ error: Error?) -> Void) {
+        var data: [String: Any] = [
+            "limit": options.limit,
+            "includeThumbnailURLs": options.includeThumbnailURLs,
+            "includeAllAuthorData": options.includeDetailedAuthors,
+            "pending": true
         ]
         if let startAfterDocumentID = options.startAfterDocumentID {
             data["lastLoadedDocID"] = startAfterDocumentID

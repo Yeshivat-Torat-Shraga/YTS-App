@@ -581,11 +581,12 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					value: string;
 			  }
 			| undefined,
+		pending: data.pending as boolean || false,
 	};
 
 	const COLLECTION = 'content';
 	const db = admin.firestore();
-	let query = db.collection(COLLECTION).where('pending', '==', false).orderBy('date', 'desc');
+	let query = db.collection(COLLECTION).where('pending', '==', queryOptions.pending).orderBy('date', 'desc');
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
