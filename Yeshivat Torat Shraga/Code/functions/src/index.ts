@@ -45,7 +45,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 
 admin.initializeApp({
-	projectId: 'yeshivat-torat-shraga',
+	projectId: 'yeshivat-torat-shraga'
 	// credential: admin.credential.cert(
 	// 	require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
 	// ),
@@ -1256,6 +1256,8 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 });
 
 exports.submitShiur = functions.https.onCall(async (data, context) => {
+	const db = admin.firestore();
+
 	verifyAppCheck(context);
 
 	log(`Submitting shiur: ${JSON.stringify(data)}`);
@@ -1347,7 +1349,6 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	const fileID = generateFileID(filename);
 
 	// ensure number of pending documents is not greater than 400
-	const db = admin.firestore();
 	const pendingDocs = await db.collection('content').where('pending', '==', true).get();
 	if (pendingDocs.size > 400) {
 		return {
@@ -1358,6 +1359,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 
 	// get uid if exists
 	const uid = context.auth?.uid;
+	log(`uid: ${uid}`);
 
 	//  create a prospective content document
 	const prospectiveContent: ProspectiveContentDocument = {
@@ -1397,7 +1399,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	} catch (err) {
 		log(`Error uploading to Firebase: ${err}`);
 		return {
-			status: 'denied',
+			status: 'failed',
 			message: 'Internal error',
 		};
 	}
