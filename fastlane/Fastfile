@@ -74,11 +74,11 @@ platform :ios do
  
     # profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
 
-    create_keychain(
-        name: "fastlane_keychain",
-        password: "meow",
-        unlock: true,
-    )
+    # create_keychain(
+    #     name: "fastlane_keychain",
+    #     password: "meow",
+    #     unlock: true,
+    # )
 
     # if not is_ci
     #   produce_profiles
@@ -87,8 +87,8 @@ platform :ios do
     match(
       api_key: api_key,
       app_identifier: [app_id, app_id + ".NotificationService"],
-      keychain_name: "fastlane_keychain",
-      keychain_password: "meow",
+      # keychain_name: "fastlane_keychain",
+      # keychain_password: "meow",
       type: "appstore",
     )
   end
@@ -97,10 +97,17 @@ platform :ios do
   lane :build_release do |options|
     app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
  
-    if is_ci
+    target_to_profile_mapping = {
+      "Yeshivat Torat Shraga" => "match AppStore com.reesedevelopment.YTS",
+      "NotificationModifier" => "match AppStore com.reesedevelopment.YTS.NotificationService",
+    }
+
+    target_to_profile_mapping.each do |target, profile_name|
       update_code_signing_settings(
+        targets: [target],
         build_configurations: ["Release"],
-        use_automatic_signing: false,
+        profile_name: profile_name,
+        code_sign_identity: "Apple Distribution: David Reese (YL279DNVQD)",
       )
     end
 
@@ -108,7 +115,7 @@ platform :ios do
     gym(
       export_options: {
         method: "app-store",
-        provisioning_profiles: SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING,
+        provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
         signing_style: "manual",
       },
       output_name: "YTS",
