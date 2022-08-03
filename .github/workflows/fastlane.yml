@@ -32,18 +32,18 @@ jobs:
        with:
          ruby-version: 2.7.2
          bundler-cache: true
-     - name: Debugging with ssh
-       uses: lhotari/action-upterm@v1
-       env:
-         ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-         ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-         ASC_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
-         MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-         KEYCHAIN_PATH: ~/Library/Keychains/signing_temp.keychain-db
-         FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-         FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-         FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
+    #  - name: Debugging with ssh
+    #    uses: lhotari/action-upterm@v1
+    #    env:
+    #      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+    #      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+    #      ASC_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+    #      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+    #      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+    #      KEYCHAIN_PATH: ~/Library/Keychains/signing_temp.keychain-db
+    #      FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+    #      FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+    #      FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
 
      - name: Build & upload iOS binary
        run: bundle exec fastlane build_upload_testflight
