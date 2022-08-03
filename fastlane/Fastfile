@@ -74,11 +74,11 @@ platform :ios do
  
     # profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
 
-    # create_keychain(
-    #     name: "fastlane_keychain",
-    #     password: "meow",
-    #     unlock: true,
-    # )
+    create_keychain(
+        name: "fastlane_keychain",
+        password: "meow",
+        unlock: true,
+    )
 
     # if not is_ci
     #   produce_profiles
@@ -87,8 +87,8 @@ platform :ios do
     match(
       api_key: api_key,
       app_identifier: [app_id, app_id + ".NotificationService"],
-      # keychain_name: "fastlane_keychain",
-      # keychain_password: "meow",
+      keychain_name: "fastlane_keychain",
+      keychain_password: "meow",
       type: "appstore",
     )
   end
