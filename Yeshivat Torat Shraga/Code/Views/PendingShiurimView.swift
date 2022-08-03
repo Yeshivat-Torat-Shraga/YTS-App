@@ -22,9 +22,9 @@ struct PendingShiurimView: View {
             LazyVStack {
                 if let sortables = model.sortables {
                     ForEach(sortables, id: \.id) { content in
+                        Divider()
                         MiniContentBar(content: content)
                             .padding()
-                        Divider()
                     }
                 }
                 
@@ -80,7 +80,7 @@ struct PendingShiurimView: View {
                         Spacer()
                         EllipseButton(action: {
                             audioPlayerModel.play(audio: audio)
-                        }, imageSystemName: "play.fill", foregroundColor: .primary, backgroundColor: .white)
+                        }, imageSystemName: "play.fill", foregroundColor: .primary, backgroundColor: .clear)
                     }
                     
                     Spacer()

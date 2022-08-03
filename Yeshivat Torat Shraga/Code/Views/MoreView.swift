@@ -76,7 +76,7 @@ struct MoreView: View {
                         }
                     
                     NavigationLink("Pending Shiurim") {
-                        PendingShiurimView(miniPlayerShowing: miniPlayerShowing)
+                        model.pendingShiurimView
                     }
                     }
                 }

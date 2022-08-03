@@ -16,8 +16,11 @@ class MoreModel: ObservableObject {
     @Published var submitContentView: SubmitContentView
     @AppStorage("enableDevNotifications") var devNotificationsEnabled: Bool = false
     
+    @Published var pendingShiurimView: PendingShiurimView
+    
     init(miniPlayerShowing: Binding<Bool>) {
         self.submitContentView = SubmitContentView(miniPlayerShowing: miniPlayerShowing)
+        self.pendingShiurimView = PendingShiurimView(miniPlayerShowing: miniPlayerShowing)
         
         let currentNotifications = UNUserNotificationCenter.current()
         let acceptableNotificationStatuses: [UNAuthorizationStatus] = [.authorized, .ephemeral, .provisional]
