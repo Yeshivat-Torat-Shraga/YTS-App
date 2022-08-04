@@ -122,6 +122,7 @@ platform :ios do
       scheme: "Yeshivat Torat Shraga",
       silent: true,
       skip_profile_detection: true,
+      include_symbols: false,
       xcargs: {
         # Use BUILDCACHE override compiler paths to
         # ensure that the correct compiler paths are used.
