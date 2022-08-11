@@ -1,162 +1,25 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
 default_platform(:ios)
 
 platform :ios do
-
-  desc "Set the Xcode version to be used"
-  lane :set_xcode_version do
-    xcversion(version: "13.3.1")
+  desc "Push a new release build to the App Store"
+  lane :release do
+    increment_build_number(xcodeproj: "Yeshivat Torat Shraga.xcodeproj")
+    build_app(scheme: "Yeshivat Torat Shraga")
+    upload_to_app_store
   end
-
-  desc "Load ASC API Key information to use in subsequent lanes"
-  lane :load_asc_api_key do
-    if is_ci
-      app_store_connect_api_key(
-        issuer_id: ENV["ASC_ISSUER_ID"],
-        key_content: ENV["ASC_KEY"],
-        key_id: ENV["ASC_KEY_ID"],
-      )
-    else
-      app_store_connect_api_key(
-        issuer_id: ENV["ASC_ISSUER_ID"],
-        key_filepath: "~/Downloads/asc-key.p8",
-        key_id: ENV["ASC_KEY_ID"],
-      )
-    end
-  end
-
-  desc "Bump build number based on most recent TestFlight build number"
-  lane :fetch_and_increment_build_number do
-    #fetch read your app identifier defined in your Appfile
-    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-
-    current_version = get_version_number(target: "Yeshivat Torat Shraga")
-    latest_build_number = latest_testflight_build_number(
-      api_key: api_key,
-      app_identifier: app_identifier,
-      version: current_version,
-    )
-    increment_build_number(build_number: (latest_build_number.to_f + 1))
-  end
-
-  desc "Run produce methods"
-  lane :produce_profiles do
-    app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    # If this lane fails due to authentication issues,
-    # try resetting the FASTLANE_SESSION environment
-    # variable via the following command:
-    # bundle exec fastlane spaceauth
-    produce(
-      app_identifier: app_id,
-      app_name: "Yeshivat Torat Shraga",
-      skip_itc: true,
-      enable_services: {
-        "associated_domains": "on",
-        "app_group": "on",
-        "app_attest": "on",
-        "push_notification": "on",
-      }
-    )
-    produce(
-      app_identifier: app_id + ".NotificationService",
-      app_name: "Yeshivat Torat Shraga Notification Service",
-      skip_itc: true,
-      enable_services: {
-        "app_group": "on",
-      }
-    )
-  end
- 
-  desc "Check certs and profiles"
-  lane :prepare_signing do |options|
-    app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
- 
-    # profile_name = "App Provisioning Profile" # replace with the name of your existing profile, or define a name for the profile that fastlane will create if it's not found
-
-    create_keychain(
-        name: "fastlane_keychain",
-        password: "meow",
-        unlock: true,
-    )
-
-    # if not is_ci
-    #   produce_profiles
-    # end
-
-    match(
-      api_key: api_key,
-      app_identifier: [app_id, app_id + ".NotificationService"],
-      keychain_name: "fastlane_keychain",
-      keychain_password: "meow",
-      type: "appstore",
-    )
-  end
- 
-  desc "Build the iOS app for release"
-  lane :build_release do |options|
-    app_id = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
- 
-    target_to_profile_mapping = {
-      "Yeshivat Torat Shraga" => "match AppStore com.reesedevelopment.YTS",
-      "NotificationModifier" => "match AppStore com.reesedevelopment.YTS.NotificationService",
-    }
-
-    target_to_profile_mapping.each do |target, profile_name|
-      update_code_signing_settings(
-        targets: [target],
-        build_configurations: ["Release"],
-        profile_name: profile_name,
-        code_sign_identity: "Apple Distribution: David Reese (YL279DNVQD)",
-      )
-    end
-
-    # build the app
-    gym(
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
-        signing_style: "manual",
-      },
-      output_name: "YTS",
-      scheme: "Yeshivat Torat Shraga",
-      silent: true,
-      skip_profile_detection: true,
-      include_symbols: false,
-      xcargs: {
-        # Use BUILDCACHE override compiler paths to
-        # ensure that the correct compiler paths are used.
-        :CC => "clang",
-        :CPLUSPLUS => "clang++",
-        :LD => "clang",
-        :LDPLUSPLUS => "clang++",
-      },
-    )
-  end
- 
-  desc "Upload to TestFlight / ASC"
-  lane :upload_release do
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    
-    deliver(
-        api_key: api_key,
-        force: true,
-        skip_app_version_update: true,
-        skip_metadata: true,
-        skip_screenshots: true,
-    )
-  end
-
-  desc "Build and upload to TestFlight"
-  lane :build_upload_testflight do
-    # set_xcode_version
-    load_asc_api_key
-    prepare_signing
-    if is_ci
-      fetch_and_increment_build_number
-    end
-    build_release
-    upload_release
-  end
-
 end
