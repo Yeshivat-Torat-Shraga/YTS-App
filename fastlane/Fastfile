@@ -16,10 +16,51 @@
 default_platform(:ios)
 
 platform :ios do
+  desc "Load ASC API Key information to use in subsequent lanes"
+  lane :load_asc_api_key do
+    if is_ci
+      app_store_connect_api_key(
+        issuer_id: ENV["ASC_ISSUER_ID"],
+        key_content: ENV["ASC_KEY"],
+        key_id: ENV["ASC_KEY_ID"],
+      )
+    else
+      app_store_connect_api_key(
+        issuer_id: ENV["ASC_ISSUER_ID"],
+        key_filepath: "~/Downloads/asc-key.p8",
+        key_id: ENV["ASC_KEY_ID"],
+      )
+    end
+  end
+
   desc "Push a new release build to the App Store"
   lane :release do
     increment_build_number(xcodeproj: "Yeshivat Torat Shraga.xcodeproj")
-    build_app(scheme: "Yeshivat Torat Shraga")
+    match(type: "appstore", app_identifier: "com.reesedevelopment.YTS.NotificationService")
+    match(type: "appstore", app_identifier: "com.reesedevelopment.YTS")
+    target_to_profile_mapping = {
+      "Yeshivat Torat Shraga" => "match AppStore com.reesedevelopment.YTS",
+      "NotificationModifier" => "match AppStore com.reesedevelopment.YTS.NotificationService",
+    }
+
+    target_to_profile_mapping.each do |target, profile_name|
+      update_code_signing_settings(
+        targets: [target],
+        build_configurations: ["Release"],
+        profile_name: profile_name,
+      )
+    end
+
+    gym(
+      export_method: "app-store",
+      scheme: "Yeshivat Torat Shraga",
+       export_options: {
+        method: "app-store",
+        provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
+        signing_style: "manual",
+      },
+      skip_profile_detection: true,
+    )
     upload_to_app_store
   end
 end
