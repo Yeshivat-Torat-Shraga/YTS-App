@@ -71,6 +71,25 @@ def send_push_notification(title, body, badge):
     flash("Notification sent")
 
 
+def send_personal_notification(fcmToken, title, body, should_increment_badge=True):
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=title,
+            body=body,
+        ),
+        apns=messaging.APNSConfig(
+            payload=messaging.APNSPayload(
+                aps=messaging.Aps(
+                    mutable_content=True,
+                    badge=1 if should_increment_badge else None
+                )
+            )
+        ),
+        token=fcmToken
+    )
+    messaging.send(message)
+
+
 def silent_badge_increment(badge=1):
     send_push_notification(None, None, badge)
 
@@ -319,6 +338,12 @@ def shiur_review(ID):
             shiur.update(updated_document)
             flash("Shiur approved!")
             # Send a APNS notification that badges the app
+            if "upload_data" in shiur:
+                upload_data = shiur["upload_data"]
+                if "token" in upload_data:
+                    token = upload_data["token"]
+                    send_personal_notification(
+                        token, "Your shiur has been approved!", "It will be available in the app shortly.")
             silent_badge_increment()
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
