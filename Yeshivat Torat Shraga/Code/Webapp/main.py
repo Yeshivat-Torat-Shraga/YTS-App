@@ -338,7 +338,7 @@ def shiur_review(ID):
             shiur.update(updated_document)
             flash("Shiur approved!")
             # Send a APNS notification that badges the app
-            if "upload_data" in shiur:
+            if "upload_data" in shiur.get().to_dict():
                 upload_data = shiur["upload_data"]
                 if "token" in upload_data:
                     token = upload_data["token"]
