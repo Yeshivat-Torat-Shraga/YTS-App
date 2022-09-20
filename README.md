@@ -41,8 +41,8 @@ Here is a non-exhaustive list of the frameworks we used while working on this pr
 The app was released to the AppStore on May 22, 2022. You can download it [here](https://apps.apple.com/app/yeshivat-torat-shraga/id1598556472).
 
 ## Are you going to make an Android version?
-Due to the nature of such a project, we currently cannot afford the time to do so. However, we are
-considering taking it up over the summer.
+~Due to the nature of such a project, we currently cannot afford the time to do so. However, we are
+considering taking it up over the summer.~ no
 
 ## I was looking through your code and I found something that I really liked. Can I copy it?
 That's a good question. We have not yet added a licence for this repository,
