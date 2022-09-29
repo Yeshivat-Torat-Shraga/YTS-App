@@ -752,7 +752,7 @@ exports.generateHLSStream = storage
 			validation: false,
 		});
 
-		let newFolderPrefix = `HLSStreams/`;
+		let newFolderPrefix = `HLSStreams`;
 
 		if (userUpload) {
 			// count number of pending firebase documents
