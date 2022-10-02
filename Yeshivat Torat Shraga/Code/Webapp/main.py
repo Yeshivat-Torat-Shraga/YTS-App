@@ -458,7 +458,7 @@ def shiurim_upload():
         # Content Type:
         content_type = request.form.get("type", "")
 
-        source_path = f"HLSStreams/{file_hash}/{file_hash}.m3u8"
+        source_path = f"HLSStreams/audio/{file_hash}/{file_hash}.m3u8"
 
         # Tags:
         # Default to MISC.
