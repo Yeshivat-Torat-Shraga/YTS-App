@@ -296,7 +296,6 @@ def shiur_review(ID):
         approval_status = request.form.get(
             "approval_status", "denied", type=str)
         if approval_status == "approved":
-
             rabbi = request.form.get("author").split("~")
             date = datetime.strptime(
                 request.form.get(
@@ -345,7 +344,7 @@ def shiur_review(ID):
                     send_personal_notification(
                         token, "Your shiur has been approved!", "It will be available in the app shortly.")
             silent_badge_increment()
-            return redirect(url_for("shiurim_pending_list"))
+            return redirect("/shiurim/pending")
         elif approval_status == "denied":
             shiur = db.collection('content').document(ID)
             shiur_data = shiur.get().to_dict()
@@ -355,10 +354,11 @@ def shiur_review(ID):
             file_hash = source_path.split("/")[2]
             try:
                 bucket.delete_blob(f"{content_type}/{file_hash}")
+                flash("Shiur denied and deleted.")
             except NotFound:
+                flash("Shiur not found.")
                 pass
-            flash("Shiur denied and deleted!")
-            return redirect(url_for("shiurim_pending_list"))
+            return redirect("/shiurim/pending")
 
 
 @app.route("/shiurim/<ID>", methods=["GET", "POST"])
