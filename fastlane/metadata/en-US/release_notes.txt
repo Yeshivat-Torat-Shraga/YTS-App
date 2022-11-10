@@ -1,0 +1,1 @@
+This update includes notifications, letting you know shiurim are available as soon as they are uploaded, via the number on the app icon. You will also get notified if submitted shiurim are approved or denied.

@@ -45,7 +45,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 
 admin.initializeApp({
-	projectId: 'yeshivat-torat-shraga'
+	projectId: 'yeshivat-torat-shraga',
 	// credential: admin.credential.cert(
 	// 	require('/Users/benjitusk/Downloads/yeshivat-torat-shraga-bed10d9b83ed.json')
 	// ),
@@ -581,12 +581,15 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 					value: string;
 			  }
 			| undefined,
-		pending: data.pending as boolean || false,
+		pending: (data.pending as boolean) || false,
 	};
 
 	const COLLECTION = 'content';
 	const db = admin.firestore();
-	let query = db.collection(COLLECTION).where('pending', '==', queryOptions.pending).orderBy('date', 'desc');
+	let query = db
+		.collection(COLLECTION)
+		.where('pending', '==', queryOptions.pending)
+		.orderBy('date', 'desc');
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
@@ -749,7 +752,7 @@ exports.generateHLSStream = storage
 			validation: false,
 		});
 
-		let newFolderPrefix = `HLSStreams/${object.contentType!.split('/')[0]}`;
+		let newFolderPrefix = `HLSStreams/audio`;
 
 		if (userUpload) {
 			// count number of pending firebase documents
@@ -780,7 +783,10 @@ exports.generateHLSStream = storage
 				log(`Filename ${filename} matches hash of content file ${hex}`);
 				// check if database has matching document
 				var newFolderPath = newFolderPrefix + '/' + hex;
-				const doc = await db.collection('content').where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8').get();
+				const doc = await db
+					.collection('content')
+					.where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8')
+					.get();
 
 				if (doc.empty) {
 					// no matching document, delete file
