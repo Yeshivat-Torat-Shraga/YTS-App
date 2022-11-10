@@ -185,12 +185,16 @@ struct SearchView: View {
                 
                 HStack {
                     Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
                     TextField("", text: $searchText, onCommit: {
                         search(searchText)
                     })
                         .placeholder(when: searchText.isEmpty) {
                             Text("Search")
+                                .foregroundColor(.secondary)
                         }
+                        .foregroundColor(.primary)
+                        
                     
                 }
                 .padding(.leading, 13)
