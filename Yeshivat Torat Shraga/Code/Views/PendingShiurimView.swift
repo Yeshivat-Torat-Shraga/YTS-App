@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// View for administrators and developers to monitor shiurim which have been submitted by the public but not approoved
 struct PendingShiurimView: View {
     @ObservedObject var model: PendingShiurimModel
     
@@ -21,10 +22,17 @@ struct PendingShiurimView: View {
         ScrollView {
             LazyVStack {
                 if let sortables = model.sortables {
-                    ForEach(sortables, id: \.id) { content in
-                        Divider()
-                        MiniContentBar(content: content)
-                            .padding()
+                    if !sortables.isEmpty {
+                        ForEach(sortables, id: \.id) { content in
+                            Divider()
+                            MiniContentBar(content: content)
+                                .padding()
+                        }
+                    } else {
+                        Spacer()
+                        Text("There are currently no shiurim pending.")
+                            .font(.title3)
+                            .bold()
                     }
                 }
                 
