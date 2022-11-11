@@ -8,12 +8,17 @@
 import SwiftUI
 import FirebaseAnalytics
 
+/// View used to search the database for content and rebbeim
 struct SearchView: View {
     @ObservedObject var model = SearchModel()
     @State var selectedResultTag: SearchOptions = .all
     @State var showAlert = false
     @State var alertBody = ""
     @State var alertTitle = ""
+    
+    var noResultsFound: Bool {
+        return (model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false && model.rebbeim?.isEmpty ?? false) || (selectedResultTag == .shiurim && model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false) || (selectedResultTag == .rebbeim && model.rebbeim?.isEmpty ?? false)
+    }
     
     var body: some View {
         NavigationView {
@@ -30,11 +35,6 @@ struct SearchView: View {
                     Text("Rebbeim")
                         .tag(SearchOptions.rebbeim)
                 }
-                //                .onChange(of: selectedResultTag) { value in
-                //                    withAnimation {
-                //
-                //                    }
-                //                }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding([.bottom])
             }
@@ -50,7 +50,7 @@ struct SearchView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 Spacer()
-            } else if (!model.loadingContent && !model.loadingRebbeim) && ((model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false && model.rebbeim?.isEmpty ?? false) || (selectedResultTag == .shiurim && model.content?.videos.isEmpty ?? false && model.content?.audios.isEmpty ?? false) || (selectedResultTag == .rebbeim && model.rebbeim?.isEmpty ?? false)) {
+            } else if noResultsFound && (!model.loadingContent && !model.loadingRebbeim) {
                 Text("Sorry, no results were found.")
                     .font(.title2)
                     .bold()
@@ -112,7 +112,7 @@ struct SearchView: View {
                                     Spacer()
                                 } else if let audio = sortable.audio {
                                     Spacer()
-                                    AudioCardView(audio: audio)
+                                    SearchedAudioCardView(audio: audio)
                                     Spacer()
                                 }
                             }

@@ -60,6 +60,7 @@
 		F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D2273BE58B00F7ACCC /* YTS.swift */; };
 		F230C4D5273BE81E00F7ACCC /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4D4273BE81E00F7ACCC /* Errors.swift */; };
 		F230C4DC2740454F00F7ACCC /* FirebaseConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */; };
+		F2469B1D291E758800C94FCE /* SearchedAudioCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2469B1C291E758800C94FCE /* SearchedAudioCardView.swift */; };
 		F25038A4274EA1EC006FF802 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25038A3274EA1EC006FF802 /* Helpers.swift */; };
 		F2570DDF27AAD3BF00BF7E7A /* LoadingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */; };
 		F2570DE327AAE05B00BF7E7A /* LoadMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */; };
@@ -168,6 +169,7 @@
 		F230C4D2273BE58B00F7ACCC /* YTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTS.swift; sourceTree = "<group>"; };
 		F230C4D4273BE81E00F7ACCC /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		F230C4DB2740454F00F7ACCC /* FirebaseConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConnection.swift; sourceTree = "<group>"; };
+		F2469B1C291E758800C94FCE /* SearchedAudioCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchedAudioCardView.swift; sourceTree = "<group>"; };
 		F25038A3274EA1EC006FF802 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		F2570DDE27AAD3BF00BF7E7A /* LoadingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingPage.swift; sourceTree = "<group>"; };
 		F2570DE227AAE05B00BF7E7A /* LoadMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreView.swift; sourceTree = "<group>"; };
@@ -290,6 +292,7 @@
 			children = (
 				F2D6E2C0282BC685000917D2 /* AboutView.swift */,
 				B1D0A2D8274BD1D500F7F0A5 /* AudioCardView.swift */,
+				F2469B1C291E758800C94FCE /* SearchedAudioCardView.swift */,
 				F2BB3174274BCC97008B9DE0 /* AudioPlayer.swift */,
 				F29B6874283B8E0000ECA1A6 /* AutoLoadMoreBarView.swift */,
 				087B985427ABD5CB00B09A90 /* ContentCardView.swift */,
@@ -537,6 +540,7 @@
 				082872A32833EBE80002EB78 /* ParentTagView.swift in Sources */,
 				F28E293B2758E2FB00D9F4AF /* TagTileView.swift in Sources */,
 				F230C4D3273BE58B00F7ACCC /* YTS.swift in Sources */,
+				F2469B1D291E758800C94FCE /* SearchedAudioCardView.swift in Sources */,
 				084E99C32794760D00CCEED6 /* NewsModel.swift in Sources */,
 				B1D0A2D9274BD1D500F7F0A5 /* AudioCardView.swift in Sources */,
 				08FA96C9277B2ED1006CC195 /* SearchModel.swift in Sources */,
