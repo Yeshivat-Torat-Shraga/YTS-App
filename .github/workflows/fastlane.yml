@@ -53,7 +53,7 @@ jobs:
          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
 
      - name: Build & upload iOS binary
-       run: fastlane release
+       run: bundle exec fastlane build_upload_testflight
        env:
          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
