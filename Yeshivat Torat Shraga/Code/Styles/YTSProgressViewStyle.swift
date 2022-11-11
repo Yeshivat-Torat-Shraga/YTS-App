@@ -16,7 +16,7 @@ struct YTSProgressViewStyle: ProgressViewStyle {
     private let defaultProgress = 0.2 // CHANGE
     
     // tracks the rotation angle for the indefinite progress bar
-    @State private var fillRotationAngle = Angle.degrees(-90) // ADD
+    @State private var fillRotationAngle = Angle.degrees(-90)
     
     public func makeBody(configuration: ProgressViewStyleConfiguration) -> some View {
         VStack {

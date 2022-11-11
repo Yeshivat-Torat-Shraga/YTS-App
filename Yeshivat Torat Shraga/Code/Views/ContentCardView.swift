@@ -24,11 +24,15 @@ struct ContentCardView<Content: YTSContent>: View {
     @EnvironmentObject var favoritesManager: Favorites
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var player: Player
+    
     @Environment(\.colorScheme) var colorScheme
+    
     @State var isShowingPlayerSheet = false
     @State private var isFavoritesBusy = false
     @State private var heartFillOverride = false
+    
     let content: Content
+    
     var isAudio: Bool {
         return content is Audio
     }
@@ -65,7 +69,6 @@ struct ContentCardView<Content: YTSContent>: View {
                     .overlay(Rectangle().fill(colorScheme == .light
                                               ? Color.white
                                               : Color.black).opacity(0.2))
-                
                 VStack {
                     HStack {
                         VStack {
@@ -98,7 +101,6 @@ struct ContentCardView<Content: YTSContent>: View {
                             }
                         }
                     }
-                    //                    .frame(height: 200)
                     
                     Spacer()
                     

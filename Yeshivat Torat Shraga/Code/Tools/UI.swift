@@ -623,13 +623,13 @@ struct URLImage<Content : View>: View {
     
     init(url: String, @ViewBuilder placeholder: @escaping () -> Content, completion: ((_ image: Image?) -> Void)? = nil) {
         self.placeholder = placeholder()
-        self.imageLoader.prepare(url: url, completion: completion)
+//        self.imageLoader.prepare(url: url, completion: completion)
         self.imageLoader.resume()
     }
     
     init(url: URL, @ViewBuilder placeholder: @escaping () -> Content, completion: ((_ image: Image?) -> Void)? = nil) {
         self.placeholder = placeholder()
-        self.imageLoader.prepare(url: url, completion: completion)
+//        self.imageLoader.prepare(url: url, completion: completion)
         self.imageLoader.resume()
     }
     
@@ -640,7 +640,6 @@ struct URLImage<Content : View>: View {
                     .resizable()
                     .background(Color.gray)
             } else {
-//                AngularGradient(colors: [.gray.lighter(), UI.Constants.primaryColor], center: .bottomTrailing)
                 Blur()
                     .overlay(
                 placeholder

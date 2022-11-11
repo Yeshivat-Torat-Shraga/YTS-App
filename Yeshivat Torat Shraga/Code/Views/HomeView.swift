@@ -10,9 +10,11 @@ import FirebaseAnalytics
 
 struct HomeView: View {
     @ObservedObject var model: HomeModel
+    
     @EnvironmentObject var player: Player
     @EnvironmentObject var audioPlayerModel: AudioPlayerModel
     @EnvironmentObject var favoritesManager: Favorites
+    
     @AppStorage("lastViewedAlertID") var lastViewedAlertID = ""
     @State var presentingSearchView = false
     @State var searchView = SearchView()
@@ -36,6 +38,7 @@ struct HomeView: View {
             NavigationView {
                 ScrollView(showsIndicators: false) {
                     VStack {
+                        
                         // MARK: - Recently Uploaded
                         VStack(spacing: 0.0) {
                             LabeledDivider(title: "Recently Uploaded")
@@ -45,8 +48,7 @@ struct HomeView: View {
                                 if sortables.count < 1 {
                                     Text("Either there is no content to show here, or our servers are experiencing an issue. Please try again soon.")
                                         .padding()
-                                } else {
-                                    ScrollView(.horizontal, showsIndicators: false) {
+                                } else {                                    ScrollView(.horizontal, showsIndicators: false) {
                                         LazyHStack {
                                             ForEach(sortables, id: \.self) { sortable in
                                                 SortableContentCardView(content: sortable)
@@ -65,7 +67,7 @@ struct HomeView: View {
                                 }.padding()
                             }
                         }
-                        
+                        .fixedSize(horizontal: false, vertical: true)
                         
                         // MARK: - Rebbeim
                         VStack(spacing: 0) {
@@ -128,6 +130,7 @@ struct HomeView: View {
                                 }.padding()
                             }
                         }
+                        
                         
                         
                         // MARK: - SLIDESHOW
