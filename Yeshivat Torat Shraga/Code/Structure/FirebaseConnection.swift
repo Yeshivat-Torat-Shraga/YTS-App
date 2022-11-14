@@ -14,7 +14,7 @@ final class FirebaseConnection {
     static var functions = Functions.functions()
     
     typealias ContentOptions = (limit: Int, includeThumbnailURLs: Bool, includeDetailedAuthors: Bool, startAfterDocumentID: FirestoreID?)
-    typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startAfterDocumentID: FirestoreID?)
+    typealias RebbeimOptions = (limit: Int, includePictureURLs: Bool, startAfterDocumentID: FirestoreID?, includeServiceProfiles: Bool)
     
     typealias Metadata = (newLastLoadedDocumentID: FirestoreID?, finalCall: Bool)
     
@@ -240,7 +240,7 @@ final class FirebaseConnection {
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
     /// - Returns:
     /// `((results: Content, [Rabbi], Metadata)?, Error?)`
-    static func search(query: String, contentOptions: ContentOptions = (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startAfterDocumentID: nil), completion: @escaping (_ results: (content: (AVContent?), rebbeim: [Rabbi]?, metadata: (content: Metadata?, rebbeim: Metadata?))?, _ error: Error?) -> Void) {
+    static func search(query: String, contentOptions: ContentOptions = (limit: 5, includeThumbnailURLs: true, includeDetailedAuthors: false, startAfterDocumentID: nil), rebbeimOptions: RebbeimOptions = (limit: 10, includePictureURLs: false, startAfterDocumentID: nil, includeServiceProfiles: false), completion: @escaping (_ results: (content: (AVContent?), rebbeim: [Rabbi]?, metadata: (content: Metadata?, rebbeim: Metadata?))?, _ error: Error?) -> Void) {
         var content: AVContent = (videos: [], audios: [])
         var rebbeim: [Rabbi] = []
         
@@ -256,7 +256,8 @@ final class FirebaseConnection {
         
         var rebbeimOptionsData: [String : Any] = [
             "limit": rebbeimOptions.limit,
-            "includePictureURLs": rebbeimOptions.includePictureURLs
+            "includePictureURLs": rebbeimOptions.includePictureURLs,
+            "includeServiceProfiles": rebbeimOptions.includeServiceProfiles
         ]
         
         if let rsID = rebbeimOptions.startAfterDocumentID {
@@ -525,13 +526,15 @@ final class FirebaseConnection {
     ///   - lastLoadedDocumentID: Pages results starting from first element afterwards.
     ///   - count: The amount of `Rabbi` objects to return. Default is `10`.
     ///   - includeProfilePictureURLs: Whether or not to include profile picture URLs in the response. Default is `true`.
+    ///   - includeServiceProfiles: Whether or not to include service profiles such as 'Guest Speaker.' Default is `false`.
     ///   - completion: Callback which returns the results and metadata once function completes, including the new `lastLoadedDocumentID`.
-    static func loadRebbeim(options: RebbeimOptions = (limit: 10, includePictureURLs: true, startAfterDocumentID: nil), completion: @escaping (_ results: (rebbeim: [Rabbi], metadata: Metadata)?, _ error: Error?) -> Void) {
+    static func loadRebbeim(options: RebbeimOptions = (limit: 10, includePictureURLs: true, startAfterDocumentID: nil, includeServiceProfiles: false), completion: @escaping (_ results: (rebbeim: [Rabbi], metadata: Metadata)?, _ error: Error?) -> Void) {
         var rebbeim: [Rabbi] = []
         
         var data: [String: Any] = [
             "limit": options.limit,
-            "includePictureURLs": options.includePictureURLs
+            "includePictureURLs": options.includePictureURLs,
+            "includeServiceProfiles": options.includeServiceProfiles
         ]
         if let startAfterDocumentID = options.startAfterDocumentID {
             data["lastLoadedDocID"] = startAfterDocumentID

@@ -162,7 +162,7 @@ class SubmitContentModel: ObservableObject {
         
         // Load all Rabbis
         group.enter()
-        FirebaseConnection.loadRebbeim(options: (limit: -1, includePictureURLs: false, startAfterDocumentID: nil)) { result, error in
+        FirebaseConnection.loadRebbeim(options: (limit: -1, includePictureURLs: false, startAfterDocumentID: nil, includeServiceProfiles: true)) { result, error in
             guard let rebbeim = result?.rebbeim else {
                 self.showAlert(title: "Error", body: "There was an issue contacting the server. Please try again later.")
                 return
