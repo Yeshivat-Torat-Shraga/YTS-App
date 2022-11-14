@@ -427,6 +427,15 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 	};
 });
 
+/**
+ * @remarks
+ * Returns a list of rebbeim in firebase
+ * 
+ * @param limit - The max amount of rebbeim to return, default is 10
+ * @param lastLoadedDocID - Optional id of the last document retreived used to paginate the data
+ * @param includePictureURLs - Indicates whether or not profile picture URLs should be generated and included
+ * @param includeServiceProfiles - Indicates whether or not to include service profiles, including 'Guest Speaker'
+ */
 exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
 	verifyAppCheck(context);
@@ -436,12 +445,18 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 		limit: (data.limit as number) || 10,
 		previousDocID: data.lastLoadedDocID as string | undefined,
 		includePictureURLs: data.includePictureURLs as boolean | undefined,
+		includeServiceProfiles: data.includeServiceProfiles as boolean | false,
 	};
 
 	const COLLECTION = 'rebbeim';
 	const db = admin.firestore();
 
-	let query = db.collection(COLLECTION).orderBy('name', 'asc');
+	const GUEST_SPEAKER_ID = 'hn2GBxMrEbRSVtaxPC2K';
+
+	let query = db.collection(COLLECTION)
+		.orderBy('name', 'asc');
+
+		// pagination
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
 		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
@@ -450,6 +465,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 		log(`Starting after document '${snapshot}'`);
 	}
 
+	// limiting, rebbeim in database are not expected to exceed a reasonable amount
 	if (queryOptions.limit > 0) {
 		query = query.limit(queryOptions.limit);
 	}
@@ -487,6 +503,12 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	// to resolve.
 	const rebbeimDocs: (RebbeimDocument | null)[] = await Promise.all(
 		docs.map(async (doc) => {
+			if (!queryOptions.includeServiceProfiles) {
+				if (doc.id == GUEST_SPEAKER_ID) {
+					return null;
+				}
+			}
+
 			// Get the document data
 			try {
 				var data = new RebbeimFirebaseDocument(doc.data());
@@ -494,10 +516,11 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 				return null;
 			}
 
-			log(`Loading rabbi: '${JSON.stringify(data)}'`);
+			// log(`Loading rabbi: '${JSON.stringify(data)}'`);
 
 			// Get the image path
 			const path = data.profile_picture_filename;
+
 			// Get the image URL
 			try {
 				const pfpURL = await getURLFor(`profile-pictures/${path}`);
