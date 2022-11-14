@@ -59,7 +59,7 @@ jobs:
          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
          ASC_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-#         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 #         FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
 #          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
