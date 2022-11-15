@@ -53,13 +53,15 @@ platform :ios do
     match(
       type: 'appstore',
       app_identifier: "com.reesedevelopment.YTS.NotificationService",
-      api_key: api_key
+      api_key: api_key,
+      git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION"])
     )
     
     match(
       type: 'appstore',
       app_identifier: "com.reesedevelopment.YTS",
-      api_key: api_key
+      api_key: api_key,
+      git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION"])
     )
     
     target_to_profile_mapping = {
