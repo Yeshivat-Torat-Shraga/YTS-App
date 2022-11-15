@@ -15,6 +15,26 @@ update_fastlane
 
 default_platform(:ios)
 
+# def delete_temp_keychain(name)
+#   delete_keychain(
+#     name: name
+#   ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+# end
+
+# def create_temp_keychain(name, password)
+#   create_keychain(
+#     name: name,
+#     password: password,
+#     unlock: false,
+#     timeout: 0
+#   )
+# end
+
+# def ensure_temp_keychain(name, password)
+#   delete_temp_keychain(name)
+#   create_temp_keychain(name, password)
+# end
+
 platform :ios do
 #   lane :load_asc_api_key do
 #     if is_ci
@@ -33,6 +53,10 @@ platform :ios do
 #   end
 
   lane :release do
+    
+#     keychain_name = TEMP_KEYCHAIN_USER
+#     keychain_password = TEMP_KEYCHAIN_PASSWORD
+#     ensure_temp_keychain(keychain_name, keychain_password)
     
     desc "Load ASC API Key information to use in subsequent lanes"
     api_key = app_store_connect_api_key(
