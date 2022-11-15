@@ -11,7 +11,7 @@
 #
 
 # Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+update_fastlane
 
 default_platform(:ios)
 
@@ -44,41 +44,41 @@ platform :ios do
 #     match(type: "appstore", app_identifier: "com.reesedevelopment.YTS.NotificationService")
 #     match(type: "appstore", app_identifier: "com.reesedevelopment.YTS")
     
-    match(
-      type: 'appstore',
-      app_identifier: "com.reesedevelopment.YTS.NotificationService",
-      api_key: api_key
-    )
+#     match(
+#       type: 'appstore',
+#       app_identifier: "com.reesedevelopment.YTS.NotificationService",
+#       api_key: api_key
+#     )
     
-    match(
-      type: 'appstore',
-      app_identifier: "com.reesedevelopment.YTS",
-      api_key: api_key
-    )
+#     match(
+#       type: 'appstore',
+#       app_identifier: "com.reesedevelopment.YTS",
+#       api_key: api_key
+#     )
     
-    target_to_profile_mapping = {
-      "Yeshivat Torat Shraga" => "match AppStore com.reesedevelopment.YTS",
-      "NotificationModifier" => "match AppStore com.reesedevelopment.YTS.NotificationService",
-    }
+#     target_to_profile_mapping = {
+#       "Yeshivat Torat Shraga" => "match AppStore com.reesedevelopment.YTS",
+#       "NotificationModifier" => "match AppStore com.reesedevelopment.YTS.NotificationService",
+#     }
 
-    target_to_profile_mapping.each do |target, profile_name|
-      update_code_signing_settings(
-        targets: [target],
-        build_configurations: ["Release"],
-        profile_name: profile_name,
-      )
-    end
+#     target_to_profile_mapping.each do |target, profile_name|
+#       update_code_signing_settings(
+#         targets: [target],
+#         build_configurations: ["Release"],
+#         profile_name: profile_name,
+#       )
+#     end
 
-    gym(
-      export_method: "app-store",
-      scheme: "Yeshivat Torat Shraga",
-       export_options: {
-        method: "app-store",
-        provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
-        signing_style: "manual",
-      },
-      skip_profile_detection: true,
-    )
-    upload_to_app_store
+#     gym(
+#       export_method: "app-store",
+#       scheme: "Yeshivat Torat Shraga",
+#        export_options: {
+#         method: "app-store",
+#         provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
+#         signing_style: "manual",
+#       },
+#       skip_profile_detection: true,
+#     )
+#     upload_to_app_store
   end
 end
