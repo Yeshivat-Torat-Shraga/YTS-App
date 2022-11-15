@@ -38,6 +38,7 @@ jobs:
          ASC_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+         FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
          KEYCHAIN_PATH: ~/Library/Keychains/signing_temp.keychain-db
          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 5
      - name: Upload app-store ipa and dsyms to artifacts
