@@ -64,8 +64,8 @@ platform :ios do
         key_content: ENV["ASC_KEY"],
         key_id: ENV["ASC_KEY_ID"],
         is_key_content_base64: true,
-        duration: 1200,            
-        in_house: false
+#         duration: 1200,            
+#         in_house: false
     )
     
     desc "Push a new release build to the App Store"
