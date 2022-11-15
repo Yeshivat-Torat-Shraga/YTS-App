@@ -46,8 +46,13 @@ platform :ios do
     
     match(
       type: 'appstore',
+      app_identifier: "com.reesedevelopment.YTS.NotificationService",
+      api_key: api_key
+    )
+    
+    match(
+      type: 'appstore',
       app_identifier: "com.reesedevelopment.YTS",
-#       git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
       api_key: api_key
     )
     
