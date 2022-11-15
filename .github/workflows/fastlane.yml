@@ -31,7 +31,7 @@ jobs:
          ruby-version: 2.7.2
          bundler-cache: true
      - name: Build & upload iOS binary
-       run: bundle exec fastlane ios release
+       run: bundle exec fastlane release
        env:
          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.TEAM_ID }}
          DEVELOPER_APP_ID: ${{ secrets.APP_ID }}
