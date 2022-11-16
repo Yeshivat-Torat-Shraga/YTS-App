@@ -73,7 +73,7 @@ class SearchModel: ObservableObject, ErrorShower {
                                                    startAfterDocumentID: lastLoadedContentID),
                                   rebbeimOptions: (limit: rebbeimLimit,
                                                    includePictureURLs: true,
-                                                   startAfterDocumentID: lastLoadedRabbiID)) { results, error in
+                                                   startAfterDocumentID: lastLoadedRabbiID, includeServiceProfiles: false)) { results, error in
             guard let content = results?.content else {
                 self.loadingContent = false
                 self.loadingRebbeim = false
