@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Data model for HomeView
 class HomeModel: ObservableObject, ErrorShower {
     @Published var showError: Bool = false
     @Published var showAlert: Bool = false
