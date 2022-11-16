@@ -15,6 +15,26 @@ update_fastlane
 
 default_platform(:ios)
 
+# def delete_temp_keychain(name)
+#   delete_keychain(
+#     name: name
+#   ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+# end
+
+# def create_temp_keychain(name, password)
+#   create_keychain(
+#     name: name,
+#     password: password,
+#     unlock: false,
+#     timeout: 0
+#   )
+# end
+
+# def ensure_temp_keychain(name, password)
+#   delete_temp_keychain(name)
+#   create_temp_keychain(name, password)
+# end
+
 platform :ios do
 #   lane :load_asc_api_key do
 #     if is_ci
@@ -34,14 +54,18 @@ platform :ios do
 
   lane :release do
     
+#     keychain_name = TEMP_KEYCHAIN_USER
+#     keychain_password = TEMP_KEYCHAIN_PASSWORD
+#     ensure_temp_keychain(keychain_name, keychain_password)
+    
     desc "Load ASC API Key information to use in subsequent lanes"
     api_key = app_store_connect_api_key(
         issuer_id: ENV["ASC_ISSUER_ID"],
         key_content: ENV["ASC_KEY"],
         key_id: ENV["ASC_KEY_ID"],
         is_key_content_base64: true,
-        duration: 1200,            
-        in_house: false
+#         duration: 1200,            
+#         in_house: false
     )
     
     desc "Push a new release build to the App Store"
@@ -53,13 +77,15 @@ platform :ios do
     match(
       type: 'appstore',
       app_identifier: "com.reesedevelopment.YTS.NotificationService",
-      api_key: api_key
+      api_key: api_key,
+      git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION"])
     )
     
     match(
       type: 'appstore',
       app_identifier: "com.reesedevelopment.YTS",
-      api_key: api_key
+      api_key: api_key,
+      git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTHORIZATION"])
     )
     
     target_to_profile_mapping = {
@@ -76,15 +102,28 @@ platform :ios do
     end
 
     gym(
-      export_method: "app-store",
+      configuration: "Release",
       scheme: "Yeshivat Torat Shraga",
+      export_method: "app-store",
        export_options: {
-        method: "app-store",
         provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
         signing_style: "manual",
       },
       skip_profile_detection: true,
     )
+    
+#     gym(
+#       configuration: "Release",
+#       workspace: "your_project_workspace.xcworkspace",
+#       scheme: "your_schema",
+#       export_method: "app-store",
+#       export_options: {
+#         provisioningProfiles: { 
+#             DEVELOPER_APP_ID => PROVISIONING_PROFILE_SPECIFIER
+#         }
+#       }
+#     )
+    
     upload_to_app_store
   end
 end
