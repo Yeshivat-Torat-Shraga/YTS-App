@@ -102,15 +102,28 @@ platform :ios do
     end
 
     gym(
-      export_method: "app-store",
+      configuration: "Release",
       scheme: "Yeshivat Torat Shraga",
+      export_method: "app-store",
        export_options: {
-        method: "app-store",
         provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING],
         signing_style: "manual",
       },
       skip_profile_detection: true,
     )
+    
+#     gym(
+#       configuration: "Release",
+#       workspace: "your_project_workspace.xcworkspace",
+#       scheme: "your_schema",
+#       export_method: "app-store",
+#       export_options: {
+#         provisioningProfiles: { 
+#             DEVELOPER_APP_ID => PROVISIONING_PROFILE_SPECIFIER
+#         }
+#       }
+#     )
+    
     upload_to_app_store
   end
 end
