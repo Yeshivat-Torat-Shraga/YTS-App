@@ -72,13 +72,6 @@ final class Player: NSObject, ObservableObject {
     func set(avPlayer: AVPlayer, audio: Audio) {
         self.content = audio
         
-        DispatchQueue.global(qos: .background).async {
-            if let spot = ContentSpots.getSpot(content: audio) {
-                print("Switching spot to \(spot)")
-            }
-            
-        }
-        
         removePeriodicTimeObserver()
         timeControlStatusKVOPublisher?.cancel()
         itemDurationKVOPublisher?.cancel()
@@ -87,6 +80,22 @@ final class Player: NSObject, ObservableObject {
         self.addPeriodicTimeObserver()
         self.addTimeControlStatusObserver()
         self.addItemDurationPublisher()
+        
+        
+//        DispatchQueue.global(qos: .background).async {
+            if let spot = ContentSpots.getSpot(content: audio) {
+                print("Switching spot to \(spot)")
+                self.scrub(to: CMTimeMakeWithSeconds(spot, preferredTimescale: timeScale))
+            }
+            
+//        }
+        
+        NotificationCenter.default
+            .addObserver(self,
+            selector: #selector(playerDidFinishPlaying),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: avPlayer.currentItem
+        )
     }
     
     func play() {
@@ -113,6 +122,12 @@ final class Player: NSObject, ObservableObject {
         self.avPlayer?.rate = rate
     }
     
+    @objc func playerDidFinishPlaying() {
+        if let content = content {
+            ContentSpots.delete(content: content)
+        }
+    }
+    
     fileprivate func addPeriodicTimeObserver() {
         self.periodicTimeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] (time) in
             guard let self = self else { return }
@@ -122,6 +137,7 @@ final class Player: NSObject, ObservableObject {
                 self.observedTime = time.seconds
                 
                 if let content = self.content {
+                    print("Saving seconds: \(time.seconds)")
                     ContentSpots.save(content: content, spot: time.seconds)
                 }
             }
