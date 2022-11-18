@@ -13,7 +13,10 @@ import SwiftUI
 let timeScale = CMTimeScale(1000)
 let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
 
+/// <#Description#>
 final class Player: NSObject, ObservableObject {
+    /// The audio that the spot will be saved for
+    private var content: Audio?
     
     /// Display time that will be bound to the scrub slider.
     @Published var displayTime: TimeInterval = 0
@@ -66,7 +69,16 @@ final class Player: NSObject, ObservableObject {
         itemDurationKVOPublisher?.cancel()
     }
     
-    func set(avPlayer: AVPlayer) {
+    func set(avPlayer: AVPlayer, audio: Audio) {
+        self.content = audio
+        
+        DispatchQueue.global(qos: .background).async {
+            if let spot = ContentSpots.getSpot(content: audio) {
+                print("Switching spot to \(spot)")
+            }
+            
+        }
+        
         removePeriodicTimeObserver()
         timeControlStatusKVOPublisher?.cancel()
         itemDurationKVOPublisher?.cancel()
@@ -108,6 +120,10 @@ final class Player: NSObject, ObservableObject {
             // Always update observed time.
             withAnimation {
                 self.observedTime = time.seconds
+                
+                if let content = self.content {
+                    ContentSpots.save(content: content, spot: time.seconds)
+                }
             }
             
             switch self.scrubState {

@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 class ContentSpots {
-    let delegate = (UIApplication.shared.delegate as! AppDelegate)
+    static let delegate = (UIApplication.shared.delegate as! AppDelegate)
     
-    func save(content: any YTSContent, spot: TimeInterval) {
+    static func save(content: any YTSContent, spot: TimeInterval) {
         DispatchQueue.global(qos: .background).async {
             let managedContext = self.delegate.persistentContainer.viewContext
             
@@ -31,7 +31,7 @@ class ContentSpots {
         }
     }
     
-    func delete(content: any YTSContent) {
+    static func delete(content: any YTSContent) {
         DispatchQueue.global(qos: .background).async {
             let managedContext = self.delegate.persistentContainer.viewContext
             let fetchRequest = CDSpot.fetchRequest()
@@ -50,7 +50,7 @@ class ContentSpots {
         }
     }
     
-    func getSpot(content: any YTSContent) -> TimeInterval? {
+    static func getSpot(content: any YTSContent) -> TimeInterval? {
 //        DispatchQueue.global(qos: .background).async {
         if let spots = getCDSpots(content: content) {
             return TimeInterval(spots[0].spot)
@@ -60,9 +60,9 @@ class ContentSpots {
 //        }
     }
     
-    private func getCDSpots(content: any YTSContent) -> [CDSpot]? {
+    private static func getCDSpots(content: any YTSContent) -> [CDSpot]? {
 //        DispatchQueue.global(qos: .background).async {
-            let managedContext = self.delegate.persistentContainer.viewContext
+        let managedContext = ContentSpots.delegate.persistentContainer.viewContext
             let fetchRequest = CDSpot.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "contentFirestoreId == %@", content.firestoreID)
             return try? managedContext.fetch(fetchRequest)
