@@ -84,7 +84,7 @@ final class Player: NSObject, ObservableObject {
         
 //        DispatchQueue.global(qos: .background).async {
             if let spot = ContentSpots.getSpot(content: audio) {
-                print("Switching spot to \(spot)")
+                print("Setting spot to \(spot) for content \(audio.title) (ID=\(audio.firestoreID)")
                 self.scrub(to: CMTimeMakeWithSeconds(spot, preferredTimescale: timeScale))
             }
             
@@ -92,10 +92,10 @@ final class Player: NSObject, ObservableObject {
         
         NotificationCenter.default
             .addObserver(self,
-            selector: #selector(playerDidFinishPlaying),
-            name: .AVPlayerItemDidPlayToEndTime,
-            object: avPlayer.currentItem
-        )
+                         selector: #selector(playerDidFinishPlaying),
+                         name: .AVPlayerItemDidPlayToEndTime,
+                         object: avPlayer.currentItem
+            )
     }
     
     func play() {
@@ -128,6 +128,12 @@ final class Player: NSObject, ObservableObject {
         }
     }
     
+    func saveSpot(_ spot: TimeInterval) {
+        if let content = self.content {
+            ContentSpots.save(content: content, spot: spot)
+        }
+    }
+    
     fileprivate func addPeriodicTimeObserver() {
         self.periodicTimeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] (time) in
             guard let self = self else { return }
@@ -136,10 +142,7 @@ final class Player: NSObject, ObservableObject {
             withAnimation {
                 self.observedTime = time.seconds
                 
-                if let content = self.content {
-                    print("Saving seconds: \(time.seconds)")
-                    ContentSpots.save(content: content, spot: time.seconds)
-                }
+                self.saveSpot(time.seconds)
             }
             
             switch self.scrubState {
