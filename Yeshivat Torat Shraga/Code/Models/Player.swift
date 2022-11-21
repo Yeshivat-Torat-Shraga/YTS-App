@@ -124,7 +124,10 @@ final class Player: NSObject, ObservableObject {
     
     @objc func playerDidFinishPlaying() {
         if let content = content {
+            print("Deleting spots for content \(content.title) (ID=\(content.firestoreID))")
             ContentSpots.delete(content: content)
+        } else {
+            print("Cannot delete spots, content is nil")
         }
     }
     

@@ -57,7 +57,7 @@ class ContentSpots {
                 managedContext.delete(result)
             }
             try managedContext.save()
-            print("Deleted all CDSpots for \(content.firestoreID)")
+            print("Deleted all CDSpots for content \(content.title) (ID=\(content.firestoreID))")
         } catch {
             print("Failed to delete: \(error)")
         }
