@@ -279,7 +279,7 @@ def shiurim_pending_list():
         shiur["id"] = id
         collection.append(shiur)
     if len(collection) == 0:
-        flash("There are no pending shiurim")
+        flash("There are no pending shiurim.")
     # Sort collection by date
     collection.sort(key=lambda x: x["date"], reverse=True)
     return render_template("pending_shiurim.html", data=collection, type="Shiurim")
@@ -366,6 +366,8 @@ def shiur_review(ID):
             except NotFound:
                 flash("The shiur content files could not be found.")
                 pass
+            except Exception as e:
+                flash(str(e.message))
             return redirect(url_for("shiurim_pending_list"))
 
 
