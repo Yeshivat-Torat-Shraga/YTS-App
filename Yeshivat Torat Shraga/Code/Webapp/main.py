@@ -35,7 +35,13 @@ bucket = storage.bucket()
 cached_rebbeim = []
 cached_tags = []
 
-
+def delete_folder(bucket, folder_name):
+#     bucket = cls.storage_client.get_bucket(bucket_name)
+#     """Delete object under folder"""
+    blobs = list(bucket.list_blobs(prefix=folder_name))
+    bucket.delete_blobs(blobs)
+    print(f"Folder {folder_name} deleted.")
+    
 def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:
         print("No notification sent")
@@ -639,13 +645,6 @@ def slideshow_upload():
 
         return redirect(url_for("slideshow"))
 
-def delete_folder(bucket, folder_name):
-#     bucket = cls.storage_client.get_bucket(bucket_name)
-#     """Delete object under folder"""
-    blobs = list(bucket.list_blobs(prefix=folder_name))
-    bucket.delete_blobs(blobs)
-    print(f"Folder {folder_name} deleted.")
-
 if __name__ == "__main__":
     app.secret_key = "super secret key"
     if PRODUCTION:
@@ -654,3 +653,4 @@ if __name__ == "__main__":
     else:
         print("Running in development mode")
         app.run(debug=True, host="localhost", port=8080)
+      
