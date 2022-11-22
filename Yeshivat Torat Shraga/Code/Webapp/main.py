@@ -353,14 +353,13 @@ def shiur_review(ID):
             silent_badge_increment()
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
-            
+            shiur = db.collection('content').document(ID)
+            shiur_data = shiur.get().to_dict()
             source_path = shiur_data["source_path"]
             content_type = shiur_data["type"]
             file_hash = source_path.split("/")[2]
             try:
                 delete_folder(bucket, f"{content_type}/{file_hash}")
-                shiur = db.collection('content').document(ID)
-                shiur_data = shiur.get().to_dict()
                 shiur.delete()
                 flash("Shiur denied and deleted.")
             except NotFound:
