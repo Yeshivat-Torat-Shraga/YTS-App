@@ -359,7 +359,7 @@ def shiur_review(ID):
             content_type = shiur_data["type"]
             file_hash = source_path.split("/")[2]
             try:
-                delete_folder(bucket, f"HLSStreams/{content_type}/{file_hash}")
+                delete_folder(bucket, f"{content_type}/{file_hash}")
                 # bucket.delete_blob(f"{content_type}/{file_hash}")
                 shiur.delete()
                 flash("The shiur was successfully denied and deleted.")
