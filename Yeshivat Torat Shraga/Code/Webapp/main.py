@@ -354,7 +354,7 @@ def shiur_review(ID):
             content_type = shiur_data["type"]
             file_hash = source_path.split("/")[2]
             try:
-                bucket.delete_blob(f"{file_hash}")
+                delete_folder(bucket, f"{file_hash}")
                 flash("Shiur denied and deleted!")
             except NotFound:
                 flash("The shiur content files could not be found")
@@ -638,6 +638,12 @@ def slideshow_upload():
 
         return redirect(url_for("slideshow"))
 
+def delete_folder(cls, bucket, folder_name):
+#     bucket = cls.storage_client.get_bucket(bucket_name)
+    """Delete object under folder"""
+    blobs = list(bucket.list_blobs(prefix=folder_name))
+    bucket.delete_blobs(blobs)
+    print(f"Folder {folder_name} deleted.")
 
 if __name__ == "__main__":
     app.secret_key = "super secret key"
