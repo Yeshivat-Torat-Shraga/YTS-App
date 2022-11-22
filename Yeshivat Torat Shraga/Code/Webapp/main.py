@@ -359,11 +359,12 @@ def shiur_review(ID):
             content_type = shiur_data["type"]
             file_hash = source_path.split("/")[2]
             try:
-                delete_folder(bucket, f"{content_type}/{file_hash}")
+                # delete_folder(bucket, f"{content_type}/{file_hash}")
+                bucket.delete_blob(f"{content_type}/{file_hash}")
                 shiur.delete()
-                flash("Shiur denied and deleted.")
+                flash("The shiur was successfully denied and deleted.")
             except NotFound:
-                flash("The shiur content files could not be found")
+                flash("The shiur content files could not be found.")
                 pass
             return redirect(url_for("shiurim_pending_list"))
 
@@ -412,7 +413,9 @@ def shiurim_delete(ID):
     try:
         bucket.delete_blob(f"{content_type}/{file_hash}")
         shiur.delete()
+        flash("The shiur was successfully deleted.")
     except NotFound as e:
+        flash("The shiur content files could not be found.")
         pass
     return redirect(url_for("shiurim"))
 
