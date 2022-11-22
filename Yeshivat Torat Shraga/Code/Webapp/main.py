@@ -354,7 +354,7 @@ def shiur_review(ID):
             content_type = shiur_data["type"]
             file_hash = source_path.split("/")[2]
             try:
-                delete_folder(bucket, f"{file_hash}")
+                delete_folder(bucket, f"{content_type}/{file_hash}")
                 flash("Shiur denied and deleted!")
             except NotFound:
                 flash("The shiur content files could not be found")
