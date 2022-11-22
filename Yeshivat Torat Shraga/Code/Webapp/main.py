@@ -639,7 +639,7 @@ def slideshow_upload():
 
         return redirect(url_for("slideshow"))
 
-def delete_folder(cls, bucket, folder_name):
+def delete_folder(bucket, folder_name):
 #     bucket = cls.storage_client.get_bucket(bucket_name)
 #     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
