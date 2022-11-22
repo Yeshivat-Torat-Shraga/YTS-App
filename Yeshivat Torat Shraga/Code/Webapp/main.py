@@ -38,8 +38,8 @@ cached_tags = []
 def delete_folder(bucket, folder_name):
 #     bucket = cls.storage_client.get_bucket(bucket_name)
 #     """Delete object under folder"""
-    blobs = list(bucket.list_blobs(prefix=folder_name))
-    bucket.delete_blobs(blobs)
+    # blobs = list(bucket.list_blobs(prefix=folder_name))
+    # bucket.delete_blobs(blobs)
     print(f"Folder {folder_name} deleted.")
     
 def send_push_notification(title, body, badge):
@@ -410,9 +410,9 @@ def shiurim_delete(ID):
     source_path = shiur_data["source_path"]
     content_type = shiur_data["type"]
     file_hash = source_path.split("/")[2]
-    shiur.delete()
     try:
         bucket.delete_blob(f"{content_type}/{file_hash}")
+        shiur.delete()
     except NotFound as e:
         pass
     return redirect(url_for("shiurim"))
