@@ -641,7 +641,7 @@ def slideshow_upload():
 
 def delete_folder(cls, bucket, folder_name):
 #     bucket = cls.storage_client.get_bucket(bucket_name)
-    """Delete object under folder"""
+#     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
     bucket.delete_blobs(blobs)
     print(f"Folder {folder_name} deleted.")
