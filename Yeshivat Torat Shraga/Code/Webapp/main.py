@@ -413,7 +413,7 @@ def shiurim_delete(ID):
     content_type = shiur_data["type"]
     file_hash = source_path.split("/")[2]
     try:
-        bucket.delete_blob(f"{content_type}/{file_hash}")
+        bucket.delete_blob(f"HLSStreams/{content_type}/{file_hash}")
         shiur.delete()
         flash("The shiur was successfully deleted.")
     except NotFound as e:
