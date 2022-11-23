@@ -634,7 +634,8 @@ def slideshow_delete(ID):
     if len(cached_rebbeim) == 0:
         refresh_cache()
     slide = db.collection("slideshowImages").document(ID)
-    slide_filename = (slide.get().to_dict())["image_name"]
+    slide_data = slide.get().to_dict()
+    slide_filename = slide_data["image_name"]
     slide_filepath = f"slideshow/{slide_filename}"
     delete_file(slide_filepath)
 
