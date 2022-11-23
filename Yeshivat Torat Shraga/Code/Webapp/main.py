@@ -47,8 +47,9 @@ def delete_folder(bucket, folder_name):
     return
 
 def delete_file(bucket, filepath):
-    delete_thread = threading.Thread(target=bucket.delete_blob, name="DeleteFile", args=(filepath))
-    delete_thread.start()
+    # delete_thread = threading.Thread(target=bucket.delete_blob, name="DeleteFile", args=(filepath))
+    # delete_thread.start()
+    bucket.delete_blob(bucket, filepath)
     return
     
 def send_push_notification(title, body, badge):
