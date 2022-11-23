@@ -39,6 +39,7 @@ def delete_folder(bucket, folder_name):
 #     bucket = cls.storage_client.get_bucket(bucket_name)
 #     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
+    flash(blobs)
     bucket.delete_blobs(blobs)
     print(f"Folder {folder_name} deleted.")
     
@@ -413,7 +414,7 @@ def shiurim_delete(ID):
     content_type = shiur_data["type"]
     file_hash = source_path.split("/")[2]
     try:
-        bucket.delete_blob(f"HLSStreams/{content_type}/{file_hash}")
+        delete_folder(bucket, f"HLSStreams/{content_type}/{file_hash}")
         shiur.delete()
         flash("The shiur was successfully deleted.")
     except NotFound as e:
