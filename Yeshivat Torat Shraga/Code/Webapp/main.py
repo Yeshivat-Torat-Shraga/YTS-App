@@ -43,9 +43,11 @@ def delete_folder(bucket, folder_name):
     # flash(blobs)
     def delete():
         bucket.delete_blobs(blobs)
+        
     delete_thread = threading.Thread(target=delete, name="FolderDeletion", args=())
     delete_thread.start()
     print(f"Folder {folder_name} deleting.")
+    return
     
 def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:
