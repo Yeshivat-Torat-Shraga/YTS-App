@@ -41,10 +41,14 @@ def delete_folder(bucket, folder_name):
 #     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
     # flash(blobs)
-    delete_thread = threading.Thread(target=bucket.delete_blobs, name="FolderDeletion", args=(blobs))
+    delete_thread = threading.Thread(target=bucket.delete_blobs, name="DeleteFolder", args=(blobs))
     delete_thread.start()
     print(f"Folder {folder_name} deleting.")
     return
+
+def delete_file(bucket, filepath):
+    delete_thread = threading.Thread(target=bucket.delete_blob, name="DeleteFile", args=(filepath))
+    delete_thread.start()
     
 def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:
@@ -222,8 +226,15 @@ def rabbiDelete(ID):
     if len(cached_rebbeim) == 0:
         refresh_cache()
     rabbi = db.collection("rebbeim").document(ID)
+    pp_filename = (rabbi.get().to_dict())["profile_picture_filename"]
+    pp_filepath = f"profile-pictures/{pp_filename}"
+    delete_file(pp_filepath)
+
+
+    # vulnerability here, if the deletion fails it will still remove the document
     rabbi.delete()
-    flash("Rabbi deleted!")
+    flash("The profile was successfully deleted.")
+
     refresh_cache()
     return redirect(url_for("rabbis"))
 
@@ -257,7 +268,7 @@ def rabbiCreate():
         return redirect(url_for("rabbis"))
 
 
-@app.route("/shiurim/", methods=["GET"])
+@app.route("/shiurim", methods=["GET"])
 def shiurim():
     if len(cached_rebbeim) == 0:
         refresh_cache()
@@ -364,9 +375,9 @@ def shiur_review(ID):
             file_hash = source_path.split("/")[2]
             try:
                 delete_folder(bucket, f"HLSStreams/{content_type}/{file_hash}")
-                # bucket.delete_blob(f"{content_type}/{file_hash}")
+                # vulnerability here, if the deletion fails it will still remove the document
                 shiur.delete()
-                flash("The shiur was successfully denied and deleted.")
+                flash("The shiur was successfully denied is being deleted.")
             except NotFound:
                 flash("The shiur content files could not be found.")
                 pass
@@ -393,7 +404,7 @@ def shiurimDetail(ID):
             "shiurimdetail.html", shiur=collection, rabbis=rabbis, ID=ID, type="Shiurim"
         )
     else:
-        # Update the shiur document
+        # Update the document
 
         updated_document = {}
         author = request.form.get("author").split("~")
@@ -418,8 +429,9 @@ def shiurim_delete(ID):
     file_hash = source_path.split("/")[2]
     try:
         delete_folder(bucket, f"HLSStreams/{content_type}/{file_hash}")
+        # vulnerability here, if the deletion fails it will still remove the document
         shiur.delete()
-        flash("The shiur was successfully deleted.")
+        flash("The shiur is being deleted.")
     except NotFound as e:
         flash("The shiur content files could not be found.")
         pass
@@ -622,6 +634,11 @@ def slideshow_delete(ID):
     if len(cached_rebbeim) == 0:
         refresh_cache()
     slide = db.collection("slideshowImages").document(ID)
+    slide_filename = (slide.get().to_dict())["image_name"]
+    slide_filepath = f"slideshow/{slide_filename}"
+    delete_file(slide_filepath)
+
+    # vulnerability here, if the deletion fails it will still remove the document
     slide.delete()
     return redirect(url_for("slideshow"))
 
