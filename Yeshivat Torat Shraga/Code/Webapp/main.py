@@ -10,6 +10,7 @@ from blake3 import blake3
 from google.cloud.exceptions import NotFound
 import hashlib
 from uuid import uuid4
+import threading
 
 PRODUCTION = os.getenv("PRODUCTION")
 
@@ -39,9 +40,12 @@ def delete_folder(bucket, folder_name):
 #     bucket = cls.storage_client.get_bucket(bucket_name)
 #     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
-    flash(blobs)
-    bucket.delete_blobs(blobs)
-    print(f"Folder {folder_name} deleted.")
+    # flash(blobs)
+    def delete():
+        bucket.delete_blobs(blobs)
+    delete_thread = threading.Thread(target=delete, name="FolderDeletion", args=())
+    delete_thread.start()
+    print(f"Folder {folder_name} deleting.")
     
 def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:

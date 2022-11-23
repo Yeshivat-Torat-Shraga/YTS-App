@@ -53,7 +53,11 @@ class Favorites: ObservableObject {
     ///   - completion: Returns the optional updated favorites tuple and an optional error
     func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
-            
+            Analytics.logEvent("favorited_content", parameters: [
+                "content_creator": audioToSave.author.name,
+                "content_title": audioToSave.title,
+                "content_length": Int(audioToSave.duration ?? 0),
+            ])
             
             let managedContext = self.delegate.persistentContainer.viewContext
             
