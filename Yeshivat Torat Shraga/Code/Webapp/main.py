@@ -639,7 +639,7 @@ def slideshow_delete(ID):
     slide_data = slide.get().to_dict()
     slide_filename = slide_data["image_name"]
     try:
-        delete_file(bucket, f"slideshow/{slide_filename}")
+        bucket.delete_blob(f"slideshow/{slide_filename}")
 
         # vulnerability here, if the deletion fails it will still remove the document
         slide.delete()
