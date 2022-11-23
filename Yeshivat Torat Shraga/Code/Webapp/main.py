@@ -49,6 +49,7 @@ def delete_folder(bucket, folder_name):
 def delete_file(bucket, filepath):
     delete_thread = threading.Thread(target=bucket.delete_blob, name="DeleteFile", args=(filepath))
     delete_thread.start()
+    return
     
 def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:
@@ -636,11 +637,15 @@ def slideshow_delete(ID):
     slide = db.collection("slideshowImages").document(ID)
     slide_data = slide.get().to_dict()
     slide_filename = slide_data["image_name"]
-    slide_filepath = f"slideshow/{slide_filename}"
-    delete_file(bucket, slide_filepath)
+    try:
+        delete_file(bucket, f"slideshow/{slide_filename}")
 
-    # vulnerability here, if the deletion fails it will still remove the document
-    slide.delete()
+        # vulnerability here, if the deletion fails it will still remove the document
+        slide.delete()
+        flash("The image is being deleted.")
+    except NotFound:
+        flash("The content file could not be found.")
+        pass
     return redirect(url_for("slideshow"))
 
 
