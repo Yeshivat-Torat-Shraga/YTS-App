@@ -33,6 +33,7 @@ class Favorites: ObservableObject {
         }
     }
     
+    /// Deletes all favorites in the app
     func clearFavorites() {
         let entities = [CDContent.entity(), CDPerson.entity()]
         for entity in entities {
@@ -53,11 +54,6 @@ class Favorites: ObservableObject {
     ///   - completion: Returns the optional updated favorites tuple and an optional error
     func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
-            Analytics.logEvent("favorited_content", parameters: [
-                "content_creator": audioToSave.author.name,
-                "content_title": audioToSave.title,
-                "content_length": Int(audioToSave.duration ?? 0),
-            ])
             
             let managedContext = self.delegate.persistentContainer.viewContext
             
@@ -120,15 +116,12 @@ class Favorites: ObservableObject {
 
             
             let managedContext = self.delegate.persistentContainer.viewContext
-            
             let entity = CDContent.entity()
             
             let cdAudio = CDContent(entity: entity,
                                   insertInto: managedContext)
             
             cdAudio.firestoreID = audioToSave.firestoreID
-            
-            
             
             DispatchQueue.main.async {
                 do {
@@ -144,77 +137,62 @@ class Favorites: ObservableObject {
     
     func delete(_ rabbiToDelete: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
+        
         let fetchRequest = CDPerson.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "firestoreID == %@", rabbiToDelete.firestoreID)
         
         do {
-            let result = try managedContext.fetch(fetchRequest)
+            let results = try managedContext.fetch(fetchRequest)
             
-            if let match = result.first(where: { r in
-                r.firestoreID == rabbiToDelete.firestoreID
-            }) {
-                managedContext.delete(match)
-                
-                do {
-                    try managedContext.save()
-                    loadFavorites(completion: completion)
-                } catch {
-                    print("Failed to delete: \(error)")
-                    loadFavorites(completion: completion)
-                }
+            for result in results {
+                managedContext.delete(result)
             }
+            
+            try managedContext.save()
+            loadFavorites(completion: completion)
         } catch {
             print("Failed to delete: \(error)")
+            loadFavorites(completion: completion)
         }
     }
     
     internal func delete(_ videoToDelete: Video, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
         let fetchRequest = CDContent.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "firestoreID == %@", videoToDelete.firestoreID)
         
         do {
-            let result = try managedContext.fetch(fetchRequest)
+            let results = try managedContext.fetch(fetchRequest)
             
-            if let match = result.first(where: { v in
-                v.firestoreID == videoToDelete.firestoreID
-            }) {
-                managedContext.delete(match)
-                
-                do {
-                    try managedContext.save()
-                    loadFavorites(completion: completion)
-                } catch {
-                    print("Failed to delete: \(error)")
-                    loadFavorites(completion: completion)
-                }
+            for result in results {
+                managedContext.delete(result)
             }
+                
+            try managedContext.save()
+            loadFavorites(completion: completion)
         } catch {
             print("Failed to delete: \(error)")
+            loadFavorites(completion: completion)
         }
     }
     
     func delete(_ audioToDelete: Audio, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         let managedContext = delegate.persistentContainer.viewContext
         let fetchRequest = CDContent.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "firestoreID == %@", audioToDelete.firestoreID)
+        
         do {
-            let result = try managedContext.fetch(fetchRequest)
-            
-            if let match = result.first(where: { a in
-                a.firestoreID == audioToDelete.firestoreID
-            }) {
-                managedContext.delete(match)
+            let results = try managedContext.fetch(fetchRequest)
                 
-                do {
-                    try managedContext.save()
-                    loadFavorites(completion: completion)
-                } catch {
-                    loadFavorites(completion: completion)
-                }
-            } else {
-                print("Could not locate a match in CoreData, This likely happened because an erroneous delete request was made.")
-                loadFavorites(completion: completion)
+            for result in results {
+                managedContext.delete(result)
             }
+            
+            try managedContext.save()
+            loadFavorites(completion: completion)
         } catch {
             print("Failed to delete: \(error)")
+            loadFavorites(completion: completion)
         }
     }
     
