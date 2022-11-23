@@ -228,7 +228,7 @@ def rabbiDelete(ID):
     rabbi = db.collection("rebbeim").document(ID)
     pp_filename = (rabbi.get().to_dict())["profile_picture_filename"]
     pp_filepath = f"profile-pictures/{pp_filename}"
-    delete_file(pp_filepath)
+    delete_file(bucket, pp_filepath)
 
 
     # vulnerability here, if the deletion fails it will still remove the document
@@ -637,7 +637,7 @@ def slideshow_delete(ID):
     slide_data = slide.get().to_dict()
     slide_filename = slide_data["image_name"]
     slide_filepath = f"slideshow/{slide_filename}"
-    delete_file(slide_filepath)
+    delete_file(bucket, slide_filepath)
 
     # vulnerability here, if the deletion fails it will still remove the document
     slide.delete()
