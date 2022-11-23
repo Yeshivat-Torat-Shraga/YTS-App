@@ -41,10 +41,7 @@ def delete_folder(bucket, folder_name):
 #     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
     # flash(blobs)
-    def delete():
-        bucket.delete_blobs(blobs)
-        
-    delete_thread = threading.Thread(target=delete, name="FolderDeletion", args=())
+    delete_thread = threading.Thread(target=bucket.delete_blobs, name="FolderDeletion", args=(blobs))
     delete_thread.start()
     print(f"Folder {folder_name} deleting.")
     return
@@ -366,7 +363,7 @@ def shiur_review(ID):
             content_type = shiur_data["type"]
             file_hash = source_path.split("/")[2]
             try:
-                delete_folder(bucket, f"{content_type}/{file_hash}")
+                delete_folder(bucket, f"HLSStreams/{content_type}/{file_hash}")
                 # bucket.delete_blob(f"{content_type}/{file_hash}")
                 shiur.delete()
                 flash("The shiur was successfully denied and deleted.")
