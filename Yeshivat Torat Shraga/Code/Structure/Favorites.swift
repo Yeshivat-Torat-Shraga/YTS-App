@@ -47,6 +47,10 @@ class Favorites: ObservableObject {
         loadFavorites()
     }
     
+    /// Saves a favorite rabbi in CoreData storage
+    /// - Parameters:
+    ///   - rabbiToSave: The rabbi to save
+    ///   - completion: Returns the optional updated favorites tuple and an optional error
     func save(_ rabbiToSave: DetailedRabbi, completion: ((_ favorites: FavoritesTuple?, _ error: Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .background).async {
             
@@ -87,8 +91,6 @@ class Favorites: ObservableObject {
                                   insertInto: managedContext)
             
             cdVideo.firestoreID = videoToSave.firestoreID
-            
-            
             
             DispatchQueue.main.async {
                 do {

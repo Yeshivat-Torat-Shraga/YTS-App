@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CDContent" representedClassName="CDContent" syncable="YES" codeGenerationType="class">
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
     </entity>
     <entity name="CDPerson" representedClassName="CDPerson" syncable="YES" codeGenerationType="class">
         <attribute name="firestoreID" optional="YES" attributeType="String"/>
     </entity>
-    <elements>
-        <element name="CDPerson" positionX="157.3817749023438" positionY="-107.6398010253906" width="128" height="44"/>
-        <element name="CDContent" positionX="45" positionY="45" width="128" height="44"/>
-    </elements>
+    <entity name="CDSpot" representedClassName="CDSpot" syncable="YES" codeGenerationType="class">
+        <attribute name="contentFirestoreId" attributeType="String"/>
+        <attribute name="spot" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
 </model>

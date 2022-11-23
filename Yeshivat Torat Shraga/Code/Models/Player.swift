@@ -13,7 +13,10 @@ import SwiftUI
 let timeScale = CMTimeScale(1000)
 let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
 
+/// <#Description#>
 final class Player: NSObject, ObservableObject {
+    /// The audio that the spot will be saved for
+    private var content: Audio?
     
     /// Display time that will be bound to the scrub slider.
     @Published var displayTime: TimeInterval = 0
@@ -66,7 +69,9 @@ final class Player: NSObject, ObservableObject {
         itemDurationKVOPublisher?.cancel()
     }
     
-    func set(avPlayer: AVPlayer) {
+    func set(avPlayer: AVPlayer, audio: Audio) {
+        self.content = audio
+        
         removePeriodicTimeObserver()
         timeControlStatusKVOPublisher?.cancel()
         itemDurationKVOPublisher?.cancel()
@@ -75,6 +80,22 @@ final class Player: NSObject, ObservableObject {
         self.addPeriodicTimeObserver()
         self.addTimeControlStatusObserver()
         self.addItemDurationPublisher()
+        
+        
+//        DispatchQueue.global(qos: .background).async {
+            if let spot = ContentSpots.getSpot(content: audio) {
+                print("Setting spot to \(spot) for content \(audio.title) (ID=\(audio.firestoreID)")
+                self.scrub(to: CMTimeMakeWithSeconds(spot, preferredTimescale: timeScale))
+            }
+            
+//        }
+        
+        NotificationCenter.default
+            .addObserver(self,
+                         selector: #selector(playerDidFinishPlaying),
+                         name: .AVPlayerItemDidPlayToEndTime,
+                         object: avPlayer.currentItem
+            )
     }
     
     func play() {
@@ -101,6 +122,21 @@ final class Player: NSObject, ObservableObject {
         self.avPlayer?.rate = rate
     }
     
+    @objc func playerDidFinishPlaying() {
+        if let content = content {
+            print("Deleting spots for content \(content.title) (ID=\(content.firestoreID))")
+            ContentSpots.delete(content: content)
+        } else {
+            print("Cannot delete spots, content is nil")
+        }
+    }
+    
+    func saveSpot(_ spot: TimeInterval) {
+        if let content = self.content {
+            ContentSpots.save(content: content, spot: spot)
+        }
+    }
+    
     fileprivate func addPeriodicTimeObserver() {
         self.periodicTimeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] (time) in
             guard let self = self else { return }
@@ -108,6 +144,8 @@ final class Player: NSObject, ObservableObject {
             // Always update observed time.
             withAnimation {
                 self.observedTime = time.seconds
+                
+                self.saveSpot(time.seconds)
             }
             
             switch self.scrubState {
