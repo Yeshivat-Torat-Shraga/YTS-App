@@ -624,13 +624,13 @@ struct URLImage<Content : View>: View {
     init(url: String, @ViewBuilder placeholder: @escaping () -> Content, completion: ((_ image: Image?) -> Void)? = nil) {
         self.placeholder = placeholder()
         self.imageLoader.prepare(url: url, completion: completion)
-        self.imageLoader.resume()
+//        self.imageLoader.resume()
     }
     
     init(url: URL, @ViewBuilder placeholder: @escaping () -> Content, completion: ((_ image: Image?) -> Void)? = nil) {
         self.placeholder = placeholder()
         self.imageLoader.prepare(url: url, completion: completion)
-        self.imageLoader.resume()
+//        self.imageLoader.resume()
     }
     
     var body: some View {

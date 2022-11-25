@@ -144,9 +144,13 @@ final class Player: NSObject, ObservableObject {
             // Always update observed time.
             withAnimation {
                 self.observedTime = time.seconds
-                
-                self.saveSpot(time.seconds)
+//                autoreleasepool {
+//                }
             }
+            
+//            autoreleasepool {
+                self.saveSpot(time.seconds)
+//            }
             
             switch self.scrubState {
             case .reset:
