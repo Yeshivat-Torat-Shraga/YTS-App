@@ -359,7 +359,6 @@ def shiur_review(ID):
 
             shiur = db.collection('content').document(ID)
             shiur.update(updated_document)
-            flash("Shiur approved!")
             # Send a APNS notification that badges the app
             if "upload_data" in shiur.get().to_dict():
                 upload_data = shiur["upload_data"]
@@ -368,6 +367,8 @@ def shiur_review(ID):
                     send_personal_notification(
                         token, "Your shiur has been approved!", "It will be available in the app shortly.")
             silent_badge_increment()
+            
+            flash("Shiur approved!")
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
             shiur = db.collection('content').document(ID)
@@ -386,7 +387,6 @@ def shiur_review(ID):
             except Exception as e:
                 flash(str(e.message))
             return redirect(url_for("shiurim_pending_list"))
-
 
 @app.route("/shiurim/<ID>", methods=["GET", "POST"])
 def shiurimDetail(ID):
