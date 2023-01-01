@@ -36,22 +36,26 @@ bucket = storage.bucket()
 cached_rebbeim = []
 cached_tags = []
 
+
 def delete_folder(bucket, folder_name):
-#     bucket = cls.storage_client.get_bucket(bucket_name)
-#     """Delete object under folder"""
+    #     bucket = cls.storage_client.get_bucket(bucket_name)
+    #     """Delete object under folder"""
     blobs = list(bucket.list_blobs(prefix=folder_name))
     # flash(blobs)
-    delete_thread = threading.Thread(target=bucket.delete_blobs, name="DeleteFolder", args=(blobs))
+    delete_thread = threading.Thread(
+        target=bucket.delete_blobs, name="DeleteFolder", args=(blobs))
     delete_thread.start()
     print(f"Folder {folder_name} deleting.")
     return
+
 
 def delete_file(bucket, filepath):
     # delete_thread = threading.Thread(target=bucket.delete_blob, name="DeleteFile", args=(filepath))
     # delete_thread.start()
     bucket.delete_blob(bucket, filepath)
     return
-    
+
+
 def send_push_notification(title, body, badge):
     if title is None and body is None and badge is None:
         print("No notification sent")
@@ -232,7 +236,6 @@ def rabbiDelete(ID):
     pp_filepath = f"profile-pictures/{pp_filename}"
     delete_file(bucket, pp_filepath)
 
-
     # vulnerability here, if the deletion fails it will still remove the document
     rabbi.delete()
     flash("The profile was successfully deleted.")
@@ -367,7 +370,7 @@ def shiur_review(ID):
                     send_personal_notification(
                         token, "Your shiur has been approved!", "It will be available in the app shortly.")
             silent_badge_increment()
-            
+
             flash("Shiur approved!")
             return redirect(url_for("shiurim_pending_list"))
         elif approval_status == "denied":
@@ -387,6 +390,7 @@ def shiur_review(ID):
             except Exception as e:
                 flash(str(e.message))
             return redirect(url_for("shiurim_pending_list"))
+
 
 @app.route("/shiurim/<ID>", methods=["GET", "POST"])
 def shiurimDetail(ID):
@@ -560,7 +564,7 @@ def news_detail(ID):
         article["id"] = ID
         return render_template("newsdetail.html", article=article, type="News")
     else:
-        # Update the shiur document
+        # Update the news document
 
         updated_document = {}
         author = request.form.get("author")
@@ -571,8 +575,8 @@ def news_detail(ID):
         updated_document["body"] = body
         updated_document["date"] = datetime.now()
 
-        # document = db.collection("news").document(ID)
-        # document.update(updated_document)
+        document = db.collection("news").document(ID)
+        document.update(updated_document)
         should_badge_app = (request.form.get("send_badge", "off") == "on")
         if should_badge_app:
             silent_badge_increment()
@@ -677,6 +681,7 @@ def slideshow_upload():
 
         return redirect(url_for("slideshow"))
 
+
 if __name__ == "__main__":
     app.secret_key = "super secret key"
     if PRODUCTION:
@@ -685,4 +690,3 @@ if __name__ == "__main__":
     else:
         print("Running in development mode")
         app.run(debug=True, host="localhost", port=8080)
-      
