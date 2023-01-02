@@ -4,17 +4,13 @@ Pod*
 xcuserdata/
 GoogleService-Info.plist
 emulatorbackup
-Yeshivat Torat Shraga/Code/functions/yeshivat-torat-shraga-1358031cf751.json
-Yeshivat Torat Shraga/Code/functions/.vscode/launch.json
 firebase-export*
-Yeshivat Torat Shraga/Code/.vscode/launch.json
-Yeshivat Torat Shraga/Code/Webapp/.vscode/launch.json
-Yeshivat Torat Shraga/Code/Webapp/settings.py
-Yeshivat Torat Shraga/Code/Webapp/cred.json
+Website/Server/settings.py
 __pycache__/
 .vscode/
 build/
 *.mobileprovision
 *.cer
 fastlane/report.xml
-Yeshivat Torat Shraga/Code/functions/.gcloudignore
+.gcloudignore
+yeshivat-torat-shraga-1358031cf751.json
