@@ -13,12 +13,18 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-## iOS
-
-### ios release
+### build
 
 ```sh
-[bundle exec] fastlane ios release
+[bundle exec] fastlane build
+```
+
+
+
+### load_api_key
+
+```sh
+[bundle exec] fastlane load_api_key
 ```
 
 
