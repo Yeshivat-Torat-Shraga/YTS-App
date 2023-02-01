@@ -11,6 +11,7 @@ __pycache__/
 build/
 *.mobileprovision
 *.cer
+.env*
 fastlane/report.xml
 .gcloudignore
 yeshivat-torat-shraga-1358031cf751.json
