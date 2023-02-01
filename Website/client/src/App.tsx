@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import { useEffect, useState } from 'react';
 import {
 	AppBar,
 	CssBaseline,
@@ -13,7 +12,7 @@ import {
 import NavDrawer from './components/NavDrawer';
 import { NavLabel } from './nav';
 import BodyView from './components/BodyView';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './Firebase/firebase';
 import { AuthContext } from './authContext';
 
@@ -25,7 +24,7 @@ const theme = createTheme({
 
 function App() {
 	const [activeTab, setActiveTab] = useState('Shiurim' as NavLabel);
-	const [user, setUser] = React.useState(auth.currentUser);
+	const [user, setUser] = useState(auth.currentUser);
 	// We need to make sure onAuthStateChanged is only called once
 	// so we use React.useEffect to make sure it's only called once
 	useEffect(() => {

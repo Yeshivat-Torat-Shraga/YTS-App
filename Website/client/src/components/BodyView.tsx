@@ -1,7 +1,8 @@
 import { Backdrop, Box, Toolbar, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../authContext';
+import { loremIpsum } from '../loremipsum';
 import { NavLabel } from '../nav';
 import AuthButton from './AuthButton';
 import ShiurimMain from './ShiurimMain';
@@ -38,6 +39,11 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 				}}
 			>
 				<Toolbar />
+				{!user && (
+					<Typography variant="body1" padding={5}>
+						{loremIpsum} {loremIpsum}
+					</Typography>
+				)}
 				<ActiveComponent />
 			</Box>
 			<Backdrop

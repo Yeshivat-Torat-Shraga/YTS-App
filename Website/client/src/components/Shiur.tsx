@@ -1,5 +1,4 @@
-import React from 'react';
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Card, CardContent, Grid, Typography } from '@mui/material';
 import Shiur from '../types/shiur';
 import { CalendarMonth, Person } from '@mui/icons-material';
 
