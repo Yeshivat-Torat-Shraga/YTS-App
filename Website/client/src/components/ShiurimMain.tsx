@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
-import ShiurCard from './Shiur';
+import ShiurCard from './ShiurCard';
 import { useAppDataStore } from '../state';
 
 export default function ShiurimMain() {

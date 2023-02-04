@@ -7,7 +7,7 @@ import { NavLabel } from '../nav';
 import AuthButton from './AuthButton';
 import { NewsMain } from './NewsMain';
 import PendingShiurim from './PendingShiurim';
-import AllRebbeim from './Rebbeim';
+import AllRebbeim from './RebbeimMain';
 import ShiurimMain from './ShiurimMain';
 
 const navComponents = {

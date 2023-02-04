@@ -1,6 +1,6 @@
 import { Box, Grid } from '@mui/material';
 import { useAppDataStore } from '../state';
-import ShiurCard from './Shiur';
+import ShiurCard from './ShiurCard';
 
 export default function PendingShiurim() {
 	const shiurim = useAppDataStore((state) => state.shiur.shiurim);
