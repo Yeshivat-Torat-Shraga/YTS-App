@@ -21,10 +21,14 @@ function onAuthButtonClick() {
 			// const provider = new auth.GoogleAuthProvider();
 			// auth.signInWithPopup(provider);
 		} else if (process.env.NODE_ENV === 'development') {
-			const email = process.env.REACT_APP_DEV_EMAIL;
-			const password = process.env.REACT_APP_DEV_PASSWORD;
+			// const email = process.env.REACT_APP_DEV_EMAIL;
+			// const password = process.env.REACT_APP_DEV_PASSWORD;
+			const email = window.prompt('Enter your email');
+			const password = window.prompt('Enter your password');
+			// const provider = new EmailAuthProvider();
+			// signInWithPopup(auth, provider).then((result) => {});
 			signInWithEmailAndPassword(auth, email!, password!).catch((error) => {
-				console.log(error);
+				window.alert(error.message);
 			});
 		}
 	}
