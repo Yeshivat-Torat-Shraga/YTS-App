@@ -1,19 +1,17 @@
 import { create } from 'zustand';
 import Article from './types/article';
-import { Rabbi, RawRabbi } from './types/rabbi';
-import { RawShiur, Shiur } from './types/shiur';
+import { Rabbi } from './types/rabbi';
+import { Shiur } from './types/shiur';
 import { AppData } from './types/state';
-import { processRawRebbeim, processRawShiurim } from './utils';
 
 export const useAppDataStore = create<AppData>()((set) => ({
 	shiur: {
 		shiurim: [],
-		setShiurim: (shiurim: RawShiur[], rabbis: Rabbi[]) => {
-			let processedShiurim = processRawShiurim(shiurim, rabbis);
+		setShiurim: (shiurim: Shiur[]) => {
 			set((state) => ({
 				shiur: {
 					...state.shiur,
-					shiurim: processedShiurim,
+					shiurim,
 				},
 			}));
 		},
@@ -41,13 +39,11 @@ export const useAppDataStore = create<AppData>()((set) => ({
 	},
 	rabbi: {
 		rebbeim: [],
-		setRebbeim: async (rebbeim: RawRabbi[]) => {
-			let processedRebbeim = await processRawRebbeim(rebbeim);
-
+		setRebbeim: (rebbeim: Rabbi[]) => {
 			set((state) => ({
 				rabbi: {
 					...state.rabbi,
-					rebbeim: processedRebbeim,
+					rebbeim,
 				},
 			}));
 		},
