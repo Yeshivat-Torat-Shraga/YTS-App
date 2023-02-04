@@ -5,15 +5,18 @@ import { AuthContext } from '../authContext';
 import { loremIpsum } from '../loremipsum';
 import { NavLabel } from '../nav';
 import AuthButton from './AuthButton';
+import { NewsMain } from './NewsMain';
+import PendingShiurim from './PendingShiurim';
+import AllRebbeim from './Rebbeim';
 import ShiurimMain from './ShiurimMain';
 
 const navComponents = {
 	Authentication: Box,
 	'-----': Box,
 	Shiurim: ShiurimMain,
-	'Pending Review': Box,
-	Rebbeim: Box,
-	News: Box,
+	'Pending Review': PendingShiurim,
+	Rebbeim: AllRebbeim,
+	News: NewsMain,
 	Slideshow: Box,
 	'Notifications and Announcements': Box,
 };
