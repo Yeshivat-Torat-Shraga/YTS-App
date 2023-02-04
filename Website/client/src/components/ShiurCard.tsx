@@ -1,8 +1,13 @@
-import { Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
 import { Shiur } from '../types/shiur';
 import { CalendarMonth, Person } from '@mui/icons-material';
-
+import { useAppDataStore } from '../state';
 export default function ShiurCard({ shiur }: { shiur: Shiur }) {
+	const data = useAppDataStore.getState();
+	if (shiur.date === undefined) {
+		console.log(data);
+		debugger;
+	}
 	return (
 		<Grid sx={{ p: 2 }} xs={6} item>
 			<Card
@@ -11,7 +16,7 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 					height: '170px',
 				}}
 			>
-				<CardHeader></CardHeader>
+				<ShiurCardHeader shiur={shiur} />
 				<CardContent>
 					<Typography variant="h6" gutterBottom>
 						{shiur.title}
@@ -30,7 +35,7 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 									paddingRight: '2px',
 								}}
 							/>
-							{shiur.author}
+							{shiur.author?.name || shiur.authorName}
 						</>
 					</Typography>
 					{/* Date, but nicely formatted */}
@@ -49,4 +54,20 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 			</Card>
 		</Grid>
 	);
+}
+
+function ShiurCardHeader({ shiur }: { shiur: Shiur }) {
+	if (shiur.author) {
+		return (
+			<CardHeader
+				avatar={<Avatar aria-label="author" src={shiur.author.profilePictureURL} />}
+				title={shiur.author.name}
+				subheader={shiur.date.toDate().toLocaleDateString()}
+			/>
+		);
+	} else {
+		return (
+			<CardHeader title={shiur.date.toDate().toLocaleDateString()} subheader={shiur.authorName} />
+		);
+	}
 }
