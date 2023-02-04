@@ -1,10 +1,10 @@
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import ShiurCard from './Shiur';
-import { useShiurimStore } from '../state';
+import { useAppDataStore } from '../state';
 
 export default function ShiurimMain() {
-	const shiurim = useShiurimStore((state) => state.shiurim);
+	const shiurim = useAppDataStore((state) => state.shiur.shiurim);
 	return (
 		<Box>
 			<Grid container>
