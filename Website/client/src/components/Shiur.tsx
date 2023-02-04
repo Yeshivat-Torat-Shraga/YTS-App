@@ -1,16 +1,17 @@
-import { Card, CardContent, Grid, Typography } from '@mui/material';
-import Shiur from '../types/shiur';
+import { Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
+import { Shiur } from '../types/shiur';
 import { CalendarMonth, Person } from '@mui/icons-material';
 
 export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 	return (
-		<Grid sx={{ p: 2 }} xs={4} item>
+		<Grid sx={{ p: 2 }} xs={6} item>
 			<Card
 				variant="elevation"
 				sx={{
 					height: '170px',
 				}}
 			>
+				<CardHeader></CardHeader>
 				<CardContent>
 					<Typography variant="h6" gutterBottom>
 						{shiur.title}
@@ -20,15 +21,17 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 					so that the buttons are always at the bottom of the card
 					 */}
 					<Typography variant="body1" gutterBottom color="text.secondary">
-						<Person
-							sx={{
-								// adjust for the fact that this is a body1
-								fontSize: '1.4rem',
-								verticalAlign: 'text-bottom',
-								paddingRight: '2px',
-							}}
-						/>
-						{shiur.author}
+						<>
+							<Person
+								sx={{
+									// adjust for the fact that this is a body1
+									fontSize: '1.4rem',
+									verticalAlign: 'text-bottom',
+									paddingRight: '2px',
+								}}
+							/>
+							{shiur.author}
+						</>
 					</Typography>
 					{/* Date, but nicely formatted */}
 					<Typography variant="body2" gutterBottom color="text.secondary">

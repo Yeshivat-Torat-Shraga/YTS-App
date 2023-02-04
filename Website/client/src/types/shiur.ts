@@ -1,4 +1,5 @@
 import { Timestamp } from '@firebase/firestore';
+import { Rabbi } from './rabbi';
 
 type TagData = {
 	id: string;
@@ -6,11 +7,11 @@ type TagData = {
 	name: string;
 };
 
-type Shiur = {
+export type RawShiur = {
 	attributionID: string;
 	author: string;
 	date: Timestamp;
-	description: String;
+	description: string;
 	duration: number;
 	id: string;
 	pending: boolean;
@@ -21,4 +22,18 @@ type Shiur = {
 	type: string;
 };
 
-export default Shiur;
+export type Shiur = {
+	attributionID: string;
+	author?: Rabbi;
+	authorName: string;
+	date: Timestamp;
+	description: string;
+	duration: number;
+	id: string;
+	pending: boolean;
+	search_index: string[];
+	source_path: string;
+	tagData: TagData;
+	title: string;
+	type: string;
+};

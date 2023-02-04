@@ -1,22 +1,22 @@
-import { getDownloadURL, ref } from '@firebase/storage';
 import { create } from 'zustand';
-import { storage } from './Firebase/firebase';
 import Article from './types/article';
 import { Rabbi, RawRabbi } from './types/rabbi';
-import Shiur from './types/shiur';
+import { RawShiur, Shiur } from './types/shiur';
 import { AppData } from './types/state';
-import { processRawRebbeim } from './utils';
+import { processRawRebbeim, processRawShiurim } from './utils';
 
 export const useAppDataStore = create<AppData>()((set) => ({
 	shiur: {
 		shiurim: [],
-		setShiurim: (shiurim: Shiur[]) =>
+		setShiurim: (shiurim: RawShiur[], rabbis: Rabbi[]) => {
+			let processedShiurim = processRawShiurim(shiurim, rabbis);
 			set((state) => ({
 				shiur: {
 					...state.shiur,
-					shiurim,
+					shiurim: processedShiurim,
 				},
-			})),
+			}));
+		},
 		updateShiur: (shiur: Shiur) =>
 			set((state) => ({
 				shiur: {
@@ -51,14 +51,6 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				},
 			}));
 		},
-		// setRebbeim: (rebbeim: RawRabbi[]) => {
-		// set((state) => ({
-		// 	rabbi: {
-		// 		...state.rabbi,
-		// 		rebbeim,
-		// 	},
-
-		// })),
 		updateRebbe: (rebbe: Rabbi) =>
 			set((state) => ({
 				rabbi: {

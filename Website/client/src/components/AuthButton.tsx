@@ -5,7 +5,7 @@ import { AuthContext } from '../authContext';
 import { auth, firestore } from '../Firebase/firebase';
 import { useAppDataStore } from '../state';
 import { collection, getDocs } from 'firebase/firestore';
-import Shiur from '../types/shiur';
+import { RawShiur } from '../types/shiur';
 import { RawRabbi } from '../types/rabbi';
 import Article from '../types/article';
 
@@ -14,18 +14,6 @@ export default function AuthButton() {
 	const user = useContext(AuthContext);
 
 	const fetchAppData = async () => {
-		if (appData.shiur.shiurim.length === 0)
-			await getDocs(collection(firestore, 'content')).then((querySnapshot) => {
-				const newShiurim = (
-					querySnapshot.docs.map((doc) => ({
-						...doc.data(),
-						id: doc.id,
-					})) as Shiur[]
-				)
-					.filter((shiur) => shiur.source_path !== undefined)
-					.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-				appData.shiur.setShiurim(newShiurim);
-			});
 		if (appData.rabbi.rebbeim.length === 0)
 			await getDocs(collection(firestore, 'rebbeim')).then((querySnapshot) => {
 				const newRebbeim = querySnapshot.docs.map((doc) => ({
@@ -33,6 +21,18 @@ export default function AuthButton() {
 					id: doc.id,
 				})) as RawRabbi[];
 				appData.rabbi.setRebbeim(newRebbeim);
+			});
+		if (appData.shiur.shiurim.length === 0)
+			await getDocs(collection(firestore, 'content')).then((querySnapshot) => {
+				const newShiurim = (
+					querySnapshot.docs.map((doc) => ({
+						...doc.data(),
+						id: doc.id,
+					})) as RawShiur[]
+				)
+					.filter((shiur) => shiur.source_path !== undefined)
+					.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
+				appData.shiur.setShiurim(newShiurim, appData.rabbi.rebbeim);
 			});
 		if (appData.news.articles.length === 0)
 			await getDocs(collection(firestore, 'news')).then((querySnapshot) => {
