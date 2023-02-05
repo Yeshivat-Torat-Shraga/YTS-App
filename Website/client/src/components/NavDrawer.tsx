@@ -7,9 +7,13 @@ import {
 	ListItem,
 	ListItemButton,
 	ListItemText,
+	Tooltip,
+	Button,
 } from '@mui/material';
 import { NavLabel, navLabels } from '../nav';
-import AuthButton from './AuthButton';
+import { useContext } from 'react';
+import { AuthContext } from '../authContext';
+import { auth } from '../Firebase/firebase';
 
 const drawerWidth = 240;
 
@@ -20,6 +24,7 @@ export default function NavDrawer({
 	activeTab: NavLabel;
 	setActiveTab: (navLabel: NavLabel) => void;
 }) {
+	const user = useContext(AuthContext);
 	return (
 		<Drawer
 			sx={{
@@ -41,7 +46,18 @@ export default function NavDrawer({
 						case 'Authentication':
 							return (
 								<ListItem key={index}>
-									<AuthButton />
+									<Tooltip title={user ? '' : 'Login to press this button'}>
+										<span style={{ width: '100%' }}>
+											<Button
+												variant="contained"
+												disabled={!user}
+												fullWidth
+												onClick={() => auth.signOut()}
+											>
+												Logout
+											</Button>
+										</span>
+									</Tooltip>
 								</ListItem>
 							);
 						case '-----':

@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../authContext';
 import { loremIpsum } from '../loremipsum';
 import { NavLabel } from '../nav';
-import AuthButton from './AuthButton';
+import LoginPrompt from './LoginPrompt';
 import { NewsMain } from './NewsMain';
 import PendingShiurim from './PendingShiurim';
 import AllRebbeim from './RebbeimMain';
@@ -58,10 +58,7 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 				}}
 			>
 				<Stack direction="column" maxWidth="30vw">
-					<Typography variant="h5" noWrap component="div" fontWeight="bold">
-						Please Sign In
-					</Typography>
-					<AuthButton />
+					<LoginPrompt />
 				</Stack>
 			</Backdrop>
 		</Box>
