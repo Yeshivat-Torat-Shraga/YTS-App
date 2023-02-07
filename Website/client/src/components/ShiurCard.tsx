@@ -1,7 +1,8 @@
-import { Avatar, Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, CardHeader, Grid, IconButton, Typography } from '@mui/material';
 import { Shiur } from '../types/shiur';
-import { CalendarMonth, Person } from '@mui/icons-material';
+import { CalendarMonth, AccessTime, MoreVert } from '@mui/icons-material';
 import { useAppDataStore } from '../state';
+import { useState } from 'react';
 export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 	const data = useAppDataStore.getState();
 	if (shiur.date === undefined) {
@@ -27,7 +28,7 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 					 */}
 					<Typography variant="body1" gutterBottom color="text.secondary">
 						<>
-							<Person
+							<AccessTime
 								sx={{
 									// adjust for the fact that this is a body1
 									fontSize: '1.4rem',
@@ -35,7 +36,7 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 									paddingRight: '2px',
 								}}
 							/>
-							{shiur.author?.name || shiur.authorName}
+							{new Date(shiur.duration * 1000).toISOString().substr(11, 8).replace(/^00:/, '')}
 						</>
 					</Typography>
 					{/* Date, but nicely formatted */}
@@ -57,12 +58,18 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 }
 
 function ShiurCardHeader({ shiur }: { shiur: Shiur }) {
+	// const [menuExpanded, setMenuExpanded] = useState(false);
 	if (shiur.author) {
 		return (
 			<CardHeader
 				avatar={<Avatar aria-label="author" src={shiur.author.profilePictureURL} />}
 				title={shiur.author.name}
 				subheader={shiur.date.toDate().toLocaleDateString()}
+				action={
+					<IconButton aria-label="settings">
+						<MoreVert />
+					</IconButton>
+				}
 			/>
 		);
 	} else {
