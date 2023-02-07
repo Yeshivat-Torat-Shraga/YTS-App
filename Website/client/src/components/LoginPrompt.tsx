@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, browserLocalPersistence } from 'firebase/auth';
 import { Button, Paper, Stack, TextField, Typography } from '@mui/material';
 import { AuthContext } from '../authContext';
@@ -9,22 +9,21 @@ export default function LoginPrompt() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setError] = useState<string | null>(null);
-	// Trigger form submission on enter key
-	// useEffect(() => {
-	// 	const handleKeyDown = (event: KeyboardEvent) => {
-	// 		if (event.key === 'Enter') {
-	// 			onLogin(username!, password!);
-	// 		}
-	// 	};
-	// 	document.addEventListener('keydown', handleKeyDown);
-	// 	return () => {
-	// 		document.removeEventListener('keydown', handleKeyDown);
-	// 	};
-	// }, [username, password]);
 
 	return (
 		<Paper sx={{ padding: 0, width: 500 }} elevation={1}>
-			<form onSubmit={(e) => e.preventDefault()}>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					// Clear the error message
+					setError(null);
+
+					login(username, password, setError);
+					setPassword('');
+
+					// clear the password field
+				}}
+			>
 				<Stack direction="column" justifyContent="space-evenly" alignItems="center" p={2}>
 					<Typography variant="h5" noWrap component="div" fontWeight="bold" p={2}>
 						Please Sign In
@@ -39,6 +38,8 @@ export default function LoginPrompt() {
 						autoFocus
 						error={errorMessage ? true : false}
 						onChange={(e) => setUsername(e.target.value)}
+						value={username}
+						defaultValue={username}
 					/>
 					<span style={{ height: 15 }} />
 					<TextField
@@ -46,17 +47,14 @@ export default function LoginPrompt() {
 						type="password"
 						variant="outlined"
 						fullWidth
-						// value={password}
+						defaultValue={password}
+						value={password}
 						error={errorMessage ? true : false}
 						helperText={errorMessage ?? ''}
 						// Clear the password field on error
 						onChange={(e) => setPassword(e.target.value)}
 					/>
 					<Button
-						onClick={() => {
-							onLogin(username, password, setError);
-							setPassword('');
-						}}
 						variant="contained"
 						type="submit"
 						fullWidth
@@ -72,7 +70,7 @@ export default function LoginPrompt() {
 	);
 }
 
-function onLogin(
+function login(
 	username: string,
 	password: string,
 	setError: React.Dispatch<React.SetStateAction<string | null>>
@@ -80,14 +78,7 @@ function onLogin(
 	if (auth.currentUser) {
 		auth.signOut();
 	} else {
-		// if (process.env.NODE_ENV === 'production') {
-		// const provider = new auth.GoogleAuthProvider();
-		// auth.signInWithPopup(provider);
-		// } else if (process.env.NODE_ENV === 'development') {
-		// const email = process.env.REACT_APP_DEV_EMAIL;
-		// const password = process.env.REACT_APP_DEV_PASSWORD;
 		if (username !== '' && password !== '') {
-			// Set login persistence to session
 			auth
 				.setPersistence(browserLocalPersistence)
 				.then(() => {
@@ -95,20 +86,16 @@ function onLogin(
 				})
 				.then((_) => {
 					setError(null);
+					// alert the user that this is a preview and a work in progress
+					alert(
+						'Welcome to the preview of the new website! This is a work in progress, so please be patient as I work out the design and features.'
+					);
 				})
 				.catch((error) => {
 					setError('Please check your username and password and try again.');
 				});
-			// signInWithEmailAndPassword(auth, username, password)
-			// 	.then((_) => {
-			// 		setError(null);
-			// 	})
-			// 	.catch((error) => {
-			// 		setError('Please check your username and password and try again.');
-			// 	});
 		} else {
-			setError('Username and password are required');
+			setError('Username and password are both required, silly!');
 		}
-		// }
 	}
 }
