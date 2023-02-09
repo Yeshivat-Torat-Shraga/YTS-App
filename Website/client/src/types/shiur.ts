@@ -20,6 +20,7 @@ export type RawShiur = {
 	tagData: TagData;
 	title: string;
 	type: string;
+	viewCount?: number;
 };
 
 export type Shiur = {
@@ -36,4 +37,5 @@ export type Shiur = {
 	tagData: TagData;
 	title: string;
 	type: string;
+	viewCount?: number;
 };
