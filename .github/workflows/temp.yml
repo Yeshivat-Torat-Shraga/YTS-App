@@ -1,0 +1,27 @@
+name: temp
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+jobs:
+  # This workflow contains a single job called "build"
+  build-service:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Add secrets to config file
+    - name: get secrets
+      env:
+        MY_VAL: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      run: |
+        import os
+        data = open("file", "w")
+        for q in (os.getenv("MY_VAL")):
+          print(q)
+          data.write(q)
+      shell: python
