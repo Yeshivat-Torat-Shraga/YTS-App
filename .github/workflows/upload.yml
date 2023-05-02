@@ -106,7 +106,7 @@ jobs:
                 \"image\": \"$IMAGE_TAG\",
                 \"environment\": {
                   \"WEBAUTH_USERNAME\": \"${{ secrets.WEB_USERNAME }}\",
-                  \"WEBAUTH_PASSWORD\": \"${{ secrets.WEB_PASSWORD }}\",
+                  \"WEBAUTH_PASSWORD\": \"${{ secrets.WEB_PASSWORD }}\"
                 },
                 \"ports\": {
                   \"80\": \"HTTP\"
