@@ -40,7 +40,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          cd Yeshivat\ Torat\ Shraga/Code/Webapp
+          cd Website/Server
           docker build -t ${{ steps.vars.outputs.image }} -t ${{ steps.vars.outputs.latest }} .
         
       - name: Login to DockerHub
