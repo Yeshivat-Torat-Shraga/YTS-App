@@ -83,7 +83,7 @@ jobs:
           chmod +x /usr/local/bin/lightsailctl
       - name: Release to Amazon Lightsail
         env:
-          CONTAINER_SERVICE_NAME: container-service-1
+          CONTAINER_SERVICE_NAME: shraga-upload
         run: |
           echo "Releasing to Amazon Lightsail"
 
