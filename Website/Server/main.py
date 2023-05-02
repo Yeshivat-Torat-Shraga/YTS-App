@@ -32,8 +32,8 @@ if PRODUCTION:
     notification_topic = "all"
 
 
-app.config["BASIC_AUTH_USERNAME"] = settings.username
-app.config["BASIC_AUTH_PASSWORD"] = settings.password
+app.config["BASIC_AUTH_USERNAME"] = username
+app.config["BASIC_AUTH_PASSWORD"] = password
 app.config["BASIC_AUTH_FORCE"] = True
 db = firestore.client()
 bucket = storage.bucket()
