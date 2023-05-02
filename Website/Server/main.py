@@ -4,7 +4,7 @@ from flask import Flask, Response, redirect, render_template, request, send_from
 from flask_basicauth import BasicAuth
 import ffmpeg
 import os
-import settings
+# import settings
 from firebase_admin import credentials, initialize_app, storage, firestore, messaging
 from blake3 import blake3
 from google.cloud.exceptions import NotFound
@@ -15,8 +15,12 @@ import threading
 PRODUCTION = os.getenv("PRODUCTION")
 
 # Check if the following environment variables are set:
-username = settings.username
-password = settings.password
+username = os.getenv("WEBAUTH_USERNAME")
+password = os.getenv("WEBAUTH_PASSWORD")
+
+if username is None or password is None:
+    print("WEBAUTH_USERNAME or WEBAUTH_PASSWORD environment variables not set")
+    exit(1)
 
 cred = credentials.Certificate("cred.json")
 initialize_app(cred, {"storageBucket": "yeshivat-torat-shraga.appspot.com"})
