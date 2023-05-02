@@ -26,11 +26,8 @@ jobs:
       # Add secrets to config file
       - name: Inject Secrets
         run: |
-          cd Website/Server
           # The firebase credentials should be formatted as a stringified JSON object (I think)
-          echo -E '${{ secrets.FIREBASE_CREDENTIALS }}' > cred.json
-          echo username = \'${{ secrets.WEB_USERNAME }}\' >> settings.py
-          echo password = \'${{ secrets.WEB_PASSWORD }}\' >> settings.py
+          echo -E '${{ secrets.FIREBASE_CREDENTIALS }}' > Website/Server/cred.json
 
       - name: Build Vars
         id: vars
@@ -107,6 +104,10 @@ jobs:
             --containers "{
               \"$CONTAINER_SERVICE_NAME\": {
                 \"image\": \"$IMAGE_TAG\",
+                \"environment\": {
+                  \"WEBAUTH_USERNAME\": \"${{ secrets.WEB_USERNAME }}\",
+                  \"WEBAUTH_PASSWORD\": \"${{ secrets.WEB_PASSWORD }}\",
+                },
                 \"ports\": {
                   \"80\": \"HTTP\"
                 }
