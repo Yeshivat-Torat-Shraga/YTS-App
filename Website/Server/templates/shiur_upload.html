@@ -44,7 +44,7 @@
     <select name="tag" id="tags" class="form-control" required>
       <option selected disabled></option>
       {% for tag in tags %}
-      {% if not tag.isParent %}
+      {% if not tag.subCategories %}
       <option value="{{ tag.id }}">{{ tag.displayName }}</option>
       {% endif %}
       {% endfor %}
