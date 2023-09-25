@@ -351,6 +351,24 @@ exports.loadRabbisByIDs = https.onCall(async (data, context): Promise<LoadData> 
 	};
 });
 
+exports.loadSignedUrlBySourcePath = https.onCall(async (data, context): Promise<string | Error> => {
+	// === APP CHECK ===
+	verifyAppCheck(context);
+	// check if data.documentID is a string
+	if (typeof data.sourcePath !== 'string') throw new Error('data.sourcePath must be a string');
+
+	let documentPath: string = data.sourcePath;
+	if (!documentPath.startsWith('HLSStreams/')) return Error('Invalid path');
+	// Get the signed URL
+	try {
+		return getURLFor(documentPath);
+		// return the document data
+	} catch (err) {
+		log(`Error getting url for '${documentPath}': ${err}`, true);
+		return err as Error;
+	}
+});
+
 exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData> => {
 	// === APP CHECK ===
 	verifyAppCheck(context);
@@ -430,7 +448,7 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
 /**
  * @remarks
  * Returns a list of rebbeim in firebase
- * 
+ *
  * @param limit - The max amount of rebbeim to return, default is 10
  * @param lastLoadedDocID - Optional id of the last document retreived used to paginate the data
  * @param includePictureURLs - Indicates whether or not profile picture URLs should be generated and included
@@ -453,10 +471,9 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const GUEST_SPEAKER_ID = 'hn2GBxMrEbRSVtaxPC2K';
 
-	let query = db.collection(COLLECTION)
-		.orderBy('name', 'asc');
+	let query = db.collection(COLLECTION).orderBy('name', 'asc');
 
-		// pagination
+	// pagination
 	if (queryOptions.previousDocID) {
 		// Fetch the document with the specified ID from Firestore.
 		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
@@ -616,7 +633,10 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
-			throw new https.HttpsError('invalid-argument', 'The search field and value must be set.');
+			throw new https.HttpsError(
+				'invalid-argument',
+				'The search field and value must be set.'
+			);
 		}
 		if (queryOptions.search.field == 'tagID') {
 			// If it's a tag ID, we need to get the tag document using the tag ID
@@ -709,7 +729,10 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 			};
 			try {
 				const sourceURL = await getURLFor(`${data.source_path}`);
-				const author = await getRabbiFor(data.attributionID, queryOptions.includeAllAuthorData);
+				const author = await getRabbiFor(
+					data.attributionID,
+					queryOptions.includeAllAuthorData
+				);
 				return {
 					id: doc.id,
 					fileID: strippedFilename(data.source_path),
@@ -1149,10 +1172,14 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 					.get()
 					.then((snapshot) => {
 						query = query.startAfter(snapshot) as any;
-						log(`Starting collection '${collectionName}' after document ID: ${startAfter}`);
+						log(
+							`Starting collection '${collectionName}' after document ID: ${startAfter}`
+						);
 					})
 					.catch((reason) => {
-						log(`Error starting collection '${collectionName}' after document ID: ${startAfter}`);
+						log(
+							`Error starting collection '${collectionName}' after document ID: ${startAfter}`
+						);
 						return null;
 					});
 			}
@@ -1601,7 +1628,10 @@ exports.cleanStorage = https.onCall(async (data, context) => {
 	// check each file if it has a corresponding firebase document
 	const db = admin.firestore();
 	const hlsFilesToDelete = await hlsFilenames.filter(async (file) => {
-		const doc = await db.collection('content').where('fileID', '==', strippedFilename(file)).get();
+		const doc = await db
+			.collection('content')
+			.where('fileID', '==', strippedFilename(file))
+			.get();
 
 		if (doc.empty) {
 			return file;

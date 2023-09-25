@@ -107,7 +107,7 @@ class DetailedRabbi: Rabbi, URLImageable {
     }
     
     static public var sample: DetailedRabbi =
-        DetailedRabbi(id: "TEST_ID", name: "Test Uploader", profileImageURL: URL(string: "https://firebasestorage.googleapis.com/v0/b/yeshivat-torat-shraga.appspot.com/o/profile-pictures%2Frabbieichler.jpeg?alt=media&token=8f1e24d1-0531-47cf-9a9e-726a613cd3dd")!)
+        DetailedRabbi(id: "TEST_ID", name: "Test Uploader", profileImageURL: URL(string: "https://storage.googleapis.com/yeshivat-torat-shraga.appspot.com/profile-pictures/rabbieichler.jpeg")!)
     
     /*
     init?(name: String, profileImageURL: URL) throws {
