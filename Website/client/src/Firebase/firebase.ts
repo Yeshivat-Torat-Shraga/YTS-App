@@ -8,13 +8,29 @@ import { RawRabbi } from '../types/rabbi';
 import { RawShiur } from '../types/shiur';
 import Article from '../types/article';
 import { processRawRebbeim, processRawShiurim } from '../utils';
+import { initializeAppCheck, ReCaptchaV3Provider, getToken } from 'firebase/app-check';
 
 export const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
+const appCheckToken = process.env.REACT_APP_FIREBASE_APPCHECK_TOKEN;
+//// @ts-expect-error
+// window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+const appCheck = initializeAppCheck(app, {
+	provider: new ReCaptchaV3Provider(appCheckToken || ''),
+	isTokenAutoRefreshEnabled: true,
+});
 
+// const analytics = getAnalytics(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
+
+getToken(appCheck)
+	.then(() => {
+		console.log('success');
+	})
+	.catch((error) => {
+		console.log(error.message);
+	});
 
 auth.onAuthStateChanged(async (user) => {
 	let state = useAppDataStore.getState();
