@@ -42,7 +42,8 @@ The app was released to the AppStore on May 22, 2022. You can download it [here]
 
 ## Are you going to make an Android version?
 ~Due to the nature of such a project, we currently cannot afford the time to do so. However, we are
-considering taking it up over the summer.~ no
+considering taking it up over the summer.~ ~no~
+Yup! Its in the works, set to be released in November. 
 
 ## I was looking through your code and I found something that I really liked. Can I copy it?
 That's a good question. We have not yet added a licence for this repository,
