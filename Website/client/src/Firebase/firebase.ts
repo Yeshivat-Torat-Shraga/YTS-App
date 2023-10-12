@@ -5,17 +5,21 @@ import { getStorage } from '@firebase/storage';
 import firebaseConfig from './config.json';
 import { useAppDataStore } from '../state';
 import { RawRabbi } from '../types/rabbi';
-import { RawShiur } from '../types/shiur';
+import { RawShiur, TagData } from '../types/shiur';
 import Article from '../types/article';
 import { processRawRebbeim, processRawShiurim } from '../utils';
 import { initializeAppCheck, ReCaptchaV3Provider, getToken } from 'firebase/app-check';
+import _ from 'lodash';
 
 export const app = initializeApp(firebaseConfig);
 const appCheckToken = process.env.REACT_APP_FIREBASE_APPCHECK_TOKEN;
-//// @ts-expect-error
-// window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-const appCheck = initializeAppCheck(app, {
-	provider: new ReCaptchaV3Provider(appCheckToken || ''),
+if (!appCheckToken) {
+	throw new Error('Missing firebase app check token');
+}
+// @ts-expect-error
+window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+export const appCheck = initializeAppCheck(app, {
+	provider: new ReCaptchaV3Provider(appCheckToken),
 	isTokenAutoRefreshEnabled: true,
 });
 
@@ -23,14 +27,15 @@ const appCheck = initializeAppCheck(app, {
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
+console.log(auth.currentUser?.uid);
 
-getToken(appCheck)
-	.then(() => {
-		console.log('success');
-	})
-	.catch((error) => {
-		console.log(error.message);
-	});
+// getToken(appCheck)
+// 	.then(() => {
+// 		console.log('success');
+// 	})
+// 	.catch((error) => {
+// 		console.log(error.message);
+// 	});
 
 auth.onAuthStateChanged(async (user) => {
 	let state = useAppDataStore.getState();
@@ -38,18 +43,22 @@ auth.onAuthStateChanged(async (user) => {
 		let rawData: {
 			rabbi: RawRabbi[];
 			shiur: RawShiur[];
+			tags: TagData[];
 			news: Article[];
 		} = {
 			rabbi: [],
 			shiur: [],
+			tags: [],
 			news: [],
 		};
 		await Promise.all([
 			getDocs(collection(firestore, 'rebbeim')).then(async (querySnapshot) => {
-				const newRebbeim = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as RawRabbi[];
+				const newRebbeim = querySnapshot.docs.map((doc) => {
+					return {
+						...doc.data(),
+						id: doc.id,
+					};
+				}) as RawRabbi[];
 				rawData.rabbi = newRebbeim;
 			}),
 			getDocs(collection(firestore, 'content')).then(async (querySnapshot) => {
@@ -63,7 +72,13 @@ auth.onAuthStateChanged(async (user) => {
 					.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
 				rawData.shiur = newShiurim;
 			}),
-
+			getDocs(collection(firestore, 'tags')).then(async (querySnapshot) => {
+				const newTags = querySnapshot.docs.map((doc) => ({
+					...doc.data(),
+					id: doc.id,
+				})) as TagData[];
+				rawData.tags = newTags;
+			}),
 			getDocs(collection(firestore, 'news')).then(async (querySnapshot) => {
 				const newArticles = querySnapshot.docs.map((doc) => ({
 					...doc.data(),
@@ -74,14 +89,17 @@ auth.onAuthStateChanged(async (user) => {
 		]);
 		let processedRebbeim = await processRawRebbeim(rawData.rabbi);
 		let processedShiurim = processRawShiurim(rawData.shiur, processedRebbeim);
-		let processedArticles = rawData.news;
+		let processedArticles = _.keyBy(rawData.news, 'id');
+		let processedTags = _.keyBy(rawData.tags, 'id');
 
 		state.rabbi.setRebbeim(processedRebbeim);
 		state.shiur.setShiurim(processedShiurim);
 		state.news.setArticles(processedArticles);
+		state.tags.setTags(processedTags);
 	} else {
 		state.shiur.clearShiurim();
 		state.rabbi.clearRebbeim();
 		state.news.clearArticles();
+		state.tags.setTags({});
 	}
 });

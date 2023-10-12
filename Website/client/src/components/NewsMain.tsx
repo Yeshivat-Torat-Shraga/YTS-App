@@ -1,13 +1,13 @@
 import { Box, Grid, Typography } from '@mui/material';
 import { useAppDataStore } from '../state';
 import Article from '../types/article';
-
+import _ from 'lodash';
 export function NewsMain() {
 	const articles = useAppDataStore((state) => state.news.articles);
 	return (
 		<Box>
 			<Grid container>
-				{articles.map((article) => (
+				{_.map(articles, (article) => (
 					<ArticleCard article={article} />
 				))}
 			</Grid>

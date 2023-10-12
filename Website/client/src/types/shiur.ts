@@ -1,10 +1,13 @@
 import { Timestamp } from '@firebase/firestore';
 import { Rabbi } from './rabbi';
 
-type TagData = {
+export type TagData = {
 	id: string;
 	displayName: string;
 	name: string;
+	parentID?: string;
+	isParent?: boolean;
+	subCategories?: string[];
 };
 
 export type RawShiur = {
@@ -39,3 +42,19 @@ export type Shiur = {
 	type: string;
 	viewCount?: number;
 };
+
+export function shiurToRawShiur(shiur: Shiur): Omit<RawShiur, 'id'> {
+	return {
+		attributionID: shiur.attributionID,
+		author: shiur.authorName,
+		date: shiur.date,
+		description: shiur.description,
+		duration: shiur.duration,
+		pending: shiur.pending,
+		search_index: shiur.search_index,
+		source_path: shiur.source_path,
+		tagData: shiur.tagData,
+		title: shiur.title,
+		type: shiur.type,
+	};
+}

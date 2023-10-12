@@ -31,7 +31,7 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 		maxHeight: '100vh',
 	};
 	return (
-		<Box>
+		<Box sx={{ width: '100%' }}>
 			<Box
 				component="main"
 				sx={{

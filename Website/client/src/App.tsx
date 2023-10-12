@@ -42,7 +42,11 @@ function App() {
 			}
 		});
 	}, [auth]);
-
+	useEffect(() => {
+		window.process = {
+			...window.process,
+		};
+	}, []);
 	return (
 		<ThemeProvider theme={theme}>
 			<Box sx={{ display: 'flex' }}>

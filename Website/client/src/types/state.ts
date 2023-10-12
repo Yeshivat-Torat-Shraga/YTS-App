@@ -1,27 +1,31 @@
 import Article from './article';
 import { Rabbi } from './rabbi';
-import { Shiur } from './shiur';
+import { Shiur, TagData } from './shiur';
 
 export interface AppData {
 	shiur: {
-		shiurim: Shiur[];
-		setShiurim: (shiurim: Shiur[]) => void;
+		shiurim: { [id: string]: Shiur };
+		setShiurim: (shiurim: { [id: string]: Shiur }) => void;
 		updateShiur: (shiur: Shiur) => void;
 		deleteShiur: (shiur: Shiur) => void;
 		clearShiurim: () => void;
 	};
 	rabbi: {
-		rebbeim: Rabbi[];
-		setRebbeim: (rebbeim: Rabbi[]) => void;
+		rebbeim: { [id: string]: Rabbi };
+		setRebbeim: (rebbeim: { [id: string]: Rabbi }) => void;
 		updateRebbe: (rebbe: Rabbi) => void;
 		deleteRebbe: (rebbe: Rabbi) => void;
 		clearRebbeim: () => void;
 	};
 	news: {
-		articles: Article[];
-		setArticles: (articles: Article[]) => void;
+		articles: { [id: string]: Article };
+		setArticles: (articles: { [id: string]: Article }) => void;
 		updateArticle: (article: Article) => void;
 		deleteArticle: (article: Article) => void;
 		clearArticles: () => void;
+	};
+	tags: {
+		tags: { [id: string]: TagData };
+		setTags: (tags: { [id: string]: TagData }) => void;
 	};
 }

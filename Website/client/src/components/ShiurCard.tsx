@@ -43,14 +43,17 @@ export default function ShiurCard({ shiur }: { shiur: Shiur }) {
 					<Typography variant="h6" gutterBottom noWrap>
 						{shiur.title}
 					</Typography>
-					{/* 
+					{/*
 					If we're not taking up all the space, put a spacer here
 					so that the buttons are always at the bottom of the card
 					 */}
 					<Typography variant="body1" gutterBottom color="text.secondary">
 						<>
 							<AccessTime sx={iconStyle} />
-							{new Date(shiur.duration * 1000).toISOString().substring(11, 19).replace(/^00:/, '')}
+							{new Date(shiur.duration * 1000)
+								.toISOString()
+								.substring(11, 19)
+								.replace(/^00:/, '')}
 						</>
 					</Typography>
 					{shiur.pending ? (
@@ -88,7 +91,10 @@ function ShiurCardHeader({ shiur }: { shiur: Shiur }) {
 		);
 	} else {
 		return (
-			<CardHeader title={shiur.date.toDate().toLocaleDateString()} subheader={shiur.authorName} />
+			<CardHeader
+				title={shiur.date.toDate().toLocaleDateString()}
+				subheader={shiur.authorName}
+			/>
 		);
 	}
 }
@@ -137,8 +143,8 @@ function EditMenu({ shiur }: { shiur: Shiur }) {
 					},
 				}}
 			>
-				{menuItems.map((item) => (
-					<MenuItem onClick={handleClose}>
+				{menuItems.map((item, index) => (
+					<MenuItem onClick={handleClose} key={index}>
 						<ListItemIcon>{item.icon}</ListItemIcon>
 						<ListItemText>
 							<Typography variant="inherit">{item.text}</Typography>
