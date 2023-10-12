@@ -1,12 +1,19 @@
+// import hlsjs from 'hls.js';
+// import 'mediaelement';
 import { DataGrid, GridToolbarContainer } from '@mui/x-data-grid';
 import { generateTimeString } from '../utils';
-import { Check, Delete, Edit, Schedule, UploadFile } from '@mui/icons-material';
+import { Check, Clear, Delete, Edit, Schedule, UploadFile } from '@mui/icons-material';
 import { Shiur } from '../types/shiur';
-import { Box, Typography, Avatar, Button, Stack } from '@mui/material';
-
+import { Box, Typography, Avatar, Button, Stack, CircularProgress } from '@mui/material';
 import _ from 'lodash';
 import { useAppDataStore } from '../state';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { functions } from '../Firebase/firebase';
+import { httpsCallable } from 'firebase/functions';
+import HLSAudioPlayer from './Player';
+
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 export default function ShiurimTable({
 	shiurim,
 	rebbeim,
@@ -41,7 +48,9 @@ export default function ShiurimTable({
 			rows={sortedIndexedShiurim}
 			rowHeight={80}
 			columnVisibilityModel={{
+				index: !isForPending,
 				pending: !isForPending,
+				audioPreview: isForPending,
 			}}
 			columns={[
 				{
@@ -127,6 +136,12 @@ export default function ShiurimTable({
 					),
 				},
 				{
+					field: 'audioPreview',
+					headerName: 'Audio Preview',
+					flex: 3,
+					renderCell: (params) => <AudioPreview params={params} />,
+				},
+				{
 					field: 'date',
 					headerName: 'Upload Date',
 					flex: 1,
@@ -142,58 +157,100 @@ export default function ShiurimTable({
 					flex: 2,
 					renderCell: (params) => (
 						<Stack direction="row" spacing={2}>
-							<Button
-								variant="outlined"
-								sx={{
-									borderRadius: 8,
-									paddingY: 0.2,
-									paddingX: 1,
-									fontWeight: 'bold',
-								}}
-								color="primary"
-								endIcon={<Edit />}
-								onClick={() => {
-									setEditShiur(params.row);
-								}}
-							>
-								Edit
-							</Button>
-							<Button
-								variant="outlined"
-								sx={{
-									borderRadius: 8,
-									paddingY: 0.2,
-									paddingX: 1,
-									fontWeight: 'bold',
-								}}
-								color="error"
-								endIcon={<Delete />}
-								onClick={() => {
-									deleteShiur(params.row);
-								}}
-							>
-								Delete
-							</Button>
+							{isForPending ? (
+								<>
+									<Button
+										variant="outlined"
+										sx={{
+											borderRadius: 8,
+											paddingY: 0.2,
+											paddingX: 1,
+											fontWeight: 'bold',
+										}}
+										color="success"
+										endIcon={<Check />}
+										onClick={() => {
+											params.row.pending = false;
+											updateShiur(params.row);
+										}}
+									>
+										Approve
+									</Button>
+									<Button
+										variant="outlined"
+										sx={{
+											borderRadius: 8,
+											paddingY: 0.2,
+											paddingX: 1,
+											fontWeight: 'bold',
+										}}
+										color="error"
+										endIcon={<Clear />}
+										onClick={() => {
+											deleteShiur(params.row);
+										}}
+									>
+										Reject
+									</Button>
+								</>
+							) : (
+								<>
+									<Button
+										variant="outlined"
+										sx={{
+											borderRadius: 8,
+											paddingY: 0.2,
+											paddingX: 1,
+											fontWeight: 'bold',
+										}}
+										color="primary"
+										endIcon={<Edit />}
+										onClick={() => {
+											setEditShiur(params.row);
+										}}
+									>
+										Edit
+									</Button>
+									<Button
+										variant="outlined"
+										sx={{
+											borderRadius: 8,
+											paddingY: 0.2,
+											paddingX: 1,
+											fontWeight: 'bold',
+										}}
+										color="error"
+										endIcon={<Delete />}
+										onClick={() => {
+											deleteShiur(params.row);
+										}}
+									>
+										Delete
+									</Button>
+								</>
+							)}
 						</Stack>
 					),
 				},
 			]}
 			slots={{
-				toolbar: () => (
-					<GridToolbarContainer>
-						<Button
-							variant="contained"
-							fullWidth
-							color="primary"
-							startIcon={<UploadFile />}
-							onClick={() => {
-								setEditShiur(null);
-							}}
-						>
-							New Shiur
-						</Button>
-					</GridToolbarContainer>
-				),
+				toolbar: isForPending
+					? null
+					: () => (
+							<GridToolbarContainer>
+								<Button
+									variant="contained"
+									fullWidth
+									color="primary"
+									startIcon={<UploadFile />}
+									onClick={() => {
+										setEditShiur(null);
+									}}
+								>
+									New Shiur
+								</Button>
+							</GridToolbarContainer>
+					  ),
 			}}
 			slotProps={{
 				toolbar: {
@@ -209,4 +266,28 @@ export default function ShiurimTable({
 			}}
 		/>
 	);
+}
+
+function AudioPreview({ params }: { params: any }) {
+	const [audioURL, setAudioURL] = useState<string | undefined>(undefined);
+	const shiur = params.row as Shiur;
+	useMemo(async () => {
+		if (!audioURL) {
+			generateV4ReadSignedUrlFor(shiur).then((url) => {
+				setAudioURL(url);
+			});
+		}
+	}, [shiur]);
+	return audioURL ? <HLSAudioPlayer hlsSource={audioURL} /> : <CircularProgress />;
+}
+
+async function generateV4ReadSignedUrlFor(shiur: Shiur) {
+	// Get a v4 signed URL for reading the file
+	const getURL = httpsCallable(functions, 'loadSignedUrlBySourcePath');
+
+	const url = (await getURL({ sourcePath: shiur.source_path }).then(
+		(result) => result.data
+	)) as string;
+
+	return url;
 }

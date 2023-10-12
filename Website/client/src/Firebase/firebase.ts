@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { collection, getDocs, getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getFunctions } from 'firebase/functions';
 import { getStorage } from '@firebase/storage';
 import firebaseConfig from './config.json';
 import { useAppDataStore } from '../state';
@@ -8,7 +9,7 @@ import { RawRabbi } from '../types/rabbi';
 import { RawShiur, TagData } from '../types/shiur';
 import Article from '../types/article';
 import { processRawRebbeim, processRawShiurim } from '../utils';
-import { initializeAppCheck, ReCaptchaV3Provider, getToken } from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import _ from 'lodash';
 
 export const app = initializeApp(firebaseConfig);
@@ -27,7 +28,7 @@ export const appCheck = initializeAppCheck(app, {
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
-
+export const functions = getFunctions(app);
 // getToken(appCheck)
 // 	.then(() => {
 // 		console.log('success');

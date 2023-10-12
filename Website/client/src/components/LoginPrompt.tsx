@@ -39,7 +39,7 @@ export default function LoginPrompt() {
 						error={errorMessage ? true : false}
 						onChange={(e) => setUsername(e.target.value)}
 						value={username}
-						defaultValue={username}
+						placeholder="Username"
 					/>
 					<span style={{ height: 15 }} />
 					<TextField
@@ -47,7 +47,7 @@ export default function LoginPrompt() {
 						type="password"
 						variant="outlined"
 						fullWidth
-						defaultValue={password}
+						placeholder="Password"
 						value={password}
 						error={errorMessage ? true : false}
 						helperText={errorMessage ?? ''}
@@ -79,8 +79,7 @@ function login(
 		auth.signOut();
 	} else {
 		if (username !== '' && password !== '') {
-			auth
-				.setPersistence(browserLocalPersistence)
+			auth.setPersistence(browserLocalPersistence)
 				.then(() => {
 					return signInWithEmailAndPassword(auth, username, password);
 				})
@@ -88,10 +87,10 @@ function login(
 					setError(null);
 					// alert the user that this is a preview and a work in progress
 					alert(
-						'Welcome to the preview of the new website! This is a work in progress, so please be patient as I work out the design and features.'
+						'Hi, welcome to the new control panel! This is a work in progress, so please be patient as we work out the kinks.'
 					);
 				})
-				.catch((error) => {
+				.catch((_error) => {
 					setError('Please check your username and password and try again.');
 				});
 		} else {

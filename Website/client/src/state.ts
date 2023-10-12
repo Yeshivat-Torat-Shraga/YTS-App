@@ -3,12 +3,11 @@ import Article from './types/article';
 import { Rabbi } from './types/rabbi';
 import { Shiur, TagData } from './types/shiur';
 import { AppData } from './types/state';
-import { doc, setDoc, deleteDoc, Timestamp } from '@firebase/firestore';
+import { doc, setDoc, deleteDoc } from '@firebase/firestore';
 import { firestore, storage } from './Firebase/firebase';
 import { shiurToRawShiur } from './types/shiur';
-import { processRawShiurim } from './utils';
 import { deleteObject, ref } from '@firebase/storage';
-export const useAppDataStore = create<AppData>()((set, get) => ({
+export const useAppDataStore = create<AppData>()((set) => ({
 	shiur: {
 		shiurim: {},
 		setShiurim: (shiurim: { [id: string]: Shiur }) => {
