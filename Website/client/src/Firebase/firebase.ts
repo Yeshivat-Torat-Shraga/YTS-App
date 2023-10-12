@@ -17,7 +17,7 @@ if (!appCheckToken) {
 	throw new Error('Missing firebase app check token');
 }
 // @ts-expect-error
-window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
 export const appCheck = initializeAppCheck(app, {
 	provider: new ReCaptchaV3Provider(appCheckToken),
 	isTokenAutoRefreshEnabled: true,
@@ -27,7 +27,6 @@ export const appCheck = initializeAppCheck(app, {
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
-console.log(auth.currentUser?.uid);
 
 // getToken(appCheck)
 // 	.then(() => {

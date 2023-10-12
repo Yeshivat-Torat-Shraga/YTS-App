@@ -4,9 +4,10 @@ import { Rabbi } from './types/rabbi';
 import { Shiur, TagData } from './types/shiur';
 import { AppData } from './types/state';
 import { doc, setDoc, deleteDoc, Timestamp } from '@firebase/firestore';
-import { firestore } from './Firebase/firebase';
+import { firestore, storage } from './Firebase/firebase';
 import { shiurToRawShiur } from './types/shiur';
 import { processRawShiurim } from './utils';
+import { deleteObject, ref } from '@firebase/storage';
 export const useAppDataStore = create<AppData>()((set, get) => ({
 	shiur: {
 		shiurim: {},
@@ -53,7 +54,13 @@ export const useAppDataStore = create<AppData>()((set, get) => ({
 		// }) => {
 		// 	// const shiur = processRawShiurim([doc], get().rabbi.rebbeim)[0];
 		// },
-		deleteShiur: (shiur: Shiur) =>
+		deleteShiur: async (shiur: Shiur) => {
+			// First delete from Firebase
+			// Then delete from storage
+			// Then delete from state
+			const fileHash = shiur.source_path.split('/')[2];
+			await deleteObject(ref(storage, `shiurim/${shiur.type}/${fileHash}`));
+			deleteDoc(doc(firestore, 'content', shiur.id));
 			set((state) => ({
 				shiur: {
 					...state.shiur,
@@ -61,7 +68,8 @@ export const useAppDataStore = create<AppData>()((set, get) => ({
 						Object.entries(state.shiur.shiurim).filter(([id, _]) => id !== shiur.id)
 					),
 				},
-			})),
+			}));
+		},
 		clearShiurim: () =>
 			set((state) => ({
 				shiur: {
@@ -102,8 +110,10 @@ export const useAppDataStore = create<AppData>()((set, get) => ({
 			}));
 		},
 		deleteRebbe: (rebbe: Rabbi) => {
-			// First delete from Firebase
+			// First remove profile picture from storage
+			// Then delete from Firebase
 			// Then delete from state
+			deleteObject(ref(storage, `profile-pictures/${rebbe.profilePictureFileName}`));
 			deleteDoc(doc(firestore, 'rebbeim', rebbe.id));
 			set((state) => ({
 				rabbi: {

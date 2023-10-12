@@ -10,7 +10,13 @@ const getMP3Duration = require('get-mp3-duration');
 export async function processRawRebbeim(rawRebbeim: RawRabbi[]): Promise<{ [id: string]: Rabbi }> {
 	return Promise.all(
 		rawRebbeim.map(async (rawRabbi) => {
-			let rabbi: Rabbi = new Rabbi(rawRabbi.id, rawRabbi.name, '', rawRabbi.visible);
+			let rabbi: Rabbi = new Rabbi(
+				rawRabbi.id,
+				rawRabbi.name,
+				'',
+				rawRabbi.profile_picture_filename,
+				rawRabbi.visible
+			);
 
 			rabbi.profilePictureURL = await getDownloadURL(
 				ref(storage, `profile-pictures/${rawRabbi.profile_picture_filename}`)
