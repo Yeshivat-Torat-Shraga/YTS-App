@@ -42,7 +42,23 @@ export default function ShiurimTable({
 			});
 	}, [shiurim]);
 
-	return (
+	return sortedIndexedShiurim.length === 0 ? (
+		<Stack direction="column" alignItems="center" justifyContent="center" p={10} spacing={3}>
+			<Typography variant="h4" align="center" color="text.disabled">
+				{isForPending ? 'No Pending Shiurim' : 'No Shiurim'}
+			</Typography>
+			<Typography variant="body1" align="center" color="text.disabled">
+				{isForPending ? (
+					<>
+						This is where user submitted shiurim will appear.
+						<br /> They will be available for approval here.
+					</>
+				) : (
+					'There are no shiurim at this time'
+				)}
+			</Typography>
+		</Stack>
+	) : (
 		<DataGrid
 			sx={{ maxWidth: '100%' }}
 			rows={sortedIndexedShiurim}
