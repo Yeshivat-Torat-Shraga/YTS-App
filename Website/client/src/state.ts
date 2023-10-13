@@ -4,7 +4,7 @@ import { Rabbi } from './types/rabbi';
 import { Shiur, TagData } from './types/shiur';
 import { AppData } from './types/state';
 import { doc, setDoc, deleteDoc } from '@firebase/firestore';
-import { firestore, storage } from './Firebase/firebase';
+import { auth, firestore, storage } from './Firebase/firebase';
 import { shiurToRawShiur } from './types/shiur';
 import { deleteObject, ref } from '@firebase/storage';
 export const useAppDataStore = create<AppData>()((set) => ({
@@ -18,17 +18,17 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				},
 			}));
 		},
-		updateShiur: (shiur: Shiur) => {
+		updateShiur: async (shiur: Shiur) => {
 			// First update Firebase
 			// Then update state
 
-			setDoc(
+			await setDoc(
 				doc(firestore, 'content', shiur.id),
 				{
 					...shiurToRawShiur(shiur),
 				},
 				{ merge: true }
-			);
+			).catch(permissionError);
 			set((state) => ({
 				shiur: {
 					...state.shiur,
@@ -58,8 +58,10 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			// Then delete from storage
 			// Then delete from state
 			const fileHash = shiur.source_path.split('/')[2];
-			await deleteObject(ref(storage, `shiurim/${shiur.type}/${fileHash}`));
-			deleteDoc(doc(firestore, 'content', shiur.id));
+			await deleteObject(ref(storage, `shiurim/${shiur.type}/${fileHash}`)).catch(
+				permissionError
+			);
+			deleteDoc(doc(firestore, 'content', shiur.id)).catch(permissionError);
 			set((state) => ({
 				shiur: {
 					...state.shiur,
@@ -87,17 +89,17 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				},
 			}));
 		},
-		updateRebbe: (rebbe: Rabbi) => {
+		updateRebbe: async (rebbe: Rabbi) => {
 			// First update Firebase
 			// Then update state
 
-			setDoc(
+			await setDoc(
 				doc(firestore, 'rebbeim', rebbe.id),
 				{
 					...rebbe,
 				},
 				{ merge: true }
-			);
+			).catch(permissionError);
 			set((state) => ({
 				rabbi: {
 					...state.rabbi,
@@ -108,12 +110,12 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				},
 			}));
 		},
-		deleteRebbe: (rebbe: Rabbi) => {
+		deleteRebbe: async (rebbe: Rabbi) => {
 			// First remove profile picture from storage
 			// Then delete from Firebase
 			// Then delete from state
-			deleteObject(ref(storage, `profile-pictures/${rebbe.profilePictureFileName}`));
-			deleteDoc(doc(firestore, 'rebbeim', rebbe.id));
+			await deleteObject(ref(storage, `profile-pictures/${rebbe.profilePictureFileName}`));
+			await deleteDoc(doc(firestore, 'rebbeim', rebbe.id));
 			set((state) => ({
 				rabbi: {
 					...state.rabbi,
@@ -178,3 +180,9 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			})),
 	},
 }));
+
+function permissionError(err: any) {
+	if (err.code === 'permission-denied') {
+		console.error(`Request from user ${auth.currentUser?.uid} failed: permission denied`);
+	} else throw err;
+}
