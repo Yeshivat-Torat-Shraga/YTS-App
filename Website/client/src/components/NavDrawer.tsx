@@ -9,11 +9,14 @@ import {
 	ListItemText,
 	Tooltip,
 	Button,
+	useTheme,
+	Stack,
 } from '@mui/material';
 import { NavLabel, navLabels } from '../nav';
 import { useContext } from 'react';
 import { AuthContext } from '../authContext';
 import { auth } from '../Firebase/firebase';
+import { useAppDataStore } from '../state';
 
 const drawerWidth = 240;
 
@@ -25,6 +28,10 @@ export default function NavDrawer({
 	setActiveTab: (navLabel: NavLabel) => void;
 }) {
 	const user = useContext(AuthContext);
+	const theme = useTheme();
+	const pendingReview = useAppDataStore((state) =>
+		_.filter(state.shiur.shiurim, (shiur) => shiur.pending)
+	).length;
 	return (
 		<Drawer
 			sx={{
@@ -66,12 +73,46 @@ export default function NavDrawer({
 							return (
 								<ListItem key={index} disablePadding>
 									<ListItemButton
+										sx={{ width: '100%' }}
 										selected={activeTab === label}
 										onClick={() => {
 											setActiveTab(label);
 										}}
 									>
-										<ListItemText primary={label} />
+										<Stack
+											direction="row"
+											spacing={2}
+											justifyContent="space-between"
+											width="100%"
+										>
+											<ListItemText primary={label} />
+											{label === 'Pending Review' && pendingReview > 0 && (
+												<div
+													style={{
+														borderRadius: 10,
+														border:
+															'1px solid' +
+															theme.palette.warning.main,
+														// textTransform: 'none',
+														color: theme.palette.warning.dark,
+														paddingTop: 2,
+														paddingBottom: 2,
+														paddingLeft: 7,
+														paddingRight: 7,
+														fontWeight: 'bold',
+														// center the text
+														display: 'flex',
+														justifyContent: 'center',
+														alignItems: 'center',
+													}}
+													color="warning"
+													// endIcon={}
+												>
+													{pendingReview}
+												</div>
+											)}
+										</Stack>
+										{/* Trailing badge */}
 									</ListItemButton>
 								</ListItem>
 							);
