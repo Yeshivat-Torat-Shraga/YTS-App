@@ -6,6 +6,8 @@ import { Shiur, TagData } from './shiur';
 export interface AppData {
 	shiur: {
 		shiurim: { [id: string]: Shiur };
+		addShiur: (shiur: Shiur) => void;
+		deleteShiur: (shiur: Shiur) => void;
 		setShiurim: (shiurim: { [id: string]: Shiur }) => void;
 		updateShiur: (shiur: Shiur) => void;
 		clearShiurim: () => void;

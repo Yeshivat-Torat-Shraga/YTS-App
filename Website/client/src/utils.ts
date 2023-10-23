@@ -3,9 +3,8 @@ import { firestore, storage } from './Firebase/firebase';
 import { Rabbi, RawRabbi } from './types/rabbi';
 import { RawShiur, Shiur } from './types/shiur';
 import _ from 'lodash';
-import { Timestamp, collection, doc, addDoc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 window.Buffer = window.Buffer || require('buffer').Buffer; // Required for get-mp3-duration
-const getMP3Duration = require('get-mp3-duration');
 
 export async function processRawRebbeim(rawRebbeim: RawRabbi[]): Promise<{ [id: string]: Rabbi }> {
 	return Promise.all(
@@ -134,9 +133,7 @@ export async function uploadShiurFile(shiurData: Omit<RawShiur, 'id'>, file: Fil
 	// 1. Get Bucket
 	const storageRef = ref(storage, `content/${hashHex}`);
 	// 2. Upload file
-	uploadBytes(storageRef, file).then((snapshot) => {
-		console.log('Uploaded a blob or file!');
-	});
+	uploadBytes(storageRef, file);
 }
 
 /**

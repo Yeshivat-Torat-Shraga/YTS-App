@@ -21,6 +21,18 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				},
 			}));
 		},
+		addShiur(shiur) {
+			addDoc(collection(firestore, 'content'), shiurToRawShiur(shiur)).catch(permissionError);
+			set((state) => ({
+				shiur: {
+					...state.shiur,
+					shiurim: {
+						...state.shiur.shiurim,
+						[shiur.id]: shiur,
+					},
+				},
+			}));
+		},
 		updateShiur: async (shiur: Shiur) => {
 			// First update Firebase
 			// Then update state
@@ -61,7 +73,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			// Then delete from storage
 			// Then delete from state
 			const fileHash = shiur.source_path.split('/')[2];
-			await deleteObject(ref(storage, `shiurim/${shiur.type}/${fileHash}`)).catch(
+			await deleteObject(ref(storage, `HLSStreams/${shiur.type}/${fileHash}`)).catch(
 				permissionError
 			);
 			deleteDoc(doc(firestore, 'content', shiur.id)).catch(permissionError);
