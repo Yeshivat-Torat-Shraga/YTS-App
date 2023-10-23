@@ -471,7 +471,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 
 	const GUEST_SPEAKER_ID = 'hn2GBxMrEbRSVtaxPC2K';
 
-	let query = db.collection(COLLECTION).orderBy('name', 'asc');
+	let query = db.collection(COLLECTION).where('visible', '==', true).orderBy('name', 'asc');
 
 	// pagination
 	if (queryOptions.previousDocID) {
