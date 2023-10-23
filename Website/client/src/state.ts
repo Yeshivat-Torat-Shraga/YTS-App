@@ -3,7 +3,7 @@ import Article from './types/article';
 import { Rabbi } from './types/rabbi';
 import { Shiur, TagData } from './types/shiur';
 import { AppData } from './types/state';
-import { doc, setDoc, deleteDoc } from '@firebase/firestore';
+import { doc, setDoc, deleteDoc, addDoc, collection } from '@firebase/firestore';
 import { auth, firestore, storage } from './Firebase/firebase';
 import { shiurToRawShiur } from './types/shiur';
 import { deleteObject, ref } from '@firebase/storage';
@@ -89,6 +89,39 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				rabbi: {
 					...state.rabbi,
 					rebbeim,
+				},
+			}));
+		},
+		async addRebbi(rebbe) {
+			const newDoc = await addDoc(collection(firestore, 'rebbeim'), rebbe).catch(
+				permissionError
+			);
+			if (!newDoc) throw new Error('Failed to add new rebbi');
+			rebbe.id = newDoc.id;
+			set((state) => ({
+				rabbi: {
+					...state.rabbi,
+					rebbeim: {
+						...state.rabbi.rebbeim,
+						[newDoc.id]: new Rabbi(
+							newDoc.id,
+							rebbe.name,
+							rebbe.profilePictureURL,
+							rebbe.profile_picture_filename,
+							rebbe.visible
+						),
+					},
+				},
+			}));
+		},
+		deleteRebbi(rebbe) {
+			deleteDoc(doc(firestore, 'rebbeim', rebbe.id)).catch(permissionError);
+			set((state) => ({
+				rabbi: {
+					...state.rabbi,
+					rebbeim: Object.fromEntries(
+						Object.entries(state.rabbi.rebbeim).filter(([id, _]) => id !== rebbe.id)
+					),
 				},
 			}));
 		},

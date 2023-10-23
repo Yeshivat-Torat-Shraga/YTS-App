@@ -153,3 +153,23 @@ export async function uploadShiurFile(shiurData: Omit<RawShiur, 'id'>, file: Fil
             "pending": False
         }
  */
+
+export async function uploadNewRebbi(
+	name: string,
+	profilePic: File
+): Promise<Omit<RawRabbi, 'id'>> {
+	// First upload file to storage
+	// Then upload document to firestore
+	const storageRef = ref(storage, `profile-pictures/${profilePic.name}`);
+	await uploadBytes(storageRef, profilePic);
+	const profilePictureURL = await getDownloadURL(
+		ref(storage, `profile-pictures/${profilePic.name}`)
+	);
+
+	return {
+		name,
+		profile_picture_filename: profilePic.name,
+		profilePictureURL,
+		visible: true,
+	};
+}

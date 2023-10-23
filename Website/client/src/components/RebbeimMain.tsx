@@ -1,27 +1,35 @@
-import { Avatar, Box, Button, Grid, Typography } from '@mui/material';
+import { Avatar, Box, Button, Modal, Typography } from '@mui/material';
 import { useAppDataStore } from '../state';
-import { RabbiCard } from './RabbiCard';
-import {
-	GridRowsProp,
-	GridRowModesModel,
-	GridRowModes,
-	DataGrid,
-	GridColDef,
-	GridToolbarContainer,
-	GridActionsCellItem,
-	GridEventListener,
-	GridRowId,
-	GridRowModel,
-	GridRowEditStopReasons,
-} from '@mui/x-data-grid';
+import { DataGrid, GridToolbarContainer } from '@mui/x-data-grid';
 import _ from 'lodash';
+import { PersonAdd } from '@mui/icons-material';
+import { useState } from 'react';
+import NewRabbiModalContents from './NewRabbiModalContents';
 export default function AllRebbeim() {
 	const rebbeim = useAppDataStore((state) => state.rabbi.rebbeim);
+	const [isAddingRabbi, setIsAddingRabbi] = useState(false);
 	return (
 		<Box height="100%" width="100%">
 			<DataGrid
 				rows={_.values(rebbeim)}
 				rowHeight={80}
+				slots={{
+					toolbar: () => (
+						<GridToolbarContainer>
+							<Button
+								variant="contained"
+								fullWidth
+								color="primary"
+								startIcon={<PersonAdd />}
+								onClick={() => {
+									setIsAddingRabbi(true);
+								}}
+							>
+								New Rebbi
+							</Button>
+						</GridToolbarContainer>
+					),
+				}}
 				columns={[
 					{
 						field: 'picURL',
@@ -72,35 +80,24 @@ export default function AllRebbeim() {
 						),
 					},
 				]}
-				// components={{
-				// 	Toolbar: GridToolbarContainer,
-				// }}
-				// componentsProps={{
-				// 	toolbar: {
-				// 		// disableExport: true,
-				// 		// disableColumnSelector: true,
-				// 		// disableDensitySelector: true,
-				// 		// disableFilterButton: true,
-				// 		// disableColumnFilter: true,
-				// 		// disableColumnMenu: true,
-				// 		// disableColumnReorder: true,
-				// 		// disableColumnResize: true,
 			/>
-			{/* <Grid container p={1}>
-				{rebbeim
-					.sort((rhs, lhs) => {
-						if (rhs.name < lhs.name) {
-							return -1;
-						}
-						if (rhs.name > lhs.name) {
-							return 1;
-						}
-						return 0;
-					})
-					.map((rabbi) => (
-						<RabbiCard rabbi={rabbi} key={rabbi.id} />
-					))}
-			</Grid> */}
+			<Modal open={isAddingRabbi} onClose={() => setIsAddingRabbi(false)}>
+				{!!isAddingRabbi ? (
+					<Box
+						sx={{
+							position: 'absolute',
+							top: '50%',
+							left: '50%',
+							transform: 'translate(-50%, -50%)',
+							width: 700,
+						}}
+					>
+						<NewRabbiModalContents />
+					</Box>
+				) : (
+					<></>
+				)}
+			</Modal>
 		</Box>
 	);
 }

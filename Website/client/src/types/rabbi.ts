@@ -17,10 +17,6 @@ export class Rabbi {
 		this.profilePictureFileName = profilePictureFileName;
 		this.visible = visible;
 	}
-
-	setVisible(visible: boolean) {
-		this.visible = visible;
-	}
 }
 
 export type RawRabbi = {
@@ -28,4 +24,5 @@ export type RawRabbi = {
 	name: string;
 	visible: boolean;
 	profile_picture_filename: string;
+	profilePictureURL: string;
 };
