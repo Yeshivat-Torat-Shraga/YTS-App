@@ -76,7 +76,9 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 							}}
 						>
 							{rebbeim.map((rebbe) => (
-								<MenuItem value={rebbe.id}>{rebbe.name}</MenuItem>
+								<MenuItem value={rebbe.id} key={rebbe.id}>
+									{rebbe.name}
+								</MenuItem>
 							))}
 						</TextField>
 						<TextField
@@ -111,8 +113,9 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 						<DropzoneArea
 							fileObjects={[]}
 							filesLimit={1}
+							maxFileSize={256 * 1024 * 1024}
 							dropzoneText={`Drop an audio file or click to choose a file`}
-							acceptedFiles={['audio/*']}
+							acceptedFiles={['audio/*', 'video/*']}
 							onChange={(files) =>
 								files.length === 0 ? setFile(null) : setFile(files[0])
 							}
@@ -132,6 +135,8 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 						onClick={() => {
 							if (shiur === null) {
 								formState.date = Timestamp.now();
+								formState.pending = true;
+								formState.viewCount = 0;
 								// TODO: Upload audio file
 								uploadShiurFile(shiurToRawShiur(formState as Shiur), file as File);
 							} else {

@@ -7,12 +7,10 @@ import { Shiur } from '../types/shiur';
 import { Box, Typography, Avatar, Button, Stack, CircularProgress } from '@mui/material';
 import _ from 'lodash';
 import { useAppDataStore } from '../state';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { functions } from '../Firebase/firebase';
 import { httpsCallable } from 'firebase/functions';
 import HLSAudioPlayer from './Player';
-
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export default function ShiurimTable({
 	shiurim,
@@ -63,6 +61,7 @@ export default function ShiurimTable({
 			sx={{ maxWidth: '100%' }}
 			rows={sortedIndexedShiurim}
 			rowHeight={80}
+			initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
 			columnVisibilityModel={{
 				index: !isForPending,
 				pending: !isForPending,
@@ -293,7 +292,7 @@ function AudioPreview({ params }: { params: any }) {
 				setAudioURL(url);
 			});
 		}
-	}, [shiur]);
+	}, [shiur, audioURL]);
 	return audioURL ? <HLSAudioPlayer hlsSource={audioURL} /> : <CircularProgress />;
 }
 
