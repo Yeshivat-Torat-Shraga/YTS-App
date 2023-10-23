@@ -7,6 +7,9 @@ import { doc, setDoc, deleteDoc } from '@firebase/firestore';
 import { auth, firestore, storage } from './Firebase/firebase';
 import { shiurToRawShiur } from './types/shiur';
 import { deleteObject, ref } from '@firebase/storage';
+import _ from 'lodash';
+export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
+
 export const useAppDataStore = create<AppData>()((set) => ({
 	shiur: {
 		shiurim: {},
@@ -142,17 +145,37 @@ export const useAppDataStore = create<AppData>()((set) => ({
 					articles,
 				},
 			})),
-		updateArticle: (article: Article) =>
+		updateArticle: async (article: Optional<Article, 'id'>) => {
+			// First update Firebase
+			// Then update state
+			if (!article.id) {
+				let newDoc = await addDoc(
+					collection(firestore, 'news'),
+					_.omit(article, 'id')
+				).catch(permissionError);
+				if (!newDoc) throw new Error('Failed to add new article');
+				article.id = newDoc.id;
+			} else {
+				await setDoc(
+					doc(firestore, 'news', article.id),
+					{
+						..._.omit(article, 'id'),
+					},
+					{ merge: true }
+				).catch(permissionError);
+			}
 			set((state) => ({
 				news: {
 					...state.news,
 					articles: {
 						...state.news.articles,
-						[article.id]: article,
+						[article.id!]: article as Article,
 					},
 				},
-			})),
-		deleteArticle: (article: Article) =>
+			}));
+		},
+		deleteArticle: (article: Article) => {
+			deleteDoc(doc(firestore, 'news', article.id)).catch(permissionError);
 			set((state) => ({
 				news: {
 					...state.news,
@@ -160,7 +183,8 @@ export const useAppDataStore = create<AppData>()((set) => ({
 						Object.entries(state.news.articles).filter(([id, _]) => id !== article.id)
 					),
 				},
-			})),
+			}));
+		},
 		clearArticles: () =>
 			set((state) => ({
 				news: {

@@ -6,6 +6,7 @@ type Article = {
 	date: Timestamp;
 	body: string;
 	title: string;
+	imageURLs: string[];
 };
 
 export default Article;

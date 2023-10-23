@@ -20,7 +20,7 @@ export interface AppData {
 	news: {
 		articles: { [id: string]: Article };
 		setArticles: (articles: { [id: string]: Article }) => void;
-		updateArticle: (article: Article) => void;
+		updateArticle: (article: Optional<Article, 'id'>) => void;
 		deleteArticle: (article: Article) => void;
 		clearArticles: () => void;
 	};
