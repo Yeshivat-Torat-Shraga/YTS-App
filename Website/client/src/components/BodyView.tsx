@@ -9,6 +9,7 @@ import { NewsMain } from './NewsMain';
 import PendingShiurim from './PendingShiurim';
 import AllRebbeim from './RebbeimMain';
 import ShiurimMain from './ShiurimMain';
+import NotificationsManager from './NotificationsSponsorships';
 
 const navComponents = {
 	Authentication: Box,
@@ -18,7 +19,7 @@ const navComponents = {
 	Rebbeim: AllRebbeim,
 	News: NewsMain,
 	Slideshow: Box,
-	'Notifications and Announcements': Box,
+	'Notifications and Sponsorships': NotificationsManager,
 };
 
 export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
