@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
 	AppBar,
 	CssBaseline,
@@ -8,6 +8,7 @@ import {
 	createTheme,
 	ThemeProvider,
 	IconButton,
+	useMediaQuery,
 } from '@mui/material';
 // import { Box } from '@mui/system';
 import NavDrawer from './components/NavDrawer';
@@ -17,17 +18,35 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './Firebase/firebase';
 import { AuthContext } from './authContext';
 import { Refresh } from '@mui/icons-material';
-import { useAppDataStore } from './state';
 
-const theme = createTheme({
+const lightTheme = createTheme({
 	palette: {
 		mode: 'light',
+	},
+});
+// Make a copy of the light theme and change it to dark
+const darkTheme = createTheme({
+	palette: {
+		mode: 'dark',
 	},
 });
 
 function App() {
 	const [activeTab, setActiveTab] = useState('Shiurim' as NavLabel);
 	const [user, setUser] = useState(auth.currentUser);
+	const [isLightTheme, setIsLightTheme] = useState(
+		useMediaQuery('(prefers-color-scheme: light)')
+	);
+	const themeListener = useCallback(
+		({ matches }: { matches: boolean }) => {
+			if (matches) {
+				if (isLightTheme) setIsLightTheme(false);
+			} else {
+				if (!isLightTheme) setIsLightTheme(true);
+			}
+		},
+		[isLightTheme]
+	);
 	// const loadContent = useAppDataStore((state) => state.load.shiurim);
 	// We need to make sure onAuthStateChanged is only called once
 	// so we use React.useEffect to make sure it's only called once
@@ -43,12 +62,15 @@ function App() {
 		});
 	}, [auth]);
 	useEffect(() => {
-		window.process = {
-			...window.process,
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeListener);
+		return () => {
+			window
+				.matchMedia('(prefers-color-scheme: dark)')
+				.removeEventListener('change', themeListener);
 		};
 	}, []);
 	return (
-		<ThemeProvider theme={theme}>
+		<ThemeProvider theme={isLightTheme ? lightTheme : darkTheme}>
 			<Box sx={{ display: 'flex' }}>
 				<CssBaseline />
 				<AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
