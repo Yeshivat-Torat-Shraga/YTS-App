@@ -4,6 +4,7 @@ import { Rabbi, RawRabbi } from './types/rabbi';
 import { RawShiur, Shiur } from './types/shiur';
 import _ from 'lodash';
 import { collection, addDoc } from 'firebase/firestore';
+import { Sponsorship, SponsorshipStatus } from './types/sponsorship';
 window.Buffer = window.Buffer || require('buffer').Buffer; // Required for get-mp3-duration
 
 export async function processRawRebbeim(rawRebbeim: RawRabbi[]): Promise<{ [id: string]: Rabbi }> {
@@ -169,4 +170,16 @@ export async function uploadNewRebbi(
 		profilePictureURL,
 		visible: true,
 	};
+}
+
+export function getSponsorshipStatus(sponsorship: Sponsorship): SponsorshipStatus {
+	const isBefore = sponsorship.dateBegin.toDate().getTime() > Date.now();
+	const isAfter = sponsorship.dateEnd.toDate().getTime() < Date.now();
+	if (isBefore) {
+		return SponsorshipStatus.INACTIVE;
+	} else if (isAfter) {
+		return SponsorshipStatus.EXPIRED;
+	} else {
+		return SponsorshipStatus.ACTIVE;
+	}
 }

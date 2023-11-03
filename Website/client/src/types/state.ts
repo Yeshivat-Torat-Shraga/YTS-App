@@ -2,6 +2,7 @@ import { Optional } from '../state';
 import Article from './article';
 import { Rabbi, RawRabbi } from './rabbi';
 import { Shiur, TagData } from './shiur';
+import { Sponsorship } from './sponsorship';
 
 export interface AppData {
 	shiur: {
@@ -31,5 +32,11 @@ export interface AppData {
 	tags: {
 		tags: { [id: string]: TagData };
 		setTags: (tags: { [id: string]: TagData }) => void;
+	};
+	sponsors: {
+		sponsors: { [id: string]: Sponsorship };
+		addSponsor: (sponsor: Optional<Sponsorship, 'id'>) => void;
+		deleteSponsor: (sponsor: Sponsorship) => void;
+		setSponsors: (sponsors: { [id: string]: Sponsorship }) => void;
 	};
 }

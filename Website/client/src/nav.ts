@@ -6,7 +6,8 @@ export const navLabels = [
 	'Rebbeim',
 	'News',
 	'Slideshow',
-	'Notifications and Sponsorships',
+	'Notifications',
+	'Sponsorships',
 ] as const;
 
 export type NavLabel = (typeof navLabels)[number];

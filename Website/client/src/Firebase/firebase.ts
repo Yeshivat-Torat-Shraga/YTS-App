@@ -11,6 +11,7 @@ import Article from '../types/article';
 import { processRawRebbeim, processRawShiurim } from '../utils';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import _ from 'lodash';
+import { Sponsorship } from '../types/sponsorship';
 
 export const app = initializeApp(firebaseConfig);
 const appCheckToken = process.env.REACT_APP_FIREBASE_APPCHECK_TOKEN;
@@ -87,6 +88,13 @@ auth.onAuthStateChanged(async (user) => {
 				rawData.news = newArticles;
 			}),
 		]);
+		getDocs(collection(firestore, 'sponsorships')).then(async (querySnapshot) => {
+			const newSponsors = querySnapshot.docs.map((doc) => ({
+				...doc.data(),
+				id: doc.id,
+			})) as Sponsorship[];
+			state.sponsors.setSponsors(_.keyBy(newSponsors, 'id'));
+		});
 		let processedRebbeim = await processRawRebbeim(rawData.rabbi);
 		let processedShiurim = processRawShiurim(rawData.shiur, processedRebbeim);
 		let processedArticles = _.keyBy(rawData.news, 'id');

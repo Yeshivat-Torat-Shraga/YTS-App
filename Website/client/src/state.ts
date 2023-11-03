@@ -8,6 +8,7 @@ import { auth, firestore, storage } from './Firebase/firebase';
 import { shiurToRawShiur } from './types/shiur';
 import { deleteObject, ref } from '@firebase/storage';
 import _ from 'lodash';
+import { Sponsorship } from './types/sponsorship';
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
 export const useAppDataStore = create<AppData>()((set) => ({
@@ -247,6 +248,48 @@ export const useAppDataStore = create<AppData>()((set) => ({
 					tags,
 				},
 			})),
+	},
+	sponsors: {
+		sponsors: {},
+		async addSponsor(sponsor) {
+			let newDoc = await addDoc(
+				collection(firestore, 'sponsorship'),
+				_.omit(sponsor, 'id')
+			).catch(permissionError);
+			if (!newDoc) throw new Error('Failed to add new article');
+			sponsor.id = newDoc.id;
+			set((state) => ({
+				sponsors: {
+					...state.sponsors,
+					sponsors: {
+						...state.sponsors.sponsors,
+						[sponsor.id!]: sponsor as Sponsorship,
+					},
+				},
+			}));
+		},
+		deleteSponsor(sponsor) {
+			deleteDoc(doc(firestore, 'sponsorships', sponsor.id)).catch(permissionError);
+			set((state) => ({
+				sponsors: {
+					...state.sponsors,
+					sponsors: Object.fromEntries(
+						Object.entries(state.sponsors.sponsors).filter(
+							([id, _]) => id !== sponsor.id
+						)
+					),
+				},
+			}));
+		},
+
+		setSponsors(sponsors: { [id: string]: Sponsorship }) {
+			set((state) => ({
+				sponsors: {
+					...state.sponsors,
+					sponsors,
+				},
+			}));
+		},
 	},
 }));
 
