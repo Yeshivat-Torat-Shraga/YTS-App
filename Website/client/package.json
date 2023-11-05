@@ -18,6 +18,7 @@
 		"@types/react-dom": "^18.0.10",
 		"@uiw/react-md-editor": "^3.23.6",
 		"buffer": "^6.0.3",
+		"date-fns": "^2.30.0",
 		"firebase": "^9.15.0",
 		"get-mp3-duration": "^1.0.0",
 		"hls.js": "^1.4.12",
@@ -27,6 +28,7 @@
 		"mui-file-dropzone": "^4.0.2",
 		"plyr-react": "^5.3.0",
 		"react": "^18.2.0",
+		"react-date-range": "^1.4.0",
 		"react-dom": "^18.2.0",
 		"react-scripts": "^5.0.1",
 		"typescript": "^4.9.4",
@@ -59,6 +61,8 @@
 		]
 	},
 	"devDependencies": {
-		"@types/lodash": "^4.14.191"
+		"@types/date-fns": "^2.6.0",
+		"@types/lodash": "^4.14.191",
+		"@types/react-date-range": "^1.4.7"
 	}
 }

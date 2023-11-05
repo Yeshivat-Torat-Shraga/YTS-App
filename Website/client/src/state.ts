@@ -253,10 +253,10 @@ export const useAppDataStore = create<AppData>()((set) => ({
 		sponsors: {},
 		async addSponsor(sponsor) {
 			let newDoc = await addDoc(
-				collection(firestore, 'sponsorship'),
+				collection(firestore, 'sponsorships'),
 				_.omit(sponsor, 'id')
 			).catch(permissionError);
-			if (!newDoc) throw new Error('Failed to add new article');
+			if (!newDoc) throw new Error('Failed to add new sponsorship');
 			sponsor.id = newDoc.id;
 			set((state) => ({
 				sponsors: {

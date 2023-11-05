@@ -7,6 +7,10 @@ import { collection, addDoc } from 'firebase/firestore';
 import { Sponsorship, SponsorshipStatus } from './types/sponsorship';
 window.Buffer = window.Buffer || require('buffer').Buffer; // Required for get-mp3-duration
 
+export type Nullable<T> = {
+	[P in keyof T]: T[P] | null;
+};
+
 export async function processRawRebbeim(rawRebbeim: RawRabbi[]): Promise<{ [id: string]: Rabbi }> {
 	return Promise.all(
 		rawRebbeim.map(async (rawRabbi) => {
