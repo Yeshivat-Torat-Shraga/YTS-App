@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { collection, getDocs, getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { getFunctions } from 'firebase/functions';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { getStorage } from '@firebase/storage';
 import firebaseConfig from './config.json';
 import { useAppDataStore } from '../state';
@@ -30,6 +30,7 @@ export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
+// connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 // getToken(appCheck)
 // 	.then(() => {
 // 		console.log('success');

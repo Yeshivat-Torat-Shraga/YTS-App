@@ -1,15 +1,49 @@
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
-import { firestore, storage } from './Firebase/firebase';
+import { firestore, functions, storage } from './Firebase/firebase';
 import { Rabbi, RawRabbi } from './types/rabbi';
 import { RawShiur, Shiur } from './types/shiur';
 import _ from 'lodash';
 import { collection, addDoc } from 'firebase/firestore';
 import { Sponsorship, SponsorshipStatus } from './types/sponsorship';
+import { httpsCallable } from 'firebase/functions';
 window.Buffer = window.Buffer || require('buffer').Buffer; // Required for get-mp3-duration
 
 export type Nullable<T> = {
 	[P in keyof T]: T[P] | null;
 };
+
+type SendNotificationPayload = {
+	title: string;
+	body: string;
+} & (
+	| {
+			topic: string;
+	  }
+	| {
+			token: string;
+	  }
+);
+
+export async function sendNotification({
+	title,
+	body,
+	topic,
+}: {
+	title: string;
+	body: string;
+	topic: string;
+}) {
+	const sendNotification = httpsCallable<SendNotificationPayload, string>(
+		functions,
+		'pushNotification'
+	);
+	sendNotification({
+		title,
+		body,
+		topic: 'faketopicthatdoesntexist',
+		token: 'dhJYB57nTZWhDYjVvFn14Q:APA91bHYQ9FisNhuEQjlCkHvcu_bVboCkbU48ly8kKPgxIP2YQtVVJ8_j71W-knXlHrItWZyXVmTxZHNdWiHBOlPA7Hi_ykAmGe1Y8I09xlM56lsp4PxD6FsnIllpDpa9QG-83Saf36t',
+	}).finally(console.info);
+}
 
 export async function processRawRebbeim(rawRebbeim: RawRabbi[]): Promise<{ [id: string]: Rabbi }> {
 	return Promise.all(
