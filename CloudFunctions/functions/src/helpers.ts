@@ -1,11 +1,32 @@
 import { logger } from 'firebase-functions';
 import admin from 'firebase-admin';
-import { Author, TagDocument, TagFirebaseDocument } from './types';
+import { Author, TagClient, TagFirebase } from './types';
 
 export const ENABLEAPPCHECK = true;
 
 export function log(data: any, structured = false): string {
+	logger.log(data, {
+		structuredData: structured,
+	});
+
+	return JSON.stringify(data);
+}
+export function info(data: any, structured = false): string {
 	logger.info(data, {
+		structuredData: structured,
+	});
+
+	return JSON.stringify(data);
+}
+export function warn(data: any, structured = false): string {
+	logger.warn(data, {
+		structuredData: structured,
+	});
+
+	return JSON.stringify(data);
+}
+export function error(data: any, structured = false): string {
+	logger.error(data, {
 		structuredData: structured,
 	});
 
@@ -59,7 +80,7 @@ export async function getRabbiFor(id: string, includeAllAuthorData: boolean): Pr
 	});
 }
 
-export async function getTagFor(id: string): Promise<TagDocument> {
+export async function getTagFor(id: string): Promise<TagClient> {
 	return new Promise(async (resolve, reject) => {
 		const db = admin.firestore();
 		try {
@@ -67,9 +88,9 @@ export async function getTagFor(id: string): Promise<TagDocument> {
 
 			const data = tagDoc.data();
 			if (data) {
-				const fd = new TagFirebaseDocument(data);
+				const fd = data as TagFirebase;
 
-				const document: TagDocument = {
+				const document: TagClient = {
 					id: tagDoc.id,
 					name: fd.name,
 					displayName: fd.displayName,

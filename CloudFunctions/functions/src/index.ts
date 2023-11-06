@@ -1,25 +1,24 @@
 import admin from 'firebase-admin';
-import { logger } from 'firebase-functions';
-import { onCall, HttpsError, onRequest } from 'firebase-functions/v2/https';
-import cors from 'cors';
-const handler = cors({ origin: true });
+// import { logger } from 'firebase-functions';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+// import cors from 'cors';
+// const handler = cors({ origin: true });
 import {
-	AlertDocument,
-	AlertFirebaseDocument,
+	AlertFirestore,
 	Author,
-	ContentDocument,
-	ContentFirebaseDocument,
-	LoadData,
-	NewsDocument,
-	NewsFirebaseDocument,
-	ProspectiveContentDocument,
-	RebbeimDocument,
-	RebbeimFirebaseDocument,
-	SlideshowImageDocument,
-	SlideshowImageFirebaseDocument,
-	SubmittedContentDocument,
-	TagDocument,
-	TagFirebaseDocument,
+	ContentClient,
+	ContentFirestore,
+	HTTPFunctionResult,
+	NewsArticleClient,
+	NewsArticleFirestore,
+	RabbiClient,
+	RabbiFirestore,
+	SlideshowImageClient,
+	SlideshowImageFirestore,
+	TagClient,
+	TagFirebase,
+	UserSubmittedContentClient,
+	UserSubmittedContentFirestore,
 } from './types';
 import {
 	log,
@@ -28,13 +27,19 @@ import {
 	strippedFilename,
 	supplyDefaultParameters,
 	getTagFor,
+	info,
+	error,
 	// ENABLEAPPCHECK,
 } from './helpers';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
-
-const functions = require('firebase-functions');
+// import { bucket } from 'firebase-functions/v1/storage';
+// const Storage = require('@google-cloud/storage').Storage;
 const FieldValue = admin.firestore.FieldValue;
+// This must be kept as a require() statement, otherwise the function will not work? \_('-')_/
+const functions = require('firebase-functions');
 
+import _ from 'lodash';
+import { AlertClient } from './types';
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
 	// credential: admin.credential.cert(
@@ -62,113 +67,153 @@ exports.createAlert = onCall({ enforceAppCheck: true }, async (request) => {
 	return 'Created an alert with ID: ' + doc.id;
 });
 
-exports.pushNotification = onRequest(
+exports.pushNotification = onCall(
 	{
-		// enforceAppCheck: true,
+		enforceAppCheck: true,
 		maxInstances: 10,
-		cors: true,
 	},
-	async (req, res) => {
-		// We can do additional checks to make sure the authenticated user can perform this action.
-		// Later, though.
-		handler(req, res, async () => {
-			const data = req.body;
+	async (request) => {
+		if (!request.auth) throw new HttpsError('unauthenticated', 'User is not authenticated');
+		const adminDoc = await admin
+			.firestore()
+			.collection('administrators')
+			.doc(request.auth.uid)
+			.get();
+		if (!adminDoc.exists) {
+			throw new HttpsError('permission-denied', 'User is not an administrator');
+		}
+		const adminProfile = adminDoc.data();
+		if (!adminProfile?.pushNotification) {
+			throw new HttpsError(
+				'permission-denied',
+				adminProfile?.username + ' does not have push notification perms'
+			);
+		}
+		const data = request.data; //req.body.data;
 
-			const payload = {
-				title: data.title,
-				body: data.body,
-			};
+		const payload = {
+			title: data.title,
+			body: data.body,
+		};
+		let topic = data.topic;
+		const token = data.token;
+		log(`received request with payload: ${JSON.stringify(data)}`);
+		log(`topic: ${topic}`);
+		log(`token: ${token}`);
+		// If topic and token are set, return with an error
+		if (data.topic !== undefined && data.token !== undefined) {
+			error('Invalid notification payload -- topic and token cannot both be set');
+			// return res.status(400).json({ result: 'Invalid notification payload' });
+			throw new HttpsError('invalid-argument', 'Invalid notification payload');
+		}
+		// if neither are set, send to all devices
+		if (topic === undefined && token === undefined) {
+			error('Invalid notification payload -- topic or token must be set');
+			// return res.status(400).json({ result: 'Invalid notification payload' });
+			throw new HttpsError('invalid-argument', 'Invalid notification payload');
+		}
 
-			// Make sure title and body are non-empty strings
-			if (
-				typeof payload.title !== 'string' ||
-				payload.title.length === 0 ||
-				typeof payload.body !== 'string' ||
-				payload.body.length === 0
-			) {
-				logger.error('Invalid notification payload');
-				return res.status(400).send('Invalid notification payload');
-			}
+		// Make sure title and body are non-empty strings
+		if (
+			typeof payload.title !== 'string' ||
+			payload.title.length === 0 ||
+			typeof payload.body !== 'string' ||
+			payload.body.length === 0
+		) {
+			error('Invalid notification payload');
+			// return res.status(400).json({ result: 'Invalid notification payload' });
+			throw new HttpsError('invalid-argument', 'Invalid notification payload');
+		}
 
-			try {
-				let notificationResult = await admin.messaging().send({
-					notification: payload,
-					topic: 'all',
-				});
+		try {
+			let notificationResult = await admin.messaging().send({
+				notification: payload,
+				topic,
+				token,
+			});
 
-				log('Successfully sent notification: ' + JSON.stringify(notificationResult));
-				return res.send(`Successfully sent message: ${notificationResult}`);
-			} catch (err) {
-				log('Error sending notification: ' + err);
-				return res.status(500).send('Error sending notification: ' + err);
-			}
-		});
+			info(
+				adminProfile.username +
+					' successfully sent notification: ' +
+					JSON.stringify(notificationResult)
+			);
+			// return res
+			// 	.status(200)
+			// 	.json({ result: `Successfully sent message: ${notificationResult}` });
+			return `Successfully sent message: ${notificationResult}`;
+		} catch (err) {
+			error('Error sending notification: ' + err);
+			// return res.status(500).json({ result: 'Error sending notification: ' + err });
+			throw new HttpsError('internal', 'Error sending notification: ' + err);
+		}
+		// });
 	}
 );
 
-exports.loadNews = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data;
-	// Get the query options
-	const queryOptions = {
-		limit: (data.limit as number) || 10,
-		includePictures: data.includePictures as Boolean,
-		previousDocID: data.lastLoadedDocID as string | undefined,
-	};
-
-	const db = admin.firestore();
-	const COLLECTION = 'news';
-
-	let query = db.collection(COLLECTION).orderBy('date', 'desc');
-	if (queryOptions.previousDocID) {
-		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
-		// Overwrite the query to start after the specified document.
-		query = query.startAfter(snapshot);
-		log(`Starting after document '${snapshot.id}'`);
-	}
-
-	// Execute the query
-	const newsSnapshot = await query.get();
-	const totalDocs = newsSnapshot.size;
-	// apply the limit
-	const docs = newsSnapshot.docs.slice(0, queryOptions.limit);
-	// Get the documents returned from the query
-	// const docs = newsSnapshot.docs;
-	// if null, return with an error
-	if (!docs || docs.length == 0) {
-		return {
-			metadata: {
-				lastLoadedDocID: queryOptions.previousDocID || null,
-				finalCall: docs ? true : false,
-			},
-			results: docs ? [] : null,
+exports.loadNews = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<NewsArticleClient> => {
+		const data = request.data;
+		// Get the query options
+		const queryOptions = {
+			limit: (data.limit as number) || 10,
+			includePictures: data.includePictures as Boolean,
+			previousDocID: data.lastLoadedDocID as string | undefined,
 		};
-	}
 
-	// Set a variable to hold the ID of the last document returned from the query.
-	// This is so the client can use this ID to load the next page of documents.
-	const lastDocumentFromQueryID = docs[docs.length - 1].id;
+		const db = admin.firestore();
+		const COLLECTION = 'news';
 
-	// Loop through the documents returned from the query.
-	// For each document, get the desired data and add it to the rebbeim array.
-	// Since we are using the await keyword, we need to make the
-	// function asynchronous. Because of this, the function returns a Promise and
-	// in turn, docs.map() returns an array of Promises.
-	// To deal with this, we are passing that array of Promises to Promise.all(), which
-	// returns a Promise that resolves when all the Promises in the array resolve.
-	// To finish it off, we use await to wait for the Promise returned by Promise.all()
-	// to resolve.
-	const newsDocs = await Promise.all(
-		docs.map(async (doc) => {
-			// get the document data
-			try {
-				var data = new NewsFirebaseDocument(doc.data());
-			} catch {
-				return null;
-			}
+		let query = db.collection(COLLECTION).orderBy('date', 'desc');
+		if (queryOptions.previousDocID) {
+			// Fetch the document with the specified ID from Firestore.
+			const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+			// Overwrite the query to start after the specified document.
+			query = query.startAfter(snapshot);
+			log(`Starting after document '${snapshot.id}'`);
+		}
 
-			const imageURLs: string[] = [];
-			/*
+		// Execute the query
+		const newsSnapshot = await query.get();
+		const totalDocs = newsSnapshot.size;
+		// apply the limit
+		const docs = newsSnapshot.docs.slice(0, queryOptions.limit);
+		// Get the documents returned from the query
+		// if null, return with an error
+		if (!docs || docs.length == 0) {
+			return {
+				metadata: {
+					lastLoadedDocID: queryOptions.previousDocID || null,
+					finalCall: docs ? true : false,
+				},
+				results: docs ? [] : null,
+			};
+		}
+
+		// Set a variable to hold the ID of the last document returned from the query.
+		// This is so the client can use this ID to load the next page of documents.
+		const lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+		// Loop through the documents returned from the query.
+		// For each document, get the desired data and add it to the rebbeim array.
+		// Since we are using the await keyword, we need to make the
+		// function asynchronous. Because of this, the function returns a Promise and
+		// in turn, docs.map() returns an array of Promises.
+		// To deal with this, we are passing that array of Promises to Promise.all(), which
+		// returns a Promise that resolves when all the Promises in the array resolve.
+		// To finish it off, we use await to wait for the Promise returned by Promise.all()
+		// to resolve.
+		const newsDocs = await Promise.all(
+			docs.map(async (doc) => {
+				// get the document data
+				try {
+					var data = doc.data() as NewsArticleFirestore;
+				} catch {
+					return null;
+				}
+
+				const imageURLs: string[] = [];
+				/*
 			// load the images
 			if (queryOptions.includePictures) {
 				for (const path of data.imageURLs || []) {
@@ -180,172 +225,178 @@ exports.loadNews = onCall({ enforceAppCheck: true }, async (request): Promise<Lo
 				}
 			}
 			*/
-			// return the document data
-			const document: NewsDocument = {
-				id: doc.id,
-				title: data.title,
-				author: data.author,
-				body: data.body,
-				uploaded: data.date,
-				imageURLs: imageURLs,
-			};
-			return document;
-		})
-	);
+				// return the document data
+				const document: NewsArticleClient = {
+					id: doc.id,
+					title: data.title,
+					author: data.author,
+					body: data.body,
+					uploaded: data.date,
+					imageURLs: imageURLs,
+				};
+				return document;
+			})
+		);
 
-	// Return the data
-	return {
-		metadata: {
-			lastLoadedDocID: lastDocumentFromQueryID,
-			finalCall: queryOptions.limit > totalDocs,
-		},
-		results: newsDocs.filter((doc) => doc != null),
-	};
-});
-
-exports.loadSlideshow = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data;
-
-	// Get the query options
-	const queryOptions = {
-		limit: (data.limit as number) || 10,
-		previousDocID: data.lastLoadedDocID as string | undefined,
-	};
-
-	const COLLECTION = 'slideshowImages';
-	const db = admin.firestore();
-
-	let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
-	if (queryOptions.previousDocID) {
-		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
-		// Overwrite the query to start after the specified document.
-		query = query.startAfter(snapshot);
-		log(`Starting after document '${snapshot}'`);
-	}
-
-	// Execute the query
-	const imageSnapshot = await query.limit(queryOptions.limit).get();
-
-	// Get the documents returned from the query
-	const docs = imageSnapshot.docs;
-	// if null, return with an error
-	if (!docs || docs.length == 0) {
+		// Return the data
 		return {
 			metadata: {
-				lastLoadedDocID: null,
-				finalCall: docs ? true : false,
+				lastLoadedDocID: lastDocumentFromQueryID,
+				finalCall: queryOptions.limit > totalDocs,
 			},
-			results: docs ? [] : null,
+			results: _.compact(newsDocs),
 		};
 	}
+);
 
-	log(`Loaded ${docs.length} image docs.`);
+exports.loadSlideshow = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<SlideshowImageClient> => {
+		const data = request.data;
 
-	// Set a variable to hold the ID of the last document returned from the query.
-	// This is so the client can use this ID to load the next page of documents.
-	const lastDocumentFromQueryID = docs[docs.length - 1].id;
+		// Get the query options
+		const queryOptions = {
+			limit: (data.limit as number) || 10,
+			previousDocID: data.lastLoadedDocID as string | undefined,
+		};
 
-	// Loop through the documents returned from the query.
-	// For each document, get the desired data and add it to the rebbeim array.
-	// Since we are using the await keyword, we need to make the
-	// function asynchronous. Because of this, the function returns a Promise and
-	// in turn, docs.map() returns an array of Promises.
-	// To deal with this, we are passing that array of Promises to Promise.all(), which
-	// returns a Promise that resolves when all the Promises in the array resolve.
-	// To finish it off, we use await to wait for the Promise returned by Promise.all()
-	// to resolve.
+		const COLLECTION = 'slideshowImages';
+		const db = admin.firestore();
 
-	const imageDocs: (SlideshowImageDocument | null)[] = await Promise.all(
-		docs.map(async (doc) => {
-			// Get the document data
-			try {
-				var data = new SlideshowImageFirebaseDocument(doc.data());
-				log(`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`);
-			} catch (err) {
-				log(`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`);
-				return null;
-			}
-
-			// log(`Loading image: '${JSON.stringify(data)}'`);
-
-			// Get the image path
-			const path = data.image_name;
-			// Get the image URL
-			try {
-				const url = await getURLFor(`slideshow/${path}`);
-				// return the document data
-				const document: SlideshowImageDocument = {
-					title: data.title || null,
-					id: doc.id,
-					url: url,
-					uploaded: data.uploaded,
-				};
-				// log(`Returning data: '${JSON.stringify(document)}'`);
-
-				return document;
-			} catch (err) {
-				log(`Error getting image for '${path}': ${err}`, true);
-				return null;
-			}
-		})
-	);
-	return {
-		metadata: {
-			lastLoadedDocID: lastDocumentFromQueryID,
-			finalCall: queryOptions.limit > docs.length,
-		},
-		results: imageDocs.filter((doc) => {
-			return doc != null;
-		}),
-	};
-});
-
-exports.loadRabbisByIDs = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data;
-	// check if data.documentIDs is an array
-	if (!Array.isArray(data.documentIDs ?? false))
-		throw new Error('data.documentIDs must be an array of strings');
-
-	// check if data.documentIDs is not empty
-	// if (data.documentIDs.length == 0) throw new Error('data.documentIDs must not be empty');
-	// check if data.documentIDs only contains strings
-	for (const id of data.documentIDs)
-		if (typeof id !== 'string') throw new Error('data.documentIDs must only contain strings');
-
-	let documentIDs: string[] = data.documentIDs;
-	const COLLECTION = 'rebbeim';
-	const db = admin.firestore();
-
-	// Get the document data
-	let unfilteredContentDocs: (Author | null)[] = await Promise.all(
-		documentIDs.map(async (docID) => {
+		let query = db.collection(COLLECTION).orderBy('uploaded', 'desc');
+		if (queryOptions.previousDocID) {
 			// Fetch the document with the specified ID from Firestore.
-			const snapshot = await db.collection(COLLECTION).doc(docID).get();
-			// If the document does not exist, return null
-			if (!snapshot.exists) return null;
-			// Get the document data
-			try {
-				return await getRabbiFor(docID, true);
-			} catch (err) {
-				log(`Error getting data for docID: '${docID}': ${err}`, true);
-				return null;
-			}
-		})
-	);
+			const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+			// Overwrite the query to start after the specified document.
+			query = query.startAfter(snapshot);
+			log(`Starting after document '${snapshot}'`);
+		}
 
-	let contentDocs = unfilteredContentDocs.filter((doc) => {
-		return doc != null;
-	}) as Author[];
+		// Execute the query
+		const imageSnapshot = await query.limit(queryOptions.limit).get();
 
-	return {
-		metadata: {
-			lastLoadedDocID: contentDocs.length > 0 ? contentDocs[contentDocs.length - 1].id : null,
-			finalCall: documentIDs.length > contentDocs.length,
-		},
-		results: contentDocs,
-	};
-});
+		// Get the documents returned from the query
+		const docs = imageSnapshot.docs;
+		// if null, return with an error
+		if (!docs || docs.length == 0) {
+			return {
+				metadata: {
+					lastLoadedDocID: null,
+					finalCall: docs ? true : false,
+				},
+				results: docs ? [] : null,
+			};
+		}
+
+		log(`Loaded ${docs.length} image docs.`);
+
+		// Set a variable to hold the ID of the last document returned from the query.
+		// This is so the client can use this ID to load the next page of documents.
+		const lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+		// Loop through the documents returned from the query.
+		// For each document, get the desired data and add it to the rebbeim array.
+		// Since we are using the await keyword, we need to make the
+		// function asynchronous. Because of this, the function returns a Promise and
+		// in turn, docs.map() returns an array of Promises.
+		// To deal with this, we are passing that array of Promises to Promise.all(), which
+		// returns a Promise that resolves when all the Promises in the array resolve.
+		// To finish it off, we use await to wait for the Promise returned by Promise.all()
+		// to resolve.
+
+		const imageDocs = await Promise.all(
+			docs.map(async (doc) => {
+				// Get the document data
+				try {
+					var data = doc.data() as SlideshowImageFirestore;
+					log(`Succeded creating SlideShowImageFirebaseDocument from ${doc.id}`);
+				} catch (err) {
+					log(`Failed creating SlideShowImageFirebaseDocument from ${doc.id}: ${err}`);
+					return null;
+				}
+
+				// log(`Loading image: '${JSON.stringify(data)}'`);
+
+				// Get the image path
+				const path = data.image_name;
+				// Get the image URL
+				try {
+					const url = await getURLFor(`slideshow/${path}`);
+					// return the document data
+					const document: SlideshowImageClient = {
+						title: data.title || null,
+						id: doc.id,
+						url: url,
+						uploaded: data.uploaded,
+					};
+					// log(`Returning data: '${JSON.stringify(document)}'`);
+
+					return document;
+				} catch (err) {
+					log(`Error getting image for '${path}': ${err}`, true);
+					return null;
+				}
+			})
+		);
+		return {
+			metadata: {
+				lastLoadedDocID: lastDocumentFromQueryID,
+				finalCall: queryOptions.limit > docs.length,
+			},
+			results: _.compact(imageDocs),
+		};
+	}
+);
+
+exports.loadRabbisByIDs = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<Author> => {
+		const data = request.data; // check if data.documentIDs is an array
+		if (!Array.isArray(data.documentIDs ?? false))
+			throw new Error('data.documentIDs must be an array of strings');
+
+		// check if data.documentIDs is not empty
+		// if (data.documentIDs.length == 0) throw new Error('data.documentIDs must not be empty');
+		// check if data.documentIDs only contains strings
+		for (const id of data.documentIDs)
+			if (typeof id !== 'string')
+				throw new Error('data.documentIDs must only contain strings');
+
+		let documentIDs: string[] = data.documentIDs;
+		const COLLECTION = 'rebbeim';
+		const db = admin.firestore();
+
+		// Get the document data
+		let unfilteredContentDocs: (Author | null)[] = await Promise.all(
+			documentIDs.map(async (docID) => {
+				// Fetch the document with the specified ID from Firestore.
+				const snapshot = await db.collection(COLLECTION).doc(docID).get();
+				// If the document does not exist, return null
+				if (!snapshot.exists) return null;
+				// Get the document data
+				try {
+					return await getRabbiFor(docID, true);
+				} catch (err) {
+					log(`Error getting data for docID: '${docID}': ${err}`, true);
+					return null;
+				}
+			})
+		);
+
+		let contentDocs = unfilteredContentDocs.filter((doc) => {
+			return doc != null;
+		}) as Author[];
+
+		return {
+			metadata: {
+				lastLoadedDocID:
+					contentDocs.length > 0 ? contentDocs[contentDocs.length - 1].id : null,
+				finalCall: documentIDs.length > contentDocs.length,
+			},
+			results: contentDocs,
+		};
+	}
+);
 
 exports.loadSignedUrlBySourcePath = onCall(
 	{ enforceAppCheck: true },
@@ -368,80 +419,84 @@ exports.loadSignedUrlBySourcePath = onCall(
 	}
 );
 
-exports.loadContentByIDs = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data;
-	// check if data.documentIDs is an array
-	if (!Array.isArray(data.documentIDs))
-		throw new Error('data.documentIDs must be an array of strings');
+exports.loadContentByIDs = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<ContentClient> => {
+		const data = request.data;
+		// check if data.documentIDs is an array
+		if (!Array.isArray(data.documentIDs))
+			throw new Error('data.documentIDs must be an array of strings');
 
-	// check if data.documentIDs is not empty
-	// if (data.documentIDs.length == 0) throw new Error('data.documentIDs must not be empty');
-	// check if data.documentIDs only contains strings
-	for (const id of data.documentIDs)
-		if (typeof id !== 'string') throw new Error('data.documentIDs must only contain strings');
+		// check if data.documentIDs is not empty
+		// if (data.documentIDs.length == 0) throw new Error('data.documentIDs must not be empty');
+		// check if data.documentIDs only contains strings
+		for (const id of data.documentIDs)
+			if (typeof id !== 'string')
+				throw new Error('data.documentIDs must only contain strings');
 
-	let documentIDs: string[] = data.documentIDs;
-	const COLLECTION = 'content';
-	const db = admin.firestore();
+		let documentIDs: string[] = data.documentIDs;
+		const COLLECTION = 'content';
+		const db = admin.firestore();
 
-	// Get the document data
-	let unfilteredContentDocs: (ContentDocument | null)[] = await Promise.all(
-		documentIDs.map(async (docID) => {
-			// Fetch the document with the specified ID from Firestore.
-			const snapshot = await db.collection(COLLECTION).doc(docID).get();
+		// Get the document data
+		let unfilteredContentDocs: (ContentClient | null)[] = await Promise.all(
+			documentIDs.map(async (docID) => {
+				// Fetch the document with the specified ID from Firestore.
+				const snapshot = await db.collection(COLLECTION).doc(docID).get();
 
-			const rawData = snapshot.data();
-			if (!rawData) return null;
-			if (rawData!.pending == true) return null;
+				const rawData = snapshot.data();
+				if (!rawData) return null;
+				if (rawData!.pending == true) return null;
 
-			// Get the document data
-			try {
-				var data = new ContentFirebaseDocument(rawData!);
-			} catch {
-				return null;
-			}
+				// Get the document data
+				try {
+					var data = rawData as ContentFirestore;
+				} catch {
+					return null;
+				}
 
-			const tagData = {
-				id: data.tagData.id,
-				name: data.tagData.name,
-				displayName: data.tagData.displayName,
-			};
-			try {
-				const sourceURL = await getURLFor(`${data.source_path}`);
-				const author = await getRabbiFor(data.attributionID, true);
-				return {
-					id: docID,
-					fileID: strippedFilename(data.source_path),
-					attributionID: data.attributionID,
-					title: data.title,
-					description: data.description,
-					duration: data.duration,
-					date: data.date,
-					type: data.type,
-					source_url: sourceURL,
-					author: author,
-					tagData: tagData,
-					pending: data.pending,
+				const tagData = {
+					id: data.tagData.id,
+					name: data.tagData.name,
+					displayName: data.tagData.displayName,
 				};
-			} catch (err) {
-				log(`Error getting data for docID: '${docID}': ${err}`, true);
-				return null;
-			}
-		})
-	);
+				try {
+					const sourceURL = await getURLFor(`${data.source_path}`);
+					const author = await getRabbiFor(data.attributionID, true);
+					const document: ContentClient = {
+						id: docID,
+						fileID: strippedFilename(data.source_path),
+						attributionID: data.attributionID,
+						title: data.title,
+						description: data.description,
+						duration: data.duration,
+						date: data.date,
+						type: data.type,
+						source_url: sourceURL,
+						author: author,
+						tagData: tagData,
+						pending: data.pending,
+					};
+					return document;
+				} catch (err) {
+					log(`Error getting data for docID: '${docID}': ${err}`, true);
+					return null;
+				}
+			})
+		);
 
-	let contentDocs = unfilteredContentDocs.filter((doc) => {
-		return doc != null;
-	}) as ContentDocument[];
+		let contentDocs = _.compact(unfilteredContentDocs);
 
-	return {
-		metadata: {
-			lastLoadedDocID: contentDocs.length > 0 ? contentDocs[contentDocs.length - 1].id : null,
-			finalCall: documentIDs.length > contentDocs.length,
-		},
-		results: contentDocs,
-	};
-});
+		return {
+			metadata: {
+				lastLoadedDocID:
+					contentDocs.length > 0 ? contentDocs[contentDocs.length - 1].id : null,
+				finalCall: documentIDs.length > contentDocs.length,
+			},
+			results: contentDocs,
+		};
+	}
+);
 
 /**
  * @remarks
@@ -452,311 +507,322 @@ exports.loadContentByIDs = onCall({ enforceAppCheck: true }, async (request): Pr
  * @param includePictureURLs - Indicates whether or not profile picture URLs should be generated and included
  * @param includeServiceProfiles - Indicates whether or not to include service profiles, including 'Guest Speaker'
  */
-exports.loadRebbeim = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data;
-	// Get the query options
-	const queryOptions = {
-		limit: (data.limit as number) || 10,
-		previousDocID: data.lastLoadedDocID as string | undefined,
-		includePictureURLs: data.includePictureURLs as boolean | undefined,
-		includeServiceProfiles: data.includeServiceProfiles as boolean | false,
-	};
-
-	const COLLECTION = 'rebbeim';
-	const db = admin.firestore();
-
-	const GUEST_SPEAKER_ID = 'hn2GBxMrEbRSVtaxPC2K';
-
-	let query = db.collection(COLLECTION).where('visible', '==', true).orderBy('name', 'asc');
-
-	// pagination
-	if (queryOptions.previousDocID) {
-		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
-		// Overwrite the query to start after the specified document.
-		query = query.startAfter(snapshot);
-		log(`Starting after document '${snapshot}'`);
-	}
-
-	// limiting, rebbeim in database are not expected to exceed a reasonable amount
-	if (queryOptions.limit > 0) {
-		query = query.limit(queryOptions.limit);
-	}
-
-	// Execute the query
-	const rebbeimSnapshot = await query.get();
-
-	// Get the documents returned from the query
-	const docs = rebbeimSnapshot.docs;
-	// if null, return
-	if (!docs || docs.length == 0) {
-		return {
-			metadata: {
-				lastLoadedDocID: null,
-				finalCall: docs ? true : false,
-			},
-			results: docs ? [] : null,
+exports.loadRebbeim = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<RabbiClient> => {
+		const data = request.data;
+		// Get the query options
+		const queryOptions = {
+			limit: (data.limit as number) || 10,
+			previousDocID: data.lastLoadedDocID as string | undefined,
+			includePictureURLs: data.includePictureURLs as boolean | undefined,
+			includeServiceProfiles: data.includeServiceProfiles as boolean | false,
 		};
-	}
 
-	log(`Loaded ${docs.length} rebbeim documents.`);
+		const COLLECTION = 'rebbeim';
+		const db = admin.firestore();
 
-	// Set a variable to hold the ID of the last document returned from the query.
-	// This is so the client can use this ID to load the next page of documents.
-	const lastDocumentFromQueryID = docs[docs.length - 1].id;
+		const GUEST_SPEAKER_ID = 'hn2GBxMrEbRSVtaxPC2K';
 
-	// Loop through the documents returned from the query.
-	// For each document, get the desired data and add it to the rebbeim array.
-	// Since we are using the await keyword, we need to make the
-	// function asynchronous. Because of this, the function returns a Promise and
-	// in turn, docs.map() returns an array of Promises.
-	// To deal with this, we are passing that array of Promises to Promise.all(), which
-	// returns a Promise that resolves when all the Promises in the array resolve.
-	// To finish it off, we use await to wait for the Promise returned by Promise.all()
-	// to resolve.
-	const rebbeimDocs: (RebbeimDocument | null)[] = await Promise.all(
-		docs.map(async (doc) => {
-			if (!queryOptions.includeServiceProfiles) {
-				if (doc.id == GUEST_SPEAKER_ID) {
+		let query = db.collection(COLLECTION).where('visible', '==', true).orderBy('name', 'asc');
+
+		// pagination
+		if (queryOptions.previousDocID) {
+			// Fetch the document with the specified ID from Firestore.
+			const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+			// Overwrite the query to start after the specified document.
+			query = query.startAfter(snapshot);
+			log(`Starting after document '${snapshot}'`);
+		}
+
+		// limiting, rebbeim in database are not expected to exceed a reasonable amount
+		if (queryOptions.limit > 0) {
+			query = query.limit(queryOptions.limit);
+		}
+
+		// Execute the query
+		const rebbeimSnapshot = await query.get();
+
+		// Get the documents returned from the query
+		const docs = rebbeimSnapshot.docs;
+		// if null, return
+		if (!docs || docs.length == 0) {
+			return {
+				metadata: {
+					lastLoadedDocID: null,
+					finalCall: docs ? true : false,
+				},
+				results: docs ? [] : null,
+			};
+		}
+
+		log(`Loaded ${docs.length} rebbeim documents.`);
+
+		// Set a variable to hold the ID of the last document returned from the query.
+		// This is so the client can use this ID to load the next page of documents.
+		const lastDocumentFromQueryID = docs[docs.length - 1].id;
+
+		// Loop through the documents returned from the query.
+		// For each document, get the desired data and add it to the rebbeim array.
+		// Since we are using the await keyword, we need to make the
+		// function asynchronous. Because of this, the function returns a Promise and
+		// in turn, docs.map() returns an array of Promises.
+		// To deal with this, we are passing that array of Promises to Promise.all(), which
+		// returns a Promise that resolves when all the Promises in the array resolve.
+		// To finish it off, we use await to wait for the Promise returned by Promise.all()
+		// to resolve.
+		const rebbeimDocs: (RabbiClient | null)[] = await Promise.all(
+			docs.map(async (doc) => {
+				if (!queryOptions.includeServiceProfiles) {
+					if (doc.id == GUEST_SPEAKER_ID) {
+						return null;
+					}
+				}
+
+				// Get the document data
+				try {
+					var data = doc.data() as RabbiFirestore;
+				} catch {
 					return null;
 				}
-			}
 
-			// Get the document data
-			try {
-				var data = new RebbeimFirebaseDocument(doc.data());
-			} catch {
-				return null;
-			}
+				// log(`Loading rabbi: '${JSON.stringify(data)}'`);
 
-			// log(`Loading rabbi: '${JSON.stringify(data)}'`);
+				// Get the image path
+				const path = data.profile_picture_filename;
 
-			// Get the image path
-			const path = data.profile_picture_filename;
-
-			// Get the image URL
-			try {
-				const pfpURL = await getURLFor(`profile-pictures/${path}`);
-				// return the document data
-				const document: RebbeimDocument = {
-					id: doc.id,
-					name: data.name,
-					profile_picture_url: pfpURL,
-				};
-				return document;
-			} catch (err) {
-				log(`Error getting image for '${path}': ${err}`, true);
-				return null;
-			}
-		})
-	);
-
-	return {
-		metadata: {
-			lastLoadedDocID: lastDocumentFromQueryID,
-			finalCall: queryOptions.limit > docs.length,
-		},
-		results: rebbeimDocs.filter((doc) => {
-			return doc != null;
-		}),
-	};
-});
-
-exports.loadAlert = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const db = admin.firestore();
-	const COLLECTION = 'alerts';
-
-	let query = db.collection(COLLECTION).orderBy('dateIssued', 'desc');
-
-	const alert = await query.limit(1).get();
-	if (alert.docs && alert.docs.length > 0 && alert.docs[0].exists) {
-		const doc = alert.docs[0];
-		const data = new AlertFirebaseDocument(doc.data());
-		const document: AlertDocument = {
-			id: doc.id,
-			title: data.title,
-			body: data.body,
-			dateIssued: data.dateIssued,
-			dateExpired: data.dateExpired,
-		};
+				// Get the image URL
+				try {
+					const pfpURL = await getURLFor(`profile-pictures/${path}`);
+					// return the document data
+					const document: RabbiClient = {
+						id: doc.id,
+						name: data.name,
+						profile_picture_url: pfpURL,
+					};
+					return document;
+				} catch (err) {
+					log(`Error getting image for '${path}': ${err}`, true);
+					return null;
+				}
+			})
+		);
 
 		return {
 			metadata: {
-				lastLoadedDocID: null,
-				finalCall: true,
+				lastLoadedDocID: lastDocumentFromQueryID,
+				finalCall: queryOptions.limit > docs.length,
 			},
-			results: data.dateExpired.toDate() < new Date() ? null : [document],
-		};
-	} else {
-		return {
-			metadata: {
-				lastLoadedDocID: null,
-				finalCall: true,
-			},
-			results: null,
+			results: _.compact(rebbeimDocs),
 		};
 	}
-});
+);
 
-exports.loadContent = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data;
+exports.loadAlert = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<AlertClient> => {
+		const db = admin.firestore();
+		const COLLECTION = 'alerts';
 
-	// Get the query options
-	const queryOptions = {
-		limit: (data.limit as number) || 10,
-		previousDocID: data.lastLoadedDocID as string | undefined,
-		includeThumbnailURLs: data.includeThumbnailURLs as boolean,
-		includeAllAuthorData: (data.includeAllAuthorData as boolean) || false,
-		search: data.search as
-			| {
-					field: string;
-					value: string;
-			  }
-			| undefined,
-		pending: (data.pending as boolean) || false,
-	};
+		let query = db.collection(COLLECTION).orderBy('dateIssued', 'desc');
 
-	const COLLECTION = 'content';
-	const db = admin.firestore();
-	let query = db
-		.collection(COLLECTION)
-		.where('pending', '==', queryOptions.pending)
-		.orderBy('date', 'desc');
-	if (queryOptions.search) {
-		// Make sure the field and value are set
-		if (!queryOptions.search.field || !queryOptions.search.value) {
-			throw new HttpsError('invalid-argument', 'The search field and value must be set.');
+		const alert = await query.limit(1).get();
+		if (alert.docs && alert.docs.length > 0 && alert.docs[0].exists) {
+			const doc = alert.docs[0];
+			const data = doc.data() as AlertFirestore;
+			const document: AlertClient = {
+				id: doc.id,
+				title: data.title,
+				body: data.body,
+				dateIssued: data.dateIssued,
+				dateExpired: data.dateExpired,
+			};
+
+			return {
+				metadata: {
+					lastLoadedDocID: null,
+					finalCall: true,
+				},
+				results: data.dateExpired.toDate() < new Date() ? null : [document],
+			};
+		} else {
+			return {
+				metadata: {
+					lastLoadedDocID: null,
+					finalCall: true,
+				},
+				results: null,
+			};
 		}
-		if (queryOptions.search.field == 'tagID') {
-			// If it's a tag ID, we need to get the tag document using the tag ID
-			const tagSnapshot = await db.collection('tags').doc(queryOptions.search.value).get();
-			// If the tag document doesn't exist, return
-			if (!tagSnapshot.exists) {
-				return {
-					metadata: {
-						lastLoadedDocID: null,
-						finalCall: true,
-					},
-					results: null,
-				};
+	}
+);
+
+exports.loadContent = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<ContentClient> => {
+		const data = request.data;
+
+		// Get the query options
+		const queryOptions = {
+			limit: (data.limit as number) || 10,
+			previousDocID: data.lastLoadedDocID as string | undefined,
+			includeThumbnailURLs: data.includeThumbnailURLs as boolean,
+			includeAllAuthorData: (data.includeAllAuthorData as boolean) || false,
+			search: data.search as
+				| {
+						field: string;
+						value: string;
+				  }
+				| undefined,
+			pending: (data.pending as boolean) || false,
+		};
+
+		const COLLECTION = 'content';
+		const db = admin.firestore();
+		let query = db
+			.collection(COLLECTION)
+			.where('pending', '==', queryOptions.pending)
+			.orderBy('date', 'desc');
+		if (queryOptions.search) {
+			// Make sure the field and value are set
+			if (!queryOptions.search.field || !queryOptions.search.value) {
+				throw new HttpsError('invalid-argument', 'The search field and value must be set.');
 			}
-			// Get the tag document
-			const tagDoc = new TagFirebaseDocument(tagSnapshot.data()!);
-			// If the tag is a child tag, we're good to go.
-			// Otherwise, it't a parent tag, so we need to get all the child tags
-			if (tagDoc.isParent) {
-				let subCategoryIDs = tagDoc.subCategories!;
-				// Get the child tags
-				// Search the tags collection for all tags with a parentTagID equal to the tagID
-				query = query.where('tagData.id', 'in', subCategoryIDs) as any;
+			if (queryOptions.search.field == 'tagID') {
+				// If it's a tag ID, we need to get the tag document using the tag ID
+				const tagSnapshot = await db
+					.collection('tags')
+					.doc(queryOptions.search.value)
+					.get();
+				// If the tag document doesn't exist, return
+				if (!tagSnapshot.exists) {
+					return {
+						metadata: {
+							lastLoadedDocID: null,
+							finalCall: true,
+						},
+						results: null,
+					};
+				}
+				// Get the tag document
+				const tagDoc = tagSnapshot.data() as TagFirebase;
+				// If the tag is a child tag, we're good to go.
+				// Otherwise, it't a parent tag, so we need to get all the child tags
+				if (tagDoc.isParent) {
+					let subCategoryIDs = tagDoc.subCategories!;
+					// Get the child tags
+					// Search the tags collection for all tags with a parentTagID equal to the tagID
+					query = query.where('tagData.id', 'in', subCategoryIDs) as any;
+				} else {
+					query = query.where('tagData.id', '==', queryOptions.search.value) as any;
+					log(`Only getting content where tagID == ${queryOptions.search.value}`);
+				}
 			} else {
-				query = query.where('tagData.id', '==', queryOptions.search.value) as any;
-				log(`Only getting content where tagID == ${queryOptions.search.value}`);
+				query = query.where(
+					queryOptions.search.field,
+					'==',
+					queryOptions.search.value
+				) as any;
+				log(
+					`Only getting content where ${queryOptions.search.field} == ${queryOptions.search.value}`
+				);
 			}
 		} else {
-			query = query.where(queryOptions.search.field, '==', queryOptions.search.value) as any;
 			log(
-				`Only getting content where ${queryOptions.search.field} == ${queryOptions.search.value}`
+				`Not filtering by search, sorting by upload date queryOptions.search: ${queryOptions.search}`
 			);
 		}
-	} else {
-		log(
-			`Not filtering by search, sorting by upload date queryOptions.search: ${queryOptions.search}`
+
+		if (queryOptions.previousDocID) {
+			// Fetch the document with the specified ID from Firestore.
+			const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
+			// Overwrite the query to start after the specified document.
+			query = query.startAfter(snapshot) as any;
+			log(`Starting after document '${snapshot}'`);
+		}
+
+		// Execute the query
+		const contentSnapshot = await query.limit(queryOptions.limit).get();
+		// Get the documents returned from the query
+		const docs = contentSnapshot.docs;
+		// If null, return
+		if (!docs || docs.length == 0) {
+			return {
+				metadata: {
+					lastLoadedDocID: null,
+					finalCall: docs ? true : false,
+				},
+				results: docs ? [] : null,
+			};
+		}
+
+		// Set a variable to hold the ID of the last document returned from the query.
+		// This is so the client can use this ID to load the next page of documents.
+		const lastDocumentFromQueryID = docs[docs.length - 1].id;
+		console.log('Last document ID to be served: ' + lastDocumentFromQueryID);
+
+		// Loop through the documents returned from the query.
+		// For each document, get the desired data and add it to the content array.
+		// Since we are using the await keyword, we need to make the
+		// function asynchronous. Because of this, the function returns a Promise and
+		// in turn, docs.map() returns an array of Promises.
+		// To deal with this, we are passing that array of Promises to Promise.all(), which
+		// returns a Promise that resolves when all the Promises in the array resolve.
+		// To finish it off, we use await to wait for the Promise returned by Promise.all()
+		// to resolve.
+		const contentDocs = await Promise.all(
+			docs.map(async (doc) => {
+				// Get the document data
+				try {
+					var data = doc.data() as ContentFirestore;
+				} catch {
+					return null;
+				}
+
+				const tagData = {
+					id: data.tagData.id,
+					name: data.tagData.name,
+					displayName: data.tagData.displayName,
+				};
+				try {
+					const sourceURL = await getURLFor(`${data.source_path}`);
+					const author = await getRabbiFor(
+						data.attributionID,
+						queryOptions.includeAllAuthorData
+					);
+					const document: ContentClient = {
+						id: doc.id,
+						fileID: strippedFilename(data.source_path),
+						attributionID: data.attributionID,
+						title: data.title,
+						description: data.description,
+						duration: data.duration,
+						date: data.date,
+						type: data.type,
+						source_url: sourceURL,
+						author: author,
+						tagData: tagData,
+						pending: data.pending,
+					};
+					return document;
+				} catch (err) {
+					log(`Error getting data for docID: '${doc.id}': ${err}`, true);
+					return null;
+				}
+			})
 		);
-	}
 
-	if (queryOptions.previousDocID) {
-		// Fetch the document with the specified ID from Firestore.
-		const snapshot = await db.collection(COLLECTION).doc(queryOptions.previousDocID).get();
-		// Overwrite the query to start after the specified document.
-		query = query.startAfter(snapshot) as any;
-		log(`Starting after document '${snapshot}'`);
-	}
-
-	// Execute the query
-	const contentSnapshot = await query.limit(queryOptions.limit).get();
-	// Get the documents returned from the query
-	const docs = contentSnapshot.docs;
-	// If null, return
-	if (!docs || docs.length == 0) {
 		return {
 			metadata: {
-				lastLoadedDocID: null,
-				finalCall: docs ? true : false,
+				lastLoadedDocID: lastDocumentFromQueryID,
+				finalCall: queryOptions.limit > docs.length,
 			},
-			results: docs ? [] : null,
-		};
-	}
-
-	// Set a variable to hold the ID of the last document returned from the query.
-	// This is so the client can use this ID to load the next page of documents.
-	const lastDocumentFromQueryID = docs[docs.length - 1].id;
-	console.log('Last document ID to be served: ' + lastDocumentFromQueryID);
-
-	// Loop through the documents returned from the query.
-	// For each document, get the desired data and add it to the content array.
-	// Since we are using the await keyword, we need to make the
-	// function asynchronous. Because of this, the function returns a Promise and
-	// in turn, docs.map() returns an array of Promises.
-	// To deal with this, we are passing that array of Promises to Promise.all(), which
-	// returns a Promise that resolves when all the Promises in the array resolve.
-	// To finish it off, we use await to wait for the Promise returned by Promise.all()
-	// to resolve.
-	const contentDocs: (ContentDocument | null)[] = await Promise.all(
-		docs.map(async (doc) => {
-			// Get the document data
-			try {
-				var data = new ContentFirebaseDocument(doc.data());
-			} catch {
-				return null;
-			}
-
-			const tagData = {
-				id: data.tagData.id,
-				name: data.tagData.name,
-				displayName: data.tagData.displayName,
-			};
-			try {
-				const sourceURL = await getURLFor(`${data.source_path}`);
-				const author = await getRabbiFor(
-					data.attributionID,
-					queryOptions.includeAllAuthorData
-				);
-				return {
-					id: doc.id,
-					fileID: strippedFilename(data.source_path),
-					attributionID: data.attributionID,
-					title: data.title,
-					description: data.description,
-					duration: data.duration,
-					date: data.date,
-					type: data.type,
-					source_url: sourceURL,
-					author: author,
-					tagData: tagData,
-					pending: data.pending,
-				};
-			} catch (err) {
-				log(`Error getting data for docID: '${doc.id}': ${err}`, true);
-				return null;
-			}
-		})
-	);
-
-	return {
-		metadata: {
-			lastLoadedDocID: lastDocumentFromQueryID,
-			finalCall: queryOptions.limit > docs.length,
-		},
-		results: contentDocs
-			.filter((doc) => {
-				return doc != null;
-			})
-			.sort((lhs, rhs) => {
+			results: _.compact(contentDocs).sort((lhs, rhs) => {
 				return lhs!.date < rhs!.date ? 1 : -1;
 			}),
-	};
-});
+		};
+	}
+);
 
 // exports.generateHLSStream = storage
 // 	.bucket()
@@ -968,72 +1034,79 @@ exports.loadContent = onCall({ enforceAppCheck: true }, async (request): Promise
 // 		unlinkSync(tempFilePath);
 // 	});
 
-exports.loadCategories = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
-	const data = request.data ?? {};
-	const queryOptions = {
-		flatList: data.flatList || (false as boolean),
-	};
-	// This function will load all tags documents from the database and return them in JSON format.
-	const COLLECTION = 'tags';
-	const db = admin.firestore();
-	let query = db.collection(COLLECTION);
-	let querySnapshot = await query.get();
-	if (querySnapshot.empty) {
+exports.loadCategories = onCall(
+	{ enforceAppCheck: true },
+	async (request): HTTPFunctionResult<TagClient> => {
+		const data = request.data ?? {};
+		const queryOptions = {
+			flatList: data.flatList || (false as boolean),
+		};
+		// This function will load all tags documents from the database and return them in JSON format.
+		const COLLECTION = 'tags';
+		const db = admin.firestore();
+		let query = db.collection(COLLECTION);
+		let querySnapshot = await query.get();
+		if (querySnapshot.empty) {
+			return {
+				metadata: {
+					lastLoadedDocID: null,
+					finalCall: true,
+				},
+				results: [],
+			};
+		}
+		let categories: TagClient[] = [];
+		querySnapshot.forEach((doc) => {
+			let data = doc.data() as TagFirebase;
+			let category: TagClient = {
+				id: doc.id,
+				name: data.name,
+				displayName: data.displayName,
+				isParent: data.isParent || false,
+			};
+			if (data.subCategories) {
+				category.subCategories = _.compact(
+					(data.subCategories as string[]).map((subCategoryID: string) => {
+						// Get the subcategory document
+						let subCategory = querySnapshot.docs.find(
+							(doc) => doc.id === subCategoryID
+						);
+						if (!subCategory) {
+							return null;
+						}
+						let subCategoryData = subCategory.data() as TagFirebase;
+						const subCategoryDocument: TagClient = {
+							id: subCategory.id,
+							name: subCategoryData.name,
+							displayName: subCategoryData.displayName,
+							isParent: subCategoryData.isParent || false, // This should always be false
+						};
+						return subCategoryDocument;
+					})
+				);
+			}
+			// Add the category to the list if
+			// it does not have a parentID OR
+			// we are loading the flat list
+			if (!data.parentID || queryOptions.flatList) categories.push(category);
+			if (queryOptions.flatList)
+				categories = categories.filter((category) => !category.isParent);
+			// Sort alphabetically
+			categories.sort((a, b) => {
+				if (a.displayName < b.displayName) return -1;
+				if (a.displayName > b.displayName) return 1;
+				return 0;
+			});
+		});
 		return {
 			metadata: {
-				lastLoadedDocID: null,
+				lastLoadedDocID: querySnapshot.docs[querySnapshot.docs.length - 1].id,
 				finalCall: true,
 			},
-			results: [],
+			results: categories,
 		};
 	}
-	let categories: TagDocument[] = [];
-	querySnapshot.forEach((doc) => {
-		let data = new TagFirebaseDocument(doc.data());
-		let category: TagDocument = {
-			id: doc.id,
-			name: data.name,
-			displayName: data.displayName,
-			isParent: data.isParent || false,
-		};
-		if (data.subCategories) {
-			category.subCategories = data.subCategories
-				.map((subCategoryID: string) => {
-					// Get the subcategory document
-					let subCategory = querySnapshot.docs.find((doc) => doc.id === subCategoryID);
-					if (!subCategory) {
-						return null;
-					}
-					let subCategoryData = new TagFirebaseDocument(subCategory.data());
-					return {
-						id: subCategory.id,
-						name: subCategoryData.name,
-						displayName: subCategoryData.displayName,
-						isParent: subCategoryData.isParent || false, // This should always be false
-					} as TagDocument;
-				})
-				.filter((subCategory) => subCategory !== null) as TagDocument[];
-		}
-		// Add the category to the list if
-		// it does not have a parentID OR
-		// we are loading the flat list
-		if (!data.parentID || queryOptions.flatList) categories.push(category);
-		if (queryOptions.flatList) categories = categories.filter((category) => !category.isParent);
-		// Sort alphabetically
-		categories.sort((a, b) => {
-			if (a.displayName < b.displayName) return -1;
-			if (a.displayName > b.displayName) return 1;
-			return 0;
-		});
-	});
-	return {
-		metadata: {
-			lastLoadedDocID: querySnapshot.docs[querySnapshot.docs.length - 1].id,
-			finalCall: true,
-		},
-		results: categories,
-	};
-});
+);
 
 exports.incrementViewCount = onCall({ enforceAppCheck: true }, async (request): Promise<void> => {
 	const callData = request.data;
@@ -1046,7 +1119,7 @@ exports.incrementViewCount = onCall({ enforceAppCheck: true }, async (request): 
 	let query = db.collection(COLLECTION).doc(documentID);
 	let querySnapshot = await query.get();
 	if (querySnapshot.exists) {
-		let data = new ContentFirebaseDocument(querySnapshot.data()!);
+		let data = querySnapshot.data() as ContentFirestore;
 		if (!data.viewCount) data.viewCount = 0;
 		let newData = {
 			viewCount: data.viewCount + 1,
@@ -1180,14 +1253,14 @@ exports.search = onCall({ enforceAppCheck: true }, async (request): Promise<any>
 	const rawContent = docs[0];
 	const rawRebbeim = docs[1];
 
-	let content: (ContentDocument | null)[] | null;
+	let content: (ContentClient | null)[] | null;
 
 	if (rawContent != null) {
 		content = await Promise.all(
 			rawContent.map(async (doc) => {
 				// Get the document data
 				try {
-					var data = new ContentFirebaseDocument(doc.data());
+					var data = doc.data() as ContentFirestore;
 				} catch {
 					return null;
 				}
@@ -1229,14 +1302,14 @@ exports.search = onCall({ enforceAppCheck: true }, async (request): Promise<any>
 		content = null;
 	}
 
-	let rebbeim: (RebbeimDocument | null)[] | null;
+	let rebbeim: (RabbiClient | null)[] | null;
 	// check if rawRebbeim is null
 	if (rawRebbeim != null) {
 		rebbeim = await Promise.all(
 			rawRebbeim.map(async (doc) => {
 				// Get the document data
 				try {
-					var data = new RebbeimFirebaseDocument(doc.data());
+					var data = doc.data() as RabbiFirestore;
 				} catch {
 					return null;
 				}
@@ -1247,7 +1320,7 @@ exports.search = onCall({ enforceAppCheck: true }, async (request): Promise<any>
 				try {
 					const pfpURL = await getURLFor(`profile-pictures/${path}`);
 					// return the document data
-					const document: RebbeimDocument = {
+					const document: RabbiClient = {
 						id: doc.id,
 						name: data.name,
 						profile_picture_url: pfpURL,
@@ -1301,7 +1374,7 @@ exports.submitShiur = onCall({ enforceAppCheck: true }, async (request) => {
 	log(`Submitting shiur: ${JSON.stringify(data)}`);
 	const filename = data.filename;
 
-	const submission: SubmittedContentDocument = {
+	const submission: UserSubmittedContentClient = {
 		attributionID: data.attributionID,
 		title: data.title,
 		description: data.description,
@@ -1400,7 +1473,7 @@ exports.submitShiur = onCall({ enforceAppCheck: true }, async (request) => {
 	log(`uid: ${uid}`);
 
 	//  create a prospective content document
-	const prospectiveContent: ProspectiveContentDocument = {
+	const prospectiveContent: UserSubmittedContentFirestore = {
 		fileID: fileID,
 		attributionID: submission.attributionID,
 		title: submission.title,
@@ -1487,8 +1560,8 @@ exports.updateContentData = functions.firestore
 	.document(`content/{contentID}`)
 	.onWrite(async (ev) => {
 		if (ev.after.data != undefined) {
-			let data = ev.after.data();
-			let components = [];
+			let data = ev.after.data() as ContentFirestore;
+			let components: string[] = [];
 			let titleComponents = data.title
 				.replace(/[^a-z\d\s]+/gi, '')
 				.toLowerCase()
@@ -1527,8 +1600,8 @@ exports.updateContentData = functions.firestore
 
 exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWrite(async (ev) => {
 	if (ev.after.data != undefined) {
-		let data = ev.after.data();
-		let components = [];
+		let data = ev.after.data() as RabbiFirestore;
+		let components: string[] = [];
 		let nameComponents = data.name
 			.replace(/[^a-z\d\s]+/gi, '')
 			.toLowerCase()
@@ -1556,7 +1629,7 @@ exports.updateRabbiData = functions.firestore.document(`rebbeim/{rabbiID}`).onWr
 
 const lowercase = ['the', 'and', 'of', 'a', 'an', 'in', 'for', 'is', 'zt"l', "zt'l"];
 
-function titleFormat(s) {
+function titleFormat(s: string) {
 	const titleComponents = s.split(' ');
 	const title = titleComponents.map((x) => {
 		if (x.length > 1 && lowercase.indexOf(x.toLowerCase()) == -1) {

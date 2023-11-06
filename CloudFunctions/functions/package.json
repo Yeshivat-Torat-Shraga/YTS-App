@@ -24,11 +24,13 @@
 		"firebase-admin": "^10.0.2",
 		"firebase-functions": "^4.5.0",
 		"fs": "0.0.1-security",
+		"lodash": "^4.17.21",
 		"os": "^0.1.2",
 		"path": "^0.12.7"
 	},
 	"devDependencies": {
-		"@types/child-process-promise": "^2.2.2",
+		"@types/child-process-promise": "^2.2.4",
+		"@types/lodash": "^4.14.200",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
 		"eslint": "^7.32.0",

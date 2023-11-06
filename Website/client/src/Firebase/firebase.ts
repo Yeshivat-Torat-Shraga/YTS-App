@@ -30,7 +30,6 @@ export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
-// connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 // getToken(appCheck)
 // 	.then(() => {
 // 		console.log('success');

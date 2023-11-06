@@ -37,12 +37,12 @@ export async function sendNotification({
 		functions,
 		'pushNotification'
 	);
-	sendNotification({
+	console.log('sending notification to topic', topic);
+	return sendNotification({
 		title,
 		body,
-		topic: 'faketopicthatdoesntexist',
-		token: 'dhJYB57nTZWhDYjVvFn14Q:APA91bHYQ9FisNhuEQjlCkHvcu_bVboCkbU48ly8kKPgxIP2YQtVVJ8_j71W-knXlHrItWZyXVmTxZHNdWiHBOlPA7Hi_ykAmGe1Y8I09xlM56lsp4PxD6FsnIllpDpa9QG-83Saf36t',
-	}).finally(console.info);
+		topic,
+	});
 }
 
 export async function processRawRebbeim(rawRebbeim: RawRabbi[]): Promise<{ [id: string]: Rabbi }> {
