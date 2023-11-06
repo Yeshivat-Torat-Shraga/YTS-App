@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { collection, getDocs, getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { getStorage } from '@firebase/storage';
+import { getDownloadURL, getStorage, ref } from '@firebase/storage';
 import firebaseConfig from './config.json';
 import { useAppDataStore } from '../state';
 import { RawRabbi } from '../types/rabbi';
@@ -12,6 +12,7 @@ import { processRawRebbeim, processRawShiurim } from '../utils';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import _ from 'lodash';
 import { Sponsorship } from '../types/sponsorship';
+import { Slideshow } from '../types/slideshow';
 
 export const app = initializeApp(firebaseConfig);
 const appCheckToken = process.env.REACT_APP_FIREBASE_APPCHECK_TOKEN;
@@ -87,14 +88,26 @@ auth.onAuthStateChanged(async (user) => {
 				})) as Article[];
 				rawData.news = newArticles;
 			}),
+			getDocs(collection(firestore, 'sponsorships')).then(async (querySnapshot) => {
+				const newSponsors = querySnapshot.docs.map((doc) => ({
+					...doc.data(),
+					id: doc.id,
+				})) as Sponsorship[];
+				state.sponsors.setSponsors(_.keyBy(newSponsors, 'id'));
+			}),
+			getDocs(collection(firestore, 'slideshowImages')).then(async (querySnapshot) => {
+				const newSlides = await Promise.all(
+					querySnapshot.docs.map(async (doc) => {
+						const data = doc.data();
+						const url = await getDownloadURL(
+							ref(storage, `slideshow/${data.image_name}`)
+						);
+						return { title: data.title, id: doc.id, url } as Slideshow;
+					})
+				);
+				state.slideshow.setSlideshow(_.keyBy(newSlides, 'id'));
+			}),
 		]);
-		getDocs(collection(firestore, 'sponsorships')).then(async (querySnapshot) => {
-			const newSponsors = querySnapshot.docs.map((doc) => ({
-				...doc.data(),
-				id: doc.id,
-			})) as Sponsorship[];
-			state.sponsors.setSponsors(_.keyBy(newSponsors, 'id'));
-		});
 		let processedRebbeim = await processRawRebbeim(rawData.rabbi);
 		let processedShiurim = processRawShiurim(rawData.shiur, processedRebbeim);
 		let processedArticles = _.keyBy(rawData.news, 'id');

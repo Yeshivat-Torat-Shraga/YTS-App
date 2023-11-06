@@ -2,6 +2,7 @@ import { Optional } from '../state';
 import Article from './article';
 import { Rabbi, RawRabbi } from './rabbi';
 import { Shiur, TagData } from './shiur';
+import { Slideshow } from './slideshow';
 import { Sponsorship } from './sponsorship';
 
 export interface AppData {
@@ -38,5 +39,11 @@ export interface AppData {
 		addSponsor: (sponsor: Optional<Sponsorship, 'id'>) => void;
 		deleteSponsor: (sponsor: Sponsorship) => void;
 		setSponsors: (sponsors: { [id: string]: Sponsorship }) => void;
+	};
+	slideshow: {
+		slideshow: { [id: string]: Slideshow };
+		addSlide: (slide: Optional<Slideshow, 'id'>) => void;
+		deleteSlide: (slide: Slideshow) => void;
+		setSlideshow: (slideshow: { [id: string]: Slideshow }) => void;
 	};
 }

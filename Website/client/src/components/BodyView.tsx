@@ -11,6 +11,7 @@ import AllRebbeim from './RebbeimMain';
 import ShiurimMain from './ShiurimMain';
 import NotificationsManager from './Notifications';
 import SponsorshipPage from './Sponsorships';
+import SlideshowPage from './SlideshowPage';
 
 const navComponents = {
 	Authentication: Box,
@@ -19,7 +20,7 @@ const navComponents = {
 	'Pending Review': PendingShiurim,
 	Rebbeim: AllRebbeim,
 	News: NewsMain,
-	Slideshow: Box,
+	Slideshow: SlideshowPage,
 	Notifications: NotificationsManager,
 	Sponsorships: SponsorshipPage,
 };

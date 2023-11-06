@@ -9,6 +9,7 @@ import { shiurToRawShiur } from './types/shiur';
 import { deleteObject, ref } from '@firebase/storage';
 import _ from 'lodash';
 import { Sponsorship } from './types/sponsorship';
+import { Slideshow } from './types/slideshow';
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
 export const useAppDataStore = create<AppData>()((set) => ({
@@ -287,6 +288,41 @@ export const useAppDataStore = create<AppData>()((set) => ({
 				sponsors: {
 					...state.sponsors,
 					sponsors,
+				},
+			}));
+		},
+	},
+	slideshow: {
+		slideshow: {},
+		addSlide(slide) {
+			set((state) => ({
+				slideshow: {
+					...state.slideshow,
+					slideshow: {
+						...state.slideshow.slideshow,
+						[slide.id!]: slide as Slideshow,
+					},
+				},
+			}));
+		},
+		deleteSlide(slide) {
+			deleteDoc(doc(firestore, 'slideshow', slide.id)).catch(permissionError);
+			set((state) => ({
+				slideshow: {
+					...state.slideshow,
+					slideshow: Object.fromEntries(
+						Object.entries(state.slideshow.slideshow).filter(
+							([id, _]) => id !== slide.id
+						)
+					),
+				},
+			}));
+		},
+		setSlideshow(slideshow) {
+			set((state) => ({
+				slideshow: {
+					...state.slideshow,
+					slideshow,
 				},
 			}));
 		},
