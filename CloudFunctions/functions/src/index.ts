@@ -1,10 +1,8 @@
 import admin from 'firebase-admin';
-import { https, storage, logger } from 'firebase-functions';
-import ffmpeg from '@ffmpeg-installer/ffmpeg';
-import childProcessPromise from 'child-process-promise';
-// import * as functions from 'firebase-functions';
-
-import os from 'os';
+import { logger } from 'firebase-functions';
+import { onCall, HttpsError, onRequest } from 'firebase-functions/v2/https';
+import cors from 'cors';
+const handler = cors({ origin: true });
 import {
 	AlertDocument,
 	AlertFirebaseDocument,
@@ -29,20 +27,13 @@ import {
 	getRabbiFor,
 	strippedFilename,
 	supplyDefaultParameters,
-	verifyAppCheck,
 	getTagFor,
 	// ENABLEAPPCHECK,
 } from './helpers';
-import path from 'path';
-import { readdirSync, unlinkSync } from 'fs';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
-// import { bucket } from 'firebase-functions/v1/storage';
-const Storage = require('@google-cloud/storage').Storage;
+
 const functions = require('firebase-functions');
 const FieldValue = admin.firestore.FieldValue;
-
-const crypto = require('crypto');
-const fs = require('fs');
 
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
@@ -51,10 +42,8 @@ admin.initializeApp({
 	// ),
 });
 
-exports.createAlert = https.onCall(async (data, context) => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
-
+exports.createAlert = onCall({ enforceAppCheck: true }, async (request) => {
+	const data = request.data;
 	if (!data.title || typeof data.title !== 'string') return 'Title is required';
 	if (!data.body || typeof data.body !== 'string') return 'Body is required';
 	if (!data.dateIssued || typeof data.dateIssued !== 'string') return 'Invalid dateIssued';
@@ -73,43 +62,52 @@ exports.createAlert = https.onCall(async (data, context) => {
 	return 'Created an alert with ID: ' + doc.id;
 });
 
-exports.createNotification = https.onCall(async (data, context): Promise<string> => {
-	// App check is not needed, as this function requires authentication.
+exports.pushNotification = onRequest(
+	{
+		// enforceAppCheck: true,
+		maxInstances: 10,
+		cors: true,
+	},
+	async (req, res) => {
+		// We can do additional checks to make sure the authenticated user can perform this action.
+		// Later, though.
+		handler(req, res, async () => {
+			const data = req.body;
 
-	const payload = {
-		title: data.title,
-		body: data.body,
-	};
+			const payload = {
+				title: data.title,
+				body: data.body,
+			};
 
-	// Make sure title and body are non-empty strings
-	if (
-		typeof payload.title !== 'string' ||
-		payload.title.length === 0 ||
-		typeof payload.body !== 'string' ||
-		payload.body.length === 0
-	) {
-		logger.error('Invalid notification payload');
-		return 'Invalid notification payload';
-	}
+			// Make sure title and body are non-empty strings
+			if (
+				typeof payload.title !== 'string' ||
+				payload.title.length === 0 ||
+				typeof payload.body !== 'string' ||
+				payload.body.length === 0
+			) {
+				logger.error('Invalid notification payload');
+				return res.status(400).send('Invalid notification payload');
+			}
 
-	try {
-		let res = await admin.messaging().send({
-			notification: payload,
-			topic: 'all',
+			try {
+				let notificationResult = await admin.messaging().send({
+					notification: payload,
+					topic: 'all',
+				});
+
+				log('Successfully sent notification: ' + JSON.stringify(notificationResult));
+				return res.send(`Successfully sent message: ${notificationResult}`);
+			} catch (err) {
+				log('Error sending notification: ' + err);
+				return res.status(500).send('Error sending notification: ' + err);
+			}
 		});
-
-		log('Successfully sent notification: ' + JSON.stringify(res));
-		return `Successfully sent message: ${res}`;
-	} catch (err) {
-		log('Error sending notification: ' + err);
-		return 'Error sending notification: ' + err;
 	}
-});
+);
 
-exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
-
+exports.loadNews = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data;
 	// Get the query options
 	const queryOptions = {
 		limit: (data.limit as number) || 10,
@@ -205,9 +203,8 @@ exports.loadNews = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
+exports.loadSlideshow = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data;
 
 	// Get the query options
 	const queryOptions = {
@@ -304,9 +301,8 @@ exports.loadSlideshow = https.onCall(async (data, context): Promise<LoadData> =>
 	};
 });
 
-exports.loadRabbisByIDs = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
+exports.loadRabbisByIDs = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data;
 	// check if data.documentIDs is an array
 	if (!Array.isArray(data.documentIDs ?? false))
 		throw new Error('data.documentIDs must be an array of strings');
@@ -351,27 +347,29 @@ exports.loadRabbisByIDs = https.onCall(async (data, context): Promise<LoadData> 
 	};
 });
 
-exports.loadSignedUrlBySourcePath = https.onCall(async (data, context): Promise<string | Error> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
-	// check if data.documentID is a string
-	if (typeof data.sourcePath !== 'string') throw new Error('data.sourcePath must be a string');
+exports.loadSignedUrlBySourcePath = onCall(
+	{ enforceAppCheck: true },
+	async (request): Promise<string | Error> => {
+		const data = request.data;
+		// check if data.documentID is a string
+		if (typeof data.sourcePath !== 'string')
+			throw new Error('data.sourcePath must be a string');
 
-	let documentPath: string = data.sourcePath;
-	if (!documentPath.startsWith('HLSStreams/')) return Error('Invalid path');
-	// Get the signed URL
-	try {
-		return getURLFor(documentPath);
-		// return the document data
-	} catch (err) {
-		log(`Error getting url for '${documentPath}': ${err}`, true);
-		return err as Error;
+		let documentPath: string = data.sourcePath;
+		if (!documentPath.startsWith('HLSStreams/')) return Error('Invalid path');
+		// Get the signed URL
+		try {
+			return getURLFor(documentPath);
+			// return the document data
+		} catch (err) {
+			log(`Error getting url for '${documentPath}': ${err}`, true);
+			return err as Error;
+		}
 	}
-});
+);
 
-exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
+exports.loadContentByIDs = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data;
 	// check if data.documentIDs is an array
 	if (!Array.isArray(data.documentIDs))
 		throw new Error('data.documentIDs must be an array of strings');
@@ -454,10 +452,8 @@ exports.loadContentByIDs = https.onCall(async (data, context): Promise<LoadData>
  * @param includePictureURLs - Indicates whether or not profile picture URLs should be generated and included
  * @param includeServiceProfiles - Indicates whether or not to include service profiles, including 'Guest Speaker'
  */
-exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
-
+exports.loadRebbeim = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data;
 	// Get the query options
 	const queryOptions = {
 		limit: (data.limit as number) || 10,
@@ -566,10 +562,7 @@ exports.loadRebbeim = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
-
+exports.loadAlert = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
 	const db = admin.firestore();
 	const COLLECTION = 'alerts';
 
@@ -605,9 +598,8 @@ exports.loadAlert = https.onCall(async (data, context): Promise<LoadData> => {
 	}
 });
 
-exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
+exports.loadContent = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data;
 
 	// Get the query options
 	const queryOptions = {
@@ -633,10 +625,7 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	if (queryOptions.search) {
 		// Make sure the field and value are set
 		if (!queryOptions.search.field || !queryOptions.search.value) {
-			throw new https.HttpsError(
-				'invalid-argument',
-				'The search field and value must be set.'
-			);
+			throw new HttpsError('invalid-argument', 'The search field and value must be set.');
 		}
 		if (queryOptions.search.field == 'tagID') {
 			// If it's a tag ID, we need to get the tag document using the tag ID
@@ -769,225 +758,220 @@ exports.loadContent = https.onCall(async (data, context): Promise<LoadData> => {
 	};
 });
 
-exports.generateHLSStream = storage
-	.bucket()
-	.object()
-	.onFinalize(async (object) => {
-		// check if file is user uploaded
-		const userUpload = object.name!.startsWith('user-submissions/');
-		// Exit if this is triggered on a file that is not uplaoded to the content folder.
-		if (!object.name!.startsWith('content/') && !userUpload) {
-			return log(`File ${object.name} is not in the content folder. Exiting...`);
-		}
+// exports.generateHLSStream = storage
+// 	.bucket()
+// 	.object()
+// 	.onFinalize(async (object) => {
+// 		// check if file is user uploaded
+// 		const userUpload = object.name!.startsWith('user-submissions/');
+// 		// Exit if this is triggered on a file that is not uplaoded to the content folder.
+// 		if (!object.name!.startsWith('content/') && !userUpload) {
+// 			return log(`File ${object.name} is not in the content folder. Exiting...`);
+// 		}
 
-		const storageObj = new Storage();
-		const bucket = storageObj.bucket(object.bucket);
+// 		const storageObj = new Storage();
+// 		const bucket = storageObj.bucket(object.bucket);
 
-		const filepath = object.name!;
-		const filename = strippedFilename(filepath);
-		const tempFilePath = path.join(os.tmpdir(), filename);
+// 		const filepath = object.name!;
+// 		const filename = strippedFilename(filepath);
+// 		const tempFilePath = path.join(os.tmpdir(), filename);
 
-		// limit file size to 250 mb
-		if (parseInt(object.size) > 262144000) {
-			return log(`File ${object.name} is too large. Exiting...`);
-		}
+// 		// limit file size to 250 mb
+// 		if (parseInt(object.size) > 262144000) {
+// 			return log(`File ${object.name} is too large. Exiting...`);
+// 		}
 
-		// Download file from bucket.
-		await bucket.file(filepath).download({
-			destination: tempFilePath,
-			validation: false,
-		});
+// 		// Download file from bucket.
+// 		await bucket.file(filepath).download({
+// 			destination: tempFilePath,
+// 			validation: false,
+// 		});
 
-		let newFolderPrefix = `HLSStreams/audio`;
+// 		let newFolderPrefix = `HLSStreams/audio`;
 
-		if (userUpload) {
-			// count number of pending firebase documents
-			const db = admin.firestore();
-			const pendingCount = await db.collection('content').where('pending', '==', true).get();
+// 		if (userUpload) {
+// 			// count number of pending firebase documents
+// 			const db = admin.firestore();
+// 			const pendingCount = await db.collection('content').where('pending', '==', true).get();
 
-			if (pendingCount.size > 400) {
-				// delete file and return
-				log(`Too many pending documents. Deleting file at ${object.name}`);
-				return bucket.file(filepath).delete();
-			}
+// 			if (pendingCount.size > 400) {
+// 				// delete file and return
+// 				log(`Too many pending documents. Deleting file at ${object.name}`);
+// 				return bucket.file(filepath).delete();
+// 			}
 
-			log('Detected user upload, running checks...');
-			// sha256 hash the file
-			const fileBuffer = fs.readFileSync(tempFilePath);
-			const hashSum = crypto.createHash('sha256');
-			hashSum.update(fileBuffer);
-			const hex = hashSum.digest('hex');
-			log(`File named ${filename} has hash: ${hex}`);
+// 			log('Detected user upload, running checks...');
+// 			// sha256 hash the file
+// 			const fileBuffer = fs.readFileSync(tempFilePath);
+// 			const hashSum = crypto.createHash('sha256');
+// 			hashSum.update(fileBuffer);
+// 			const hex = hashSum.digest('hex');
+// 			log(`File named ${filename} has hash: ${hex}`);
 
-			// check that filename == hash
-			if (filename != hex) {
-				log(`Filename ${filename} does not match hash of content file ${hex}`);
-				log(`Deleting file at ${object.name}`);
-				await bucket.file(object.name!).delete();
-				return 'Failed to authenticate file';
-			} else {
-				log(`Filename ${filename} matches hash of content file ${hex}`);
-				// check if database has matching document
-				var newFolderPath = newFolderPrefix + '/' + hex;
-				const doc = await db
-					.collection('content')
-					.where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8')
-					.get();
+// 			// check that filename == hash
+// 			if (filename != hex) {
+// 				log(`Filename ${filename} does not match hash of content file ${hex}`);
+// 				log(`Deleting file at ${object.name}`);
+// 				await bucket.file(object.name!).delete();
+// 				return 'Failed to authenticate file';
+// 			} else {
+// 				log(`Filename ${filename} matches hash of content file ${hex}`);
+// 				// check if database has matching document
+// 				var newFolderPath = newFolderPrefix + '/' + hex;
+// 				const doc = await db
+// 					.collection('content')
+// 					.where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8')
+// 					.get();
 
-				if (doc.empty) {
-					// no matching document, delete file
-					log(`No matching firebase document for file to be placed at ${newFolderPath}`);
-					log(`Deleting file at ${object.name}`);
-					await bucket.file(filepath).delete();
-					return 'Failed to authenticate file';
-				} else {
-					// NOTE: Doesn't check for multiple matches
-					log(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
-				}
-			}
-		} else {
-			var newFolderPath = newFolderPrefix + '/' + filename;
-		}
+// 				if (doc.empty) {
+// 					// no matching document, delete file
+// 					log(`No matching firebase document for file to be placed at ${newFolderPath}`);
+// 					log(`Deleting file at ${object.name}`);
+// 					await bucket.file(filepath).delete();
+// 					return 'Failed to authenticate file';
+// 				} else {
+// 					// NOTE: Doesn't check for multiple matches
+// 					log(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
+// 				}
+// 			}
+// 		} else {
+// 			var newFolderPath = newFolderPrefix + '/' + filename;
+// 		}
 
-		const inputPath = tempFilePath;
-		const outputDir = path.join(os.tmpdir(), 'HLSStreams');
-		log(`Input path: ${inputPath}`);
-		log(`Output dir: ${outputDir}`);
+// 		const inputPath = tempFilePath;
+// 		const outputDir = path.join(os.tmpdir(), 'HLSStreams');
+// 		log(`Input path: ${inputPath}`);
+// 		log(`Output dir: ${outputDir}`);
 
-		// Create the output directory if it does not exist
-		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
-		// Empty the output directory if it exists
-		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
+// 		// Create the output directory if it does not exist
+// 		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
+// 		// Empty the output directory if it exists
+// 		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
 
-		// Create the HLS stream
-		let ffmpegArgs = [
-			'-y',
-			'-i',
-			inputPath,
-			'-hls_time',
-			'10',
-			'-hls_list_size',
-			'0',
-			'-hls_flags',
-			'append_list',
-			'-hls_segment_filename',
-			`${outputDir}/${filename}_%d.ts`,
-			`${outputDir}/${filename}.m3u8`,
-		];
+// 		// Create the HLS stream
+// 		let ffmpegArgs = [
+// 			'-y',
+// 			'-i',
+// 			inputPath,
+// 			'-hls_time',
+// 			'10',
+// 			'-hls_list_size',
+// 			'0',
+// 			'-hls_flags',
+// 			'append_list',
+// 			'-hls_segment_filename',
+// 			`${outputDir}/${filename}_%d.ts`,
+// 			`${outputDir}/${filename}.m3u8`,
+// 		];
 
-		if (object.contentType?.startsWith('audio/')) {
-			ffmpegArgs.splice(3, 0, '-vn');
-		}
+// 		if (object.contentType?.startsWith('audio/')) {
+// 			ffmpegArgs.splice(3, 0, '-vn');
+// 		}
 
-		log(`ffmpegArgs: ${ffmpegArgs}`);
-		try {
-			await childProcessPromise.spawn(ffmpeg.path, ffmpegArgs, {
-				stdio: 'inherit',
-			});
-		} catch (err) {
-			log(`Error creating HLS stream for ${filename}: ${err}`);
-		}
+// 		log(`ffmpegArgs: ${ffmpegArgs}`);
+// 		try {
+// 			await childProcessPromise.spawn(ffmpeg.path, ffmpegArgs, {
+// 				stdio: 'inherit',
+// 			});
+// 		} catch (err) {
+// 			log(`Error creating HLS stream for ${filename}: ${err}`);
+// 		}
 
-		log(`Uploading HLS stream from ${outputDir}`);
+// 		log(`Uploading HLS stream from ${outputDir}`);
 
-		const filenames = readdirSync(outputDir);
+// 		const filenames = readdirSync(outputDir);
 
-		// Upload the HLS stream to the bucket asynchronously
-		await Promise.all(
-			filenames.map((filePart) => {
-				const fp = path.join(outputDir, filePart);
-				log(`Uploading ${fp}...`);
-				return bucket.upload(fp, {
-					destination: `${newFolderPath}/${filePart}`,
-					metadata: {
-						'Cache-Control': 'public,max-age=3600',
-					},
-				});
-			})
-		);
-		console.log('Uploaded all files.');
+// 		// Upload the HLS stream to the bucket asynchronously
+// 		await Promise.all(
+// 			filenames.map((filePart) => {
+// 				const fp = path.join(outputDir, filePart);
+// 				log(`Uploading ${fp}...`);
+// 				return bucket.upload(fp, {
+// 					destination: `${newFolderPath}/${filePart}`,
+// 					metadata: {
+// 						'Cache-Control': 'public,max-age=3600',
+// 					},
+// 				});
+// 			})
+// 		);
+// 		console.log('Uploaded all files.');
 
-		// Delete the file in the content folder
-		bucket.file(filepath).delete();
-	});
+// 		// Delete the file in the content folder
+// 		bucket.file(filepath).delete();
+// 	});
 
-exports.generateThumbnail = storage
-	.bucket()
-	.object()
-	.onFinalize(async (object) => {
-		// if it's a .ts file exit
-		if (object.name!.endsWith('.ts')) {
-			log(`File ${object.name} is part of a HLSS stream.`);
-			return;
-		}
-		// Step 1: Preliminary filetype check
-		// Exit if this is triggered on a file that is not a video.
-		if (!object.contentType!.startsWith('video/')) {
-			return log(`File ${object.name} is not a video. Exiting...`);
-		}
-		// Step 2: Download the file from the bucket to a temporary folder
-		const filepath = object.name;
-		const filename = strippedFilename(filepath!);
-		const storage = new Storage();
-		const bucket = storage.bucket(object.bucket);
-		const tempFilePath = path.join(os.tmpdir(), filename);
-		await bucket.file(filepath).download({
-			destination: tempFilePath,
-			validation: false,
-		});
-		const inputPath = tempFilePath;
-		const outputDir = path.join(os.tmpdir(), 'thumbnails');
-		// Step 3: Create the output folder
-		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
-		// delete everything in the output directory
-		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
+// exports.generateThumbnail = storage
+// 	.bucket()
+// 	.object()
+// 	.onFinalize(async (object) => {
+// 		// if it's a .ts file exit
+// 		if (object.name!.endsWith('.ts')) {
+// 			log(`File ${object.name} is part of a HLSS stream.`);
+// 			return;
+// 		}
+// 		// Step 1: Preliminary filetype check
+// 		// Exit if this is triggered on a file that is not a video.
+// 		if (!object.contentType!.startsWith('video/')) {
+// 			return log(`File ${object.name} is not a video. Exiting...`);
+// 		}
+// 		// Step 2: Download the file from the bucket to a temporary folder
+// 		const filepath = object.name;
+// 		const filename = strippedFilename(filepath!);
+// 		const storage = new Storage();
+// 		const bucket = storage.bucket(object.bucket);
+// 		const tempFilePath = path.join(os.tmpdir(), filename);
+// 		await bucket.file(filepath).download({
+// 			destination: tempFilePath,
+// 			validation: false,
+// 		});
+// 		const inputPath = tempFilePath;
+// 		const outputDir = path.join(os.tmpdir(), 'thumbnails');
+// 		// Step 3: Create the output folder
+// 		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
+// 		// delete everything in the output directory
+// 		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
 
-		// Step 4: Generate the thumbnail using ffmpeg
-		try {
-			await childProcessPromise.spawn(
-				ffmpeg.path,
-				[
-					'-ss',
-					'0',
-					'-i',
-					inputPath,
-					'-y',
-					'-vframes',
-					'1',
-					'-vf',
-					'scale=512:-1',
-					'-update',
-					'1',
-					`${outputDir}/${filename}.jpg`,
-				],
-				{ stdio: 'inherit' }
-			);
-		} catch (error) {
-			logger.error(`Error: ${error}`);
-		}
-		// Step 5: Upload the thumbnail to the bucket
-		const metadata = {
-			contentType: 'image/jpeg',
-			// To enable Client-side caching you can set the Cache-Control headers here:
-			'Cache-Control': 'public,max-age=3600',
-		};
-		await bucket.upload(`${outputDir}/${filename}.jpg`, {
-			destination: `thumbnails/${filename}.jpg`,
-			metadata: metadata,
-		});
-		// Step 6: Delete the temporary file
-		unlinkSync(tempFilePath);
-	});
+// 		// Step 4: Generate the thumbnail using ffmpeg
+// 		try {
+// 			await childProcessPromise.spawn(
+// 				ffmpeg.path,
+// 				[
+// 					'-ss',
+// 					'0',
+// 					'-i',
+// 					inputPath,
+// 					'-y',
+// 					'-vframes',
+// 					'1',
+// 					'-vf',
+// 					'scale=512:-1',
+// 					'-update',
+// 					'1',
+// 					`${outputDir}/${filename}.jpg`,
+// 				],
+// 				{ stdio: 'inherit' }
+// 			);
+// 		} catch (error) {
+// 			logger.error(`Error: ${error}`);
+// 		}
+// 		// Step 5: Upload the thumbnail to the bucket
+// 		const metadata = {
+// 			contentType: 'image/jpeg',
+// 			// To enable Client-side caching you can set the Cache-Control headers here:
+// 			'Cache-Control': 'public,max-age=3600',
+// 		};
+// 		await bucket.upload(`${outputDir}/${filename}.jpg`, {
+// 			destination: `thumbnails/${filename}.jpg`,
+// 			metadata: metadata,
+// 		});
+// 		// Step 6: Delete the temporary file
+// 		unlinkSync(tempFilePath);
+// 	});
 
-exports.loadCategories = https.onCall(async (callData, context): Promise<LoadData> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
-	if (callData == null) {
-		// This will happen if the function is called from outdated clients (<= v1.1.3 (2))
-		callData = {};
-	}
+exports.loadCategories = onCall({ enforceAppCheck: true }, async (request): Promise<LoadData> => {
+	const data = request.data ?? {};
 	const queryOptions = {
-		flatList: callData.flatList || (false as boolean),
+		flatList: data.flatList || (false as boolean),
 	};
 	// This function will load all tags documents from the database and return them in JSON format.
 	const COLLECTION = 'tags';
@@ -1051,9 +1035,8 @@ exports.loadCategories = https.onCall(async (callData, context): Promise<LoadDat
 	};
 });
 
-exports.incrementViewCount = https.onCall(async (callData, context): Promise<void> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
+exports.incrementViewCount = onCall({ enforceAppCheck: true }, async (request): Promise<void> => {
+	const callData = request.data;
 	// This function will increase the view count for the content with the given ID.
 	// This function will only work if the user is authenticated.
 	if (typeof callData.documentID !== 'string') return;
@@ -1072,9 +1055,8 @@ exports.incrementViewCount = https.onCall(async (callData, context): Promise<voi
 	}
 });
 
-exports.search = https.onCall(async (callData, context): Promise<any> => {
-	// === APP CHECK ===
-	verifyAppCheck(context);
+exports.search = onCall({ enforceAppCheck: true }, async (request): Promise<any> => {
+	const data = request.data;
 	const defaultSearchOptions = {
 		content: {
 			limit: 5,
@@ -1089,7 +1071,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 		},
 	};
 
-	const searchOptions = supplyDefaultParameters(defaultSearchOptions, callData.searchOptions);
+	const searchOptions = supplyDefaultParameters(defaultSearchOptions, data.searchOptions);
 
 	log(`Searching with options: ${JSON.stringify(searchOptions)}`);
 
@@ -1097,7 +1079,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 
 	const db = admin.firestore();
 
-	if (!callData.searchQuery) {
+	if (!data.searchQuery) {
 		return {
 			results: null,
 			errors: ['This function requires a search query.'],
@@ -1105,7 +1087,7 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 			metadata: null,
 		};
 	}
-	const searchQuery = callData.searchQuery.toLowerCase();
+	const searchQuery = data.searchQuery.toLowerCase();
 	const searchArray = searchQuery.split(' ');
 
 	// const phrasesToRemove = ['rabbi', 'the'];
@@ -1312,10 +1294,9 @@ exports.search = https.onCall(async (callData, context): Promise<any> => {
 	return result;
 });
 
-exports.submitShiur = functions.https.onCall(async (data, context) => {
+exports.submitShiur = onCall({ enforceAppCheck: true }, async (request) => {
 	const db = admin.firestore();
-
-	verifyAppCheck(context);
+	const data = request.data;
 
 	log(`Submitting shiur: ${JSON.stringify(data)}`);
 	const filename = data.filename;
@@ -1415,7 +1396,7 @@ exports.submitShiur = functions.https.onCall(async (data, context) => {
 	}
 
 	// get uid if exists
-	const uid = context.auth?.uid;
+	const uid = request.auth?.uid;
 	log(`uid: ${uid}`);
 
 	//  create a prospective content document
@@ -1466,7 +1447,8 @@ function generateFileID(filename: string): string {
 	return strippedFilename(filename);
 }
 
-exports.reloadDocuments = https.onCall((data, context) => {
+exports.reloadDocuments = onCall((request) => {
+	const data = request.data;
 	let collectionName = data.collectionName;
 	var db = admin.firestore();
 	db.collection(collectionName)
@@ -1614,7 +1596,7 @@ function nameFormat(s) {
 	return title.join(' ');
 }
 
-exports.cleanStorage = https.onCall(async (data, context) => {
+exports.cleanStorage = onCall(async (request) => {
 	const bucket = admin.storage().bucket('gs://yeshivat-torat-shraga.appspot.com/');
 	const files = await bucket.getFiles();
 	const filenames = files.map((file) => file.name);

@@ -1,4 +1,4 @@
-import { https, logger } from 'firebase-functions';
+import { logger } from 'firebase-functions';
 import admin from 'firebase-admin';
 import { Author, TagDocument, TagFirebaseDocument } from './types';
 
@@ -10,17 +10,6 @@ export function log(data: any, structured = false): string {
 	});
 
 	return JSON.stringify(data);
-}
-
-export function verifyAppCheck(context: https.CallableContext): void {
-	if (context.app == undefined) {
-		if (ENABLEAPPCHECK)
-			throw new https.HttpsError(
-				'failed-precondition',
-				'The function must be called from an App Check verified app.'
-			);
-		else logger.warn('App Check verification failed, but App Check is not enforced.');
-	} else log('App Check verification passed.');
 }
 
 export async function getRabbiFor(id: string, includeAllAuthorData: boolean): Promise<Author> {
@@ -96,7 +85,6 @@ export async function getTagFor(id: string): Promise<TagDocument> {
 		}
 	});
 }
-
 
 export async function getURLFor(path: string): Promise<string> {
 	return new Promise((resolve, reject) => {

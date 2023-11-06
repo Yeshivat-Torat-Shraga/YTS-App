@@ -12,16 +12,17 @@
 		"logs": "firebase functions:log"
 	},
 	"engines": {
-		"node": "14"
+		"node": "20"
 	},
 	"main": "lib/index.js",
 	"dependencies": {
-		"@ffmpeg-installer/ffmpeg": "^1.1.0",
 		"@google-cloud/firestore": "^5.0.2",
+		"@google-cloud/functions-framework": "^3.3.0",
 		"child-process-promise": "^2.2.1",
+		"cors": "^2.8.5",
 		"crypto": "^1.0.1",
 		"firebase-admin": "^10.0.2",
-		"firebase-functions": "^3.21.2",
+		"firebase-functions": "^4.5.0",
 		"fs": "0.0.1-security",
 		"os": "^0.1.2",
 		"path": "^0.12.7"
