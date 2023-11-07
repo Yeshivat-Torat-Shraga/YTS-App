@@ -27,6 +27,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRange, Range } from 'react-date-range';
 import { addDays } from 'date-fns';
 import { Timestamp } from 'firebase/firestore';
+import { AddCard } from '@mui/icons-material';
 
 export default function SponsorshipPage() {
 	const sponsors = useAppDataStore((state) => _.values(state.sponsors)).sort(
@@ -35,34 +36,37 @@ export default function SponsorshipPage() {
 
 	const [isShowingAddSponsor, setIsShowingAddSponsor] = useState(false);
 	return (
-		<Stack
-			direction="column"
-			id="Sponsorships"
-			justifyContent="center"
-			alignItems="center"
-			width="100%"
-			spacing={2}
-		>
-			<Typography variant="h4">Sponsorship</Typography>
-			<Typography variant="body1">Set the app sponsor.</Typography>
-
-			<SponsorTable sponsorships={sponsors} />
-			<Button
-				variant="contained"
-				color="primary"
-				fullWidth
-				onClick={() => setIsShowingAddSponsor(true)}
+		<Box width="100%" height="100%" display="flex" justifyContent="center">
+			<Stack
+				direction="column"
+				id="Sponsorships"
+				alignItems="center"
+				width="70vw"
+				spacing={2}
+				marginTop={3}
 			>
-				Add Sponsor
-			</Button>
-			{isShowingAddSponsor && (
-				<NewSponsorshipModal // so the modal gets unmounted on close (and internal state gets reset)
-					open={true}
-					dismiss={() => setIsShowingAddSponsor(false)}
-					sponsors={sponsors}
-				/>
-			)}
-		</Stack>
+				<Typography variant="h4">Sponsorship</Typography>
+				<Typography variant="body1">Set the app sponsor.</Typography>
+
+				<SponsorTable sponsorships={sponsors} />
+				<Button
+					variant="contained"
+					color="primary"
+					fullWidth
+					endIcon={<AddCard />}
+					onClick={() => setIsShowingAddSponsor(true)}
+				>
+					Add Sponsor
+				</Button>
+				{isShowingAddSponsor && (
+					<NewSponsorshipModal // so the modal gets unmounted on close (and internal state gets reset)
+						open={true}
+						dismiss={() => setIsShowingAddSponsor(false)}
+						sponsors={sponsors}
+					/>
+				)}
+			</Stack>
+		</Box>
 	);
 }
 
@@ -72,7 +76,7 @@ export function SponsorTable({ sponsorships }: { sponsorships: Sponsorship[] }) 
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 
 	return (
-		<Box>
+		<Box width="100%">
 			<TableContainer component={Paper}>
 				<Table aria-label="simple table">
 					<TableHead>

@@ -1,5 +1,6 @@
 import {
 	Alert,
+	Box,
 	Button,
 	Checkbox,
 	Collapse,
@@ -24,11 +25,11 @@ export default function NotificationsManager() {
 		visible: false,
 	});
 	return (
-		<Stack width="100%" height="100%" justifyContent="center" alignItems="center">
+		<Box width="100%" height="100%" display="flex" justifyContent="center">
 			<Stack
 				direction="column"
-				justifyContent="space-evenly"
-				alignItems="center"
+				marginTop={3}
+				justifySelf="center"
 				height="100%"
 				width="66vw"
 				spacing={2.5}
@@ -136,6 +137,6 @@ export default function NotificationsManager() {
 					</Collapse>
 				</Stack>
 			</Stack>
-		</Stack>
+		</Box>
 	);
 }

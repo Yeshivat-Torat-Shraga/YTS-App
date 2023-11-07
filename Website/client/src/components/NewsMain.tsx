@@ -31,6 +31,7 @@ import {
 	ExpandMore,
 	KeyboardArrowDown,
 	KeyboardArrowUp,
+	PostAdd,
 	Save,
 } from '@mui/icons-material';
 import Markdown from 'react-markdown';
@@ -46,6 +47,10 @@ export function NewsMain() {
 	return (
 		<Box>
 			<Button
+				sx={{ mb: 2 }}
+				variant="contained"
+				fullWidth
+				startIcon={<PostAdd />}
 				onClick={() =>
 					setArticleToEdit({
 						id: undefined,
