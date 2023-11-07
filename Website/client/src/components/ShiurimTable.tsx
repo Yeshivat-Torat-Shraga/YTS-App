@@ -24,8 +24,8 @@ export default function ShiurimTable({
 	isForPending?: boolean;
 }) {
 	const [deleteShiur, updateShiur] = useAppDataStore((state) => [
-		state.shiur.deleteShiur,
-		state.shiur.updateShiur,
+		state.deleteShiur,
+		state.updateShiur,
 	]);
 	const sortedIndexedShiurim = useMemo(() => {
 		const numberOfShiurim = Object.keys(shiurim).length;

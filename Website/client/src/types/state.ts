@@ -6,44 +6,35 @@ import { Slideshow } from './slideshow';
 import { Sponsorship } from './sponsorship';
 
 export interface AppData {
-	shiur: {
-		shiurim: { [id: string]: Shiur };
-		addShiur: (shiur: Shiur) => void;
-		deleteShiur: (shiur: Shiur) => void;
-		setShiurim: (shiurim: { [id: string]: Shiur }) => void;
-		updateShiur: (shiur: Shiur) => void;
-		clearShiurim: () => void;
-	};
-	rabbi: {
-		rebbeim: { [id: string]: Rabbi };
-		addRebbi: (rebbe: Optional<RawRabbi, 'id'>) => void;
-		deleteRebbi: (rebbe: Rabbi) => void;
-		setRebbeim: (rebbeim: { [id: string]: Rabbi }) => void;
-		updateRebbe: (rebbe: Rabbi) => void;
-		deleteRebbe: (rebbe: Rabbi) => void;
-		clearRebbeim: () => void;
-	};
-	news: {
-		articles: { [id: string]: Article };
-		setArticles: (articles: { [id: string]: Article }) => void;
-		updateArticle: (article: Optional<Article, 'id'>) => void;
-		deleteArticle: (article: Article) => void;
-		clearArticles: () => void;
-	};
-	tags: {
-		tags: { [id: string]: TagData };
-		setTags: (tags: { [id: string]: TagData }) => void;
-	};
-	sponsors: {
-		sponsors: { [id: string]: Sponsorship };
-		addSponsor: (sponsor: Optional<Sponsorship, 'id'>) => void;
-		deleteSponsor: (sponsor: Sponsorship) => void;
-		setSponsors: (sponsors: { [id: string]: Sponsorship }) => void;
-	};
-	slideshow: {
-		slideshow: { [id: string]: Slideshow };
-		addSlide: (slide: Optional<Slideshow, 'id'>) => void;
-		deleteSlide: (slide: Slideshow) => void;
-		setSlideshow: (slideshow: { [id: string]: Slideshow }) => void;
-	};
+	setState: (state: Partial<AppData>) => void;
+	loading: boolean;
+	setLoading: (loading: boolean) => void;
+	shiurim: { [id: string]: Shiur };
+	addShiur: (shiur: Shiur) => void;
+	deleteShiur: (shiur: Shiur) => void;
+	setShiurim: (shiurim: { [id: string]: Shiur }) => void;
+	updateShiur: (shiur: Shiur) => void;
+	clearShiurim: () => void;
+	rebbeim: { [id: string]: Rabbi };
+	addRebbi: (rebbe: Optional<RawRabbi, 'id'>) => void;
+	deleteRebbi: (rebbe: Rabbi) => void;
+	setRebbeim: (rebbeim: { [id: string]: Rabbi }) => void;
+	updateRebbe: (rebbe: Rabbi) => void;
+	deleteRebbe: (rebbe: Rabbi) => void;
+	clearRebbeim: () => void;
+	articles: { [id: string]: Article };
+	setArticles: (articles: { [id: string]: Article }) => void;
+	updateArticle: (article: Optional<Article, 'id'>) => void;
+	deleteArticle: (article: Article) => void;
+	clearArticles: () => void;
+	tags: { [id: string]: TagData };
+	setTags: (tags: { [id: string]: TagData }) => void;
+	sponsors: { [id: string]: Sponsorship };
+	addSponsor: (sponsor: Optional<Sponsorship, 'id'>) => void;
+	deleteSponsor: (sponsor: Sponsorship) => void;
+	setSponsors: (sponsors: { [id: string]: Sponsorship }) => void;
+	slideshow: { [id: string]: Slideshow };
+	addSlide: (slide: { title: string | null; uploaded: Date; image: File }) => void;
+	deleteSlide: (slide: Slideshow) => void;
+	setSlideshow: (slideshow: { [id: string]: Slideshow }) => void;
 }

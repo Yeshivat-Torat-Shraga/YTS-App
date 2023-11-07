@@ -29,7 +29,7 @@ import { addDays } from 'date-fns';
 import { Timestamp } from 'firebase/firestore';
 
 export default function SponsorshipPage() {
-	const sponsors = useAppDataStore((state) => _.values(state.sponsors.sponsors)).sort(
+	const sponsors = useAppDataStore((state) => _.values(state.sponsors)).sort(
 		(a, b) => a.dateBegin.seconds - b.dateBegin.seconds
 	);
 
@@ -67,7 +67,7 @@ export default function SponsorshipPage() {
 }
 
 export function SponsorTable({ sponsorships }: { sponsorships: Sponsorship[] }) {
-	const deleteSponsor = useAppDataStore((state) => state.sponsors.deleteSponsor);
+	const deleteSponsor = useAppDataStore((state) => state.deleteSponsor);
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -212,7 +212,7 @@ function NewSponsorshipModal({
 			} as Range,
 		])
 	);
-	const addSponsor = useAppDataStore((state) => state.sponsors.addSponsor);
+	const addSponsor = useAppDataStore((state) => state.addSponsor);
 	return (
 		<Modal open={open} onClose={dismiss}>
 			<Box

@@ -23,8 +23,8 @@ import { useState } from 'react';
 import { Timestamp } from 'firebase/firestore';
 export function NewsMain() {
 	const [articles, deleteArticle] = useAppDataStore((state) => [
-		state.news.articles,
-		state.news.deleteArticle,
+		state.articles,
+		state.deleteArticle,
 	]);
 	const [articleToEdit, setArticleToEdit] = useState<Optional<Article, 'id'> | null>(null);
 	return (
@@ -120,7 +120,7 @@ function ArticleEditModal({
 	closeEditor: () => void;
 }) {
 	const [formState, setFormState] = useState(article);
-	const updateArticle = useAppDataStore((state) => state.news.updateArticle);
+	const updateArticle = useAppDataStore((state) => state.updateArticle);
 	return (
 		<Modal open={!!article} onClose={closeEditor}>
 			<Box

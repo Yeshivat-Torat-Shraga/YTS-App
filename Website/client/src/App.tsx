@@ -18,6 +18,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './Firebase/firebase';
 import { AuthContext } from './authContext';
 import { Refresh } from '@mui/icons-material';
+import { loadData } from './utils';
+import { useAppDataStore } from './state';
 
 const lightTheme = createTheme({
 	palette: {
@@ -34,6 +36,11 @@ const darkTheme = createTheme({
 function App() {
 	const [activeTab, setActiveTab] = useState('Shiurim' as NavLabel);
 	const [user, setUser] = useState(auth.currentUser);
+	const [loading, setIsLoading, setState] = useAppDataStore((state) => [
+		state.loading,
+		state.setLoading,
+		state.setState,
+	]);
 	const [isLightTheme, setIsLightTheme] = useState(
 		useMediaQuery('(prefers-color-scheme: light)')
 	);
@@ -54,7 +61,11 @@ function App() {
 		onAuthStateChanged(auth, (user) => {
 			if (user) {
 				auth.updateCurrentUser(user);
+				setIsLoading(true);
 				setUser(user);
+				loadData(user)
+					.then(setState)
+					.finally(() => setIsLoading(false));
 			} else {
 				auth.signOut();
 				setUser(user);
@@ -78,7 +89,15 @@ function App() {
 						<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
 							{activeTab}
 						</Typography>
-						<IconButton onClick={() => null} sx={{ color: 'white' }}>
+						<IconButton
+							onClick={() => {
+								setIsLoading(true);
+								loadData(user)
+									.then(setState)
+									.finally(() => setIsLoading(false));
+							}}
+							sx={{ color: 'white' }}
+						>
 							<Refresh />
 						</IconButton>
 					</Toolbar>

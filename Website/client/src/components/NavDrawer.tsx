@@ -30,7 +30,7 @@ export default function NavDrawer({
 	const user = useContext(AuthContext);
 	const theme = useTheme();
 	const pendingReview = useAppDataStore((state) =>
-		_.filter(state.shiur.shiurim, (shiur) => shiur.pending)
+		_.filter(state.shiurim, (shiur) => shiur.pending)
 	).length;
 	return (
 		<Drawer

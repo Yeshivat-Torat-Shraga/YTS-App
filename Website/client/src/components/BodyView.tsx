@@ -12,6 +12,7 @@ import ShiurimMain from './ShiurimMain';
 import NotificationsManager from './Notifications';
 import SponsorshipPage from './Sponsorships';
 import SlideshowPage from './SlideshowPage';
+import { useAppDataStore } from '../state';
 
 const navComponents = {
 	Authentication: Box,
@@ -28,6 +29,7 @@ const navComponents = {
 export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 	const ActiveComponent = navComponents[activeTab];
 	const user = useContext(AuthContext);
+	const isLoading = useAppDataStore((state) => state.loading);
 	const blurProps = {
 		filter: 'blur(3px)',
 		opacity: 0.65,
@@ -51,7 +53,13 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 						{loremIpsum} {loremIpsum}
 					</Typography>
 				)}
-				<ActiveComponent />
+				{isLoading ? (
+					<Typography variant="body1" padding={5}>
+						Loading...
+					</Typography>
+				) : (
+					<ActiveComponent />
+				)}
 			</Box>
 			<Backdrop
 				open={!user}

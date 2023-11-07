@@ -1,18 +1,12 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { getDownloadURL, getStorage, ref } from '@firebase/storage';
 import firebaseConfig from './config.json';
-import { useAppDataStore } from '../state';
-import { RawRabbi } from '../types/rabbi';
-import { RawShiur, TagData } from '../types/shiur';
-import Article from '../types/article';
-import { processRawRebbeim, processRawShiurim } from '../utils';
+import { getFunctions } from 'firebase/functions';
+import { getStorage } from '@firebase/storage';
+import { loadData } from '../utils';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import _ from 'lodash';
-import { Sponsorship } from '../types/sponsorship';
-import { Slideshow } from '../types/slideshow';
 
 export const app = initializeApp(firebaseConfig);
 const appCheckToken = process.env.REACT_APP_FIREBASE_APPCHECK_TOKEN;
@@ -39,88 +33,4 @@ export const functions = getFunctions(app);
 // 		console.log(error.message);
 // 	});
 
-auth.onAuthStateChanged(async (user) => {
-	let state = useAppDataStore.getState();
-	if (user) {
-		let rawData: {
-			rabbi: RawRabbi[];
-			shiur: RawShiur[];
-			tags: TagData[];
-			news: Article[];
-		} = {
-			rabbi: [],
-			shiur: [],
-			tags: [],
-			news: [],
-		};
-		await Promise.all([
-			getDocs(collection(firestore, 'rebbeim')).then(async (querySnapshot) => {
-				const newRebbeim = querySnapshot.docs.map((doc) => {
-					return {
-						...doc.data(),
-						id: doc.id,
-					};
-				}) as RawRabbi[];
-				rawData.rabbi = newRebbeim;
-			}),
-			getDocs(collection(firestore, 'content')).then(async (querySnapshot) => {
-				const newShiurim = (
-					querySnapshot.docs.map((doc) => ({
-						...doc.data(),
-						id: doc.id,
-					})) as RawShiur[]
-				)
-					.filter((shiur) => shiur.source_path !== undefined)
-					.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-				rawData.shiur = newShiurim;
-			}),
-			getDocs(collection(firestore, 'tags')).then(async (querySnapshot) => {
-				const newTags = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as TagData[];
-				rawData.tags = newTags;
-			}),
-			getDocs(collection(firestore, 'news')).then(async (querySnapshot) => {
-				const newArticles = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as Article[];
-				rawData.news = newArticles;
-			}),
-			getDocs(collection(firestore, 'sponsorships')).then(async (querySnapshot) => {
-				const newSponsors = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as Sponsorship[];
-				state.sponsors.setSponsors(_.keyBy(newSponsors, 'id'));
-			}),
-			getDocs(collection(firestore, 'slideshowImages')).then(async (querySnapshot) => {
-				const newSlides = await Promise.all(
-					querySnapshot.docs.map(async (doc) => {
-						const data = doc.data();
-						const url = await getDownloadURL(
-							ref(storage, `slideshow/${data.image_name}`)
-						);
-						return { title: data.title, id: doc.id, url } as Slideshow;
-					})
-				);
-				state.slideshow.setSlideshow(_.keyBy(newSlides, 'id'));
-			}),
-		]);
-		let processedRebbeim = await processRawRebbeim(rawData.rabbi);
-		let processedShiurim = processRawShiurim(rawData.shiur, processedRebbeim);
-		let processedArticles = _.keyBy(rawData.news, 'id');
-		let processedTags = _.keyBy(rawData.tags, 'id');
-
-		state.rabbi.setRebbeim(processedRebbeim);
-		state.shiur.setShiurim(processedShiurim);
-		state.news.setArticles(processedArticles);
-		state.tags.setTags(processedTags);
-	} else {
-		state.shiur.clearShiurim();
-		state.rabbi.clearRebbeim();
-		state.news.clearArticles();
-		state.tags.setTags({});
-	}
-});
+// auth.onAuthStateChanged(loadData);

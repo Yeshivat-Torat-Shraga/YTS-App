@@ -19,11 +19,11 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 	// If shiur is null, then we are creating a new shiur
 	const isNewShiur = shiur === null;
 	const [formState, setFormState] = useState<Partial<Shiur>>(shiur ?? {});
-	const rebbeim = _.values(useAppDataStore((state) => state.rabbi.rebbeim)).sort((a, b) =>
+	const rebbeim = _.values(useAppDataStore((state) => state.rebbeim)).sort((a, b) =>
 		a.name.localeCompare(b.name)
 	);
 	const [file, setFile] = useState<File | null>(null);
-	const categories = _.values(useAppDataStore((state) => state.tags.tags))
+	const categories = _.values(useAppDataStore((state) => state.tags))
 		.sort((a, b) => a.displayName.localeCompare(b.displayName))
 		.filter((tag) => tag.subCategories === undefined);
 	const formStateHasEmptyFields = [
@@ -140,7 +140,7 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 								// TODO: Upload audio file
 								uploadShiurFile(shiurToRawShiur(formState as Shiur), file as File);
 							} else {
-								useAppDataStore.getState().shiur.updateShiur(formState as Shiur);
+								useAppDataStore.getState().updateShiur(formState as Shiur);
 							}
 						}}
 					>

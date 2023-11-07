@@ -7,8 +7,8 @@ import ShiurimTable from './ShiurimTable';
 import EditShiurModalContents from './EditShiurModalContents';
 
 export default function PendingShiurim() {
-	const shiurim = useAppDataStore((state) => state.shiur.shiurim);
-	const rebbeim = useAppDataStore((state) => state.rabbi.rebbeim);
+	const shiurim = useAppDataStore((state) => state.shiurim);
+	const rebbeim = useAppDataStore((state) => state.rebbeim);
 	const [editShiur, setEditShiur] = useState<Shiur | undefined | null>(undefined);
 	const pendingShiurim = useMemo(() => {
 		const list = _.values(shiurim)

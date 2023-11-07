@@ -6,7 +6,7 @@ import { PersonAdd } from '@mui/icons-material';
 import { useState } from 'react';
 import NewRabbiModalContents from './NewRabbiModalContents';
 export default function AllRebbeim() {
-	const rebbeim = useAppDataStore((state) => state.rabbi.rebbeim);
+	const rebbeim = useAppDataStore((state) => state.rebbeim);
 	const [isAddingRabbi, setIsAddingRabbi] = useState(false);
 	return (
 		<Box height="100%" width="100%">
@@ -71,7 +71,7 @@ export default function AllRebbeim() {
 									color={params.row.visible ? 'success' : 'error'}
 									onClick={() => {
 										params.row.visible = !params.row.visible;
-										useAppDataStore.getState().rabbi.updateRebbe(params.row);
+										useAppDataStore.getState().updateRebbe(params.row);
 									}}
 								>
 									{params.row.visible ? 'Visible' : 'Hidden'}

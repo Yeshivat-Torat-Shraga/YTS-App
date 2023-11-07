@@ -11,7 +11,7 @@ export default function NewRabbiModalContents() {
 		name: '',
 		profilePicture: undefined,
 	});
-	const addRebbi = useAppDataStore((state) => state.rabbi.addRebbi);
+	const addRebbi = useAppDataStore((state) => state.addRebbi);
 	return (
 		<Card sx={{ padding: 4 }}>
 			<CardHeader
