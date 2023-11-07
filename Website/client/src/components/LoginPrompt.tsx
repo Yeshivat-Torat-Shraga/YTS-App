@@ -1,18 +1,18 @@
-import { useContext, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { signInWithEmailAndPassword, browserLocalPersistence, UserCredential } from 'firebase/auth';
 import { Button, Paper, Stack, TextField, Typography } from '@mui/material';
-import { AuthContext } from '../authContext';
-import { auth, firestore } from '../Firebase/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { ControlPanelUser } from '../types/state';
+import { auth } from '../Firebase/firebase';
 import { useAppDataStore } from '../state';
+import { validateProfile } from '../utils';
 
 export default function LoginPrompt() {
-	const user = useContext(AuthContext);
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setError] = useState<string | null>(null);
-	const setUser = useAppDataStore((state) => state.setUserProfile);
+	const [userProfile, setUserProfile] = useAppDataStore((state) => [
+		state.userProfile,
+		state.setUserProfile,
+	]);
 	return (
 		<Paper sx={{ padding: 0, width: 500 }} elevation={1}>
 			<form
@@ -21,24 +21,16 @@ export default function LoginPrompt() {
 					// Clear the error message
 					setError(null);
 
-					login(username, password, setError).then(async (cred) => {
-						// Get the user from Firebase to check permissions
-						const userProfile = await getDoc(
-							doc(firestore, 'administrators', cred.user.uid)
-						);
-						// If the user is not an admin, log them out
-						if (!userProfile.exists()) {
-							auth.signOut();
-							setError('You are not authorized to access this page.');
-						} else {
-							const userData = userProfile.data() as ControlPanelUser;
-							setUser(userData);
-							alert(`Welcome, ${userData.username}!`);
-						}
-					});
-					setPassword('');
-
-					// clear the password field
+					login(username, password, setError)
+						.then(validateProfile)
+						.then(setUserProfile)
+						.catch(() => {
+							setError("You don't have permission to access the control panel.");
+						})
+						.finally(() => {
+							// clear the password field
+							setPassword('');
+						});
 				}}
 			>
 				<Stack direction="column" justifyContent="space-evenly" alignItems="center" p={2}>
@@ -79,7 +71,7 @@ export default function LoginPrompt() {
 							marginTop: 2,
 						}}
 					>
-						{user ? 'Log Out' : 'Sign In'}
+						{userProfile ? 'Log Out' : 'Sign In'}
 					</Button>
 				</Stack>
 			</form>
@@ -91,7 +83,7 @@ async function login(
 	username: string,
 	password: string,
 	setError: React.Dispatch<React.SetStateAction<string | null>>
-): Promise<UserCredential> {
+): Promise<UserCredential['user']> {
 	if (auth.currentUser) {
 		await auth.signOut();
 	}
@@ -99,9 +91,9 @@ async function login(
 		return auth
 			.setPersistence(browserLocalPersistence)
 			.then(() => signInWithEmailAndPassword(auth, username, password))
-			.then((user) => {
+			.then((cred) => {
 				setError(null);
-				return user;
+				return cred.user;
 			})
 			.catch((_error) => {
 				setError('Please check your username and password and try again.');

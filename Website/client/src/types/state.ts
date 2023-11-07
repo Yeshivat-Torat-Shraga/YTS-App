@@ -1,3 +1,4 @@
+import { UserCredential } from 'firebase/auth';
 import { Optional } from '../state';
 import Article from './article';
 import { Rabbi, RawRabbi } from './rabbi';
@@ -6,14 +7,17 @@ import { Slideshow } from './slideshow';
 import { Sponsorship } from './sponsorship';
 
 export type ControlPanelUser = {
-	username: string;
-	permissions: {
-		pushNotifications: boolean;
-		sponsorships: boolean;
-		articles: boolean;
-		shiurim: boolean;
-		rebbeim: boolean;
-		slideshow: boolean;
+	cred: UserCredential['user'];
+	profile: {
+		username: string;
+		permissions: {
+			pushNotifications: boolean;
+			sponsorships: boolean;
+			articles: boolean;
+			shiurim: boolean;
+			rebbeim: boolean;
+			slideshow: boolean;
+		};
 	};
 };
 export interface AppData {

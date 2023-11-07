@@ -1,16 +1,16 @@
 import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
-import { firestore, functions, storage } from './Firebase/firebase';
+import { auth, firestore, functions, storage } from './Firebase/firebase';
 import { Rabbi, RawRabbi } from './types/rabbi';
 import { RawShiur, Shiur, TagData } from './types/shiur';
 import _ from 'lodash';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, getDoc } from 'firebase/firestore';
 import { Sponsorship, SponsorshipStatus } from './types/sponsorship';
 import { httpsCallable } from 'firebase/functions';
-import { User } from 'firebase/auth';
+import { User, UserCredential } from 'firebase/auth';
 import { useAppDataStore } from './state';
 import Article from './types/article';
 import { Slideshow } from './types/slideshow';
-import { AppData } from './types/state';
+import { AppData, ControlPanelUser } from './types/state';
 window.Buffer = window.Buffer || require('buffer').Buffer; // Required for get-mp3-duration
 
 export type Nullable<T> = {
@@ -227,7 +227,23 @@ export function getSponsorshipStatus(sponsorship: Sponsorship): SponsorshipStatu
 	}
 }
 
-export async function loadData(user: User | null): Promise<Partial<AppData>> {
+export async function validateProfile(user: UserCredential['user']) {
+	// Get the user from Firebase to check permissions
+	const userProfile = await getDoc(doc(firestore, 'administrators', user.uid));
+	// If the user is not an admin, log them out
+	if (!userProfile.exists()) {
+		auth.signOut();
+		return Promise.reject('You are not authorized to access this page.');
+	} else {
+		const userData = userProfile.data() as ControlPanelUser['profile'];
+		return {
+			cred: user,
+			profile: userData,
+		};
+	}
+}
+
+export async function loadData(): Promise<Partial<AppData>> {
 	const data: {
 		shiurim: AppData['shiurim'];
 		rebbeim: AppData['rebbeim'];
@@ -243,96 +259,87 @@ export async function loadData(user: User | null): Promise<Partial<AppData>> {
 		sponsors: {},
 		slideshow: {},
 	};
-	if (!!user) {
-		let rawData: {
-			rabbi: RawRabbi[];
-			shiur: RawShiur[];
-			tags: TagData[];
-			news: Article[];
-		} = {
-			rabbi: [],
-			shiur: [],
-			tags: [],
-			news: [],
-		};
-		await Promise.all([
-			getDocs(collection(firestore, 'rebbeim')).then(async (querySnapshot) => {
-				const newRebbeim = querySnapshot.docs.map((doc) => {
-					return {
-						...doc.data(),
-						id: doc.id,
-					};
-				}) as RawRabbi[];
-				rawData.rabbi = newRebbeim;
-			}),
-			getDocs(collection(firestore, 'content')).then(async (querySnapshot) => {
-				const newShiurim = (
-					querySnapshot.docs.map((doc) => ({
-						...doc.data(),
-						id: doc.id,
-					})) as RawShiur[]
-				)
-					.filter((shiur) => shiur.source_path !== undefined)
-					.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-				rawData.shiur = newShiurim;
-			}),
-			getDocs(collection(firestore, 'tags')).then(async (querySnapshot) => {
-				const newTags = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as TagData[];
-				rawData.tags = newTags;
-			}),
-			getDocs(collection(firestore, 'news')).then(async (querySnapshot) => {
-				const newArticles = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as Article[];
-				rawData.news = newArticles;
-			}),
-			getDocs(collection(firestore, 'sponsorships')).then(async (querySnapshot) => {
-				const newSponsors = querySnapshot.docs.map((doc) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as Sponsorship[];
-				data.sponsors = _.keyBy(newSponsors, 'id');
-			}),
-			getDocs(collection(firestore, 'slideshowImages')).then(async (querySnapshot) => {
-				const newSlides = await Promise.all(
-					querySnapshot.docs.map(async (doc) => {
-						const data = doc.data();
-						const url = await getDownloadURL(
-							ref(storage, `slideshow/${data.image_name}`)
-						);
-						const slideshow: Slideshow = {
-							title: data.title,
-							id: doc.id,
-							url,
-							uploaded: data.uploaded,
-						};
-						return slideshow;
-					})
-				);
-				data.slideshow = _.keyBy(newSlides, 'id');
-			}),
-		]);
-		let processedRebbeim = await processRawRebbeim(rawData.rabbi);
-		let processedShiurim = processRawShiurim(rawData.shiur, processedRebbeim);
-		let processedArticles = _.keyBy(rawData.news, 'id');
-		let processedTags = _.keyBy(rawData.tags, 'id');
 
-		data.rebbeim = processedRebbeim;
-		data.shiurim = processedShiurim;
-		data.articles = processedArticles;
-		data.tags = processedTags;
-	} else {
-		data.shiurim = {};
-		data.rebbeim = {};
-		data.articles = {};
-		data.tags = {};
-		data.sponsors = {};
-		data.slideshow = {};
-	}
+	let rawData: {
+		rabbi: RawRabbi[];
+		shiur: RawShiur[];
+		tags: TagData[];
+		news: Article[];
+	} = {
+		rabbi: [],
+		shiur: [],
+		tags: [],
+		news: [],
+	};
+	await Promise.all([
+		getDocs(collection(firestore, 'rebbeim')).then(async (querySnapshot) => {
+			const newRebbeim = querySnapshot.docs.map((doc) => {
+				return {
+					...doc.data(),
+					id: doc.id,
+				};
+			}) as RawRabbi[];
+			rawData.rabbi = newRebbeim;
+		}),
+		getDocs(collection(firestore, 'content')).then(async (querySnapshot) => {
+			const newShiurim = (
+				querySnapshot.docs.map((doc) => ({
+					...doc.data(),
+					id: doc.id,
+				})) as RawShiur[]
+			)
+				.filter((shiur) => shiur.source_path !== undefined)
+				.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
+			rawData.shiur = newShiurim;
+		}),
+		getDocs(collection(firestore, 'tags')).then(async (querySnapshot) => {
+			const newTags = querySnapshot.docs.map((doc) => ({
+				...doc.data(),
+				id: doc.id,
+			})) as TagData[];
+			rawData.tags = newTags;
+		}),
+		getDocs(collection(firestore, 'news')).then(async (querySnapshot) => {
+			const newArticles = querySnapshot.docs.map((doc) => ({
+				...doc.data(),
+				id: doc.id,
+			})) as Article[];
+			rawData.news = newArticles;
+		}),
+		getDocs(collection(firestore, 'sponsorships')).then(async (querySnapshot) => {
+			const newSponsors = querySnapshot.docs.map((doc) => ({
+				...doc.data(),
+				id: doc.id,
+			})) as Sponsorship[];
+			data.sponsors = _.keyBy(newSponsors, 'id');
+		}),
+		getDocs(collection(firestore, 'slideshowImages')).then(async (querySnapshot) => {
+			const newSlides = await Promise.all(
+				querySnapshot.docs.map(async (doc) => {
+					const data = doc.data();
+					const url = await getDownloadURL(ref(storage, `slideshow/${data.image_name}`));
+					const slideshow: Slideshow = {
+						title: data.title,
+						id: doc.id,
+						url,
+						uploaded: data.uploaded,
+					};
+					return slideshow;
+				})
+			);
+			data.slideshow = _.keyBy(newSlides, 'id');
+		}),
+	]);
+	let processedRebbeim = await processRawRebbeim(rawData.rabbi);
+	let processedShiurim = processRawShiurim(rawData.shiur, processedRebbeim);
+	let processedArticles = _.keyBy(rawData.news, 'id');
+	let processedTags = _.keyBy(rawData.tags, 'id');
+
+	data.rebbeim = processedRebbeim;
+	data.shiurim = processedShiurim;
+	data.articles = processedArticles;
+	data.tags = processedTags;
+
 	const returnData: Partial<AppData> = {
 		...data,
 		loading: false,

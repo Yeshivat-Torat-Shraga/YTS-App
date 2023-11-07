@@ -16,9 +16,8 @@ import { NavLabel } from './nav';
 import BodyView from './components/BodyView';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './Firebase/firebase';
-import { AuthContext } from './authContext';
 import { Refresh } from '@mui/icons-material';
-import { loadData } from './utils';
+import { loadData, validateProfile } from './utils';
 import { useAppDataStore } from './state';
 
 const lightTheme = createTheme({
@@ -35,12 +34,7 @@ const darkTheme = createTheme({
 
 function App() {
 	const [activeTab, setActiveTab] = useState('Shiurim' as NavLabel);
-	const [user, setUser] = useState(auth.currentUser);
-	const [loading, setIsLoading, setState] = useAppDataStore((state) => [
-		state.loading,
-		state.setLoading,
-		state.setState,
-	]);
+	const [setIsLoading, setState] = useAppDataStore((state) => [state.setLoading, state.setState]);
 	const [isLightTheme, setIsLightTheme] = useState(
 		useMediaQuery('(prefers-color-scheme: light)')
 	);
@@ -54,21 +48,20 @@ function App() {
 		},
 		[isLightTheme]
 	);
-	// const loadContent = useAppDataStore((state) => state.load.shiurim);
-	// We need to make sure onAuthStateChanged is only called once
-	// so we use React.useEffect to make sure it's only called once
+	const setUserProfile = useAppDataStore((state) => state.setUserProfile);
 	useEffect(() => {
 		onAuthStateChanged(auth, (user) => {
 			if (user) {
 				auth.updateCurrentUser(user);
 				setIsLoading(true);
-				setUser(user);
-				loadData(user)
+				validateProfile(user)
+					.then(setUserProfile)
+					.then(loadData)
 					.then(setState)
 					.finally(() => setIsLoading(false));
 			} else {
 				auth.signOut();
-				setUser(user);
+				setUserProfile(user);
 			}
 		});
 	}, [auth]);
@@ -92,7 +85,7 @@ function App() {
 						<IconButton
 							onClick={() => {
 								setIsLoading(true);
-								loadData(user)
+								loadData()
 									.then(setState)
 									.finally(() => setIsLoading(false));
 							}}
@@ -102,10 +95,8 @@ function App() {
 						</IconButton>
 					</Toolbar>
 				</AppBar>
-				<AuthContext.Provider value={user}>
-					<NavDrawer activeTab={activeTab} setActiveTab={setActiveTab} />
-					<BodyView activeTab={activeTab} />
-				</AuthContext.Provider>
+				<NavDrawer activeTab={activeTab} setActiveTab={setActiveTab} />
+				<BodyView activeTab={activeTab} />
 			</ThemeProvider>
 		</Box>
 	);

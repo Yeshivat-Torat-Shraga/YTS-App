@@ -4,7 +4,6 @@ import { getAuth } from 'firebase/auth';
 import firebaseConfig from './config.json';
 import { getFunctions } from 'firebase/functions';
 import { getStorage } from '@firebase/storage';
-import { loadData } from '../utils';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import _ from 'lodash';
 
@@ -25,12 +24,3 @@ export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
-// getToken(appCheck)
-// 	.then(() => {
-// 		console.log('success');
-// 	})
-// 	.catch((error) => {
-// 		console.log(error.message);
-// 	});
-
-// auth.onAuthStateChanged(loadData);

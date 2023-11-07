@@ -1,7 +1,6 @@
 import { Backdrop, Box, Divider, LinearProgress, Toolbar, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import React, { useContext } from 'react';
-import { AuthContext } from '../authContext';
+import React from 'react';
 import { loremIpsum } from '../loremipsum';
 import { NavLabel } from '../nav';
 import LoginPrompt from './LoginPrompt';
@@ -18,7 +17,7 @@ import { ControlPanelUser } from '../types/state';
 const navComponents: {
 	[key in NavLabel]: {
 		component: React.FC;
-		requiredPermission?: keyof ControlPanelUser['permissions'];
+		requiredPermission?: keyof ControlPanelUser['profile']['permissions'];
 	};
 } = {
 	Authentication: { component: Box },
@@ -33,13 +32,12 @@ const navComponents: {
 };
 
 export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
-	const userPermissions = useAppDataStore((state) => state.userProfile?.permissions);
-	const username = useAppDataStore((state) => state.userProfile?.username);
+	const user = useAppDataStore((state) => state.userProfile);
 	const requiredPermission = navComponents[activeTab].requiredPermission;
 	const ActiveComponent = navComponents[activeTab].component;
 	const userHasPermission =
-		!requiredPermission || (userPermissions && userPermissions[requiredPermission]);
-	const user = useContext(AuthContext);
+		!requiredPermission ||
+		(user?.profile.permissions && user.profile.permissions[requiredPermission]);
 	const isLoading = useAppDataStore((state) => state.loading);
 	const blurProps = {
 		filter: 'blur(3px)',
@@ -92,18 +90,35 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 							height="100%"
 							spacing={5}
 						>
-							<Typography variant="h4">403</Typography>
+							<Typography variant="h4" color="error.main">
+								403
+							</Typography>
 							<Divider
 								orientation="vertical"
 								flexItem
 								sx={{
+									height: '50%',
+									alignSelf: 'unset',
 									borderWidth: 1,
 									borderColor: 'error.main',
 								}}
 							/>
-							<Typography variant="h4">
-								You do not have permission to view this page, {username}.
-							</Typography>
+							<Stack direction="column" spacing={2}>
+								<Typography variant="h4" color="error.main">
+									You do not have permission to view this page,{' '}
+									{user?.profile.username}.
+								</Typography>
+								<Typography variant="body1" color="error.main">
+									If you believe this is an error, please contact your
+									administrator.
+								</Typography>
+								<Typography variant="body2" color="error.main">
+									If you are the administrator, contact the developer.
+								</Typography>
+								<Typography variant="caption" color="error.main">
+									If you are the developer, you probably messed up.
+								</Typography>
+							</Stack>
 						</Stack>
 					)}
 				</Box>

@@ -83,10 +83,10 @@ exports.pushNotification = onCall(
 			throw new HttpsError('permission-denied', 'User is not an administrator');
 		}
 		const adminProfile = adminDoc.data();
-		if (!adminProfile?.pushNotification) {
+		if (!adminProfile?.permissions?.pushNotifications) {
 			throw new HttpsError(
 				'permission-denied',
-				adminProfile?.username + ' does not have push notification perms'
+				adminProfile?.username + ' does not have push notification permissions'
 			);
 		}
 		const data = request.data; //req.body.data;

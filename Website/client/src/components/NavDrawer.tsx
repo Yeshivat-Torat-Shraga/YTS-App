@@ -13,8 +13,6 @@ import {
 	Stack,
 } from '@mui/material';
 import { NavLabel, navLabels } from '../nav';
-import { useContext } from 'react';
-import { AuthContext } from '../authContext';
 import { auth } from '../Firebase/firebase';
 import { useAppDataStore } from '../state';
 
@@ -27,7 +25,7 @@ export default function NavDrawer({
 	activeTab: NavLabel;
 	setActiveTab: (navLabel: NavLabel) => void;
 }) {
-	const user = useContext(AuthContext);
+	const user = useAppDataStore((state) => state.userProfile);
 	const theme = useTheme();
 	const pendingReview = useAppDataStore((state) =>
 		_.filter(state.shiurim, (shiur) => shiur.pending)
