@@ -1,4 +1,4 @@
-import { Backdrop, Box, Toolbar, Typography } from '@mui/material';
+import { Backdrop, Box, LinearProgress, Toolbar, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useContext } from 'react';
 import { AuthContext } from '../authContext';
@@ -34,33 +34,44 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 		filter: 'blur(3px)',
 		opacity: 0.65,
 		overflow: 'hidden',
-		maxHeight: '100vh',
 	};
 	return (
-		<Box sx={{ width: '100%' }}>
-			<Box
-				component="main"
-				sx={{
-					flexGrow: 1,
-					bgcolor: 'background.default',
-					p: 3,
-					...(!user ? blurProps : {}),
-				}}
-			>
-				<Toolbar />
-				{!user && (
-					<Typography variant="body1" padding={5}>
-						{loremIpsum} {loremIpsum}
-					</Typography>
-				)}
-				{isLoading ? (
-					<Typography variant="body1" padding={5}>
-						Loading...
-					</Typography>
-				) : (
-					<ActiveComponent />
-				)}
-			</Box>
+		<Box
+			sx={{
+				flexGrow: 1,
+				bgcolor: undefined,
+				p: 3,
+				height: '100%',
+				minHeight: '100%',
+				overflow: 'auto',
+				display: 'flex',
+				flexDirection: 'column',
+				...({ user } ? {} : blurProps),
+			}}
+		>
+			<Toolbar />
+			{!user && (
+				<Typography variant="body1" padding={5}>
+					{loremIpsum} {loremIpsum}
+				</Typography>
+			)}
+			{isLoading ? (
+				<Stack
+					direction="column"
+					width="100%"
+					alignItems="center"
+					height="100%"
+					spacing={2}
+					justifyContent="center"
+				>
+					<Typography variant="h4">Loading</Typography>
+					<Box sx={{ width: '25%' }}>
+						<LinearProgress />
+					</Box>
+				</Stack>
+			) : (
+				<ActiveComponent />
+			)}
 			<Backdrop
 				open={!user}
 				invisible

@@ -81,9 +81,9 @@ function App() {
 		};
 	}, []);
 	return (
-		<ThemeProvider theme={isLightTheme ? lightTheme : darkTheme}>
-			<Box sx={{ display: 'flex' }}>
-				<CssBaseline />
+		<Box sx={{ display: 'flex', height: '100%' }}>
+			<CssBaseline />
+			<ThemeProvider theme={isLightTheme ? lightTheme : darkTheme}>
 				<AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 					<Toolbar>
 						<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
@@ -106,8 +106,8 @@ function App() {
 					<NavDrawer activeTab={activeTab} setActiveTab={setActiveTab} />
 					<BodyView activeTab={activeTab} />
 				</AuthContext.Provider>
-			</Box>
-		</ThemeProvider>
+			</ThemeProvider>
+		</Box>
 	);
 }
 
