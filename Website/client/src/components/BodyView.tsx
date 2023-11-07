@@ -1,6 +1,6 @@
-import { Backdrop, Box, LinearProgress, Toolbar, Typography } from '@mui/material';
+import { Backdrop, Box, Divider, LinearProgress, Toolbar, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { AuthContext } from '../authContext';
 import { loremIpsum } from '../loremipsum';
 import { NavLabel } from '../nav';
@@ -13,21 +13,32 @@ import NotificationsManager from './Notifications';
 import SponsorshipPage from './Sponsorships';
 import SlideshowPage from './SlideshowPage';
 import { useAppDataStore } from '../state';
+import { ControlPanelUser } from '../types/state';
 
-const navComponents = {
-	Authentication: Box,
-	'-----': Box,
-	Shiurim: ShiurimMain,
-	'Pending Review': PendingShiurim,
-	Rebbeim: AllRebbeim,
-	News: NewsMain,
-	Slideshow: SlideshowPage,
-	Notifications: NotificationsManager,
-	Sponsorships: SponsorshipPage,
+const navComponents: {
+	[key in NavLabel]: {
+		component: React.FC;
+		requiredPermission?: keyof ControlPanelUser['permissions'];
+	};
+} = {
+	Authentication: { component: Box },
+	'-----': { component: Box },
+	Shiurim: { component: ShiurimMain, requiredPermission: 'shiurim' },
+	'Pending Review': { component: PendingShiurim, requiredPermission: 'shiurim' },
+	Rebbeim: { component: AllRebbeim, requiredPermission: 'rebbeim' },
+	News: { component: NewsMain, requiredPermission: 'articles' },
+	Slideshow: { component: SlideshowPage, requiredPermission: 'slideshow' },
+	Notifications: { component: NotificationsManager, requiredPermission: 'pushNotifications' },
+	Sponsorships: { component: SponsorshipPage, requiredPermission: 'sponsorships' },
 };
 
 export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
-	const ActiveComponent = navComponents[activeTab];
+	const userPermissions = useAppDataStore((state) => state.userProfile?.permissions);
+	const username = useAppDataStore((state) => state.userProfile?.username);
+	const requiredPermission = navComponents[activeTab].requiredPermission;
+	const ActiveComponent = navComponents[activeTab].component;
+	const userHasPermission =
+		!requiredPermission || (userPermissions && userPermissions[requiredPermission]);
 	const user = useContext(AuthContext);
 	const isLoading = useAppDataStore((state) => state.loading);
 	const blurProps = {
@@ -70,7 +81,32 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 					</Box>
 				</Stack>
 			) : (
-				<ActiveComponent />
+				<Box width="100%" height="100%">
+					{userHasPermission ? (
+						<ActiveComponent />
+					) : (
+						<Stack
+							direction="row"
+							justifyContent="center"
+							alignItems="center"
+							height="100%"
+							spacing={5}
+						>
+							<Typography variant="h4">403</Typography>
+							<Divider
+								orientation="vertical"
+								flexItem
+								sx={{
+									borderWidth: 1,
+									borderColor: 'error.main',
+								}}
+							/>
+							<Typography variant="h4">
+								You do not have permission to view this page, {username}.
+							</Typography>
+						</Stack>
+					)}
+				</Box>
 			)}
 			<Backdrop
 				open={!user}

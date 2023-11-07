@@ -1,15 +1,18 @@
 import { useContext, useState, useEffect } from 'react';
-import { signInWithEmailAndPassword, browserLocalPersistence } from 'firebase/auth';
+import { signInWithEmailAndPassword, browserLocalPersistence, UserCredential } from 'firebase/auth';
 import { Button, Paper, Stack, TextField, Typography } from '@mui/material';
 import { AuthContext } from '../authContext';
-import { auth } from '../Firebase/firebase';
+import { auth, firestore } from '../Firebase/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { ControlPanelUser } from '../types/state';
+import { useAppDataStore } from '../state';
 
 export default function LoginPrompt() {
 	const user = useContext(AuthContext);
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setError] = useState<string | null>(null);
-
+	const setUser = useAppDataStore((state) => state.setUserProfile);
 	return (
 		<Paper sx={{ padding: 0, width: 500 }} elevation={1}>
 			<form
@@ -18,7 +21,21 @@ export default function LoginPrompt() {
 					// Clear the error message
 					setError(null);
 
-					login(username, password, setError);
+					login(username, password, setError).then(async (cred) => {
+						// Get the user from Firebase to check permissions
+						const userProfile = await getDoc(
+							doc(firestore, 'administrators', cred.user.uid)
+						);
+						// If the user is not an admin, log them out
+						if (!userProfile.exists()) {
+							auth.signOut();
+							setError('You are not authorized to access this page.');
+						} else {
+							const userData = userProfile.data() as ControlPanelUser;
+							setUser(userData);
+							alert(`Welcome, ${userData.username}!`);
+						}
+					});
 					setPassword('');
 
 					// clear the password field
@@ -70,31 +87,28 @@ export default function LoginPrompt() {
 	);
 }
 
-function login(
+async function login(
 	username: string,
 	password: string,
 	setError: React.Dispatch<React.SetStateAction<string | null>>
-) {
+): Promise<UserCredential> {
 	if (auth.currentUser) {
-		auth.signOut();
+		await auth.signOut();
+	}
+	if (username !== '' && password !== '') {
+		return auth
+			.setPersistence(browserLocalPersistence)
+			.then(() => signInWithEmailAndPassword(auth, username, password))
+			.then((user) => {
+				setError(null);
+				return user;
+			})
+			.catch((_error) => {
+				setError('Please check your username and password and try again.');
+				return Promise.reject(null);
+			});
 	} else {
-		if (username !== '' && password !== '') {
-			auth.setPersistence(browserLocalPersistence)
-				.then(() => {
-					return signInWithEmailAndPassword(auth, username, password);
-				})
-				.then((_) => {
-					setError(null);
-					// alert the user that this is a preview and a work in progress
-					alert(
-						'Hi, welcome to the new control panel! This is a work in progress, so please be patient as we work out the kinks.'
-					);
-				})
-				.catch((_error) => {
-					setError('Please check your username and password and try again.');
-				});
-		} else {
-			setError('Username and password are both required, silly!');
-		}
+		setError('Username and password are both required, silly!');
+		return Promise.reject(null);
 	}
 }

@@ -5,9 +5,22 @@ import { Shiur, TagData } from './shiur';
 import { Slideshow } from './slideshow';
 import { Sponsorship } from './sponsorship';
 
+export type ControlPanelUser = {
+	username: string;
+	permissions: {
+		pushNotifications: boolean;
+		sponsorships: boolean;
+		articles: boolean;
+		shiurim: boolean;
+		rebbeim: boolean;
+		slideshow: boolean;
+	};
+};
 export interface AppData {
 	setState: (state: Partial<AppData>) => void;
 	loading: boolean;
+	userProfile: ControlPanelUser | null;
+	setUserProfile: (userProfile: ControlPanelUser | null) => void;
 	setLoading: (loading: boolean) => void;
 	shiurim: { [id: string]: Shiur };
 	addShiur: (shiur: Shiur) => void;

@@ -14,6 +14,8 @@ export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
 export const useAppDataStore = create<AppData>()((set) => ({
 	setState: (state) => set({ ...state }),
+	userProfile: null,
+	setUserProfile: (userProfile) => set({ userProfile }),
 	loading: true,
 	setLoading: (loading) => set((state) => ({ ...state, loading })),
 	shiurim: {},
