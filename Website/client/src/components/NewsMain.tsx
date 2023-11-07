@@ -8,15 +8,31 @@ import {
 	CardActions,
 	CardContent,
 	CardHeader,
+	Collapse,
+	IconButton,
 	Modal,
+	Paper,
 	Stack,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableRow,
 	TextField,
 	Typography,
 } from '@mui/material';
 import { Optional, useAppDataStore } from '../state';
 import Article from '../types/article';
 import _ from 'lodash';
-import { Clear, CloudUpload, Edit, ExpandMore, Save } from '@mui/icons-material';
+import {
+	Clear,
+	CloudUpload,
+	Edit,
+	ExpandMore,
+	KeyboardArrowDown,
+	KeyboardArrowUp,
+	Save,
+} from '@mui/icons-material';
 import Markdown from 'react-markdown';
 import MDEditor from '@uiw/react-md-editor';
 import { useState } from 'react';
@@ -43,65 +59,28 @@ export function NewsMain() {
 			>
 				New Article
 			</Button>
-			{_.map(articles, (article) => (
-				<Accordion key={article.id}>
-					<AccordionSummary expandIcon={<ExpandMore />}>
-						<Stack
-							direction="row"
-							justifyContent="space-between"
-							alignItems="center"
-							spacing={1}
-							width="100%"
-							marginX={1}
-						>
-							<Typography>{article.title}</Typography>
-							<Typography>{article.author}</Typography>
-							<Stack direction="row" spacing={1}>
-								<Button
-									variant="outlined"
-									sx={{
-										borderRadius: 8,
-										// textTransform: 'none',
-										paddingY: 0.2,
-										paddingX: 1,
-										fontWeight: 'bold',
-									}}
-									color="primary"
-									onClick={(e) => {
-										e.stopPropagation();
-										setArticleToEdit(article);
-									}}
-									endIcon={<Edit />}
-								>
-									Edit
-								</Button>
-								<Button
-									variant="outlined"
-									sx={{
-										borderRadius: 8,
-										// textTransform: 'none',
-										paddingY: 0.2,
-										paddingX: 1,
-										fontWeight: 'bold',
-									}}
-									color="error"
-									onClick={(e) => {
-										e.stopPropagation();
-										deleteArticle(article);
-										// Delete article
-									}}
-									endIcon={<Clear />}
-								>
-									Delete
-								</Button>
-							</Stack>
-						</Stack>
-					</AccordionSummary>
-					<AccordionDetails>
-						<Markdown>{article.body}</Markdown>
-					</AccordionDetails>
-				</Accordion>
-			))}
+			<Paper elevation={3}>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell />
+							<TableCell>Title</TableCell>
+							<TableCell>Author</TableCell>
+							<TableCell align="right">Actions</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{_.map(articles, (article) => (
+							<Row
+								key={article.id}
+								row={article}
+								deleteArticle={() => deleteArticle(article)}
+								editArticle={() => setArticleToEdit(article)}
+							/>
+						))}
+					</TableBody>
+				</Table>
+			</Paper>
 			{articleToEdit && (
 				<ArticleEditModal
 					article={articleToEdit}
@@ -240,3 +219,73 @@ const OutlinedDiv = ({ children, label }: { children: JSX.Element; label: string
 	);
 };
 export default OutlinedDiv;
+
+function Row(props: { row: Article; deleteArticle: () => void; editArticle: () => void }) {
+	const { row, deleteArticle, editArticle } = props;
+	const [open, setOpen] = useState(false);
+
+	return (
+		<>
+			<TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+				<TableCell>
+					<IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+						{open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+					</IconButton>
+				</TableCell>
+				<TableCell component="th" scope="row">
+					{row.title}
+				</TableCell>
+				<TableCell>{row.author}</TableCell>
+				<TableCell>
+					<Stack direction="row" spacing={1} justifyContent="flex-end">
+						<Button
+							variant="outlined"
+							sx={{
+								borderRadius: 8,
+								// textTransform: 'none',
+								paddingY: 0.2,
+								paddingX: 1,
+								fontWeight: 'bold',
+							}}
+							color="primary"
+							onClick={(e) => {
+								e.stopPropagation();
+								editArticle();
+							}}
+							endIcon={<Edit />}
+						>
+							Edit
+						</Button>
+						<Button
+							variant="outlined"
+							sx={{
+								borderRadius: 8,
+								// textTransform: 'none',
+								paddingY: 0.2,
+								paddingX: 1,
+								fontWeight: 'bold',
+							}}
+							color="error"
+							onClick={(e) => {
+								e.stopPropagation();
+								deleteArticle();
+							}}
+							endIcon={<Clear />}
+						>
+							Delete
+						</Button>
+					</Stack>
+				</TableCell>
+			</TableRow>
+			<TableRow>
+				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+					<Collapse in={open} timeout="auto" unmountOnExit>
+						<Box sx={{ margin: 1 }}>
+							<Markdown>{row.body}</Markdown>
+						</Box>
+					</Collapse>
+				</TableCell>
+			</TableRow>
+		</>
+	);
+}

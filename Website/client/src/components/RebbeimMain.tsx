@@ -9,7 +9,7 @@ export default function AllRebbeim() {
 	const rebbeim = useAppDataStore((state) => state.rebbeim);
 	const [isAddingRabbi, setIsAddingRabbi] = useState(false);
 	return (
-		<Box height="100%" width="100%">
+		<>
 			<DataGrid
 				rows={_.values(rebbeim)}
 				rowHeight={80}
@@ -98,6 +98,6 @@ export default function AllRebbeim() {
 					<></>
 				)}
 			</Modal>
-		</Box>
+		</>
 	);
 }

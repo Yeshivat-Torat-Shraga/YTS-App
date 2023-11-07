@@ -82,8 +82,8 @@ function App() {
 	}, []);
 	return (
 		<Box sx={{ display: 'flex', height: '100%' }}>
-			<CssBaseline />
 			<ThemeProvider theme={isLightTheme ? lightTheme : darkTheme}>
+				<CssBaseline />
 				<AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
 					<Toolbar>
 						<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>

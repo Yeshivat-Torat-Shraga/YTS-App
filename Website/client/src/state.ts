@@ -177,10 +177,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 		set((state) => ({
 			sponsors: {
 				...state.sponsors,
-				sponsors: {
-					...state.sponsors.sponsors,
-					[sponsor.id!]: sponsor as Sponsorship,
-				},
+				[sponsor.id!]: sponsor as Sponsorship,
 			},
 		}));
 	},
@@ -215,17 +212,12 @@ export const useAppDataStore = create<AppData>()((set) => ({
 		const newDocID = results[1];
 		if (!newDocID) throw new Error('Failed to add new slide');
 		set((state) => ({
-			slideshow: {
-				...state.slideshow,
-				slideshow: {
-					...state.slideshow.slideshow,
-					[newDocID]: {
-						id: newDocID,
-						title: slide.title,
-						url: URL.createObjectURL(slide.image),
-						uploaded: Timestamp.fromDate(slide.uploaded),
-					},
-				},
+			...state.slideshow,
+			[newDocID]: {
+				id: newDocID,
+				title: slide.title,
+				url: URL.createObjectURL(slide.image),
+				uploaded: Timestamp.fromDate(slide.uploaded),
 			},
 		}));
 	},

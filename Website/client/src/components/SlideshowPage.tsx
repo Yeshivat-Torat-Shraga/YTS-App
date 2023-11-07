@@ -61,6 +61,7 @@ function Label({
 export default function SlideshowPage() {
 	const slideshowImages = _.values(useAppDataStore((state) => state.slideshow));
 	const [isShowingUploadModal, setIsShowingUploadModal] = useState(false);
+	useAppDataStore(console.info);
 	return (
 		<Stack
 			direction="column"
