@@ -11,12 +11,12 @@ export type ControlPanelUser = {
 	profile: {
 		username: string;
 		permissions: {
-			pushNotifications: boolean;
-			sponsorships: boolean;
-			articles: boolean;
-			shiurim: boolean;
-			rebbeim: boolean;
-			slideshow: boolean;
+			pushNotifications?: boolean;
+			sponsorships?: boolean;
+			articles?: boolean;
+			shiurim?: boolean;
+			rebbeim?: boolean;
+			slideshow?: boolean;
 		};
 	};
 };

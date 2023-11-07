@@ -14,7 +14,7 @@ export default function LoginPrompt() {
 		state.setUserProfile,
 	]);
 	return (
-		<Paper sx={{ padding: 0, width: 500 }} elevation={1}>
+		<Paper sx={{ padding: 0, width: 500, backgroundColor: 'transparent' }} elevation={1}>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();

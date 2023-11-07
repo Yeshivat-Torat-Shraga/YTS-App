@@ -1,6 +1,15 @@
-import { Backdrop, Box, Divider, LinearProgress, Toolbar, Typography } from '@mui/material';
+import {
+	Backdrop,
+	Box,
+	Divider,
+	LinearProgress,
+	Toolbar,
+	Typography,
+	useMediaQuery,
+	useTheme,
+} from '@mui/material';
 import { Stack } from '@mui/system';
-import React from 'react';
+import React, { useState } from 'react';
 import { loremIpsum } from '../loremipsum';
 import { NavLabel } from '../nav';
 import LoginPrompt from './LoginPrompt';
@@ -55,75 +64,73 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 				overflow: 'auto',
 				display: 'flex',
 				flexDirection: 'column',
-				...({ user } ? {} : blurProps),
 			}}
 		>
 			<Toolbar />
-			{!user && (
-				<Typography variant="body1" padding={5}>
-					{loremIpsum} {loremIpsum}
-				</Typography>
-			)}
-			{isLoading ? (
-				<Stack
-					direction="column"
-					width="100%"
-					alignItems="center"
-					height="100%"
-					spacing={2}
-					justifyContent="center"
-				>
-					<Typography variant="h4">Loading</Typography>
-					<Box sx={{ width: '25%' }}>
-						<LinearProgress />
-					</Box>
-				</Stack>
-			) : (
-				<Box width="100%" height="100%">
-					{userHasPermission ? (
-						<ActiveComponent />
-					) : (
-						<Stack
-							direction="row"
-							justifyContent="center"
-							alignItems="center"
-							height="100%"
-							spacing={5}
-						>
-							<Typography variant="h4" color="error.main">
-								403
-							</Typography>
-							<Divider
-								orientation="vertical"
-								flexItem
-								sx={{
-									height: '50%',
-									alignSelf: 'unset',
-									borderWidth: 1,
-									borderColor: 'error.main',
-								}}
-							/>
-							<Stack direction="column" spacing={2}>
+			{user ? (
+				isLoading ? (
+					<Stack
+						direction="column"
+						width="100%"
+						alignItems="center"
+						height="100%"
+						spacing={2}
+						justifyContent="center"
+					>
+						<Typography variant="h4">Loading</Typography>
+						<Box sx={{ width: '25%' }}>
+							<LinearProgress />
+						</Box>
+					</Stack>
+				) : (
+					<Box width="100%" height="100%">
+						{userHasPermission ? (
+							<ActiveComponent />
+						) : (
+							<Stack
+								direction="row"
+								justifyContent="center"
+								alignItems="center"
+								height="100%"
+								spacing={5}
+							>
 								<Typography variant="h4" color="error.main">
-									You do not have permission to view this page,{' '}
-									{user?.profile.username}.
+									Access Denied (403)
 								</Typography>
-								<Typography variant="body1" color="error.main">
-									If you believe this is an error, please contact your
-									administrator.
-								</Typography>
-								<Typography variant="body2" color="error.main">
-									If you are the administrator, contact the developer.
-								</Typography>
-								<Typography variant="caption" color="error.main">
-									If you are the developer, you probably messed up.
-								</Typography>
+								<Divider
+									orientation="vertical"
+									flexItem
+									sx={{
+										height: '50%',
+										alignSelf: 'unset',
+										borderWidth: 1,
+										borderColor: 'error.main',
+									}}
+								/>
+								<Stack direction="column" spacing={2}>
+									<Typography variant="h4" color="error.main">
+										You do not have permission to view this page,{' '}
+										{user?.profile.username}.
+									</Typography>
+									<Typography variant="body1" color="error.main">
+										If you believe this is an error, please contact your
+										administrator.
+									</Typography>
+									<Typography variant="body2" color="error.main">
+										If you are the administrator, contact the developer.
+									</Typography>
+									<Typography variant="caption" color="error.main">
+										If you are the developer, contact a Higher Power.
+									</Typography>
+								</Stack>
 							</Stack>
-						</Stack>
-					)}
-				</Box>
+						)}
+					</Box>
+				)
+			) : (
+				<LoginScreen />
 			)}
-			<Backdrop
+			{/* <Backdrop
 				open={!user}
 				invisible
 				sx={{
@@ -134,7 +141,34 @@ export default function BodyView({ activeTab }: { activeTab: NavLabel }) {
 				<Stack direction="column" maxWidth="30vw">
 					<LoginPrompt />
 				</Stack>
-			</Backdrop>
+			</Backdrop> */}
+		</Box>
+	);
+}
+
+function LoginScreen() {
+	const theme = useTheme();
+	return (
+		<Box
+			sx={{
+				backgroundImage: `url(loginbg-${theme.palette.mode}.png)`,
+				backgroundRepeat: 'repeat',
+				width: '100%',
+				height: '100%',
+				// Center the content
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'center',
+				alignItems: 'center',
+			}}
+		>
+			<Box
+				sx={{
+					backdropFilter: 'blur(5px)',
+				}}
+			>
+				<LoginPrompt />
+			</Box>
 		</Box>
 	);
 }
