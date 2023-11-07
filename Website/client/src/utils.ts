@@ -344,6 +344,5 @@ export async function loadData(): Promise<Partial<AppData>> {
 		...data,
 		loading: false,
 	};
-	console.info(returnData, 'returning data');
 	return returnData;
 }

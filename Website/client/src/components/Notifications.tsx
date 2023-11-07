@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { Nullable, sendNotification } from '../utils';
 import { useState } from 'react';
+import { NotificationAdd, NotificationImportant, Warning } from '@mui/icons-material';
 
 export default function NotificationsManager() {
 	const [formState, setFormState] = useState<Nullable<{ title: string; body: string }>>({
@@ -85,6 +86,7 @@ export default function NotificationsManager() {
 							variant="contained"
 							color={isTest ? 'primary' : 'warning'}
 							fullWidth
+							startIcon={isTest ? <NotificationAdd /> : <NotificationImportant />}
 							disabled={
 								formState.title === null ||
 								formState.title.trim() === '' ||

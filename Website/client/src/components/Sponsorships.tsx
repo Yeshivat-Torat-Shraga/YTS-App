@@ -53,7 +53,7 @@ export default function SponsorshipPage() {
 					variant="contained"
 					color="primary"
 					fullWidth
-					endIcon={<AddCard />}
+					startIcon={<AddCard />}
 					onClick={() => setIsShowingAddSponsor(true)}
 				>
 					Add Sponsor
