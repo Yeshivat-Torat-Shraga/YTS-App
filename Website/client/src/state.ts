@@ -19,12 +19,12 @@ export const useAppDataStore = create<AppData>()((set) => ({
 	loading: true,
 	setLoading: (loading) => set((state) => ({ ...state, loading })),
 	shiurim: {},
-	setShiurim: (shiurim: { [id: string]: Shiur }) => {
+	setShiurim(shiurim: { [id: string]: Shiur }) {
 		set((state) => ({
 			shiurim,
 		}));
 	},
-	addShiur(shiur) {
+	async addShiur(shiur) {
 		addDoc(collection(firestore, 'content'), shiurToRawShiur(shiur)).catch(permissionError);
 		set((state) => ({
 			shiurim: {
@@ -33,7 +33,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	updateShiur: async (shiur: Shiur) => {
+	async updateShiur(shiur: Shiur) {
 		await setDoc(
 			doc(firestore, 'content', shiur.id),
 			{
@@ -48,7 +48,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	deleteShiur: async (shiur: Shiur) => {
+	async deleteShiur(shiur: Shiur) {
 		const fileHash = shiur.source_path.split('/')[2];
 		await deleteObject(ref(storage, `HLSStreams/${shiur.type}/${fileHash}`)).catch(
 			permissionError
@@ -65,7 +65,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			shiurim: {},
 		})),
 	rebbeim: {},
-	setRebbeim: (rebbeim: { [id: string]: Rabbi }) => {
+	setRebbeim(rebbeim: { [id: string]: Rabbi }) {
 		set((state) => ({
 			rebbeim,
 		}));
@@ -87,7 +87,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	deleteRebbi(rebbe) {
+	async deleteRebbi(rebbe) {
 		deleteDoc(doc(firestore, 'rebbeim', rebbe.id)).catch(permissionError);
 		set((state) => ({
 			rebbeim: Object.fromEntries(
@@ -95,7 +95,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			),
 		}));
 	},
-	updateRebbe: async (rebbe: Rabbi) => {
+	async updateRebbe(rebbe: Rabbi) {
 		await setDoc(
 			doc(firestore, 'rebbeim', rebbe.id),
 			{
@@ -110,7 +110,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	deleteRebbe: async (rebbe: Rabbi) => {
+	async deleteRebbe(rebbe: Rabbi) {
 		await deleteObject(ref(storage, `profile-pictures/${rebbe.profilePictureFileName}`));
 		await deleteDoc(doc(firestore, 'rebbeim', rebbe.id));
 		set((state) => ({
@@ -128,7 +128,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 		set((state) => ({
 			articles,
 		})),
-	updateArticle: async (article: Optional<Article, 'id'>) => {
+	async updateArticle(article: Optional<Article, 'id'>) {
 		if (!article.id) {
 			let newDoc = await addDoc(collection(firestore, 'news'), _.omit(article, 'id')).catch(
 				permissionError
@@ -151,7 +151,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	deleteArticle: (article: Article) => {
+	async deleteArticle(article: Article) {
 		deleteDoc(doc(firestore, 'news', article.id)).catch(permissionError);
 		set((state) => ({
 			articles: Object.fromEntries(
@@ -183,7 +183,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	deleteSponsor(sponsor) {
+	async deleteSponsor(sponsor) {
 		deleteDoc(doc(firestore, 'sponsorships', sponsor.id)).catch(permissionError);
 		set((state) => ({
 			sponsors: Object.fromEntries(
@@ -223,7 +223,7 @@ export const useAppDataStore = create<AppData>()((set) => ({
 			},
 		}));
 	},
-	deleteSlide(slide) {
+	async deleteSlide(slide) {
 		deleteDoc(doc(firestore, 'slideshowImages', slide.id)).catch(permissionError);
 		set((state) => ({
 			slideshow: Object.fromEntries(
