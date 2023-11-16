@@ -43,7 +43,7 @@ export type Shiur = {
 	viewCount?: number;
 };
 
-export function shiurToRawShiur(shiur: Shiur): Omit<RawShiur, 'id'> {
+export function shiurToRawShiur(shiur: Omit<Shiur, 'id'>): Omit<RawShiur, 'id'> {
 	return {
 		attributionID: shiur.attributionID,
 		author: shiur.authorName,

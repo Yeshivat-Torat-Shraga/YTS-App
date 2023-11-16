@@ -37,7 +37,10 @@ export default function PendingShiurim() {
 							width: 700,
 						}}
 					>
-						<EditShiurModalContents shiur={editShiur} />
+						<EditShiurModalContents
+							shiur={editShiur}
+							closeModal={() => setEditShiur(undefined)}
+						/>
 					</Box>
 				) : (
 					<></>

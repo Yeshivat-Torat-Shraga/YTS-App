@@ -25,7 +25,6 @@ export const useAppDataStore = create<AppData>()((set) => ({
 		}));
 	},
 	async addShiur(shiur) {
-		addDoc(collection(firestore, 'content'), shiurToRawShiur(shiur)).catch(permissionError);
 		set((state) => ({
 			shiurim: {
 				...state.shiurim,
@@ -50,9 +49,9 @@ export const useAppDataStore = create<AppData>()((set) => ({
 	},
 	async deleteShiur(shiur: Shiur) {
 		const fileHash = shiur.source_path.split('/')[2];
-		await deleteObject(ref(storage, `HLSStreams/${shiur.type}/${fileHash}`)).catch(
-			permissionError
-		);
+		await deleteObject(ref(storage, `HLSStreams/${shiur.type}/${fileHash}`))
+			.catch(permissionError)
+			.catch(storageNotFound);
 		deleteDoc(doc(firestore, 'content', shiur.id)).catch(permissionError);
 		set((state) => ({
 			shiurim: Object.fromEntries(
@@ -241,5 +240,11 @@ export const useAppDataStore = create<AppData>()((set) => ({
 function permissionError(err: any) {
 	if (err.code === 'permission-denied') {
 		console.error(`Request from user ${auth.currentUser?.uid} failed: permission denied`);
+	} else throw err;
+}
+
+function storageNotFound(err: any) {
+	if (err.code === 'storage/object-not-found') {
+		console.error('Storage object not found');
 	} else throw err;
 }

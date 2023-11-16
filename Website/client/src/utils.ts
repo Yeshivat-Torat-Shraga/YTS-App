@@ -1,9 +1,17 @@
-import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import { UploadResult, getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { auth, firestore, functions, storage } from './Firebase/firebase';
 import { Rabbi, RawRabbi } from './types/rabbi';
-import { RawShiur, Shiur, TagData } from './types/shiur';
+import { RawShiur, Shiur, TagData, shiurToRawShiur } from './types/shiur';
 import _ from 'lodash';
-import { collection, addDoc, getDocs, doc, getDoc } from 'firebase/firestore';
+import {
+	collection,
+	addDoc,
+	getDocs,
+	doc,
+	getDoc,
+	DocumentData,
+	DocumentReference,
+} from 'firebase/firestore';
 import { Sponsorship, SponsorshipStatus } from './types/sponsorship';
 import { httpsCallable } from 'firebase/functions';
 import { User, UserCredential } from 'firebase/auth';
@@ -101,7 +109,8 @@ export function generateTimeString(seconds: number) {
 	return hoursString + minutesString + secondsString;
 }
 
-export async function uploadShiurFile(shiurData: Omit<RawShiur, 'id'>, file: File) {
+export async function uploadShiurFile(fullShiur: Omit<Shiur, 'id'>, file: File): Promise<Shiur> {
+	let shiurData = shiurToRawShiur(fullShiur);
 	// First we need to set the proper firestore document
 	// Then we need to upload the file to storage
 
@@ -160,7 +169,20 @@ export async function uploadShiurFile(shiurData: Omit<RawShiur, 'id'>, file: Fil
 
 	// 12. Upload to storage
 
-	addDoc(collection(firestore, 'content'), {
+	// B. Submit to storage
+	// 1. Get Bucket
+
+	const storageRef = ref(storage, `content/${hashHex}`);
+	if (
+		_.some(
+			[attributionID, author, date, description, duration, tagData, title, type, pending],
+			_.isNil
+		)
+	) {
+		throw new Error('Missing required field');
+	}
+
+	return addDoc(collection(firestore, 'content'), {
 		attributionID,
 		author,
 		date,
@@ -171,13 +193,25 @@ export async function uploadShiurFile(shiurData: Omit<RawShiur, 'id'>, file: Fil
 		title,
 		type,
 		pending,
-	});
-
-	// B. Submit to storage
-	// 1. Get Bucket
-	const storageRef = ref(storage, `content/${hashHex}`);
-	// 2. Upload file
-	uploadBytes(storageRef, file);
+	}).then((docRef) =>
+		uploadBytes(storageRef, file).then((__) => {
+			return {
+				id: docRef.id,
+				duration,
+				source_path: `HLSStreams/audio/${hashHex}/${hashHex}.m3u8`,
+				type,
+				attributionID,
+				date,
+				description,
+				title,
+				tagData,
+				authorName: author,
+				pending,
+				author: fullShiur.author,
+				search_index: [],
+			};
+		})
+	);
 }
 
 /**

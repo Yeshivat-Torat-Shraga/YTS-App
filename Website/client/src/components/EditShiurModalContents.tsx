@@ -1,12 +1,12 @@
 import {
 	Typography,
-	Button,
 	Stack,
 	Card,
 	CardHeader,
 	TextField,
 	CardContent,
 	MenuItem,
+	Alert,
 } from '@mui/material';
 import { useAppDataStore } from '../state';
 import _ from 'lodash';
@@ -15,7 +15,15 @@ import { useState } from 'react';
 import { Shiur, shiurToRawShiur } from '../types/shiur';
 import { Timestamp } from 'firebase/firestore';
 import { DropzoneArea } from 'mui-file-dropzone';
-export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null }) {
+import { LoadingButton } from '@mui/lab';
+
+export default function EditShiurModalContents({
+	shiur,
+	closeModal,
+}: {
+	shiur: Shiur | null;
+	closeModal: () => void;
+}) {
 	// If shiur is null, then we are creating a new shiur
 	const isNewShiur = shiur === null;
 	const [formState, setFormState] = useState<Partial<Shiur>>(shiur ?? {});
@@ -32,6 +40,11 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 		formState.tagData,
 		// formState.description,
 	].some((field) => field === undefined || field === null || field === '');
+
+	const [isUploading, setIsUploading] = useState(false);
+	const [error, setError] = useState('');
+	const [addShiur, updateShiur] = useAppDataStore((state) => [state.addShiur, state.updateShiur]);
+
 	return (
 		<Card sx={{ padding: 4 }}>
 			<CardHeader
@@ -97,7 +110,9 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 							}}
 						>
 							{categories.map((tag) => (
-								<MenuItem value={tag.id}>{tag.displayName}</MenuItem>
+								<MenuItem value={tag.id} key={tag.id}>
+									{tag.displayName}
+								</MenuItem>
 							))}
 						</TextField>
 					</Stack>
@@ -123,29 +138,46 @@ export default function EditShiurModalContents({ shiur }: { shiur: Shiur | null 
 						/>
 					)}
 
-					<Button
+					<LoadingButton
 						variant="outlined"
 						color="primary"
+						loading={isUploading}
 						fullWidth
 						disabled={
 							formStateHasEmptyFields ||
 							(shiur === null && file === null) ||
-							(shiur !== null && _.isEqual(shiur, formState))
+							(shiur !== null && _.isEqual(shiur, formState)) ||
+							isUploading
 						}
 						onClick={() => {
 							if (shiur === null) {
 								formState.date = Timestamp.now();
-								formState.pending = true;
+								formState.pending = false;
 								formState.viewCount = 0;
+								formState.description = formState.description ?? '';
 								// TODO: Upload audio file
-								uploadShiurFile(shiurToRawShiur(formState as Shiur), file as File);
+								setIsUploading(true);
+								uploadShiurFile(formState as Shiur, file as File)
+									.then((resultingShiur) => {
+										setIsUploading(false);
+										addShiur(resultingShiur);
+										closeModal();
+									})
+									.catch((error) => {
+										setError(
+											"Upload failed. If this is the first time you're uploading a shiur, please wait a few minutes and try again. If the problem persists, do not retry, and contact the developer."
+										);
+										setIsUploading(false);
+									});
 							} else {
-								useAppDataStore.getState().updateShiur(formState as Shiur);
+								updateShiur(formState as Shiur);
+								closeModal();
 							}
 						}}
 					>
-						{shiur === null ? 'Upload' : 'Save'}
-					</Button>
+						{isUploading ? 'Uploading...' : shiur === null ? 'Upload' : 'Save'}
+					</LoadingButton>
+					{!!error && <Alert severity="error">{error}</Alert>}
 				</Stack>
 			</CardContent>
 		</Card>

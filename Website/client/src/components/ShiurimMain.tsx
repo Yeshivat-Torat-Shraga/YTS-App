@@ -1,6 +1,5 @@
 import { Box, Modal } from '@mui/material';
 import { useAppDataStore } from '../state';
-import _ from 'lodash';
 import { useState } from 'react';
 import { Shiur } from '../types/shiur';
 import ShiurimTable from './ShiurimTable';
@@ -26,7 +25,10 @@ export default function ShiurimMain() {
 							width: 700,
 						}}
 					>
-						<EditShiurModalContents shiur={editShiur} />
+						<EditShiurModalContents
+							shiur={editShiur}
+							closeModal={() => setEditShiur(undefined)}
+						/>
 					</Box>
 				) : (
 					<></>
