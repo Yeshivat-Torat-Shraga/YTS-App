@@ -18,6 +18,7 @@ export function info(data: any, structured = false): string {
 
 	return JSON.stringify(data);
 }
+
 export function warn(data: any, structured = false): string {
 	logger.warn(data, {
 		structuredData: structured,
@@ -27,6 +28,14 @@ export function warn(data: any, structured = false): string {
 }
 export function error(data: any, structured = false): string {
 	logger.error(data, {
+		structuredData: structured,
+	});
+
+	return JSON.stringify(data);
+}
+
+export function debugLog(data: any, structured = false): string {
+	logger.debug(data, {
 		structuredData: structured,
 	});
 

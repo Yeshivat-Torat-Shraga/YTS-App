@@ -1,8 +1,15 @@
 import admin from 'firebase-admin';
 // import { logger } from 'firebase-functions';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-// import cors from 'cors';
+import { onObjectFinalized } from 'firebase-functions/v2/storage';
+import { tmpdir } from 'os';
+import { readFileSync, readdirSync } from 'fs';
 // const handler = cors({ origin: true });
+import { setGlobalOptions } from 'firebase-functions/v2';
+import { Storage } from '@google-cloud/storage';
+// Uncomment this when deploying HLSStream generation
+setGlobalOptions({ maxInstances: 5, memory: '4GiB', timeoutSeconds: 540 });
+
 import {
 	AlertFirestore,
 	Author,
@@ -29,17 +36,23 @@ import {
 	getTagFor,
 	info,
 	error,
+	warn,
+	debugLog,
 	// ENABLEAPPCHECK,
 } from './helpers';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
-// import { bucket } from 'firebase-functions/v1/storage';
-// const Storage = require('@google-cloud/storage').Storage;
+import ChildProcessPromise from 'child-process-promise'; // This is for running the ffmpeg command
+// The ffmpeg command is bundled with the OS provisioned by Google Cloud Functions (Ubuntu 18.04)
+// To ensure we are given Ubuntu 18.04, we need to set the runtime to 'nodejs16' in package.json
 const FieldValue = admin.firestore.FieldValue;
+
 // This must be kept as a require() statement, otherwise the function will not work? \_('-')_/
 const functions = require('firebase-functions');
 
 import _ from 'lodash';
 import { AlertClient } from './types';
+import path from 'path';
+import { createHash } from 'crypto';
 admin.initializeApp({
 	projectId: 'yeshivat-torat-shraga',
 	// credential: admin.credential.cert(
@@ -824,147 +837,161 @@ exports.loadContent = onCall(
 	}
 );
 
-// exports.generateHLSStream = storage
-// 	.bucket()
-// 	.object()
-// 	.onFinalize(async (object) => {
-// 		// check if file is user uploaded
-// 		const userUpload = object.name!.startsWith('user-submissions/');
-// 		// Exit if this is triggered on a file that is not uplaoded to the content folder.
-// 		if (!object.name!.startsWith('content/') && !userUpload) {
-// 			return log(`File ${object.name} is not in the content folder. Exiting...`);
-// 		}
+exports.generateHLSStream = onObjectFinalized(async (event) => {
+	const object = event.data;
+	// check if file is user uploaded
+	const userUpload = object.name!.startsWith('user-submissions/');
+	// Exit if this is triggered on a file that is not uplaoded to the content folder.
+	if (!object.name!.startsWith('content/') && !userUpload) {
+		return debugLog(`File ${object.name} is not in the content folder. Exiting...`);
+	}
 
-// 		const storageObj = new Storage();
-// 		const bucket = storageObj.bucket(object.bucket);
+	const storageObj = new Storage();
+	const bucket = storageObj.bucket(object.bucket);
 
-// 		const filepath = object.name!;
-// 		const filename = strippedFilename(filepath);
-// 		const tempFilePath = path.join(os.tmpdir(), filename);
+	const filepath = object.name!;
+	const filename = strippedFilename(filepath);
+	const tempFilePath = path.join(tmpdir(), filename);
 
-// 		// limit file size to 250 mb
-// 		if (parseInt(object.size) > 262144000) {
-// 			return log(`File ${object.name} is too large. Exiting...`);
-// 		}
+	// limit file size to 250 mb
+	if (object.size > 262144000) {
+		return warn(`File ${object.name} is too large. Exiting...`);
+	}
 
-// 		// Download file from bucket.
-// 		await bucket.file(filepath).download({
-// 			destination: tempFilePath,
-// 			validation: false,
-// 		});
+	// Download file from bucket.
+	await bucket.file(filepath).download({
+		destination: tempFilePath,
+		validation: false,
+	});
 
-// 		let newFolderPrefix = `HLSStreams/audio`;
+	let newFolderPrefix = `HLSStreams/audio`;
 
-// 		if (userUpload) {
-// 			// count number of pending firebase documents
-// 			const db = admin.firestore();
-// 			const pendingCount = await db.collection('content').where('pending', '==', true).get();
+	if (userUpload) {
+		// count number of pending firebase documents
+		const db = admin.firestore();
+		const pendingCount = await db.collection('content').where('pending', '==', true).get();
 
-// 			if (pendingCount.size > 400) {
-// 				// delete file and return
-// 				log(`Too many pending documents. Deleting file at ${object.name}`);
-// 				return bucket.file(filepath).delete();
-// 			}
+		if (pendingCount.size > 400) {
+			// delete file and return
+			warn(`Too many pending documents. Deleting file at ${object.name}`);
+			return bucket.file(filepath).delete();
+		}
 
-// 			log('Detected user upload, running checks...');
-// 			// sha256 hash the file
-// 			const fileBuffer = fs.readFileSync(tempFilePath);
-// 			const hashSum = crypto.createHash('sha256');
-// 			hashSum.update(fileBuffer);
-// 			const hex = hashSum.digest('hex');
-// 			log(`File named ${filename} has hash: ${hex}`);
+		log('Detected user upload, running checks...');
+		// sha256 hash the file
+		const fileBuffer = readFileSync(tempFilePath);
+		const hashSum = createHash('sha256');
+		hashSum.update(fileBuffer);
+		const hex = hashSum.digest('hex');
+		debugLog(`File named ${filename} has hash: ${hex}`);
 
-// 			// check that filename == hash
-// 			if (filename != hex) {
-// 				log(`Filename ${filename} does not match hash of content file ${hex}`);
-// 				log(`Deleting file at ${object.name}`);
-// 				await bucket.file(object.name!).delete();
-// 				return 'Failed to authenticate file';
-// 			} else {
-// 				log(`Filename ${filename} matches hash of content file ${hex}`);
-// 				// check if database has matching document
-// 				var newFolderPath = newFolderPrefix + '/' + hex;
-// 				const doc = await db
-// 					.collection('content')
-// 					.where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8')
-// 					.get();
+		// check that filename == hash
+		if (filename != hex) {
+			warn(`Filename ${filename} does not match hash of content file ${hex}`);
+			info(`Deleting file at ${object.name}`);
+			await bucket.file(object.name!).delete();
+			return 'Failed to authenticate file';
+		}
+		debugLog(`Filename ${filename} matches hash of content file ${hex}`);
 
-// 				if (doc.empty) {
-// 					// no matching document, delete file
-// 					log(`No matching firebase document for file to be placed at ${newFolderPath}`);
-// 					log(`Deleting file at ${object.name}`);
-// 					await bucket.file(filepath).delete();
-// 					return 'Failed to authenticate file';
-// 				} else {
-// 					// NOTE: Doesn't check for multiple matches
-// 					log(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
-// 				}
-// 			}
-// 		} else {
-// 			var newFolderPath = newFolderPrefix + '/' + filename;
-// 		}
+		// Check that there is no file with the same hash in storage
+		var newFolderPath = newFolderPrefix + '/' + hex;
+		const [files] = await bucket.getFiles({
+			prefix: newFolderPath,
+		});
+		// files
+		if (files.length > 0) {
+			warn(`File with hash ${hex} already exists in storage`);
+			info(`Deleting file at ${object.name}`);
+			log(`Not creating new HLS stream for ${filename} because it already exists`);
+			await bucket.file(object.name!).delete();
+			return 'File already exists';
+		}
+		// check if database has matching document
+		const doc = await db
+			.collection('content')
+			.where('source_path', '==', newFolderPath + `/${hex}` + '.m3u8')
+			.get();
 
-// 		const inputPath = tempFilePath;
-// 		const outputDir = path.join(os.tmpdir(), 'HLSStreams');
-// 		log(`Input path: ${inputPath}`);
-// 		log(`Output dir: ${outputDir}`);
+		if (doc.empty) {
+			// no matching document, delete file
+			warn(`No matching firebase document for file to be placed at ${newFolderPath}`);
+			info(`Deleting file at ${object.name}`);
+			log(
+				`Not creating new HLS stream for ${filename} because there is no matching firebase document`
+			);
+			await bucket.file(filepath).delete();
+			return 'Failed to authenticate file';
+		} else {
+			// NOTE: Doesn't check for multiple matches
+			debugLog(`Found matching firebase document for file ${filename}: ${doc.docs[0].id}`);
+		}
+	} else {
+		var newFolderPath = newFolderPrefix + '/' + filename;
+	}
 
-// 		// Create the output directory if it does not exist
-// 		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
-// 		// Empty the output directory if it exists
-// 		await childProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
+	const inputPath = tempFilePath;
+	const outputDir = path.join(tmpdir(), 'HLSStreams');
+	log(`Input path: ${inputPath}`);
+	log(`Output dir: ${outputDir}`);
 
-// 		// Create the HLS stream
-// 		let ffmpegArgs = [
-// 			'-y',
-// 			'-i',
-// 			inputPath,
-// 			'-hls_time',
-// 			'10',
-// 			'-hls_list_size',
-// 			'0',
-// 			'-hls_flags',
-// 			'append_list',
-// 			'-hls_segment_filename',
-// 			`${outputDir}/${filename}_%d.ts`,
-// 			`${outputDir}/${filename}.m3u8`,
-// 		];
+	// Create the output directory if it does not exist
+	await ChildProcessPromise.spawn('mkdir', ['-p', outputDir]);
+	// Empty the output directory if it exists
+	await ChildProcessPromise.spawn('rm', ['-rf', `${outputDir}/*`]);
 
-// 		if (object.contentType?.startsWith('audio/')) {
-// 			ffmpegArgs.splice(3, 0, '-vn');
-// 		}
+	// Create the HLS stream
+	let ffmpegArgs = [
+		'-y',
+		'-i',
+		inputPath,
+		'-hls_time',
+		'10',
+		'-hls_list_size',
+		'0',
+		'-hls_flags',
+		'append_list',
+		'-hls_segment_filename',
+		`${outputDir}/${filename}_%d.ts`,
+		`${outputDir}/${filename}.m3u8`,
+	];
 
-// 		log(`ffmpegArgs: ${ffmpegArgs}`);
-// 		try {
-// 			await childProcessPromise.spawn(ffmpeg.path, ffmpegArgs, {
-// 				stdio: 'inherit',
-// 			});
-// 		} catch (err) {
-// 			log(`Error creating HLS stream for ${filename}: ${err}`);
-// 		}
+	if (object.contentType?.startsWith('audio/')) {
+		ffmpegArgs.splice(3, 0, '-vn');
+	}
 
-// 		log(`Uploading HLS stream from ${outputDir}`);
+	debugLog(`ffmpegArgs: ${ffmpegArgs}`);
+	try {
+		await ChildProcessPromise.spawn('ffmpeg', ffmpegArgs, {
+			stdio: 'inherit',
+		});
+		log(`Created HLS stream for ${filename}`);
+	} catch (err) {
+		error(`Error creating HLS stream for ${filename}: ${err}`);
+	}
 
-// 		const filenames = readdirSync(outputDir);
+	log(`Uploading HLS stream from ${outputDir}`);
 
-// 		// Upload the HLS stream to the bucket asynchronously
-// 		await Promise.all(
-// 			filenames.map((filePart) => {
-// 				const fp = path.join(outputDir, filePart);
-// 				log(`Uploading ${fp}...`);
-// 				return bucket.upload(fp, {
-// 					destination: `${newFolderPath}/${filePart}`,
-// 					metadata: {
-// 						'Cache-Control': 'public,max-age=3600',
-// 					},
-// 				});
-// 			})
-// 		);
-// 		console.log('Uploaded all files.');
+	const filenames = readdirSync(outputDir);
 
-// 		// Delete the file in the content folder
-// 		bucket.file(filepath).delete();
-// 	});
+	// Upload the HLS stream to the bucket asynchronously
+	await Promise.all(
+		filenames.map((filePart) => {
+			const fp = path.join(outputDir, filePart);
+			debugLog(`Uploading ${fp}...`);
+			return bucket.upload(fp, {
+				destination: `${newFolderPath}/${filePart}`,
+				metadata: {
+					'Cache-Control': 'public,max-age=3600',
+				},
+			});
+		})
+	);
+	console.log('Done uploading HLS stream');
+
+	// Delete the file in the content folder
+	bucket.file(filepath).delete();
+});
 
 // exports.generateThumbnail = storage
 // 	.bucket()
@@ -985,13 +1012,13 @@ exports.loadContent = onCall(
 // 		const filename = strippedFilename(filepath!);
 // 		const storage = new Storage();
 // 		const bucket = storage.bucket(object.bucket);
-// 		const tempFilePath = path.join(os.tmpdir(), filename);
+// 		const tempFilePath = path.join(tmpdir(), filename);
 // 		await bucket.file(filepath).download({
 // 			destination: tempFilePath,
 // 			validation: false,
 // 		});
 // 		const inputPath = tempFilePath;
-// 		const outputDir = path.join(os.tmpdir(), 'thumbnails');
+// 		const outputDir = path.join(tmpdir(), 'thumbnails');
 // 		// Step 3: Create the output folder
 // 		await childProcessPromise.spawn('mkdir', ['-p', outputDir]);
 // 		// delete everything in the output directory
@@ -1000,7 +1027,7 @@ exports.loadContent = onCall(
 // 		// Step 4: Generate the thumbnail using ffmpeg
 // 		try {
 // 			await childProcessPromise.spawn(
-// 				ffmpeg.path,
+// 				'ffmpeg',
 // 				[
 // 					'-ss',
 // 					'0',

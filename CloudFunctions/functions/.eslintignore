@@ -1,2 +1,5 @@
 node_modules
 lib
+
+# I literally cannot believe I have to do this
+**/.eslintrc.js

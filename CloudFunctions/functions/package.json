@@ -12,12 +12,13 @@
 		"logs": "firebase functions:log"
 	},
 	"engines": {
-		"node": "20"
+		"node": "16"
 	},
 	"main": "lib/index.js",
 	"dependencies": {
 		"@google-cloud/firestore": "^5.0.2",
 		"@google-cloud/functions-framework": "^3.3.0",
+		"@google-cloud/storage": "^7.6.0",
 		"child-process-promise": "^2.2.1",
 		"cors": "^2.8.5",
 		"crypto": "^1.0.1",

@@ -6,7 +6,8 @@ module.exports = {
   // },
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
+    project: "CloudFunctions/functions/tsconfig.json",
+
     // sourceType: "module",
   },
   plugins: [
@@ -15,16 +16,17 @@ module.exports = {
 
   ignorePatterns: [
     "lib/**/*", // Ignore built files.
+    ".eslintrc.js",
   ],
-  extends: [
-    // "eslint:recommended",
-    "google",
-  ],
-  rules: {
-    "quotes": ["error", "double"],
-    "arrow-body-style": ["error", "always"],
-    "max-len": 0,
-    "indent": 0,
-    "noTab": 0,
-  },
+  // extends: [
+  //   // "eslint:recommended",
+  //   "google",
+  // ],
+  // rules: {
+  //   "quotes": ["error", "double"],
+  //   "arrow-body-style": ["error", "always"],
+  //   "max-len": 0,
+  //   "indent": 0,
+  //   "noTab": 0,
+  // },
 };
